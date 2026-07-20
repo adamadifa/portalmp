@@ -1,0 +1,24 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::create('produksi_mutasi_saldoawal', function (Blueprint $table) {
+            $table->char('kode_saldo_awal', 8)->primary();
+            $table->date('tanggal');
+            $table->smallInteger('bulan');
+            $table->char('tahun', 4);
+            $table->timestamps();
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('produksi_mutasi_saldoawal');
+    }
+};
