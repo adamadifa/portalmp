@@ -14,7 +14,7 @@ class BarangProduksiSeeder extends Seeder
      */
     public function run(): void
     {
-        $barangs = DB::select("SELECT * FROM pacificjul.produksi_barang");
+        $barangs = DB::select("SELECT * FROM portaljuli.produksi_barang");
 
         foreach ($barangs as $b) {
             DB::table('produksi_barang')->updateOrInsert(

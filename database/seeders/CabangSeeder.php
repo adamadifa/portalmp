@@ -12,7 +12,7 @@ class CabangSeeder extends Seeder
      */
     public function run(): void
     {
-        $cabang = DB::select("SELECT * FROM pacificjul.cabang");
+        $cabang = DB::select("SELECT * FROM portaljuli.cabang");
         foreach ($cabang as $cab) {
             DB::table('cabang')->updateOrInsert(
                 ['kode_cabang' => $cab->kode_cabang],

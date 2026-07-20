@@ -14,7 +14,7 @@ class TujuanAngkutanSeeder extends Seeder
      */
     public function run(): void
     {
-        $tujuans = DB::select("SELECT * FROM pacificjul.angkutan_tujuan");
+        $tujuans = DB::select("SELECT * FROM portaljuli.angkutan_tujuan");
 
         foreach ($tujuans as $t) {
             DB::table('angkutan_tujuan')->updateOrInsert(

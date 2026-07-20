@@ -12,6 +12,8 @@ use App\Http\Controllers\BarangpembelianController;
 use App\Http\Controllers\BarangproduksiController;
 use App\Http\Controllers\SaldoawalgudangjadiController;
 use App\Http\Controllers\SamutasiproduksiController;
+use App\Http\Controllers\BpbjController;
+use App\Http\Controllers\FsthpController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -69,6 +71,29 @@ Route::middleware('auth')->group(function () {
     Route::delete('/samutasiproduksi/{kode_saldo_awal}', [SamutasiproduksiController::class, 'destroy'])->name('samutasiproduksi.destroy');
     Route::get('/samutasiproduksi/{kode_saldo_awal}/show', [SamutasiproduksiController::class, 'show'])->name('samutasiproduksi.show');
     Route::post('/samutasiproduksi/getdetailsaldo', [SamutasiproduksiController::class, 'getdetailsaldo'])->name('samutasiproduksi.getdetailsaldo');
+
+    // Produksi - BPBJ
+    Route::get('/bpbj', [BpbjController::class, 'index'])->name('bpbj.index');
+    Route::get('/bpbj/create', [BpbjController::class, 'create'])->name('bpbj.create');
+    Route::post('/bpbj', [BpbjController::class, 'store'])->name('bpbj.store');
+    Route::delete('/bpbj/{no_mutasi}', [BpbjController::class, 'destroy'])->name('bpbj.delete');
+    Route::get('/bpbj/{no_mutasi}/show', [BpbjController::class, 'show'])->name('bpbj.show');
+    Route::post('/bpbj/storedetailtemp', [BpbjController::class, 'storedetailtemp'])->name('bpbj.storedetailtemp');
+    Route::get('/bpbj/{kode_produk}/getdetailtemp', [BpbjController::class, 'getdetailtemp'])->name('bpbj.getdetailtemp');
+    Route::post('/bpbj/generatenobpbj', [BpbjController::class, 'generatenobpbj'])->name('bpbj.generatenobpbj');
+    Route::post('/bpbj/deletetemp', [BpbjController::class, 'deletetemp'])->name('bpbj.deletetemp');
+    Route::post('/bpbj/cekdetailtemp', [BpbjController::class, 'cekdetailtemp'])->name('bpbj.cekdetailtemp');
+
+    // Produksi - FSTHP
+    Route::get('/fsthp', [FsthpController::class, 'index'])->name('fsthp.index');
+    Route::get('/fsthpgudang', [FsthpController::class, 'index_gudang'])->name('fsthpgudang.index');
+    Route::get('/fsthp/create', [FsthpController::class, 'create'])->name('fsthp.create');
+    Route::post('/fsthp', [FsthpController::class, 'store'])->name('fsthp.store');
+    Route::delete('/fsthp/{no_mutasi}', [FsthpController::class, 'destroy'])->name('fsthp.delete');
+    Route::get('/fsthp/{no_mutasi}/show', [FsthpController::class, 'show'])->name('fsthp.show');
+    Route::get('/fsthp/{no_mutasi}/approve', [FsthpController::class, 'approve'])->name('fsthp.approve');
+    Route::delete('/fsthp/{no_mutasi}/cancel', [FsthpController::class, 'cancel'])->name('fsthp.cancel');
+    Route::post('/fsthp/generatenofsthp', [FsthpController::class, 'generatenofsthp'])->name('fsthp.generatenofsthp');
 });
 
 require __DIR__.'/auth.php';

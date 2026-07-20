@@ -15,7 +15,7 @@ class SupplierSeeder extends Seeder
     public function run(): void
     {
         // Fetch suppliers from pacificjul database
-        $suppliers = DB::select("SELECT * FROM pacificjul.supplier");
+        $suppliers = DB::select("SELECT * FROM portaljuli.supplier");
 
         foreach ($suppliers as $supplier) {
             DB::table('supplier')->updateOrInsert(

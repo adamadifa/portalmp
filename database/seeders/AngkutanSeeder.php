@@ -15,7 +15,7 @@ class AngkutanSeeder extends Seeder
     public function run(): void
     {
         // Fetch angkutans from pacificjul database
-        $angkutans = DB::select("SELECT * FROM pacificjul.angkutan");
+        $angkutans = DB::select("SELECT * FROM portaljuli.angkutan");
 
         foreach ($angkutans as $a) {
             DB::table('angkutan')->updateOrInsert(

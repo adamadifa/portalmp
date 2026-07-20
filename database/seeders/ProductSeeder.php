@@ -13,7 +13,7 @@ class ProductSeeder extends Seeder
     public function run(): void
     {
         // 1. Copy produk_kategori
-        $kategori = DB::select("SELECT * FROM pacificjul.produk_kategori");
+        $kategori = DB::select("SELECT * FROM portaljuli.produk_kategori");
         foreach ($kategori as $kat) {
             DB::table('produk_kategori')->updateOrInsert(
                 ['kode_kategori_produk' => $kat->kode_kategori_produk],
@@ -26,7 +26,7 @@ class ProductSeeder extends Seeder
         }
 
         // 2. Copy produk_jenis
-        $jenis = DB::select("SELECT * FROM pacificjul.produk_jenis");
+        $jenis = DB::select("SELECT * FROM portaljuli.produk_jenis");
         foreach ($jenis as $jen) {
             DB::table('produk_jenis')->updateOrInsert(
                 ['kode_jenis_produk' => $jen->kode_jenis_produk],
@@ -39,7 +39,7 @@ class ProductSeeder extends Seeder
         }
 
         // 3. Copy produk
-        $produk = DB::select("SELECT * FROM pacificjul.produk");
+        $produk = DB::select("SELECT * FROM portaljuli.produk");
         foreach ($produk as $prod) {
             DB::table('produk')->updateOrInsert(
                 ['kode_produk' => $prod->kode_produk],

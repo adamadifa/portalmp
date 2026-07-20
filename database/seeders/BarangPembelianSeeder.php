@@ -15,7 +15,7 @@ class BarangPembelianSeeder extends Seeder
     public function run(): void
     {
         // 1. Seed hrd_departemen
-        $departments = DB::select("SELECT * FROM pacificjul.hrd_departemen");
+        $departments = DB::select("SELECT * FROM portaljuli.hrd_departemen");
         foreach ($departments as $d) {
             DB::table('hrd_departemen')->updateOrInsert(
                 ['kode_dept' => $d->kode_dept],
@@ -28,7 +28,7 @@ class BarangPembelianSeeder extends Seeder
         }
 
         // 2. Seed hrd_group
-        $groups = DB::select("SELECT * FROM pacificjul.hrd_group");
+        $groups = DB::select("SELECT * FROM portaljuli.hrd_group");
         foreach ($groups as $g) {
             DB::table('hrd_group')->updateOrInsert(
                 ['kode_group' => $g->kode_group],
@@ -42,7 +42,7 @@ class BarangPembelianSeeder extends Seeder
         }
 
         // 3. Seed pembelian_barang_kategori
-        $categories = DB::select("SELECT * FROM pacificjul.pembelian_barang_kategori");
+        $categories = DB::select("SELECT * FROM portaljuli.pembelian_barang_kategori");
         foreach ($categories as $c) {
             DB::table('pembelian_barang_kategori')->updateOrInsert(
                 ['kode_kategori' => $c->kode_kategori],
@@ -56,7 +56,7 @@ class BarangPembelianSeeder extends Seeder
         }
 
         // 4. Seed pembelian_barang
-        $barangs = DB::select("SELECT * FROM pacificjul.pembelian_barang");
+        $barangs = DB::select("SELECT * FROM portaljuli.pembelian_barang");
         foreach ($barangs as $b) {
             DB::table('pembelian_barang')->updateOrInsert(
                 ['kode_barang' => $b->kode_barang],
