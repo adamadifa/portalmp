@@ -138,9 +138,9 @@
         @endcanany
 
         <!-- Gudang Bahan Dropdown -->
-        @canany(['sagudangbahan.index', 'sahargagb.index', 'opgudangbahan.index', 'barangmasukgb.index', 'barangkeluargb.index'])
+        @canany(['sagudangbahan.index', 'sahargagb.index', 'opgudangbahan.index', 'barangmasukgb.index', 'barangkeluargb.index', 'laporangudangbahan.index'])
         <div>
-            <div x-data="{ open: {{ Request::is('sagudangbahan*', 'sahargagb*', 'opgudangbahan*', 'barangmasukgudangbahan*', 'barangkeluargudangbahan*') ? 'true' : 'false' }} }">
+            <div x-data="{ open: {{ Request::is('sagudangbahan*', 'sahargagb*', 'opgudangbahan*', 'barangmasukgudangbahan*', 'barangkeluargudangbahan*', 'laporangudangbahan*') ? 'true' : 'false' }} }">
                 <button @click="open = !open" class="flex items-center justify-between w-full px-2 py-2 text-sm font-medium text-blue-100/70 hover:bg-white/5 hover:text-white rounded-lg group transition">
                     <div class="flex items-center">
                         <svg class="w-5 h-5 mr-3 text-blue-200/70 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
@@ -151,6 +151,32 @@
                 <div x-show="open" x-transition class="mt-1 ml-4 pl-4 space-y-0.5 border-l-2 border-white/20">
                     <a href="{{ route('sagudangbahan.index') }}" class="relative flex items-center px-2 py-1.5 text-xs font-semibold {{ Request::is('sagudangbahan*', 'sahargagb*', 'opgudangbahan*', 'barangmasukgudangbahan*', 'barangkeluargudangbahan*') ? 'text-white bg-white/10' : 'text-blue-100/60 hover:text-white hover:bg-white/5' }} rounded-lg transition">
                         <span class="absolute -left-[21px] w-2 h-2 rounded-full {{ Request::is('sagudangbahan*', 'sahargagb*', 'opgudangbahan*', 'barangmasukgudangbahan*', 'barangkeluargudangbahan*') ? 'bg-white' : 'bg-white/30' }}"></span>
+                        Mutasi Barang
+                    </a>
+                    @canany(['laporangudangbahan.index', 'gb.barangmasuk', 'gb.barangkeluar', 'gb.persediaan', 'gb.rekappersediaan', 'gb.kartugudang'])
+                    <a href="{{ route('laporangudangbahan.index') }}" class="relative flex items-center px-2 py-1.5 text-xs font-semibold {{ Request::is('laporangudangbahan*') ? 'text-white bg-white/10' : 'text-blue-100/60 hover:text-white hover:bg-white/5' }} rounded-lg transition">
+                        <span class="absolute -left-[21px] w-2 h-2 rounded-full {{ Request::is('laporangudangbahan*') ? 'bg-white' : 'bg-white/30' }}"></span>
+                        Laporan
+                    </a>
+                    @endcanany
+                </div>
+        </div>
+        @endcanany
+
+        <!-- Gudang Logistik Dropdown -->
+        @canany(['sagudanglogistik.index', 'opgudanglogistik.index', 'barangmasukgl.index', 'barangkeluargl.index', 'laporangudanglogistik.index'])
+        <div>
+            <div x-data="{ open: {{ Request::is('sagudanglogistik*', 'opgudanglogistik*', 'barangmasukgudanglogistik*', 'barangkeluargudanglogistik*', 'laporangudanglogistik*') ? 'true' : 'false' }} }">
+                <button @click="open = !open" class="flex items-center justify-between w-full px-2 py-2 text-sm font-medium text-blue-100/70 hover:bg-white/5 hover:text-white rounded-lg group transition">
+                    <div class="flex items-center">
+                        <svg class="w-5 h-5 mr-3 text-blue-200/70 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
+                        <span>Gudang Logistik</span>
+                    </div>
+                    <svg class="w-4 h-4 text-blue-200 transition-transform duration-200" :class="{ 'rotate-180': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                </button>
+                <div x-show="open" x-transition class="mt-1 ml-4 pl-4 space-y-0.5 border-l-2 border-white/20">
+                    <a href="{{ route('barangmasukgudanglogistik.index') }}" class="relative flex items-center px-2 py-1.5 text-xs font-semibold {{ Request::is('sagudanglogistik*', 'opgudanglogistik*', 'barangmasukgudanglogistik*', 'barangkeluargudanglogistik*') ? 'text-white bg-white/10' : 'text-blue-100/60 hover:text-white hover:bg-white/5' }} rounded-lg transition">
+                        <span class="absolute -left-[21px] w-2 h-2 rounded-full {{ Request::is('sagudanglogistik*', 'opgudanglogistik*', 'barangmasukgudanglogistik*', 'barangkeluargudanglogistik*') ? 'bg-white' : 'bg-white/30' }}"></span>
                         Mutasi Barang
                     </a>
                 </div>

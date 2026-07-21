@@ -1,75 +1,157 @@
 <style>
+/* ── Isolated Floating Label & Icon Group ──────────── */
+.c-fl-group {
+    position: relative !important;
+    width: 100% !important;
+    margin-top: 4px !important;
+}
+
+.c-fl-icon {
+    position: absolute !important;
+    left: 10px !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    color: #6B7280 !important;
+    pointer-events: none !important;
+    z-index: 25 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.c-fl-group:focus-within .c-fl-icon {
+    color: #294C9A !important;
+}
+
+/* Notched Label: Centered exactly on the top border line of input */
+.c-fl-label {
+    position: absolute !important;
+    left: 10px !important;
+    top: 0px !important;
+    bottom: auto !important;
+    transform: translateY(-50%) !important;
+    background-color: #ffffff !important;
+    padding: 0 4px !important;
+    font-size: 11px !important;
+    font-weight: 600 !important;
+    color: #374151 !important;
+    z-index: 30 !important;
+    pointer-events: none !important;
+    line-height: 1 !important;
+    white-space: nowrap !important;
+    border-radius: 2px !important;
+}
+
+.c-fl-group:focus-within .c-fl-label {
+    color: #294C9A !important;
+}
+
+/* Background cut for Detail Barang section card (bg-gray-50) */
+.c-fl-label-detail {
+    background-color: #F9FAFB !important;
+}
+
 /* ── Base input ─────────────────────────────── */
 .fi {
-    display: block;
-    width: 100%;
-    height: 34px;
-    padding: 0 10px;
-    font-size: 12px;
-    color: #111827;
-    background: #fff;
-    border: 1px solid #D1D5DB;
-    border-radius: 6px;
-    outline: none;
-    transition: border-color .15s, box-shadow .15s;
+    display: block !important;
+    width: 100% !important;
+    height: 38px !important;
+    padding: 0 12px 0 34px !important;
+    font-size: 12px !important;
+    color: #111827 !important;
+    background-color: #ffffff !important;
+    border: 1px solid #D1D5DB !important;
+    border-radius: 8px !important;
+    outline: none !important;
+    transition: border-color .15s, box-shadow .15s !important;
+}
+.fi.text-right {
+    text-align: right !important;
 }
 .fi:focus {
-    border-color: #294C9A;
-    box-shadow: 0 0 0 3px rgba(41,76,154,0.10);
+    border-color: #294C9A !important;
+    box-shadow: 0 0 0 3px rgba(41, 76, 154, 0.10) !important;
 }
-.fi::placeholder { color: #9CA3AF; font-size: 11.5px; }
+.fi::placeholder { color: #9CA3AF !important; font-size: 11.5px !important; }
 
-/* ── Select2 reset ─ match .fi exactly ─────── */
+/* ── Select2 reset ──────────────────────────── */
 .select2-container { width: 100% !important; }
 
 .select2-container--default .select2-selection--single {
-    height: 34px !important;
+    height: 38px !important;
     border: 1px solid #D1D5DB !important;
-    border-radius: 6px !important;
-    display: flex !important;
-    align-items: center !important;
-    background: #fff !important;
+    border-radius: 8px !important;
+    background-color: #ffffff !important;
     box-shadow: none !important;
+    position: relative !important;
+    display: block !important;
 }
 .select2-container--default.select2-container--focus .select2-selection--single,
 .select2-container--default.select2-container--open .select2-selection--single {
     border-color: #294C9A !important;
-    box-shadow: 0 0 0 3px rgba(41,76,154,0.10) !important;
+    box-shadow: 0 0 0 3px rgba(41, 76, 154, 0.10) !important;
     outline: none !important;
 }
+
+/* Rendered text & placeholder vertically centered */
 .select2-container--default .select2-selection--single .select2-selection__rendered {
-    line-height: 34px !important;
-    padding: 0 30px 0 10px !important;
+    display: flex !important;
+    align-items: center !important;
+    height: 100% !important;
+    line-height: normal !important;
+    padding-left: 34px !important;
+    padding-right: 32px !important;
     font-size: 12px !important;
     color: #111827 !important;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    margin: 0 !important;
 }
 .select2-container--default .select2-selection--single .select2-selection__placeholder {
+    display: inline-block !important;
+    line-height: normal !important;
     color: #9CA3AF !important;
     font-size: 11.5px !important;
+    margin: 0 !important;
+    padding: 0 !important;
 }
+
+/* Chevron arrow dead-center vertically */
 .select2-container--default .select2-selection--single .select2-selection__arrow {
-    height: 32px !important;
-    width: 24px !important;
-    right: 4px !important;
-    top: 1px !important;
+    position: absolute !important;
+    top: 50% !important;
+    right: 10px !important;
+    left: auto !important;
+    bottom: auto !important;
+    transform: translateY(-50%) !important;
+    height: 16px !important;
+    width: 16px !important;
+    margin: 0 !important;
+    padding: 0 !important;
 }
 .select2-container--default .select2-selection--single .select2-selection__arrow b {
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    margin: 0 !important;
     border-color: #6B7280 transparent transparent transparent !important;
+    border-style: solid !important;
+    border-width: 5px 4px 0 4px !important;
 }
 .select2-container--default.select2-container--open .select2-selection--single .select2-selection__arrow b {
     border-color: transparent transparent #6B7280 transparent !important;
+    border-width: 0 4px 5px 4px !important;
 }
 
 /* dropdown */
 .select2-dropdown {
     font-size: 12px !important;
     border: 1px solid #D1D5DB !important;
-    border-radius: 6px !important;
+    border-radius: 8px !important;
     box-shadow: 0 6px 20px rgba(0,0,0,0.10) !important;
-    overflow: hidden;
+    overflow: hidden !important;
 }
 .select2-search--dropdown { padding: 6px 8px !important; }
 .select2-search--dropdown .select2-search__field {
@@ -82,7 +164,7 @@
 }
 .select2-search--dropdown .select2-search__field:focus {
     border-color: #294C9A !important;
-    box-shadow: 0 0 0 2px rgba(41,76,154,0.10) !important;
+    box-shadow: 0 0 0 2px rgba(41, 76, 154, 0.10) !important;
 }
 .select2-container--default .select2-results__option {
     padding: 7px 10px !important;
@@ -90,6 +172,136 @@
 }
 .select2-container--default .select2-results__option--highlighted[aria-selected] {
     background-color: #294C9A !important;
+}
+
+/* ── Premium Modern Flatpickr Theme ───────────────── */
+.flatpickr-calendar {
+    background: #ffffff !important;
+    border-radius: 16px !important;
+    border: 1px solid #E5E7EB !important;
+    box-shadow: 0 20px 35px -10px rgba(41, 76, 154, 0.22), 0 10px 20px -5px rgba(0, 0, 0, 0.08) !important;
+    font-family: inherit !important;
+    overflow: hidden !important;
+    width: 307px !important;
+    z-index: 99999 !important;
+}
+
+/* Header Month & Navigation */
+.flatpickr-months {
+    background: linear-gradient(135deg, #294C9A 0%, #1E3A70 100%) !important;
+    padding: 8px 10px !important;
+    align-items: center !important;
+    border-radius: 15px 15px 0 0 !important;
+}
+.flatpickr-months .flatpickr-month {
+    color: #ffffff !important;
+    height: 38px !important;
+}
+.flatpickr-current-month {
+    font-size: 14px !important;
+    font-weight: 700 !important;
+    color: #ffffff !important;
+    padding-top: 4px !important;
+}
+.flatpickr-current-month .flatpickr-monthDropdown-months {
+    font-weight: 700 !important;
+    color: #ffffff !important;
+    background: transparent !important;
+    padding: 2px 6px !important;
+    border-radius: 6px !important;
+    margin-right: 4px !important;
+}
+.flatpickr-current-month .flatpickr-monthDropdown-months:hover {
+    background: rgba(255, 255, 255, 0.18) !important;
+}
+.flatpickr-current-month input.cur-year {
+    font-weight: 700 !important;
+    color: #ffffff !important;
+}
+.flatpickr-months .flatpickr-prev-month,
+.flatpickr-months .flatpickr-next-month {
+    padding: 8px !important;
+    color: #ffffff !important;
+    fill: #ffffff !important;
+    border-radius: 8px !important;
+    transition: background 0.15s ease !important;
+}
+.flatpickr-months .flatpickr-prev-month:hover,
+.flatpickr-months .flatpickr-next-month:hover {
+    background: rgba(255, 255, 255, 0.20) !important;
+}
+.flatpickr-months .flatpickr-prev-month svg,
+.flatpickr-months .flatpickr-next-month svg {
+    fill: #ffffff !important;
+    width: 14px !important;
+    height: 14px !important;
+}
+
+/* Weekday header */
+.flatpickr-weekdays {
+    background: #F3F4F6 !important;
+    padding: 8px 0 !important;
+    border-bottom: 1px solid #E5E7EB !important;
+}
+span.flatpickr-weekday {
+    color: #294C9A !important;
+    font-weight: 700 !important;
+    font-size: 11px !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.05em !important;
+}
+
+/* Days container & High Contrast Day Buttons */
+.flatpickr-days {
+    width: 307px !important;
+    padding: 6px !important;
+}
+.dayContainer {
+    width: 294px !important;
+    min-width: 294px !important;
+    max-width: 294px !important;
+}
+.flatpickr-day {
+    color: #111827 !important;
+    font-weight: 700 !important;
+    font-size: 13px !important;
+    border-radius: 10px !important;
+    height: 38px !important;
+    line-height: 38px !important;
+    max-width: 38px !important;
+    margin: 2px !important;
+    border: 1px solid transparent !important;
+    transition: all 0.15s ease !important;
+}
+.flatpickr-day:hover {
+    background: #EBF1FF !important;
+    color: #294C9A !important;
+    font-weight: 800 !important;
+    border-color: #BFDBFE !important;
+}
+.flatpickr-day.today {
+    border: 2px solid #294C9A !important;
+    color: #294C9A !important;
+    font-weight: 800 !important;
+    background: #F0F4FF !important;
+}
+.flatpickr-day.selected,
+.flatpickr-day.selected:hover {
+    background: linear-gradient(135deg, #294C9A 0%, #1E3A70 100%) !important;
+    color: #ffffff !important;
+    font-weight: 800 !important;
+    box-shadow: 0 4px 12px rgba(41, 76, 154, 0.40) !important;
+    border: none !important;
+}
+.flatpickr-day.flatpickr-disabled,
+.flatpickr-day.flatpickr-disabled:hover,
+.flatpickr-day.prevMonthDay,
+.flatpickr-day.nextMonthDay {
+    color: #9CA3AF !important;
+    font-weight: 500 !important;
+    opacity: 0.55 !important;
+    background: transparent !important;
+    border-color: transparent !important;
 }
 
 /* ── Section header ─────────────────────────── */
@@ -101,58 +313,117 @@
     letter-spacing: .08em;
     padding-bottom: 8px;
     border-bottom: 1px solid #E5E7EB;
-    margin-bottom: 10px;
+    margin-bottom: 18px;
 }
 </style>
 
-<form action="{{ route('barangmasukgudangbahan.store') }}" method="POST" id="formcreateBarangmasukgudangbahan" novalidate>
+<form action="{{ route('barangmasukgudangbahan.store') }}" method="POST" id="formcreateBarangmasukgudangbahan" novalidate class="pt-2">
     @csrf
 
-    <!-- Header row: 3 columns, no labels -->
-    <div class="grid grid-cols-3 gap-3 mb-4">
-        <input type="text" name="no_bukti" id="no_bukti"
-            class="fi" placeholder="No. Bukti Pemasukan *" autocomplete="off" />
+    <!-- Header row: 3 columns -->
+    <div class="grid grid-cols-3 gap-3 mb-5 pt-2">
+        <div class="c-fl-group">
+            <span class="c-fl-icon">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                </svg>
+            </span>
+            <input type="text" name="no_bukti" id="no_bukti" class="fi" placeholder="Masukkan No. Bukti" autocomplete="off" />
+            <label for="no_bukti" class="c-fl-label">No. Bukti Pemasukan *</label>
+        </div>
 
-        <input type="text" name="tanggal" id="tanggal"
-            class="fi flatpickr-date" placeholder="Tanggal *" autocomplete="off" />
+        <div class="c-fl-group">
+            <span class="c-fl-icon">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                </svg>
+            </span>
+            <input type="text" name="tanggal" id="tanggal" class="fi flatpickr-date" placeholder="Pilih Tanggal" autocomplete="off" />
+            <label for="tanggal" class="c-fl-label">Tanggal *</label>
+        </div>
 
-        <select name="kode_asal_barang" id="kode_asal_barang" class="select2AsalBarang">
-            <option value=""></option>
-            @foreach ($list_asal_barang as $d)
-                <option value="{{ $d['kode_asal_barang'] }}">{{ $d['asal_barang'] }}</option>
-            @endforeach
-        </select>
+        <div class="c-fl-group">
+            <span class="c-fl-icon">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5m0 0h4m-4 0V9a1 1 0 011-1h2a1 1 0 011 1v12"/>
+                </svg>
+            </span>
+            <select name="kode_asal_barang" id="kode_asal_barang" class="select2AsalBarang">
+                <option value=""></option>
+                @foreach ($list_asal_barang as $d)
+                    <option value="{{ $d['kode_asal_barang'] }}">{{ $d['asal_barang'] }}</option>
+                @endforeach
+            </select>
+            <label for="kode_asal_barang" class="c-fl-label">Asal Barang *</label>
+        </div>
     </div>
 
     <!-- Detail Barang -->
     <div class="bg-gray-50 border border-gray-200 rounded-lg p-3 mb-3">
         <div class="sec-head">Detail Barang</div>
 
-        <div class="grid grid-cols-4 gap-3 mb-3">
-            <div class="col-span-2">
+        <!-- Single row for Pilih Barang, Qty Unit, Qty Berat, Qty Lebih -->
+        <div class="grid grid-cols-12 gap-3 mb-4 pt-2">
+            <div class="c-fl-group col-span-6">
+                <span class="c-fl-icon">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                    </svg>
+                </span>
                 <select name="kode_barang_select" id="kode_barang_select" class="select2Kodebarang">
                     <option value=""></option>
                     @foreach ($barang as $d)
                         <option value="{{ $d->kode_barang }}">{{ $d->kode_barang }} | {{ $d->nama_barang }}</option>
                     @endforeach
                 </select>
+                <label for="kode_barang_select" class="c-fl-label c-fl-label-detail">Pilih Barang *</label>
             </div>
-            <input type="text" id="qty_unit"
-                class="fi text-right number-separator" placeholder="Qty Unit" autocomplete="off" />
-            <input type="text" id="qty_berat"
-                class="fi text-right number-separator" placeholder="Qty Berat" autocomplete="off" />
+
+            <div class="c-fl-group col-span-2">
+                <span class="c-fl-icon">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"/>
+                    </svg>
+                </span>
+                <input type="text" id="qty_unit" class="fi text-right number-separator" placeholder="0" autocomplete="off" />
+                <label for="qty_unit" class="c-fl-label c-fl-label-detail">Qty Unit</label>
+            </div>
+
+            <div class="c-fl-group col-span-2">
+                <span class="c-fl-icon">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5 5 0 006 0l-3-9zm0 0h6m-6 0l10.5 3.5M12 20a4 4 0 100-8 4 4 0 000 8z"/>
+                    </svg>
+                </span>
+                <input type="text" id="qty_berat" class="fi text-right number-separator" placeholder="0" autocomplete="off" />
+                <label for="qty_berat" class="c-fl-label c-fl-label-detail">Qty Berat</label>
+            </div>
+
+            <div class="c-fl-group col-span-2">
+                <span class="c-fl-icon">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                </span>
+                <input type="text" id="qty_lebih" class="fi text-right number-separator" placeholder="0" autocomplete="off" />
+                <label for="qty_lebih" class="c-fl-label c-fl-label-detail">Qty Lebih</label>
+            </div>
         </div>
 
-        <div class="grid grid-cols-3 gap-3 mb-3">
-            <input type="text" id="qty_lebih"
-                class="fi text-right number-separator" placeholder="Qty Lebih" autocomplete="off" />
-            <input type="text" id="keterangan"
-                class="fi col-span-2" placeholder="Keterangan (opsional)" autocomplete="off" />
-        </div>
+        <!-- Row 2: Keterangan & Button Tambah Barang -->
+        <div class="flex items-center gap-3 pt-1">
+            <div class="c-fl-group flex-1">
+                <span class="c-fl-icon">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"/>
+                    </svg>
+                </span>
+                <input type="text" id="keterangan" class="fi" placeholder="Keterangan (opsional)" autocomplete="off" />
+                <label for="keterangan" class="c-fl-label c-fl-label-detail">Keterangan</label>
+            </div>
 
-        <div class="flex justify-end">
             <button type="button" id="tambahproduk"
-                class="inline-flex items-center gap-1.5 px-4 py-1.5 text-xs font-semibold text-white bg-[#294C9A] hover:bg-[#1E3A70] rounded-md transition shadow-sm">
+                class="inline-flex items-center gap-1.5 px-4 text-xs font-semibold text-white bg-[#294C9A] hover:bg-[#1E3A70] rounded-md transition shadow-sm shrink-0 h-[38px] mt-1">
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                 </svg>
@@ -226,11 +497,13 @@ $(function() {
     });
 
     // Number separator
-    easyNumberSeparator({
-        selector: '.number-separator',
-        separator: '.',
-        decimalSeparator: ',',
-    });
+    if (typeof easyNumberSeparator === 'function') {
+        easyNumberSeparator({
+            selector: '.number-separator',
+            separator: '.',
+            decimalSeparator: ',',
+        });
+    }
 
     function addProduk() {
         const dataBarang = $("#kode_barang_select :selected");

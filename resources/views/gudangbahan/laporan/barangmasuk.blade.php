@@ -1,42 +1,66 @@
-<form method="POST" action="{{ route('laporangudangbahan.cetakbarangmasuk') }}" id="frmLaporanbarangmasuk" target="_blank">
+<form method="POST" action="{{ route('laporangudangbahan.cetakbarangmasuk') }}" id="frmLaporanbarangmasuk" target="_blank" class="space-y-6 pt-1">
     @csrf
-    <div class="row">
-        <div class="col">
-            <x-select label="Semua Barang" name="kode_barang_masuk" :data="$barang" key="kode_barang"
-                textShow="nama_barang" select2="select2Kodebarangmasuk" upperCase="true" hideLabel="true" />
+
+    <div class="c-fl-group">
+        <span class="c-fl-icon">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+            </svg>
+        </span>
+        <select name="kode_barang_masuk" id="kode_barang_masuk" class="select2Kodebarangmasuk">
+            <option value=""></option>
+            @foreach ($barang as $d)
+                <option value="{{ $d->kode_barang }}">{{ $d->kode_barang }} | {{ strtoupper($d->nama_barang) }}</option>
+            @endforeach
+        </select>
+        <label for="kode_barang_masuk" class="c-fl-label">Pilih Barang</label>
+    </div>
+
+    <div class="grid grid-cols-2 gap-4">
+        <div class="c-fl-group">
+            <span class="c-fl-icon">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                </svg>
+            </span>
+            <input type="text" name="dari" id="dari" class="fi flatpickr-date" placeholder="Pilih Tanggal" autocomplete="off" />
+            <label for="dari" class="c-fl-label">Dari Tanggal *</label>
+        </div>
+
+        <div class="c-fl-group">
+            <span class="c-fl-icon">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                </svg>
+            </span>
+            <input type="text" name="sampai" id="sampai" class="fi flatpickr-date" placeholder="Pilih Tanggal" autocomplete="off" />
+            <label for="sampai" class="c-fl-label">Sampai Tanggal *</label>
         </div>
     </div>
-    <div class="row">
-        <div class="col-lg-6 col-md-12 col-sm-12">
-            <x-input-with-icon icon="ti ti-calendar" label="Dari" name="dari" datepicker="flatpickr-date" hideLabel="true" />
-        </div>
-        <div class="col-lg-6 col-md-12 col-sm-12">
-            <x-input-with-icon icon="ti ti-calendar" label="Sampai" name="sampai" datepicker="flatpickr-date" hideLabel="true" />
-        </div>
+
+    <div class="c-fl-group">
+        <span class="c-fl-icon">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5m0 0h4m-4 0V9a1 1 0 011-1h2a1 1 0 011 1v12"/>
+            </svg>
+        </span>
+        <select name="kode_asal_barang" id="kode_asal_barang" class="fi">
+            <option value="">Semua Asal Barang</option>
+            @foreach ($list_asal_barang as $d)
+                <option value="{{ $d['kode_asal_barang'] }}">{{ $d['asal_barang'] }}</option>
+            @endforeach
+        </select>
+        <label for="kode_asal_barang" class="c-fl-label">Asal Barang</label>
     </div>
-    <div class="row">
-        <div class="col-12">
-            <div class="form-group mb-3">
-                <select name="kode_asal_barang" id="kode_asal_barang" class="form-select">
-                    <option value="">Semua Asal Barang</option>
-                    @foreach ($list_asal_barang as $d)
-                        <option value="{{ $d['kode_asal_barang'] }}">
-                            {{ $d['asal_barang'] }}</option>
-                    @endforeach
-                </select>
-            </div>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-lg-10 col-md-12 col-sm-12">
-            <button type="submit" name="submitButton" class="btn btn-primary w-100" id="submitButton">
-                <i class="ti ti-printer me-1"></i> Cetak
-            </button>
-        </div>
-        <div class="col-lg-2 col-md-12 col-sm-12">
-            <button type="submit" name="exportButton" class="btn btn-success w-100" id="exportButton">
-                <i class="ti ti-download"></i>
-            </button>
-        </div>
+
+    <div class="flex items-center gap-2 pt-2">
+        <button type="submit" name="submitButton" class="flex-1 inline-flex items-center justify-center px-4 py-2.5 text-xs font-semibold text-white bg-[#294C9A] hover:bg-[#1E3A70] rounded-lg transition shadow-sm gap-1.5 h-[38px]">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+            Cetak Laporan
+        </button>
+        <button type="submit" name="exportButton" class="inline-flex items-center justify-center px-4 py-2.5 text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg transition shadow-sm gap-1.5 h-[38px]">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+            Export Excel
+        </button>
     </div>
 </form>

@@ -28,6 +28,7 @@ class DatabaseSeeder extends Seeder
         $groupGudangJadi = \App\Models\Permission_group::updateOrCreate(['name' => 'Gudang Jadi']);
         $groupProduksi = \App\Models\Permission_group::updateOrCreate(['name' => 'Produksi']);
         $groupGudangBahan = \App\Models\Permission_group::updateOrCreate(['name' => 'Gudang Bahan']);
+        $groupGudangLogistik = \App\Models\Permission_group::updateOrCreate(['name' => 'Gudang Logistik']);
 
         // Create basic permissions with group associations
         $permissions = [
@@ -132,6 +133,38 @@ class DatabaseSeeder extends Seeder
             ['name' => 'barangmasukgb.show', 'id_permission_group' => $groupGudangBahan->id],
             ['name' => 'barangmasukgb.edit', 'id_permission_group' => $groupGudangBahan->id],
             ['name' => 'barangkeluargb.index', 'id_permission_group' => $groupGudangBahan->id],
+            ['name' => 'barangkeluargb.create', 'id_permission_group' => $groupGudangBahan->id],
+            ['name' => 'barangkeluargb.delete', 'id_permission_group' => $groupGudangBahan->id],
+            ['name' => 'barangkeluargb.show', 'id_permission_group' => $groupGudangBahan->id],
+            ['name' => 'barangkeluargb.edit', 'id_permission_group' => $groupGudangBahan->id],
+            ['name' => 'gb.barangmasuk', 'id_permission_group' => $groupGudangBahan->id],
+            ['name' => 'gb.barangkeluar', 'id_permission_group' => $groupGudangBahan->id],
+            ['name' => 'gb.persediaan', 'id_permission_group' => $groupGudangBahan->id],
+            ['name' => 'gb.rekappersediaan', 'id_permission_group' => $groupGudangBahan->id],
+            ['name' => 'gb.kartugudang', 'id_permission_group' => $groupGudangBahan->id],
+            ['name' => 'laporangudangbahan.index', 'id_permission_group' => $groupGudangBahan->id],
+
+            // Gudang Logistik Group
+            ['name' => 'sagudanglogistik.index', 'id_permission_group' => $groupGudangLogistik->id],
+            ['name' => 'sagudanglogistik.create', 'id_permission_group' => $groupGudangLogistik->id],
+            ['name' => 'sagudanglogistik.show', 'id_permission_group' => $groupGudangLogistik->id],
+            ['name' => 'sagudanglogistik.delete', 'id_permission_group' => $groupGudangLogistik->id],
+            ['name' => 'barangmasukgl.index', 'id_permission_group' => $groupGudangLogistik->id],
+            ['name' => 'barangmasukgl.create', 'id_permission_group' => $groupGudangLogistik->id],
+            ['name' => 'barangmasukgl.edit', 'id_permission_group' => $groupGudangLogistik->id],
+            ['name' => 'barangmasukgl.delete', 'id_permission_group' => $groupGudangLogistik->id],
+            ['name' => 'barangmasukgl.show', 'id_permission_group' => $groupGudangLogistik->id],
+            ['name' => 'barangkeluargl.index', 'id_permission_group' => $groupGudangLogistik->id],
+            ['name' => 'barangkeluargl.create', 'id_permission_group' => $groupGudangLogistik->id],
+            ['name' => 'barangkeluargl.edit', 'id_permission_group' => $groupGudangLogistik->id],
+            ['name' => 'barangkeluargl.show', 'id_permission_group' => $groupGudangLogistik->id],
+            ['name' => 'barangkeluargl.delete', 'id_permission_group' => $groupGudangLogistik->id],
+            ['name' => 'opgudanglogistik.index', 'id_permission_group' => $groupGudangLogistik->id],
+            ['name' => 'opgudanglogistik.create', 'id_permission_group' => $groupGudangLogistik->id],
+            ['name' => 'opgudanglogistik.edit', 'id_permission_group' => $groupGudangLogistik->id],
+            ['name' => 'opgudanglogistik.show', 'id_permission_group' => $groupGudangLogistik->id],
+            ['name' => 'opgudanglogistik.delete', 'id_permission_group' => $groupGudangLogistik->id],
+            ['name' => 'laporangudanglogistik.index', 'id_permission_group' => $groupGudangLogistik->id],
         ];
 
         foreach ($permissions as $p) {

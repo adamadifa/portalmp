@@ -208,6 +208,49 @@ Route::middleware('auth')->group(function () {
         Route::post('/laporangudangbahan/cetakrekappersediaan', 'cetakrekappersediaan')->name('laporangudangbahan.cetakrekappersediaan');
         Route::post('/laporangudangbahan/cetakkartugudang', 'cetakkartugudang')->name('laporangudangbahan.cetakkartugudang');
     });
+
+    // Gudang Logistik - Barang Masuk
+    Route::controller(\App\Http\Controllers\BarangmasukgudanglogistikController::class)->group(function () {
+        Route::get('/barangmasukgudanglogistik', 'index')->name('barangmasukgudanglogistik.index');
+        Route::get('/barangmasukgudanglogistik/create', 'create')->name('barangmasukgudanglogistik.create');
+        Route::post('/barangmasukgudanglogistik', 'store')->name('barangmasukgudanglogistik.store');
+        Route::get('/barangmasukgudanglogistik/{no_bukti}/edit', 'edit')->name('barangmasukgudanglogistik.edit');
+        Route::put('/barangmasukgudanglogistik/{no_bukti}/update', 'update')->name('barangmasukgudanglogistik.update');
+        Route::delete('/barangmasukgudanglogistik/{no_bukti}', 'destroy')->name('barangmasukgudanglogistik.delete');
+        Route::get('/barangmasukgudanglogistik/{no_bukti}/show', 'show')->name('barangmasukgudanglogistik.show');
+    });
+
+    // Gudang Logistik - Barang Keluar
+    Route::controller(\App\Http\Controllers\BarangkeluargudanglogistikController::class)->group(function () {
+        Route::get('/barangkeluargudanglogistik', 'index')->name('barangkeluargudanglogistik.index');
+        Route::get('/barangkeluargudanglogistik/create', 'create')->name('barangkeluargudanglogistik.create');
+        Route::post('/barangkeluargudanglogistik', 'store')->name('barangkeluargudanglogistik.store');
+        Route::get('/barangkeluargudanglogistik/{no_bukti}/edit', 'edit')->name('barangkeluargudanglogistik.edit');
+        Route::put('/barangkeluargudanglogistik/{no_bukti}/update', 'update')->name('barangkeluargudanglogistik.update');
+        Route::delete('/barangkeluargudanglogistik/{no_bukti}', 'destroy')->name('barangkeluargudanglogistik.delete');
+        Route::get('/barangkeluargudanglogistik/{no_bukti}/show', 'show')->name('barangkeluargudanglogistik.show');
+    });
+
+    // Gudang Logistik - Opname
+    Route::controller(\App\Http\Controllers\OpnamegudanglogistikController::class)->group(function () {
+        Route::get('/opgudanglogistik', 'index')->name('opgudanglogistik.index');
+        Route::get('/opgudanglogistik/create', 'create')->name('opgudanglogistik.create');
+        Route::post('/opgudanglogistik', 'store')->name('opgudanglogistik.store');
+        Route::get('/opgudanglogistik/{kode_opname}/edit', 'edit')->name('opgudanglogistik.edit');
+        Route::delete('/opgudanglogistik/{kode_opname}', 'destroy')->name('opgudanglogistik.delete');
+        Route::get('/opgudanglogistik/{kode_opname}/show', 'show')->name('opgudanglogistik.show');
+        Route::post('/opgudanglogistik/getdetailsaldo', 'getdetailsaldo')->name('opgudanglogistik.getdetailsaldo');
+    });
+
+    // Gudang Logistik - Saldo Awal
+    Route::controller(\App\Http\Controllers\SaldoawalgudanglogistikController::class)->group(function () {
+        Route::get('/sagudanglogistik', 'index')->name('sagudanglogistik.index');
+        Route::get('/sagudanglogistik/create', 'create')->name('sagudanglogistik.create');
+        Route::post('/sagudanglogistik', 'store')->name('sagudanglogistik.store');
+        Route::delete('/sagudanglogistik/{kode_saldo_awal}', 'destroy')->name('sagudanglogistik.delete');
+        Route::get('/sagudanglogistik/{kode_saldo_awal}/show', 'show')->name('sagudanglogistik.show');
+        Route::post('/sagudanglogistik/getdetailsaldo', 'getdetailsaldo')->name('sagudanglogistik.getdetailsaldo');
+    });
 });
 
 require __DIR__.'/auth.php';

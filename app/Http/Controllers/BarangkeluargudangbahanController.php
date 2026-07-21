@@ -48,6 +48,8 @@ class BarangkeluargudangbahanController extends Controller
 
     public function create()
     {
+        $data['start_periode'] = config('global.start_date');
+        $data['end_periode'] = config('global.end_date');
         $data['barang'] = Barangpembelian::where('kode_group', 'GDB')->get();
         $data['list_jenis_pengeluaran'] = config('gudangbahan.list_jenis_pengeluaran');
         $data['cabang'] = Cabang::orderby('kode_cabang')->get();
@@ -148,6 +150,8 @@ class BarangkeluargudangbahanController extends Controller
     public function edit($no_bukti)
     {
         $no_bukti = Crypt::decrypt($no_bukti);
+        $data['start_periode'] = config('global.start_date');
+        $data['end_periode'] = config('global.end_date');
         $data['barangkeluar'] = Barangkeluargudangbahan::where('no_bukti', $no_bukti)->first();
         $data['detail'] = Detailbarangkeluargudangbahan::join('pembelian_barang', 'gudang_bahan_barang_keluar_detail.kode_barang', '=', 'pembelian_barang.kode_barang')
             ->where('no_bukti', $no_bukti)
