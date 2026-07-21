@@ -131,3 +131,60 @@ if (!function_exists('getbulandantahunberikutnya')) {
         }
     }
 }
+
+if (!function_exists('lockreport')) {
+    function lockreport($tanggal)
+    {
+        $start_year = config('global.start_year');
+        $lock_date = $start_year . "-01-01";
+
+        if ($tanggal < $lock_date && !empty($tanggal)) {
+            return "error";
+        } else {
+            return "success";
+        }
+    }
+}
+
+if (!function_exists('formatAngkaDesimal')) {
+    function formatAngkaDesimal($nilai)
+    {
+        if (!empty($nilai)) {
+            return number_format($nilai, '2', ',', '.');
+        }
+        return '0,00';
+    }
+}
+
+if (!function_exists('formatAngkaDesimal3')) {
+    function formatAngkaDesimal3($nilai)
+    {
+        if (!empty($nilai)) {
+            return number_format($nilai, '3', ',', '.');
+        }
+        return '0,000';
+    }
+}
+
+if (!function_exists('formatAngkaDesimal5')) {
+    function formatAngkaDesimal5($nilai)
+    {
+        if (!empty($nilai)) {
+            return number_format($nilai, '5', ',', '.');
+        }
+        return '0,00000';
+    }
+}
+
+if (!function_exists('getBeratliter')) {
+    function getBeratliter($tanggal)
+    {
+        if ($tanggal <= "2022-03-01") {
+            $berat = 0.9064;
+        } else {
+            $berat = 1;
+        }
+        return $berat;
+    }
+}
+

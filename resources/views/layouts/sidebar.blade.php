@@ -89,7 +89,7 @@
 
         <!-- Produksi Dropdown -->
         @canany(['samutasiproduksi.view'])
-        <div x-data="{ open: {{ Request::is('samutasiproduksi*') ? 'true' : 'false' }} }">
+        <div x-data="{ open: {{ Request::is('samutasiproduksi*', 'bpbj*', 'fsthp*', 'fsthpgudang*', 'laporanproduksi*') ? 'true' : 'false' }} }">
             <button @click="open = !open" class="flex items-center justify-between w-full px-2 py-2 text-sm font-medium text-blue-100/70 hover:bg-white/5 hover:text-white rounded-lg group transition">
                 <div class="flex items-center">
                     <svg class="w-5 h-5 mr-3 text-blue-200/70 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
@@ -99,9 +99,13 @@
             </button>
             <div x-show="open" x-transition class="mt-1 ml-4 pl-4 space-y-0.5 border-l-2 border-white/20">
                 @can('samutasiproduksi.view')
-                <a href="{{ route('samutasiproduksi.index') }}" class="relative flex items-center px-2 py-1.5 text-xs font-semibold {{ Request::is('samutasiproduksi*') ? 'text-white bg-white/10' : 'text-blue-100/60 hover:text-white hover:bg-white/5' }} rounded-lg transition">
-                    <span class="absolute -left-[21px] w-2 h-2 rounded-full {{ Request::is('samutasiproduksi*') ? 'bg-white' : 'bg-white/30' }}"></span>
+                <a href="{{ route('samutasiproduksi.index') }}" class="relative flex items-center px-2 py-1.5 text-xs font-semibold {{ Request::is('samutasiproduksi*', 'bpbj*', 'fsthp*', 'fsthpgudang*') ? 'text-white bg-white/10' : 'text-blue-100/60 hover:text-white hover:bg-white/5' }} rounded-lg transition">
+                    <span class="absolute -left-[21px] w-2 h-2 rounded-full {{ Request::is('samutasiproduksi*', 'bpbj*', 'fsthp*', 'fsthpgudang*') ? 'bg-white' : 'bg-white/30' }}"></span>
                     Mutasi Produk
+                </a>
+                <a href="{{ route('laporanproduksi.index') }}" class="relative flex items-center px-2 py-1.5 text-xs font-semibold {{ Request::is('laporanproduksi*') ? 'text-white bg-white/10' : 'text-blue-100/60 hover:text-white hover:bg-white/5' }} rounded-lg transition">
+                    <span class="absolute -left-[21px] w-2 h-2 rounded-full {{ Request::is('laporanproduksi*') ? 'bg-white' : 'bg-white/30' }}"></span>
+                    Laporan
                 </a>
                 @endcan
             </div>
@@ -110,7 +114,7 @@
 
         <!-- Gudang Jadi Dropdown -->
         @canany(['sagudangjadi.view'])
-        <div x-data="{ open: {{ Request::is('sagudangjadi*') ? 'true' : 'false' }} }">
+        <div x-data="{ open: {{ Request::is('sagudangjadi*', 'fsthpgudang*', 'repackgudangjadi*', 'rejectgudangjadi*', 'lainnyagudangjadi*', 'laporangudangjadi*') ? 'true' : 'false' }} }">
             <button @click="open = !open" class="flex items-center justify-between w-full px-2 py-2 text-sm font-medium text-blue-100/70 hover:bg-white/5 hover:text-white rounded-lg group transition">
                 <div class="flex items-center">
                     <svg class="w-5 h-5 mr-3 text-blue-200/70 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
@@ -120,11 +124,36 @@
             </button>
             <div x-show="open" x-transition class="mt-1 ml-4 pl-4 space-y-0.5 border-l-2 border-white/20">
                 @can('sagudangjadi.view')
-                <a href="{{ route('sagudangjadi.index') }}" class="relative flex items-center px-2 py-1.5 text-xs font-semibold {{ Request::is('sagudangjadi*') ? 'text-white bg-white/10' : 'text-blue-100/60 hover:text-white hover:bg-white/5' }} rounded-lg transition">
-                    <span class="absolute -left-[21px] w-2 h-2 rounded-full {{ Request::is('sagudangjadi*') ? 'bg-white' : 'bg-white/30' }}"></span>
+                <a href="{{ route('sagudangjadi.index') }}" class="relative flex items-center px-2 py-1.5 text-xs font-semibold {{ Request::is('sagudangjadi*', 'fsthpgudang*', 'repackgudangjadi*', 'rejectgudangjadi*', 'lainnyagudangjadi*') ? 'text-white bg-white/10' : 'text-blue-100/60 hover:text-white hover:bg-white/5' }} rounded-lg transition">
+                    <span class="absolute -left-[21px] w-2 h-2 rounded-full {{ Request::is('sagudangjadi*', 'fsthpgudang*', 'repackgudangjadi*', 'rejectgudangjadi*', 'lainnyagudangjadi*') ? 'bg-white' : 'bg-white/30' }}"></span>
                     Mutasi Produk
                 </a>
                 @endcan
+                <a href="{{ route('laporangudangjadi.index') }}" class="relative flex items-center px-2 py-1.5 text-xs font-semibold {{ Request::is('laporangudangjadi*') ? 'text-white bg-white/10' : 'text-blue-100/60 hover:text-white hover:bg-white/5' }} rounded-lg transition">
+                    <span class="absolute -left-[21px] w-2 h-2 rounded-full {{ Request::is('laporangudangjadi*') ? 'bg-white' : 'bg-white/30' }}"></span>
+                    Laporan
+                </a>
+            </div>
+        </div>
+        @endcanany
+
+        <!-- Gudang Bahan Dropdown -->
+        @canany(['sagudangbahan.index', 'sahargagb.index', 'opgudangbahan.index', 'barangmasukgb.index', 'barangkeluargb.index'])
+        <div>
+            <div x-data="{ open: {{ Request::is('sagudangbahan*', 'sahargagb*', 'opgudangbahan*', 'barangmasukgudangbahan*', 'barangkeluargudangbahan*') ? 'true' : 'false' }} }">
+                <button @click="open = !open" class="flex items-center justify-between w-full px-2 py-2 text-sm font-medium text-blue-100/70 hover:bg-white/5 hover:text-white rounded-lg group transition">
+                    <div class="flex items-center">
+                        <svg class="w-5 h-5 mr-3 text-blue-200/70 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                        <span>Gudang Bahan</span>
+                    </div>
+                    <svg class="w-4 h-4 text-blue-200 transition-transform duration-200" :class="{ 'rotate-180': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                </button>
+                <div x-show="open" x-transition class="mt-1 ml-4 pl-4 space-y-0.5 border-l-2 border-white/20">
+                    <a href="{{ route('sagudangbahan.index') }}" class="relative flex items-center px-2 py-1.5 text-xs font-semibold {{ Request::is('sagudangbahan*', 'sahargagb*', 'opgudangbahan*', 'barangmasukgudangbahan*', 'barangkeluargudangbahan*') ? 'text-white bg-white/10' : 'text-blue-100/60 hover:text-white hover:bg-white/5' }} rounded-lg transition">
+                        <span class="absolute -left-[21px] w-2 h-2 rounded-full {{ Request::is('sagudangbahan*', 'sahargagb*', 'opgudangbahan*', 'barangmasukgudangbahan*', 'barangkeluargudangbahan*') ? 'bg-white' : 'bg-white/30' }}"></span>
+                        Mutasi Barang
+                    </a>
+                </div>
             </div>
         </div>
         @endcanany

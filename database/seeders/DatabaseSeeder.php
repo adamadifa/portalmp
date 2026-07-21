@@ -27,6 +27,7 @@ class DatabaseSeeder extends Seeder
         $groupDataMaster = \App\Models\Permission_group::updateOrCreate(['name' => 'Data Master']);
         $groupGudangJadi = \App\Models\Permission_group::updateOrCreate(['name' => 'Gudang Jadi']);
         $groupProduksi = \App\Models\Permission_group::updateOrCreate(['name' => 'Produksi']);
+        $groupGudangBahan = \App\Models\Permission_group::updateOrCreate(['name' => 'Gudang Bahan']);
 
         // Create basic permissions with group associations
         $permissions = [
@@ -42,6 +43,26 @@ class DatabaseSeeder extends Seeder
             ['name' => 'sagudangjadi.view', 'id_permission_group' => $groupGudangJadi->id],
             ['name' => 'sagudangjadi.create', 'id_permission_group' => $groupGudangJadi->id],
             ['name' => 'sagudangjadi.delete', 'id_permission_group' => $groupGudangJadi->id],
+            ['name' => 'repackgudangjadi.index', 'id_permission_group' => $groupGudangJadi->id],
+            ['name' => 'repackgudangjadi.create', 'id_permission_group' => $groupGudangJadi->id],
+            ['name' => 'repackgudangjadi.edit', 'id_permission_group' => $groupGudangJadi->id],
+            ['name' => 'repackgudangjadi.show', 'id_permission_group' => $groupGudangJadi->id],
+            ['name' => 'repackgudangjadi.delete', 'id_permission_group' => $groupGudangJadi->id],
+            ['name' => 'rejectgudangjadi.index', 'id_permission_group' => $groupGudangJadi->id],
+            ['name' => 'rejectgudangjadi.create', 'id_permission_group' => $groupGudangJadi->id],
+            ['name' => 'rejectgudangjadi.edit', 'id_permission_group' => $groupGudangJadi->id],
+            ['name' => 'rejectgudangjadi.show', 'id_permission_group' => $groupGudangJadi->id],
+            ['name' => 'rejectgudangjadi.delete', 'id_permission_group' => $groupGudangJadi->id],
+            ['name' => 'lainnyagudangjadi.index', 'id_permission_group' => $groupGudangJadi->id],
+            ['name' => 'lainnyagudangjadi.create', 'id_permission_group' => $groupGudangJadi->id],
+            ['name' => 'lainnyagudangjadi.edit', 'id_permission_group' => $groupGudangJadi->id],
+            ['name' => 'lainnyagudangjadi.show', 'id_permission_group' => $groupGudangJadi->id],
+            ['name' => 'lainnyagudangjadi.delete', 'id_permission_group' => $groupGudangJadi->id],
+            ['name' => 'gj.persediaan', 'id_permission_group' => $groupGudangJadi->id],
+            ['name' => 'gj.rekappersediaan', 'id_permission_group' => $groupGudangJadi->id],
+            ['name' => 'gj.rekaphasilproduksi', 'id_permission_group' => $groupGudangJadi->id],
+            ['name' => 'gj.rekappengeluaran', 'id_permission_group' => $groupGudangJadi->id],
+            ['name' => 'gj.realisasikiriman', 'id_permission_group' => $groupGudangJadi->id],
             
             // Roles group
             ['name' => 'roles.view', 'id_permission_group' => $groupRoles->id],
@@ -90,6 +111,27 @@ class DatabaseSeeder extends Seeder
             ['name' => 'tujuanangkutan.create', 'id_permission_group' => $groupDataMaster->id],
             ['name' => 'tujuanangkutan.edit', 'id_permission_group' => $groupDataMaster->id],
             ['name' => 'tujuanangkutan.delete', 'id_permission_group' => $groupDataMaster->id],
+
+            // Gudang Bahan Group
+            ['name' => 'sagudangbahan.index', 'id_permission_group' => $groupGudangBahan->id],
+            ['name' => 'sagudangbahan.create', 'id_permission_group' => $groupGudangBahan->id],
+            ['name' => 'sagudangbahan.delete', 'id_permission_group' => $groupGudangBahan->id],
+            ['name' => 'sagudangbahan.show', 'id_permission_group' => $groupGudangBahan->id],
+            ['name' => 'sahargagb.index', 'id_permission_group' => $groupGudangBahan->id],
+            ['name' => 'sahargagb.create', 'id_permission_group' => $groupGudangBahan->id],
+            ['name' => 'sahargagb.delete', 'id_permission_group' => $groupGudangBahan->id],
+            ['name' => 'sahargagb.show', 'id_permission_group' => $groupGudangBahan->id],
+            ['name' => 'opgudangbahan.index', 'id_permission_group' => $groupGudangBahan->id],
+            ['name' => 'opgudangbahan.create', 'id_permission_group' => $groupGudangBahan->id],
+            ['name' => 'opgudangbahan.delete', 'id_permission_group' => $groupGudangBahan->id],
+            ['name' => 'opgudangbahan.show', 'id_permission_group' => $groupGudangBahan->id],
+            ['name' => 'opgudangbahan.edit', 'id_permission_group' => $groupGudangBahan->id],
+            ['name' => 'barangmasukgb.index', 'id_permission_group' => $groupGudangBahan->id],
+            ['name' => 'barangmasukgb.create', 'id_permission_group' => $groupGudangBahan->id],
+            ['name' => 'barangmasukgb.delete', 'id_permission_group' => $groupGudangBahan->id],
+            ['name' => 'barangmasukgb.show', 'id_permission_group' => $groupGudangBahan->id],
+            ['name' => 'barangmasukgb.edit', 'id_permission_group' => $groupGudangBahan->id],
+            ['name' => 'barangkeluargb.index', 'id_permission_group' => $groupGudangBahan->id],
         ];
 
         foreach ($permissions as $p) {
