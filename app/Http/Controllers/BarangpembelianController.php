@@ -201,7 +201,7 @@ class BarangpembelianController extends Controller
             return DataTables::of($query)
                 ->addIndexColumn()
                 ->addColumn('action', function ($row) {
-                    return '<a href="#" kode_barang="' . $row->kode_barang . '" nama_barang="' . $row->nama_barang . '" kode_jenis_barang="' . $row->kode_jenis_barang . '" class="pilihBarang"><i class="ti ti-external-link"></i></a>';
+                    return '<button type="button" class="pilihBarang inline-flex items-center px-2.5 py-1 text-xs font-semibold text-white bg-[#294C9A] hover:bg-[#1E3A70] rounded-lg transition shadow-sm" kode_barang="' . $row->kode_barang . '" nama_barang="' . $row->nama_barang . '" kode_jenis_barang="' . $row->kode_jenis_barang . '">Pilih</button>';
                 })
                 ->addColumn('namabarang', function ($row) {
                     return textUpperCase($row->nama_barang);

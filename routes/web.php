@@ -9,6 +9,9 @@ use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\AngkutanController;
 use App\Http\Controllers\TujuanangkutanController;
 use App\Http\Controllers\BarangpembelianController;
+use App\Http\Controllers\PembelianController;
+use App\Http\Controllers\LaporanpembelianController;
+use App\Http\Controllers\KontrabonpembelianController;
 use App\Http\Controllers\BarangproduksiController;
 use App\Http\Controllers\SaldoawalgudangjadiController;
 use App\Http\Controllers\SamutasiproduksiController;
@@ -22,14 +25,14 @@ use App\Http\Controllers\LaporangudangjadiController;
 use App\Http\Controllers\BarangkeluargudangbahanController;
 use App\Http\Controllers\BarangmasukgudangbahanController;
 use App\Http\Controllers\LaporangudangbahanController;
+use App\Http\Controllers\LaporangudanglogistikController;
 use App\Http\Controllers\OpnamegudangbahanController;
 use App\Http\Controllers\SaldoawalgudangbahanController;
 use App\Http\Controllers\SaldoawalhargagudangbahanController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::redirect('/', '/login');
+
 
 Route::get('/dashboard', function () {
     return view('dashboard');
@@ -67,6 +70,61 @@ Route::middleware('auth')->group(function () {
     Route::resource('barangpembelian', BarangpembelianController::class);
     Route::post('/barangpembelian/getbarangbykategori', [BarangpembelianController::class, 'getbarangbykategori']);
     Route::get('/barangpembelian/{kode_group}/getbarangjson', [BarangpembelianController::class, 'getbarangjson'])->name('barangpembelian.getbarangjson');
+
+    // Pembelian
+    Route::get('/pembelian/jatuhtempo', [PembelianController::class, 'jatuhtempo'])->name('pembelian.jatuhtempo');
+    Route::get('/pembelian/createpotongan', [PembelianController::class, 'createpotongan']);
+    Route::post('/pembelian/editpotongan', [PembelianController::class, 'editpotongan']);
+    Route::post('/pembelian/editbarang', [PembelianController::class, 'editbarang']);
+    Route::post('/pembelian/splitbarang', [PembelianController::class, 'splitbarang']);
+    Route::post('/pembelian/getbarangpembelian', [PembelianController::class, 'getbarangpembelian']);
+
+    Route::resource('pembelian', PembelianController::class);
+    Route::delete('/pembelian/{no_bukti}/delete', [PembelianController::class, 'destroy'])->name('pembelian.delete');
+    Route::get('/pembelian/{no_bukti}/show', [PembelianController::class, 'show'])->name('pembelian.show');
+    Route::get('/pembelian/{no_bukti}/cetak', [PembelianController::class, 'cetak'])->name('pembelian.cetak');
+    Route::get('/pembelian/{no_bukti}/approvegdl', [PembelianController::class, 'approvegdl'])->name('pembelian.approvegdl');
+    Route::post('/pembelian/{no_bukti}/storeapprovegdl', [PembelianController::class, 'storeapprovegdl'])->name('pembelian.storeapprovegdl');
+    Route::get('/pembelian/{no_bukti}/cancelapprovegdl', [PembelianController::class, 'cancelapprovegdl'])->name('pembelian.cancelapprovegdl');
+    Route::get('/pembelian/{no_bukti}/approvemtc', [PembelianController::class, 'approvemtc'])->name('pembelian.approvemtc');
+    Route::post('/pembelian/{no_bukti}/storeapprovemtc', [PembelianController::class, 'storeapprovemtc'])->name('pembelian.storeapprovemtc');
+    Route::get('/pembelian/{no_bukti}/cancelapprovemtc', [PembelianController::class, 'cancelapprovemtc'])->name('pembelian.cancelapprovemtc');
+    Route::get('/pembelian/{kode_supplier}/getpo', [PembelianController::class, 'getPoBySupplier']);
+    Route::get('/pembelian/{kode_supplier}/getpembelianbysupplier', [PembelianController::class, 'getpembelianbysupplier']);
+    Route::get('/pembelian/{kode_supplier}/getpembelianbysupplierjson', [PembelianController::class, 'getpembelianbysupplierjson']);
+
+    // Laporan Pembelian
+    Route::controller(LaporanpembelianController::class)->group(function () {
+        Route::get('/laporanpembelian', 'index')->name('laporanpembelian.index');
+        Route::post('/laporanpembelian/cetakpembelian', 'cetakpembelian')->name('laporanpembelian.cetakpembelian');
+        Route::post('/laporanpembelian/cetakpembayaran', 'cetakpembayaran')->name('laporanpembelian.cetakpembayaran');
+        Route::post('/laporanpembelian/cetakrekapsupplier', 'cetakrekapsupplier')->name('laporanpembelian.cetakrekapsupplier');
+        Route::post('/laporanpembelian/cetakrekappembelian', 'cetakrekappembelian')->name('laporanpembelian.cetakrekappembelian');
+        Route::post('/laporanpembelian/cetakkartuhutang', 'cetakkartuhutang')->name('laporanpembelian.cetakkartuhutang');
+        Route::post('/laporanpembelian/cetakauh', 'cetakauh')->name('laporanpembelian.cetakauh');
+        Route::post('/laporanpembelian/cetakbahankemasan', 'cetakbahankemasan')->name('laporanpembelian.cetakbahankemasan');
+        Route::post('/laporanpembelian/cetakrekapbahankemasan', 'cetakrekapbahankemasan')->name('laporanpembelian.cetakrekapbahankemasan');
+        Route::post('/laporanpembelian/cetakjurnalkoreksi', 'cetakjurnalkoreksi')->name('laporanpembelian.cetakjurnalkoreksi');
+        Route::post('/laporanpembelian/cetakrekapakun', 'cetakrekapakun')->name('laporanpembelian.cetakrekapakun');
+        Route::post('/laporanpembelian/cetakrekapkontrabon', 'cetakrekapkontrabon')->name('laporanpembelian.cetakrekapkontrabon');
+        Route::post('/laporanpembelian/cetakrekappo', 'cetakrekappo')->name('laporanpembelian.cetakrekappo');
+    });
+
+    // Kontrabon Pembelian
+    Route::get('/kontrabonpembelian', [KontrabonpembelianController::class, 'index'])->name('kontrabonpmb.index');
+    Route::get('/kontrabonpembelian/create', [KontrabonpembelianController::class, 'create'])->name('kontrabonpmb.create');
+    Route::post('/kontrabonpembelian/store', [KontrabonpembelianController::class, 'store'])->name('kontrabonpmb.store');
+    Route::get('/kontrabonpembelian/{no_kontrabon}/show', [KontrabonpembelianController::class, 'show'])->name('kontrabonpmb.show');
+    Route::get('/kontrabonpembelian/{no_kontrabon}/cetak', [KontrabonpembelianController::class, 'cetak'])->name('kontrabonpmb.cetak');
+    Route::get('/kontrabonpembelian/{no_kontrabon}/edit', [KontrabonpembelianController::class, 'edit'])->name('kontrabonpmb.edit');
+    Route::put('/kontrabonpembelian/{no_kontrabon}/update', [KontrabonpembelianController::class, 'update'])->name('kontrabonpmb.update');
+    Route::delete('/kontrabonpembelian/{no_kontrabon}/delete', [KontrabonpembelianController::class, 'destroy'])->name('kontrabonpmb.delete');
+    Route::get('/kontrabonpembelian/{no_kontrabon}/approve', [KontrabonpembelianController::class, 'approve'])->name('kontrabonpmb.approve');
+    Route::get('/kontrabonpembelian/{no_kontrabon}/cancel', [KontrabonpembelianController::class, 'cancel'])->name('kontrabonpmb.cancel');
+    Route::get('/kontrabonpembelian/{no_kontrabon}/proses', [KontrabonpembelianController::class, 'proses'])->name('kontrabonpmb.proses');
+    Route::post('/kontrabonpembelian/{no_kontrabon}/storeproses', [KontrabonpembelianController::class, 'storeproses'])->name('kontrabonpmb.storeproses');
+    Route::delete('/kontrabonpembelian/{no_kontrabon}/cancelproses', [KontrabonpembelianController::class, 'cancelproses'])->name('kontrabonpmb.cancelproses');
+    Route::get('/kontrabonkeuangan/pembelian', [KontrabonpembelianController::class, 'index'])->name('kontrabonkeuangan.pembelian');
 
     // Master Data - Barang Produksi
     Route::resource('barangproduksi', BarangproduksiController::class);
@@ -209,6 +267,16 @@ Route::middleware('auth')->group(function () {
         Route::post('/laporangudangbahan/cetakkartugudang', 'cetakkartugudang')->name('laporangudangbahan.cetakkartugudang');
     });
 
+    // Gudang Logistik - Laporan
+    Route::controller(LaporangudanglogistikController::class)->group(function () {
+        Route::get('/laporangudanglogistik', 'index')->name('laporangudanglogistik.index');
+        Route::post('/laporangudanglogistik/cetakbarangmasuk', 'cetakbarangmasuk')->name('laporangudanglogistik.cetakbarangmasuk');
+        Route::post('/laporangudanglogistik/cetakbarangkeluar', 'cetakbarangkeluar')->name('laporangudanglogistik.cetakbarangkeluar');
+        Route::post('/laporangudanglogistik/cetakpersediaan', 'cetakpersediaan')->name('laporangudanglogistik.cetakpersediaan');
+        Route::post('/laporangudanglogistik/cetakrekappersediaan', 'cetakrekappersediaan')->name('laporangudanglogistik.cetakrekappersediaan');
+        Route::post('/laporangudanglogistik/cetakkartugudang', 'cetakkartugudang')->name('laporangudanglogistik.cetakkartugudang');
+    });
+
     // Gudang Logistik - Barang Masuk
     Route::controller(\App\Http\Controllers\BarangmasukgudanglogistikController::class)->group(function () {
         Route::get('/barangmasukgudanglogistik', 'index')->name('barangmasukgudanglogistik.index');
@@ -252,5 +320,8 @@ Route::middleware('auth')->group(function () {
         Route::post('/sagudanglogistik/getdetailsaldo', 'getdetailsaldo')->name('sagudanglogistik.getdetailsaldo');
     });
 });
+
+Route::post('/api/sync/pembelian', [App\Http\Controllers\Api\SyncPembelianController::class, 'sync']);
+Route::post('/api/sync/pembelian/delete', [App\Http\Controllers\Api\SyncPembelianController::class, 'delete']);
 
 require __DIR__.'/auth.php';

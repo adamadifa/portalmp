@@ -137,6 +137,44 @@
         </div>
         @endcanany
 
+        <!-- Pembelian Dropdown -->
+        @canany(['pembelian.index', 'pembelian.jatuhtempo', 'kontrabonpmb.index'])
+        <div x-data="{ open: {{ (Request::is('pembelian*') || Request::is('kontrabonpembelian*') || Request::is('laporanpembelian*')) ? 'true' : 'false' }} }">
+            <button @click="open = !open" class="flex items-center justify-between w-full px-2 py-2 text-sm font-medium text-blue-100/70 hover:bg-white/5 hover:text-white rounded-lg group transition">
+                <div class="flex items-center">
+                    <svg class="w-5 h-5 mr-3 text-blue-200/70 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                    <span>Pembelian</span>
+                </div>
+                <svg class="w-4 h-4 text-blue-200 transition-transform duration-200" :class="{ 'rotate-180': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+            </button>
+            <div x-show="open" x-transition class="mt-1 ml-4 pl-4 space-y-0.5 border-l-2 border-white/20">
+                @can('pembelian.index')
+                <a href="{{ route('pembelian.index') }}" class="relative flex items-center px-2 py-1.5 text-xs font-semibold {{ (Request::is('pembelian') || Request::is('pembelian/create') || (Request::is('pembelian/*') && !Request::is('pembelian/jatuhtempo') && !Request::is('pembelian/laporan*'))) ? 'text-white bg-white/10' : 'text-blue-100/60 hover:text-white hover:bg-white/5' }} rounded-lg transition">
+                    <span class="absolute -left-[21px] w-2 h-2 rounded-full {{ (Request::is('pembelian') || Request::is('pembelian/create') || (Request::is('pembelian/*') && !Request::is('pembelian/jatuhtempo') && !Request::is('pembelian/laporan*'))) ? 'bg-white' : 'bg-white/30' }}"></span>
+                    Pembelian
+                </a>
+                @endcan
+                @can('pembelian.jatuhtempo')
+                <a href="{{ route('pembelian.jatuhtempo') }}" class="relative flex items-center px-2 py-1.5 text-xs font-semibold {{ Request::is('pembelian/jatuhtempo') ? 'text-white bg-white/10' : 'text-blue-100/60 hover:text-white hover:bg-white/5' }} rounded-lg transition">
+                    <span class="absolute -left-[21px] w-2 h-2 rounded-full {{ Request::is('pembelian/jatuhtempo') ? 'bg-white' : 'bg-white/30' }}"></span>
+                    Jatuh Tempo
+                </a>
+                @endcan
+                @can('kontrabonpmb.index')
+                <a href="{{ route('kontrabonpmb.index') }}" class="relative flex items-center px-2 py-1.5 text-xs font-semibold {{ Request::is('kontrabonpembelian*') ? 'text-white bg-white/10' : 'text-blue-100/60 hover:text-white hover:bg-white/5' }} rounded-lg transition">
+                    <span class="absolute -left-[21px] w-2 h-2 rounded-full {{ Request::is('kontrabonpembelian*') ? 'bg-white' : 'bg-white/30' }}"></span>
+                    Kontrabon
+                </a>
+                @endcan
+                
+                <a href="{{ route('laporanpembelian.index') }}" class="relative flex items-center px-2 py-1.5 text-xs font-semibold {{ Request::is('laporanpembelian*') ? 'text-white bg-white/10' : 'text-blue-100/60 hover:text-white hover:bg-white/5' }} rounded-lg transition">
+                    <span class="absolute -left-[21px] w-2 h-2 rounded-full {{ Request::is('laporanpembelian*') ? 'bg-white' : 'bg-white/30' }}"></span>
+                    Laporan Pembelian
+                </a>
+            </div>
+        </div>
+        @endcanany
+
         <!-- Gudang Bahan Dropdown -->
         @canany(['sagudangbahan.index', 'sahargagb.index', 'opgudangbahan.index', 'barangmasukgb.index', 'barangkeluargb.index', 'laporangudangbahan.index'])
         <div>
@@ -179,6 +217,12 @@
                         <span class="absolute -left-[21px] w-2 h-2 rounded-full {{ Request::is('sagudanglogistik*', 'opgudanglogistik*', 'barangmasukgudanglogistik*', 'barangkeluargudanglogistik*') ? 'bg-white' : 'bg-white/30' }}"></span>
                         Mutasi Barang
                     </a>
+                    @canany(['laporangudanglogistik.index', 'gl.barangmasuk', 'gl.barangkeluar', 'gl.persediaan', 'gl.rekappersediaan', 'gl.kartugudang'])
+                    <a href="{{ route('laporangudanglogistik.index') }}" class="relative flex items-center px-2 py-1.5 text-xs font-semibold {{ Request::is('laporangudanglogistik*') ? 'text-white bg-white/10' : 'text-blue-100/60 hover:text-white hover:bg-white/5' }} rounded-lg transition">
+                        <span class="absolute -left-[21px] w-2 h-2 rounded-full {{ Request::is('laporangudanglogistik*') ? 'bg-white' : 'bg-white/30' }}"></span>
+                        Laporan
+                    </a>
+                    @endcanany
                 </div>
             </div>
         </div>

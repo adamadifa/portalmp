@@ -15,6 +15,12 @@
         <!-- Select2 CSS -->
         <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 
+        <!-- Flatpickr CSS -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
+        <!-- DataTables CSS -->
+        <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+
         <!-- Flatpickr Premium Circular Calendar Styles -->
         <style>
             .flatpickr-calendar {
@@ -200,7 +206,8 @@
 
                 <!-- Page Content -->
                 <main class="w-full p-4 sm:p-6 lg:p-8">
-                    {{ $slot }}
+                    {{ $slot ?? '' }}
+                    @yield('content')
                 </main>
             </div>
         </div>
@@ -209,6 +216,15 @@
         <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script src="{{ asset('assets/js/easy-number-separator.js') }}"></script>
+        <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+        <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+        <script>
+            $(document).ready(function() {
+                $(".flatpickr-date").flatpickr({
+                    dateFormat: "Y-m-d"
+                });
+            });
+        </script>
         @stack('myscript')
     </body>
 </html>

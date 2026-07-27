@@ -29,6 +29,7 @@ class DatabaseSeeder extends Seeder
         $groupProduksi = \App\Models\Permission_group::updateOrCreate(['name' => 'Produksi']);
         $groupGudangBahan = \App\Models\Permission_group::updateOrCreate(['name' => 'Gudang Bahan']);
         $groupGudangLogistik = \App\Models\Permission_group::updateOrCreate(['name' => 'Gudang Logistik']);
+        $groupPembelian = \App\Models\Permission_group::updateOrCreate(['name' => 'Pembelian']);
 
         // Create basic permissions with group associations
         $permissions = [
@@ -164,7 +165,22 @@ class DatabaseSeeder extends Seeder
             ['name' => 'opgudanglogistik.edit', 'id_permission_group' => $groupGudangLogistik->id],
             ['name' => 'opgudanglogistik.show', 'id_permission_group' => $groupGudangLogistik->id],
             ['name' => 'opgudanglogistik.delete', 'id_permission_group' => $groupGudangLogistik->id],
+            ['name' => 'gl.barangmasuk', 'id_permission_group' => $groupGudangLogistik->id],
+            ['name' => 'gl.barangkeluar', 'id_permission_group' => $groupGudangLogistik->id],
+            ['name' => 'gl.persediaan', 'id_permission_group' => $groupGudangLogistik->id],
+            ['name' => 'gl.rekappersediaan', 'id_permission_group' => $groupGudangLogistik->id],
+            ['name' => 'gl.kartugudang', 'id_permission_group' => $groupGudangLogistik->id],
             ['name' => 'laporangudanglogistik.index', 'id_permission_group' => $groupGudangLogistik->id],
+
+            // Pembelian Group
+            ['name' => 'pembelian.index', 'id_permission_group' => $groupPembelian->id],
+            ['name' => 'pembelian.create', 'id_permission_group' => $groupPembelian->id],
+            ['name' => 'pembelian.edit', 'id_permission_group' => $groupPembelian->id],
+            ['name' => 'pembelian.store', 'id_permission_group' => $groupPembelian->id],
+            ['name' => 'pembelian.update', 'id_permission_group' => $groupPembelian->id],
+            ['name' => 'pembelian.show', 'id_permission_group' => $groupPembelian->id],
+            ['name' => 'pembelian.delete', 'id_permission_group' => $groupPembelian->id],
+            ['name' => 'pembelian.jatuhtempo', 'id_permission_group' => $groupPembelian->id],
         ];
 
         foreach ($permissions as $p) {
