@@ -4,6 +4,8 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProdukController;
+use App\Http\Controllers\ProdukHargaController;
+use App\Http\Controllers\PenjualanMarketingController;
 use App\Http\Controllers\PelangganController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\AngkutanController;
@@ -53,6 +55,12 @@ Route::middleware('auth')->group(function () {
 
     // Master Data - Produk
     Route::resource('produk', ProdukController::class);
+    Route::resource('produkharga', ProdukHargaController::class);
+    Route::get('/produkharga/{kode_produk}/getharga', [ProdukHargaController::class, 'getHarga'])->name('produkharga.getharga');
+
+    // Marketing - Penjualan
+    Route::get('/penjualanmarketing/produk/getproduk', [PenjualanMarketingController::class, 'getProduk'])->name('penjualanmarketing.getproduk');
+    Route::resource('penjualanmarketing', PenjualanMarketingController::class);
 
     // Master Data - Pelanggan
     Route::resource('pelanggan', PelangganController::class);

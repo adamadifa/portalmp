@@ -30,6 +30,7 @@ class DatabaseSeeder extends Seeder
         $groupGudangBahan = \App\Models\Permission_group::updateOrCreate(['name' => 'Gudang Bahan']);
         $groupGudangLogistik = \App\Models\Permission_group::updateOrCreate(['name' => 'Gudang Logistik']);
         $groupPembelian = \App\Models\Permission_group::updateOrCreate(['name' => 'Pembelian']);
+        $groupMarketing = \App\Models\Permission_group::updateOrCreate(['name' => 'Marketing']);
 
         // Create basic permissions with group associations
         $permissions = [
@@ -83,6 +84,11 @@ class DatabaseSeeder extends Seeder
             ['name' => 'produk.create', 'id_permission_group' => $groupDataMaster->id],
             ['name' => 'produk.edit', 'id_permission_group' => $groupDataMaster->id],
             ['name' => 'produk.delete', 'id_permission_group' => $groupDataMaster->id],
+
+            ['name' => 'produkharga.view', 'id_permission_group' => $groupDataMaster->id],
+            ['name' => 'produkharga.create', 'id_permission_group' => $groupDataMaster->id],
+            ['name' => 'produkharga.edit', 'id_permission_group' => $groupDataMaster->id],
+            ['name' => 'produkharga.delete', 'id_permission_group' => $groupDataMaster->id],
 
             ['name' => 'pelanggan.view', 'id_permission_group' => $groupDataMaster->id],
             ['name' => 'pelanggan.create', 'id_permission_group' => $groupDataMaster->id],
@@ -181,6 +187,12 @@ class DatabaseSeeder extends Seeder
             ['name' => 'pembelian.show', 'id_permission_group' => $groupPembelian->id],
             ['name' => 'pembelian.delete', 'id_permission_group' => $groupPembelian->id],
             ['name' => 'pembelian.jatuhtempo', 'id_permission_group' => $groupPembelian->id],
+
+            // Marketing Group
+            ['name' => 'penjualanmarketing.view', 'id_permission_group' => $groupMarketing->id],
+            ['name' => 'penjualanmarketing.create', 'id_permission_group' => $groupMarketing->id],
+            ['name' => 'penjualanmarketing.edit', 'id_permission_group' => $groupMarketing->id],
+            ['name' => 'penjualanmarketing.delete', 'id_permission_group' => $groupMarketing->id],
         ];
 
         foreach ($permissions as $p) {
