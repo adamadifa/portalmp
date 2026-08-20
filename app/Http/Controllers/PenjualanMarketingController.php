@@ -698,9 +698,12 @@ class PenjualanMarketingController extends Controller
         abort_if(!auth()->user()->can('penjualanmarketing.create'), 403);
         $no_bukti = Crypt::decrypt($no_bukti);
 
+        $jumlah_bayar = toNumber($request->jumlah);
+        $request->merge(['jumlah_numeric' => $jumlah_bayar]);
+
         $request->validate([
             'tanggal' => 'required|date',
-            'jumlah' => 'required|numeric|min:0.01',
+            'jumlah_numeric' => 'required|numeric|min:0.01',
             'jenis_bayar' => 'required|string|in:TN,TR', // TN: Cash, TR: Transfer
         ]);
 
@@ -719,7 +722,7 @@ class PenjualanMarketingController extends Controller
 
         $sisa_tagihan = $total_invoice - $total_bayar_sebelumnya;
 
-        if ($request->jumlah > $sisa_tagihan + 0.05) {
+        if ($jumlah_bayar > $sisa_tagihan + 0.05) {
             return Redirect::back()->with(messageError('Jumlah pembayaran melebihi sisa tagihan! Sisa tagihan: ' . number_format($sisa_tagihan, 2, ',', '.')));
         }
 
@@ -742,13 +745,13 @@ class PenjualanMarketingController extends Controller
                 'tanggal' => $request->tanggal,
                 'no_bukti_penjualan' => $no_bukti,
                 'jenis_bayar' => $request->jenis_bayar,
-                'jumlah' => $request->jumlah,
+                'jumlah' => $jumlah_bayar,
                 'kode_akun' => $request->jenis_bayar == 'TN' ? '1-1100' : '1-1200',
                 'id_user' => auth()->user()->id
             ]);
 
             // If fully paid, update status to 1
-            $total_bayar_baru = $total_bayar_sebelumnya + $request->jumlah;
+            $total_bayar_baru = $total_bayar_sebelumnya + $jumlah_bayar;
             if ($total_bayar_baru >= $total_invoice - 0.05) {
                 $penjualan->update(['status' => '1']);
             }
