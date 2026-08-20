@@ -649,18 +649,14 @@ class PenjualanMarketingController extends Controller
         abort_if(!auth()->user()->can('penjualanmarketing.create'), 403);
 
         try {
-            DB::beginTransaction();
-
             DB::statement('SET FOREIGN_KEY_CHECKS=0;');
             DB::table('marketing_penjualan_historibayar')->truncate();
             DB::table('marketing_penjualan_detail')->truncate();
             DB::table('marketing_penjualan')->truncate();
             DB::statement('SET FOREIGN_KEY_CHECKS=1;');
 
-            DB::commit();
             return Redirect::route('penjualanmarketing.index')->with(messageSuccess('Seluruh Data Penjualan Berhasil Direset'));
         } catch (\Exception $e) {
-            DB::rollBack();
             DB::statement('SET FOREIGN_KEY_CHECKS=1;');
             return Redirect::back()->with(messageError('Gagal mereset data: ' . $e->getMessage()));
         }
