@@ -121,54 +121,54 @@
             @endcan
         </div>
         <div class="overflow-x-auto">
-            <table class="w-full text-xs text-left text-gray-600">
-                <thead class="text-xs uppercase bg-gradient-to-r from-[#294C9A] to-[#1E3A70] text-white">
+            <table class="w-full text-sm text-left text-gray-600">
+                <thead class="text-sm uppercase bg-gradient-to-r from-[#294C9A] to-[#1E3A70] text-white">
                     <tr>
-                        <th class="px-6 py-3 font-bold text-center w-12">
+                        <th class="px-6 py-2.5 font-bold text-center w-12">
                             <input type="checkbox" id="checkAll" class="rounded border-gray-350 text-[#294C9A] focus:ring-[#294C9A] w-4 h-4 cursor-pointer">
                         </th>
-                        <th class="px-6 py-3 font-bold">NO. BUKTI</th>
-                        <th class="px-6 py-3 font-bold">TANGGAL</th>
-                        <th class="px-6 py-3 font-bold">PELANGGAN</th>
-                        <th class="px-6 py-3 font-bold">TRANSAKSI</th>
-                        <th class="px-6 py-3 font-bold text-right">TOTAL</th>
-                        <th class="px-6 py-3 font-bold text-center">STATUS</th>
-                        <th class="px-6 py-3 font-bold text-center">AKSI</th>
+                        <th class="px-6 py-2.5 font-bold">NO. BUKTI</th>
+                        <th class="px-6 py-2.5 font-bold">TANGGAL</th>
+                        <th class="px-6 py-2.5 font-bold">PELANGGAN</th>
+                        <th class="px-6 py-2.5 font-bold">TRANSAKSI</th>
+                        <th class="px-6 py-2.5 font-bold text-right">TOTAL</th>
+                        <th class="px-6 py-2.5 font-bold text-center">STATUS</th>
+                        <th class="px-6 py-2.5 font-bold text-center">AKSI</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100 bg-white">
                     @forelse ($penjualan as $d)
                         <tr class="hover:bg-gray-50/80 transition">
-                            <td class="px-6 py-3 text-center">
+                            <td class="px-6 py-2.5 text-center">
                                 <input type="checkbox" name="selected_no_bukti[]" value="{{ $d->no_bukti }}" class="row-checkbox rounded border-gray-350 text-[#294C9A] focus:ring-[#294C9A] w-4 h-4 cursor-pointer">
                             </td>
-                            <td class="px-6 py-3 font-bold text-[#294C9A] font-mono">
+                            <td class="px-6 py-2.5 font-bold text-[#294C9A] font-mono">
                                 {{ $d->no_bukti }}
                             </td>
-                            <td class="px-6 py-3 text-gray-600">
+                            <td class="px-6 py-2.5 text-gray-600">
                                 {{ date('d-m-Y', strtotime($d->tanggal)) }}
                             </td>
-                            <td class="px-6 py-3 font-semibold text-gray-900">
+                            <td class="px-6 py-2.5 font-semibold text-gray-900">
                                 {{ $d->nama_pelanggan }}
                             </td>
-                            <td class="px-6 py-3 text-xs font-bold">
+                            <td class="px-6 py-2.5 text-xs font-bold">
                                 @if ($d->jenis_transaksi == 'T')
                                     <span class="px-2.5 py-1 bg-emerald-50 text-emerald-700 rounded-full">TUNAI ({{ $d->jenis_bayar }})</span>
                                 @else
                                     <span class="px-2.5 py-1 bg-amber-50 text-amber-700 rounded-full">KREDIT</span>
                                 @endif
                             </td>
-                            <td class="px-6 py-3 text-right font-semibold text-gray-900">
-                                Rp {{ number_format($d->total, 0, ',', '.') }}
+                            <td class="px-6 py-2.5 text-right font-semibold text-gray-900">
+                                Rp {{ number_format($d->total, 2, ',', '.') }}
                             </td>
-                            <td class="px-6 py-3 text-center">
+                            <td class="px-6 py-2.5 text-center">
                                 @if ($d->status == '1')
                                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-100 text-green-800">Lunas</span>
                                 @else
                                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-800">Belum Lunas</span>
                                 @endif
                             </td>
-                            <td class="px-6 py-3">
+                            <td class="px-6 py-2.5">
                                 <div class="flex items-center justify-center gap-3">
                                     <!-- Show -->
                                     <a href="{{ route('penjualanmarketing.show', Crypt::encrypt($d->no_bukti)) }}" class="text-blue-600 hover:text-blue-900 p-1.5 hover:bg-blue-50 rounded-lg transition" title="Detail Penjualan">
