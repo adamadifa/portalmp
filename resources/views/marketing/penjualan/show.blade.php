@@ -3,6 +3,96 @@
         Detail Penjualan Marketing
     </x-slot>
 
+    <style>
+        .flatpickr-calendar {
+            border: 1px solid #E5E7EB !important;
+            border-radius: 16px !important;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+            font-family: inherit !important;
+            overflow: hidden !important;
+        }
+        .flatpickr-months {
+            background: #294C9A !important;
+            padding: 8px 0 !important;
+        }
+        .flatpickr-months .flatpickr-month {
+            color: #ffffff !important;
+            fill: #ffffff !important;
+        }
+        .flatpickr-current-month {
+            color: #ffffff !important;
+            padding: 0 !important;
+        }
+        .flatpickr-current-month .numInputWrapper span.arrowUp::after {
+            border-bottom-color: #ffffff !important;
+        }
+        .flatpickr-current-month .numInputWrapper span.arrowDown::after {
+            border-top-color: #ffffff !important;
+        }
+        .flatpickr-current-month input.cur-year {
+            color: #ffffff !important;
+        }
+        .flatpickr-current-month .flatpickr-monthDropdown-months {
+            color: #ffffff !important;
+            background: #294C9A !important;
+            border: none !important;
+            font-weight: bold !important;
+        }
+        .flatpickr-current-month .flatpickr-monthDropdown-months option {
+            background: #ffffff !important;
+            color: #1f2937 !important;
+        }
+        .flatpickr-months .flatpickr-prev-month, 
+        .flatpickr-months .flatpickr-next-month {
+            color: #ffffff !important;
+            fill: #ffffff !important;
+            top: 10px !important;
+        }
+        .flatpickr-months .flatpickr-prev-month:hover svg, 
+        .flatpickr-months .flatpickr-next-month:hover svg {
+            fill: #60a5fa !important;
+        }
+        .flatpickr-day.selected, 
+        .flatpickr-day.startRange, 
+        .flatpickr-day.endRange, 
+        .flatpickr-day.selected.inRange, 
+        .flatpickr-day.startRange.inRange, 
+        .flatpickr-day.endRange.inRange, 
+        .flatpickr-day.selected:focus, 
+        .flatpickr-day.startRange:focus, 
+        .flatpickr-day.endRange:focus, 
+        .flatpickr-day.selected:hover, 
+        .flatpickr-day.startRange:hover, 
+        .flatpickr-day.endRange:hover, 
+        .flatpickr-day.prevMonthDay.selected, 
+        .flatpickr-day.prevMonthDay.startRange, 
+        .flatpickr-day.prevMonthDay.endRange, 
+        .flatpickr-day.prevMonthDay.selected.inRange, 
+        .flatpickr-day.prevMonthDay.startRange.inRange, 
+        .flatpickr-day.prevMonthDay.endRange.inRange, 
+        .flatpickr-day.prevMonthDay.selected:focus, 
+        .flatpickr-day.prevMonthDay.startRange:focus, 
+        .flatpickr-day.prevMonthDay.endRange:focus, 
+        .flatpickr-day.prevMonthDay.selected:hover, 
+        .flatpickr-day.prevMonthDay.startRange:hover, 
+        .flatpickr-day.prevMonthDay.endRange:hover, 
+        .flatpickr-day.nextMonthDay.selected, 
+        .flatpickr-day.nextMonthDay.startRange, 
+        .flatpickr-day.nextMonthDay.endRange, 
+        .flatpickr-day.nextMonthDay.selected.inRange, 
+        .flatpickr-day.nextMonthDay.startRange.inRange, 
+        .flatpickr-day.nextMonthDay.endRange.inRange, 
+        .flatpickr-day.nextMonthDay.selected:focus, 
+        .flatpickr-day.nextMonthDay.startRange:focus, 
+        .flatpickr-day.nextMonthDay.endRange:focus, 
+        .flatpickr-day.nextMonthDay.selected:hover, 
+        .flatpickr-day.nextMonthDay.startRange:hover, 
+        .flatpickr-day.nextMonthDay.endRange:hover {
+            background: #294C9A !important;
+            border-color: #294C9A !important;
+        }
+    </style>
+
     <!-- Main Container -->
     <div class="space-y-6">
         
