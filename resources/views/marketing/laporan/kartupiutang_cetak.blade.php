@@ -31,7 +31,7 @@
     </div>
     <div class="content">
         <div class="freeze-table">
-            <table class="datatable3" style="width: 150%">
+            <table class="datatable3" style="width: 100%">
                 <thead>
                     <tr>
                         <th style="width:1%">NO</th>
