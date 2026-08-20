@@ -35,9 +35,9 @@
                 $total_jumlah += $jumlah_item;
             }
             
-            // Bulatkan total
-            $total_ppn_rounded = round($total_ppn);
-            $total_jumlah_rounded = round($total_jumlah);
+            // Keep full decimal totals for formatting
+            $total_ppn_val = $total_ppn;
+            $total_jumlah_val = $total_jumlah;
         @endphp
 
         <!-- Top Grid: Transaction Info & Payment Summary -->
@@ -110,7 +110,7 @@
                         <div class="absolute -right-10 -top-10 w-20 h-20 bg-white/5 rounded-full blur-xl"></div>
                         <div class="relative z-10 space-y-1">
                             <span class="text-[9px] font-bold uppercase tracking-wider text-blue-200 block">Grand Total (+PPN)</span>
-                            <h2 class="text-xl font-bold font-mono tracking-tight">Rp {{ number_format($total_jumlah_rounded, 0, ',', '.') }}</h2>
+                             <h2 class="text-xl font-bold font-mono tracking-tight">Rp {{ number_format($total_jumlah_val, 2, ',', '.') }}</h2>
                         </div>
                     </div>
 
@@ -119,18 +119,18 @@
                         <table class="w-full text-xs text-left border-collapse">
                             <tr class="border-b border-gray-50">
                                 <td class="py-2 text-gray-400 font-semibold">Tagihan</td>
-                                <td class="py-2 text-right font-bold text-gray-900 font-mono">Rp {{ number_format($total_jumlah_rounded, 0, ',', '.') }}</td>
+                                <td class="py-2 text-right font-bold text-gray-900 font-mono">Rp {{ number_format($total_jumlah_val, 2, ',', '.') }}</td>
                             </tr>
                             <tr class="border-b border-gray-50">
                                 <td class="py-2 text-gray-400 font-semibold">Total Bayar</td>
                                 <td class="py-2 text-right font-bold text-emerald-600 font-mono">
-                                    Rp {{ number_format($penjualan->status == '1' ? $total_jumlah_rounded : 0, 0, ',', '.') }}
+                                    Rp {{ number_format($penjualan->status == '1' ? $total_jumlah_val : 0, 2, ',', '.') }}
                                 </td>
                             </tr>
                             <tr class="border-b border-gray-50">
                                 <td class="py-2 text-gray-400 font-semibold">Sisa Tagihan</td>
                                 <td class="py-2 text-right font-bold text-rose-600 font-mono">
-                                    Rp {{ number_format($penjualan->status == '1' ? 0 : $total_jumlah_rounded, 0, ',', '.') }}
+                                    Rp {{ number_format($penjualan->status == '1' ? 0 : $total_jumlah_val, 2, ',', '.') }}
                                 </td>
                             </tr>
                         </table>
@@ -190,21 +190,21 @@
                                     </span>
                                 </td>
                                 <td class="py-2.5 px-6 text-center font-semibold text-gray-900 whitespace-nowrap">{{ number_format($d->jumlah, 0, ',', '.') }}</td>
-                                <td class="py-2.5 px-6 text-right font-mono text-gray-900 whitespace-nowrap">Rp {{ number_format($d->harga_dus, 0, ',', '.') }}</td>
-                                <td class="py-2.5 px-6 text-right font-mono text-gray-400 whitespace-nowrap">Rp {{ number_format(round($ppn), 0, ',', '.') }}</td>
-                                <td class="py-2.5 px-6 text-right font-mono font-bold text-gray-900 whitespace-nowrap">Rp {{ number_format(round($jumlah_item), 0, ',', '.') }}</td>
+                                <td class="py-2.5 px-6 text-right font-mono text-gray-900 whitespace-nowrap">Rp {{ number_format($d->harga_dus, 2, ',', '.') }}</td>
+                                <td class="py-2.5 px-6 text-right font-mono text-gray-400 whitespace-nowrap">Rp {{ number_format($ppn, 2, ',', '.') }}</td>
+                                <td class="py-2.5 px-6 text-right font-mono font-bold text-gray-900 whitespace-nowrap">Rp {{ number_format($jumlah_item, 2, ',', '.') }}</td>
                             </tr>
                         @endforeach
                     </tbody>
                     <tfoot class="bg-gray-50/30 font-bold text-gray-900 border-t border-gray-100 text-sm">
                         <tr>
                             <td colspan="5" class="py-2.5 px-6 text-right font-semibold text-gray-500 whitespace-nowrap">TOTAL</td>
-                            <td class="py-2.5 px-6 text-right font-mono text-gray-400 whitespace-nowrap">Rp {{ number_format($total_ppn_rounded, 0, ',', '.') }}</td>
-                            <td class="py-2.5 px-6 text-right font-mono text-sm text-[#294C9A] whitespace-nowrap">Rp {{ number_format($total_jumlah_rounded, 0, ',', '.') }}</td>
+                            <td class="py-2.5 px-6 text-right font-mono text-gray-400 whitespace-nowrap">Rp {{ number_format($total_ppn_val, 2, ',', '.') }}</td>
+                            <td class="py-2.5 px-6 text-right font-mono text-sm text-[#294C9A] whitespace-nowrap">Rp {{ number_format($total_jumlah_val, 2, ',', '.') }}</td>
                         </tr>
                     </tfoot>
                 </table>
             </div>
-
+        </div>
     </div>
 </x-app-layout>

@@ -472,9 +472,9 @@ class PenjualanMarketingController extends Controller
 
                 $kodePelanggan = trim($sheet->getCell([$colMap['kodepelanggan'], $r])->getCalculatedValue() ?? '');
                 $kodeProduk = trim($sheet->getCell([$colMap['kodeproduk'], $r])->getCalculatedValue() ?? '');
-                $qty = (int) round(toNumber(trim($sheet->getCell([$colMap['qty'], $r])->getCalculatedValue() ?? 0)));
-                $harga = (int) round(toNumber(trim($sheet->getCell([$colMap['harga'], $r])->getCalculatedValue() ?? 0)));
-                $jumlah = isset($colMap['jumlah']) ? (int) round(toNumber(trim($sheet->getCell([$colMap['jumlah'], $r])->getCalculatedValue() ?? 0))) : 0;
+                $qty = (float) toNumber(trim($sheet->getCell([$colMap['qty'], $r])->getCalculatedValue() ?? 0));
+                $harga = (float) toNumber(trim($sheet->getCell([$colMap['harga'], $r])->getCalculatedValue() ?? 0));
+                $jumlah = isset($colMap['jumlah']) ? (float) toNumber(trim($sheet->getCell([$colMap['jumlah'], $r])->getCalculatedValue() ?? 0)) : 0;
 
                 if (empty($kodePelanggan) || empty($kodeProduk)) {
                     continue;
