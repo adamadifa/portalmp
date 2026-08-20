@@ -44,6 +44,7 @@
                         <th style="width:4%">QTY</th>
                         <th style="width:8%">HARGA</th>
                         <th style="width:10%">DPP</th>
+                        <th style="width:10%">DPP LAIN</th>
                         <th style="width:10%">PPN (11%)</th>
                         <th style="width:12%">TOTAL</th>
                     </tr>
@@ -53,6 +54,7 @@
                         $grouped = $penjualan->groupBy('no_bukti');
                         $grand_qty = 0;
                         $grand_dpp = 0;
+                        $grand_dpp_lain = 0;
                         $grand_ppn = 0;
                         $grand_total = 0;
                         $global_index = 1;
@@ -61,22 +63,26 @@
                         @php
                             $sub_qty = 0;
                             $sub_dpp = 0;
+                            $sub_dpp_lain = 0;
                             $sub_ppn = 0;
                             $sub_total = 0;
                         @endphp
                         @foreach ($items as $d)
                             @php
                                 $dpp = $d->harga * $d->qty;
-                                $ppn = $dpp * 0.11;
+                                $dpp_lain = $dpp * 11 / 12;
+                                $ppn = $dpp_lain * 0.12;
                                 $total = $dpp + $ppn;
 
                                 $sub_qty += $d->qty;
                                 $sub_dpp += $dpp;
+                                $sub_dpp_lain += $dpp_lain;
                                 $sub_ppn += $ppn;
                                 $sub_total += $total;
 
                                 $grand_qty += $d->qty;
                                 $grand_dpp += $dpp;
+                                $grand_dpp_lain += $dpp_lain;
                                 $grand_ppn += $ppn;
                                 $grand_total += $total;
                             @endphp
@@ -93,6 +99,7 @@
                                 <td class="right">{{ formatAngkaDesimal($d->qty) }}</td>
                                 <td class="right">Rp {{ formatAngkaDesimal($d->harga) }}</td>
                                 <td class="right">Rp {{ formatAngkaDesimal($dpp) }}</td>
+                                <td class="right">Rp {{ formatAngkaDesimal($dpp_lain) }}</td>
                                 <td class="right">Rp {{ formatAngkaDesimal($ppn) }}</td>
                                 <td class="right" style="font-weight: bold;">Rp {{ formatAngkaDesimal($total) }}</td>
                             </tr>
@@ -103,6 +110,7 @@
                             <td class="right" style="color: #1e3a8a;">{{ formatAngkaDesimal($sub_qty) }}</td>
                             <td></td>
                             <td class="right" style="color: #1e3a8a;">Rp {{ formatAngkaDesimal($sub_dpp) }}</td>
+                            <td class="right" style="color: #1e3a8a;">Rp {{ formatAngkaDesimal($sub_dpp_lain) }}</td>
                             <td class="right" style="color: #1e3a8a;">Rp {{ formatAngkaDesimal($sub_ppn) }}</td>
                             <td class="right" style="color: #1e3a8a;">Rp {{ formatAngkaDesimal($sub_total) }}</td>
                         </tr>
@@ -114,6 +122,7 @@
                         <th class="right">{{ formatAngkaDesimal($grand_qty) }}</th>
                         <th></th>
                         <th class="right">Rp {{ formatAngkaDesimal($grand_dpp) }}</th>
+                        <th class="right">Rp {{ formatAngkaDesimal($grand_dpp_lain) }}</th>
                         <th class="right">Rp {{ formatAngkaDesimal($grand_ppn) }}</th>
                         <th class="right">Rp {{ formatAngkaDesimal($grand_total) }}</th>
                     </tr>
