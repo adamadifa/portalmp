@@ -787,4 +787,66 @@ class PenjualanMarketingController extends Controller
             return Redirect::back()->with(messageError('Gagal menghapus pembayaran: ' . $e->getMessage()));
         }
     }
+
+    public function updateBayar(Request $request, $no_bukti_bayar)
+    {
+        abort_if(!auth()->user()->can('penjualanmarketing.edit'), 403);
+        $no_bukti_bayar = Crypt::decrypt($no_bukti_bayar);
+
+        $request->validate([
+            'tanggal' => 'required|date',
+            'jumlah' => 'required',
+            'jenis_bayar' => 'required|string|in:TN,TR',
+        ]);
+
+        $jumlah_bayar = toNumber($request->jumlah);
+
+        $historibayar = MarketingPenjualanHistoribayar::where('no_bukti', $no_bukti_bayar)->firstOrFail();
+        $no_bukti_penjualan = $historibayar->no_bukti_penjualan;
+
+        $penjualan = MarketingPenjualan::where('no_bukti', $no_bukti_penjualan)->firstOrFail();
+
+        // Calculate total invoice
+        $dpp = DB::table('marketing_penjualan_detail')
+            ->where('no_bukti', $no_bukti_penjualan)
+            ->sum('subtotal') ?? 0;
+        $total_invoice = $dpp + ($dpp * 0.11);
+
+        // Calculate other payments (excluding this one)
+        $total_bayar_lainnya = DB::table('marketing_penjualan_historibayar')
+            ->where('no_bukti_penjualan', $no_bukti_penjualan)
+            ->where('no_bukti', '!=', $no_bukti_bayar)
+            ->sum('jumlah') ?? 0;
+
+        $sisa_tagihan = $total_invoice - $total_bayar_lainnya;
+
+        if ($jumlah_bayar > $sisa_tagihan + 0.05) {
+            return Redirect::back()->with(messageError('Jumlah pembayaran melebihi sisa tagihan! Sisa tagihan: ' . number_format($sisa_tagihan, 2, ',', '.')));
+        }
+
+        try {
+            DB::beginTransaction();
+
+            $historibayar->update([
+                'tanggal' => $request->tanggal,
+                'jenis_bayar' => $request->jenis_bayar,
+                'jumlah' => $jumlah_bayar,
+                'kode_akun' => $request->jenis_bayar == 'TN' ? '1-1100' : '1-1200',
+            ]);
+
+            // If fully paid, update status to 1, else 0
+            $total_bayar_baru = $total_bayar_lainnya + $jumlah_bayar;
+            if ($total_bayar_baru >= $total_invoice - 0.05) {
+                $penjualan->update(['status' => '1']);
+            } else {
+                $penjualan->update(['status' => '0']);
+            }
+
+            DB::commit();
+            return Redirect::back()->with(messageSuccess('Pembayaran berhasil diperbarui.'));
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return Redirect::back()->with(messageError('Gagal memperbarui pembayaran: ' . $e->getMessage()));
+        }
+    }
 }

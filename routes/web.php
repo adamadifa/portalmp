@@ -65,6 +65,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/penjualanmarketing/reset', [PenjualanMarketingController::class, 'resetData'])->name('penjualanmarketing.reset');
     Route::post('/penjualanmarketing/delete-selected', [PenjualanMarketingController::class, 'deleteSelected'])->name('penjualanmarketing.delete-selected');
     Route::post('/penjualanmarketing/{no_bukti}/bayar', [PenjualanMarketingController::class, 'storeBayar'])->name('penjualanmarketing.storebayar');
+    Route::put('/penjualanmarketing/bayar/{no_bukti_bayar}', [PenjualanMarketingController::class, 'updateBayar'])->name('penjualanmarketing.updatebayar');
     Route::delete('/penjualanmarketing/bayar/{no_bukti_bayar}', [PenjualanMarketingController::class, 'destroyBayar'])->name('penjualanmarketing.destroybayar');
     Route::resource('penjualanmarketing', PenjualanMarketingController::class);
 

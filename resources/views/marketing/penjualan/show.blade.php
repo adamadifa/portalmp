@@ -252,7 +252,18 @@
                                         </span>
                                     </td>
                                     <td class="py-2.5 px-6 text-right font-mono font-semibold text-gray-900">Rp {{ number_format($h->jumlah, 2, ',', '.') }}</td>
-                                    <td class="py-2.5 px-6 text-center">
+                                    <td class="py-2.5 px-6 text-center flex items-center justify-center gap-1.5">
+                                        @can('penjualanmarketing.edit')
+                                        <button type="button" class="btn-edit-bayar text-[#294C9A] hover:text-[#1E3A70] p-1 hover:bg-blue-50 rounded transition" 
+                                                data-no-bukti-bayar="{{ Crypt::encrypt($h->no_bukti) }}"
+                                                data-tanggal="{{ $h->tanggal }}"
+                                                data-jumlah="{{ number_format($h->jumlah, 0, ',', '.') }}"
+                                                data-jenis-bayar="{{ $h->jenis_bayar }}"
+                                                title="Edit Pembayaran">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v12a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                                        </button>
+                                        @endcan
+
                                         @can('penjualanmarketing.delete')
                                         <form action="{{ route('penjualanmarketing.destroybayar', Crypt::encrypt($h->no_bukti)) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus pembayaran ini?')">
                                             @csrf
@@ -334,6 +345,89 @@
         @endif
     </div>
 
+    <!-- Modal Edit Pembayaran -->
+    <div id="modalEditBayar" class="fixed inset-0 z-50 flex items-center justify-center hidden bg-black/40 backdrop-blur-sm overflow-y-auto">
+        <div class="bg-white w-full max-w-md rounded-2xl shadow-xl overflow-hidden border border-gray-100 mx-4">
+            <div class="px-6 py-4 bg-gradient-to-br from-[#294C9A] to-[#1E3A70] text-white flex justify-between items-center relative overflow-hidden">
+                <div class="absolute -right-8 -top-8 w-16 h-16 bg-white/10 rounded-full blur-lg"></div>
+                <h5 class="text-xs font-bold uppercase tracking-wider text-white flex items-center gap-1.5 relative z-10">
+                    <svg class="w-4 h-4 text-blue-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                    Edit Pembayaran
+                </h5>
+                <button type="button" class="text-white hover:text-gray-200 transition" onclick="toggleModalEditBayar()">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            <div class="p-6">
+                <form id="formEditBayar" action="" method="POST" class="space-y-3.5 pt-1">
+                    @csrf
+                    @method('PUT')
+                    <div class="c-fl-group">
+                        <span class="c-fl-icon">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                        </span>
+                        <input type="text" name="tanggal" id="edit_tanggal" class="fi flatpickr-date" placeholder="Pilih Tanggal" required autocomplete="off">
+                        <label for="edit_tanggal" class="c-fl-label">Tanggal Bayar *</label>
+                    </div>
+
+                    <div class="c-fl-group">
+                        <span class="c-fl-icon">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        </span>
+                        <input type="text" name="jumlah" id="edit_jumlah" placeholder="Contoh: 50.000" class="fi font-mono font-bold text-gray-900 text-right" required autocomplete="off">
+                        <label for="edit_jumlah" class="c-fl-label">Jumlah Bayar *</label>
+                    </div>
+
+                    <div class="c-fl-group">
+                        <span class="c-fl-icon">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
+                        </span>
+                        <select name="jenis_bayar" id="edit_jenis_bayar" class="fi" required>
+                            <option value="TN">Cash / Tunai</option>
+                            <option value="TR">Transfer</option>
+                        </select>
+                        <label for="edit_jenis_bayar" class="c-fl-label">Metode Pembayaran *</label>
+                    </div>
+
+                    <div class="flex items-center gap-3 pt-3">
+                        <button type="button" class="flex-1 px-4 py-2.5 text-xs font-semibold text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition" onclick="toggleModalEditBayar()">Batal</button>
+                        <button type="submit" class="flex-1 inline-flex items-center justify-center px-4 py-2.5 text-xs font-semibold text-white bg-[#294C9A] hover:bg-[#1E3A70] rounded-lg transition shadow-sm gap-1.5 h-[38px]">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                            Simpan Perubahan
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alert Notifications -->
+    @if(session('success'))
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Berhasil',
+                    text: '{{ session('success') }}',
+                    showConfirmButton: false,
+                    timer: 2000
+                });
+            });
+        </script>
+    @endif
+    @if(session('error'))
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Gagal',
+                    text: '{{ session('error') }}',
+                    confirmButtonColor: '#294C9A'
+                });
+            });
+        </script>
+    @endif
+
     <!-- Flatpickr CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     @push('myscript')
@@ -346,7 +440,7 @@
             });
 
             // Dynamic Thousands Separator Formatter
-            $('#jumlah_bayar_input').on('keyup', function(e) {
+            $('#jumlah_bayar_input, #edit_jumlah').on('keyup', function(e) {
                 var number = $(this).val().replace(/[^,\d]/g, '').toString();
                 var split = number.split(',');
                 var sisa = split[0].length % 3;
@@ -361,6 +455,30 @@
                 rupiah = split[1] !== undefined ? rupiah + ',' + split[1] : rupiah;
                 $(this).val(rupiah);
             });
+
+            // Trigger Edit Modal
+            $('.btn-edit-bayar').on('click', function() {
+                var noBuktiBayar = $(this).data('no-bukti-bayar');
+                var tanggal = $(this).data('tanggal');
+                var jumlah = $(this).data('jumlah');
+                var jenisBayar = $(this).data('jenis-bayar');
+
+                // Set Form Action URL dynamically
+                var actionUrl = "{{ route('penjualanmarketing.updatebayar', ':no_bukti_bayar') }}".replace(':no_bukti_bayar', noBuktiBayar);
+                $('#formEditBayar').attr('action', actionUrl);
+
+                // Populate Fields
+                $('#edit_tanggal').val(tanggal);
+                $('#edit_jumlah').val(jumlah);
+                $('#edit_jenis_bayar').val(jenisBayar);
+
+                // Open Modal
+                $('#modalEditBayar').removeClass('hidden');
+            });
+
+            window.toggleModalEditBayar = function() {
+                $('#modalEditBayar').addClass('hidden');
+            }
         });
     </script>
     @endpush
