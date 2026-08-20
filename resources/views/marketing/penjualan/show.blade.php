@@ -232,7 +232,7 @@
                 </div>
                 <div class="overflow-x-auto flex-1">
                     <table class="w-full text-xs text-left border-collapse text-gray-650">
-                        <thead class="bg-emerald-50/50 text-emerald-800 text-[11px] uppercase tracking-wider font-bold">
+                        <thead class="bg-emerald-600 text-white text-[11px] uppercase tracking-wider font-bold">
                             <tr>
                                 <th class="py-2.5 px-6">No. Bukti Bayar</th>
                                 <th class="py-2.5 px-6">Tanggal</th>
