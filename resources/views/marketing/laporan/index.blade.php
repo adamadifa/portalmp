@@ -202,6 +202,16 @@
                     <span class="text-[11px] font-normal text-gray-500">Rangkuman penjualan per produk</span>
                 </div>
             </button>
+
+            <button type="button" data-tab="kartupiutang" class="tab-btn w-full flex items-center gap-3 px-4 py-3 text-xs font-semibold rounded-xl text-gray-600 hover:bg-gray-50 transition-all text-left">
+                <div class="w-8 h-8 rounded-lg bg-gray-100 text-gray-600 flex items-center justify-center shrink-0 tab-icon">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
+                </div>
+                <div>
+                    <span class="block text-sm font-bold">Kartu Piutang</span>
+                    <span class="text-[11px] font-normal text-gray-500">Histori saldo & piutang pelanggan</span>
+                </div>
+            </button>
         </div>
 
         <!-- Form Panels -->
@@ -222,6 +232,14 @@
                         <h4 class="font-bold text-sm">Laporan Rekapitulasi Penjualan Marketing</h4>
                     </div>
                     @include('marketing.laporan.rekap')
+                </div>
+
+                <div id="panel-kartupiutang" class="tab-panel p-6 hidden">
+                    <div class="flex items-center gap-2 text-[#294C9A] pb-4 mb-4 border-b border-gray-100">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
+                        <h4 class="font-bold text-sm">Laporan Kartu Piutang Marketing</h4>
+                    </div>
+                    @include('marketing.laporan.kartupiutang')
                 </div>
 
             </div>
@@ -298,6 +316,7 @@
             // Bind validations
             validatePeriode("formLapPenjualan", "dari_penjualan", "sampai_penjualan");
             validatePeriode("formLapRekapPenjualan", "dari_rekappenjualan", "sampai_rekappenjualan");
+            validatePeriode("formLapKartuPiutang", "dari_kartupiutang", "sampai_kartupiutang");
 
             // Select2 Initializations
             $(".select2Pelanggan, .select2Produk").each(function() {

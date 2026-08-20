@@ -71,6 +71,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/laporanmarketing', 'index')->name('laporanmarketing.index');
         Route::post('/laporanmarketing/cetakpenjualan', 'cetakpenjualan')->name('laporanmarketing.cetakpenjualan');
         Route::post('/laporanmarketing/cetakrekap', 'cetakrekap')->name('laporanmarketing.cetakrekap');
+        Route::post('/laporanmarketing/cetakkartupiutang', 'cetakkartupiutang')->name('laporanmarketing.cetakkartupiutang');
     });
 
     // Master Data - Pelanggan
