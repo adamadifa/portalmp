@@ -49,11 +49,14 @@ if (!function_exists('toNumber')) {
         if (is_string($value)) {
             $value = trim($value);
             
-            // If it is a standard float string (e.g. "746621.62" or "100.5")
-            // and the decimal part is not exactly 3 digits (to avoid confusing with thousands like "746.621")
+            // If it is a standard float string (e.g. "661449606.948" or "100.5")
+            // We check: if it has only one dot, and the integer part is longer than 3 digits,
+            // or the decimal part is not exactly 3 digits, it is a programming decimal float.
             if (preg_match('/^\d+\.\d+$/', $value)) {
-                $decimalPart = substr($value, strpos($value, '.') + 1);
-                if (strlen($decimalPart) !== 3) {
+                $dotPos = strpos($value, '.');
+                $beforeDot = substr($value, 0, $dotPos);
+                $decimalPart = substr($value, $dotPos + 1);
+                if (strlen($beforeDot) > 3 || strlen($decimalPart) !== 3) {
                     return (float) $value;
                 }
             }
