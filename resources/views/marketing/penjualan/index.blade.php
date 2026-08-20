@@ -99,6 +99,10 @@
             </div>
             @can('penjualanmarketing.create')
             <div class="flex gap-2">
+                <button type="button" onclick="resetPenjualan()" class="inline-flex items-center px-3.5 py-2 text-xs font-semibold text-white bg-rose-600 rounded-xl hover:bg-rose-700 transition shadow-sm gap-1.5">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                    Reset Penjualan
+                </button>
                 <button type="button" onclick="toggleModalImport()" class="inline-flex items-center px-3.5 py-2 text-xs font-semibold text-white bg-emerald-600 rounded-xl hover:bg-emerald-700 transition shadow-sm gap-1.5">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
                     Import Excel
@@ -322,6 +326,34 @@
                     }
                 });
             });
+
+            // SweetAlert2 Reset Penjualan Confirmation
+            window.resetPenjualan = function() {
+                Swal.fire({
+                    title: 'Reset Semua Penjualan?',
+                    text: "Seluruh data transaksi, item produk detail, dan histori pembayaran akan dihapus permanen!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Ya, Reset Semua!',
+                    cancelButtonText: 'Batal'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        var form = $('<form>', {
+                            'method': 'POST',
+                            'action': '{{ route("penjualanmarketing.reset") }}'
+                        });
+                        form.append($('<input>', {
+                            'name': '_token',
+                            'value': $('meta[name="csrf-token"]').attr('content'),
+                            'type': 'hidden'
+                        }));
+                        $('body').append(form);
+                        form.submit();
+                    }
+                });
+            };
         </script>
     @endpush
 </x-app-layout>
