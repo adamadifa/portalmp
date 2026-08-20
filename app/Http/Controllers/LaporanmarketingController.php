@@ -131,7 +131,7 @@ class LaporanmarketingController extends Controller
                 'p.tanggal',
                 'p.kode_pelanggan',
                 'cust.nama_pelanggan',
-                'cust.alamat',
+                'cust.alamat_pelanggan as alamat',
                 'p.kode_cabang'
             )
             ->join('pelanggan as cust', 'p.kode_pelanggan', '=', 'cust.kode_pelanggan')
