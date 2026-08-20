@@ -219,19 +219,20 @@
         <!-- Payment Section (Credit Transactions Only) -->
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 mt-6">
             <!-- Left Card: Payment History -->
-            <div class="lg:col-span-8 bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden flex flex-col justify-between">
-                <div class="px-6 py-4 bg-gradient-to-r from-emerald-600 to-emerald-700 text-white flex justify-between items-center">
-                    <h5 class="text-xs font-bold uppercase tracking-wider text-white flex items-center gap-1.5">
-                        <svg class="w-4 h-4 text-emerald-250" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
+            <div class="lg:col-span-8 bg-white rounded-2xl border border-gray-200/80 shadow-sm hover:shadow-md hover:border-gray-300 transition-all duration-300 overflow-hidden flex flex-col justify-between">
+                <div class="px-6 py-4 bg-gradient-to-br from-emerald-600 to-teal-700 text-white flex justify-between items-center relative overflow-hidden">
+                    <div class="absolute -right-8 -top-8 w-16 h-16 bg-white/10 rounded-full blur-lg"></div>
+                    <h5 class="text-xs font-bold uppercase tracking-wider text-white flex items-center gap-1.5 relative z-10">
+                        <svg class="w-4 h-4 text-emerald-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
                         Histori Pembayaran Piutang
                     </h5>
-                    <span class="text-xs font-semibold px-2 py-0.5 bg-white/20 rounded-lg text-white">
+                    <span class="text-xs font-semibold px-2.5 py-1 bg-white/20 backdrop-blur-sm rounded-lg text-white relative z-10 border border-white/10">
                         {{ count($historibayar) }} Pembayaran
                     </span>
                 </div>
                 <div class="overflow-x-auto flex-1">
                     <table class="w-full text-xs text-left border-collapse text-gray-650">
-                        <thead class="bg-emerald-50 text-emerald-800 text-[11px] uppercase tracking-wider font-bold">
+                        <thead class="bg-emerald-50/50 text-emerald-800 text-[11px] uppercase tracking-wider font-bold">
                             <tr>
                                 <th class="py-2.5 px-6">No. Bukti Bayar</th>
                                 <th class="py-2.5 px-6">Tanggal</th>
@@ -274,9 +275,10 @@
             </div>
 
             <!-- Right Card: Form Input Pembayaran -->
-            <div class="lg:col-span-4 bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden flex flex-col justify-between">
-                <div class="px-6 py-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white">
-                    <h5 class="text-xs font-bold uppercase tracking-wider text-white flex items-center gap-1.5">
+            <div class="lg:col-span-4 bg-white rounded-2xl border border-gray-200/80 shadow-sm hover:shadow-md hover:border-gray-300 transition-all duration-300 overflow-hidden flex flex-col justify-between">
+                <div class="px-6 py-4 bg-gradient-to-br from-[#294C9A] to-[#1E3A70] text-white relative overflow-hidden">
+                    <div class="absolute -right-8 -top-8 w-16 h-16 bg-white/10 rounded-full blur-lg"></div>
+                    <h5 class="text-xs font-bold uppercase tracking-wider text-white flex items-center gap-1.5 relative z-10">
                         <svg class="w-4 h-4 text-blue-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
                         Input Pembayaran Baru
                     </h5>
