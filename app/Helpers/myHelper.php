@@ -42,11 +42,30 @@ if (!function_exists('textCamelCase')) {
 if (!function_exists('toNumber')) {
     function toNumber($value)
     {
-        if (!empty($value)) {
-            return str_replace([".", ","], ["", "."], $value);
-        } else {
-            return 0;
+        if (is_float($value) || is_int($value)) {
+            return (float) $value;
         }
+
+        if (is_string($value)) {
+            $value = trim($value);
+            
+            // If it is a standard float string (e.g. "746621.62" or "100.5")
+            // and the decimal part is not exactly 3 digits (to avoid confusing with thousands like "746.621")
+            if (preg_match('/^\d+\.\d+$/', $value)) {
+                $decimalPart = substr($value, strpos($value, '.') + 1);
+                if (strlen($decimalPart) !== 3) {
+                    return (float) $value;
+                }
+            }
+            
+            if (empty($value)) {
+                return 0;
+            }
+            
+            return (float) str_replace([".", ","], ["", "."], $value);
+        }
+
+        return 0;
     }
 }
 
