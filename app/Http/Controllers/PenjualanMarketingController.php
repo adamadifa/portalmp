@@ -195,7 +195,13 @@ class PenjualanMarketingController extends Controller
         ->where('marketing_penjualan_detail.no_bukti', $no_bukti)
         ->get();
 
-        return view('marketing.penjualan.show', compact('penjualan', 'detail'));
+        $historibayar = DB::table('marketing_penjualan_historibayar')
+            ->where('no_bukti_penjualan', $no_bukti)
+            ->orderBy('tanggal', 'asc')
+            ->orderBy('created_at', 'asc')
+            ->get();
+
+        return view('marketing.penjualan.show', compact('penjualan', 'detail', 'historibayar'));
     }
 
     public function edit($no_bukti)
@@ -684,6 +690,98 @@ class PenjualanMarketingController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             return Redirect::back()->with(messageError('Gagal menghapus data terpilih: ' . $e->getMessage()));
+        }
+    }
+
+    public function storeBayar(Request $request, $no_bukti)
+    {
+        abort_if(!auth()->user()->can('penjualanmarketing.create'), 403);
+        $no_bukti = Crypt::decrypt($no_bukti);
+
+        $request->validate([
+            'tanggal' => 'required|date',
+            'jumlah' => 'required|numeric|min:0.01',
+            'jenis_bayar' => 'required|string|in:TN,TR', // TN: Cash, TR: Transfer
+        ]);
+
+        $penjualan = MarketingPenjualan::where('no_bukti', $no_bukti)->firstOrFail();
+
+        // Calculate total invoice
+        $dpp = DB::table('marketing_penjualan_detail')
+            ->where('no_bukti', $no_bukti)
+            ->sum('subtotal') ?? 0;
+        $total_invoice = $dpp + ($dpp * 0.11);
+
+        // Calculate already paid
+        $total_bayar_sebelumnya = DB::table('marketing_penjualan_historibayar')
+            ->where('no_bukti_penjualan', $no_bukti)
+            ->sum('jumlah') ?? 0;
+
+        $sisa_tagihan = $total_invoice - $total_bayar_sebelumnya;
+
+        if ($request->jumlah > $sisa_tagihan + 0.05) {
+            return Redirect::back()->with(messageError('Jumlah pembayaran melebihi sisa tagihan! Sisa tagihan: ' . number_format($sisa_tagihan, 2, ',', '.')));
+        }
+
+        try {
+            DB::beginTransaction();
+
+            $kode_cabang = auth()->user()->kode_cabang ?? 'PST';
+            $tahun = date('y', strtotime($request->tanggal));
+
+            $lasthistoribayar = MarketingPenjualanHistoribayar::select('no_bukti')
+                ->whereRaw('LEFT(no_bukti,6) = "' . $kode_cabang . $tahun . '-"')
+                ->orderBy("no_bukti", "desc")
+                ->first();
+
+            $last_no_bukti = $lasthistoribayar != null ? $lasthistoribayar->no_bukti : '';
+            $no_bukti_bayar = buatkode($last_no_bukti, $kode_cabang . $tahun . "-", 6);
+
+            MarketingPenjualanHistoribayar::create([
+                'no_bukti' => $no_bukti_bayar,
+                'tanggal' => $request->tanggal,
+                'no_bukti_penjualan' => $no_bukti,
+                'jenis_bayar' => $request->jenis_bayar,
+                'jumlah' => $request->jumlah,
+                'kode_akun' => $request->jenis_bayar == 'TN' ? '1-1100' : '1-1200',
+                'id_user' => auth()->user()->id
+            ]);
+
+            // If fully paid, update status to 1
+            $total_bayar_baru = $total_bayar_sebelumnya + $request->jumlah;
+            if ($total_bayar_baru >= $total_invoice - 0.05) {
+                $penjualan->update(['status' => '1']);
+            }
+
+            DB::commit();
+            return Redirect::back()->with(messageSuccess('Pembayaran berhasil ditambahkan.'));
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return Redirect::back()->with(messageError('Gagal menyimpan pembayaran: ' . $e->getMessage()));
+        }
+    }
+
+    public function destroyBayar($no_bukti_bayar)
+    {
+        abort_if(!auth()->user()->can('penjualanmarketing.delete'), 403);
+        $no_bukti_bayar = Crypt::decrypt($no_bukti_bayar);
+
+        $historibayar = MarketingPenjualanHistoribayar::where('no_bukti', $no_bukti_bayar)->firstOrFail();
+        $no_bukti_penjualan = $historibayar->no_bukti_penjualan;
+
+        try {
+            DB::beginTransaction();
+
+            $historibayar->delete();
+
+            // Set status to Belum Lunas ('0')
+            MarketingPenjualan::where('no_bukti', $no_bukti_penjualan)->update(['status' => '0']);
+
+            DB::commit();
+            return Redirect::back()->with(messageSuccess('Pembayaran berhasil dihapus.'));
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return Redirect::back()->with(messageError('Gagal menghapus pembayaran: ' . $e->getMessage()));
         }
     }
 }
