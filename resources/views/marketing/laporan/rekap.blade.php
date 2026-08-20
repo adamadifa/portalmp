@@ -1,4 +1,4 @@
-<form action="{{ route('laporanmarketing.cetakrekap') }}" method="POST" id="formLapRekapPenjualan" target="_blank" class="space-y-6 pt-1">
+<form action="{{ route('laporanmarketing.cetakrekap') }}" method="POST" id="formLapRekapPenjualan" target="_blank" class="space-y-3.5 pt-1">
     @csrf
     
     <div class="c-fl-group">
