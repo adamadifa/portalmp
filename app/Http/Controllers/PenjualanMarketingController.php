@@ -665,4 +665,29 @@ class PenjualanMarketingController extends Controller
             return Redirect::back()->with(messageError('Gagal mereset data: ' . $e->getMessage()));
         }
     }
+
+    public function deleteSelected(Request $request)
+    {
+        abort_if(!auth()->user()->can('penjualanmarketing.delete'), 403);
+
+        $request->validate([
+            'ids' => 'required|array',
+            'ids.*' => 'required|string'
+        ]);
+
+        try {
+            DB::beginTransaction();
+
+            $no_buktis = $request->ids;
+            
+            // Delete matching records. Cascade triggers details and historibayar deletions automatically.
+            MarketingPenjualan::whereIn('no_bukti', $no_buktis)->delete();
+
+            DB::commit();
+            return Redirect::route('penjualanmarketing.index')->with(messageSuccess('Transaksi penjualan yang terpilih berhasil dihapus'));
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return Redirect::back()->with(messageError('Gagal menghapus data terpilih: ' . $e->getMessage()));
+        }
+    }
 }

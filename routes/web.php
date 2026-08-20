@@ -63,6 +63,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/penjualanmarketing/import', [PenjualanMarketingController::class, 'importExcel'])->name('penjualanmarketing.import');
     Route::post('/penjualanmarketing/get-sheets', [PenjualanMarketingController::class, 'getSheets'])->name('penjualanmarketing.getsheets');
     Route::post('/penjualanmarketing/reset', [PenjualanMarketingController::class, 'resetData'])->name('penjualanmarketing.reset');
+    Route::post('/penjualanmarketing/delete-selected', [PenjualanMarketingController::class, 'deleteSelected'])->name('penjualanmarketing.delete-selected');
     Route::resource('penjualanmarketing', PenjualanMarketingController::class);
 
     // Master Data - Pelanggan

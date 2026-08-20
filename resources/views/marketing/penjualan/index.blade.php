@@ -99,7 +99,13 @@
             </div>
             @can('penjualanmarketing.create')
             <div class="flex gap-2">
-                <button type="button" onclick="resetPenjualan()" class="inline-flex items-center px-3.5 py-2 text-xs font-semibold text-white bg-rose-600 rounded-xl hover:bg-rose-700 transition shadow-sm gap-1.5">
+                @can('penjualanmarketing.delete')
+                <button type="button" id="btnHapusTerpilih" onclick="hapusTerpilih()" class="hidden inline-flex items-center px-3.5 py-2 text-xs font-semibold text-white bg-red-600 rounded-xl hover:bg-red-700 transition shadow-sm gap-1.5 animate-pulse">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                    Hapus Terpilih
+                </button>
+                @endcan
+                <button type="button" onclick="resetPenjualan()" class="inline-flex items-center px-3.5 py-2 text-xs font-semibold text-white bg-red-600 rounded-xl hover:bg-red-700 transition shadow-sm gap-1.5">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                     Reset Penjualan
                 </button>
@@ -118,6 +124,9 @@
             <table class="w-full text-xs text-left text-gray-600">
                 <thead class="text-xs uppercase bg-gradient-to-r from-[#294C9A] to-[#1E3A70] text-white">
                     <tr>
+                        <th class="px-6 py-3 font-bold text-center w-12">
+                            <input type="checkbox" id="checkAll" class="rounded border-gray-350 text-[#294C9A] focus:ring-[#294C9A] w-4 h-4 cursor-pointer">
+                        </th>
                         <th class="px-6 py-3 font-bold">NO. BUKTI</th>
                         <th class="px-6 py-3 font-bold">TANGGAL</th>
                         <th class="px-6 py-3 font-bold">PELANGGAN</th>
@@ -130,6 +139,9 @@
                 <tbody class="divide-y divide-gray-100 bg-white">
                     @forelse ($penjualan as $d)
                         <tr class="hover:bg-gray-50/80 transition">
+                            <td class="px-6 py-3 text-center">
+                                <input type="checkbox" name="selected_no_bukti[]" value="{{ $d->no_bukti }}" class="row-checkbox rounded border-gray-350 text-[#294C9A] focus:ring-[#294C9A] w-4 h-4 cursor-pointer">
+                            </td>
                             <td class="px-6 py-3 font-bold text-[#294C9A] font-mono">
                                 {{ $d->no_bukti }}
                             </td>
@@ -179,7 +191,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="7" class="py-12 px-6 text-center text-gray-500">
+                            <td colspan="8" class="py-12 px-6 text-center text-gray-500">
                                 <div class="flex flex-col items-center justify-center">
                                     <svg class="w-10 h-10 text-gray-300 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
                                     <span>Belum ada data penjualan marketing.</span>
@@ -349,6 +361,71 @@
                             'value': $('meta[name="csrf-token"]').attr('content'),
                             'type': 'hidden'
                         }));
+                        $('body').append(form);
+                        form.submit();
+                    }
+                });
+            };
+
+            // Checkbox logic and Bulk Delete
+            $(document).on('change', '#checkAll', function() {
+                $('.row-checkbox').prop('checked', this.checked);
+                toggleBulkDeleteButton();
+            });
+
+            $(document).on('change', '.row-checkbox', function() {
+                if ($('.row-checkbox:checked').length == $('.row-checkbox').length) {
+                    $('#checkAll').prop('checked', true);
+                } else {
+                    $('#checkAll').prop('checked', false);
+                }
+                toggleBulkDeleteButton();
+            });
+
+            function toggleBulkDeleteButton() {
+                var checkedCount = $('.row-checkbox:checked').length;
+                if (checkedCount > 0) {
+                    $('#btnHapusTerpilih').removeClass('hidden').addClass('inline-flex');
+                } else {
+                    $('#btnHapusTerpilih').addClass('hidden').removeClass('inline-flex');
+                }
+            }
+
+            window.hapusTerpilih = function() {
+                var selected = [];
+                $('.row-checkbox:checked').each(function() {
+                    selected.push($(this).val());
+                });
+
+                if (selected.length === 0) return;
+
+                Swal.fire({
+                    title: 'Hapus Transaksi Terpilih?',
+                    text: "Apakah Anda yakin ingin menghapus " + selected.length + " transaksi penjualan yang terpilih beserta detail dan pembayaran terkait?",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Ya, Hapus!',
+                    cancelButtonText: 'Batal'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        var form = $('<form>', {
+                            'method': 'POST',
+                            'action': '{{ route("penjualanmarketing.delete-selected") }}'
+                        });
+                        form.append($('<input>', {
+                            'name': '_token',
+                            'value': $('meta[name="csrf-token"]').attr('content'),
+                            'type': 'hidden'
+                        }));
+                        selected.forEach(function(id) {
+                            form.append($('<input>', {
+                                'name': 'ids[]',
+                                'value': id,
+                                'type': 'hidden'
+                            }));
+                        });
                         $('body').append(form);
                         form.submit();
                     }
