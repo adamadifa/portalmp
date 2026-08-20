@@ -297,7 +297,7 @@
                             </div>
                             <div>
                                 <label class="block text-[10px] font-semibold text-gray-500 mb-1">Jumlah Bayar *</label>
-                                <input type="number" step="0.01" name="jumlah" max="{{ $sisa_tagihan }}" min="0.01" value="{{ round($sisa_tagihan, 2) }}" class="w-full px-3 py-1.5 text-xs border border-gray-300 rounded-xl focus:ring-[#294C9A] focus:border-[#294C9A] font-mono font-bold text-gray-900" required>
+                                <input type="number" step="0.01" name="jumlah" max="{{ $sisa_tagihan }}" min="0.01" placeholder="Contoh: 50000" class="w-full px-3 py-1.5 text-xs border border-gray-300 rounded-xl focus:ring-[#294C9A] focus:border-[#294C9A] font-mono font-bold text-gray-900" required>
                             </div>
                             <div>
                                 <label class="block text-[10px] font-semibold text-gray-500 mb-1">Metode Pembayaran *</label>
