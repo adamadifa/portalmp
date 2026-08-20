@@ -66,6 +66,13 @@ Route::middleware('auth')->group(function () {
     Route::post('/penjualanmarketing/delete-selected', [PenjualanMarketingController::class, 'deleteSelected'])->name('penjualanmarketing.delete-selected');
     Route::resource('penjualanmarketing', PenjualanMarketingController::class);
 
+    // Marketing - Laporan
+    Route::controller(\App\Http\Controllers\LaporanmarketingController::class)->group(function () {
+        Route::get('/laporanmarketing', 'index')->name('laporanmarketing.index');
+        Route::post('/laporanmarketing/cetakpenjualan', 'cetakpenjualan')->name('laporanmarketing.cetakpenjualan');
+        Route::post('/laporanmarketing/cetakrekap', 'cetakrekap')->name('laporanmarketing.cetakrekap');
+    });
+
     // Master Data - Pelanggan
     Route::resource('pelanggan', PelangganController::class);
 

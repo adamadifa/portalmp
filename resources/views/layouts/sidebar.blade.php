@@ -182,8 +182,8 @@
         @endcanany
 
         <!-- Marketing Dropdown -->
-        @canany(['penjualanmarketing.view'])
-        <div x-data="{ open: {{ Request::is('penjualanmarketing*') ? 'true' : 'false' }} }">
+        @canany(['penjualanmarketing.view', 'laporanmarketing.index'])
+        <div x-data="{ open: {{ (Request::is('penjualanmarketing*') || Request::is('laporanmarketing*')) ? 'true' : 'false' }} }">
             <button @click="open = !open" class="flex items-center justify-between w-full px-2 py-2 text-sm font-medium text-blue-100/70 hover:bg-white/5 hover:text-white rounded-lg group transition">
                 <div class="flex items-center">
                     <svg class="w-5 h-5 mr-3 text-blue-200/70 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
@@ -192,10 +192,18 @@
                 <svg class="w-4 h-4 text-blue-200 transition-transform duration-200" :class="{ 'rotate-180': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
             </button>
             <div x-show="open" x-transition class="mt-1 ml-4 pl-4 space-y-0.5 border-l-2 border-white/20">
+                @can('penjualanmarketing.view')
                 <a href="{{ route('penjualanmarketing.index') }}" class="relative flex items-center px-2 py-1.5 text-xs font-semibold {{ Request::is('penjualanmarketing*') ? 'text-white bg-white/10' : 'text-blue-100/60 hover:text-white hover:bg-white/5' }} rounded-lg transition">
                     <span class="absolute -left-[21px] w-2 h-2 rounded-full {{ Request::is('penjualanmarketing*') ? 'bg-white' : 'bg-white/30' }}"></span>
                     Penjualan
                 </a>
+                @endcan
+                @can('laporanmarketing.index')
+                <a href="{{ route('laporanmarketing.index') }}" class="relative flex items-center px-2 py-1.5 text-xs font-semibold {{ Request::is('laporanmarketing*') ? 'text-white bg-white/10' : 'text-blue-100/60 hover:text-white hover:bg-white/5' }} rounded-lg transition">
+                    <span class="absolute -left-[21px] w-2 h-2 rounded-full {{ Request::is('laporanmarketing*') ? 'bg-white' : 'bg-white/30' }}"></span>
+                    Laporan
+                </a>
+                @endcan
             </div>
         </div>
         @endcanany

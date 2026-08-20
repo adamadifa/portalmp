@@ -193,6 +193,7 @@ class DatabaseSeeder extends Seeder
             ['name' => 'penjualanmarketing.create', 'id_permission_group' => $groupMarketing->id],
             ['name' => 'penjualanmarketing.edit', 'id_permission_group' => $groupMarketing->id],
             ['name' => 'penjualanmarketing.delete', 'id_permission_group' => $groupMarketing->id],
+            ['name' => 'laporanmarketing.index', 'id_permission_group' => $groupMarketing->id],
         ];
 
         foreach ($permissions as $p) {
