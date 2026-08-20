@@ -60,6 +60,8 @@ Route::middleware('auth')->group(function () {
 
     // Marketing - Penjualan
     Route::get('/penjualanmarketing/produk/getproduk', [PenjualanMarketingController::class, 'getProduk'])->name('penjualanmarketing.getproduk');
+    Route::post('/penjualanmarketing/import', [PenjualanMarketingController::class, 'importExcel'])->name('penjualanmarketing.import');
+    Route::post('/penjualanmarketing/get-sheets', [PenjualanMarketingController::class, 'getSheets'])->name('penjualanmarketing.getsheets');
     Route::resource('penjualanmarketing', PenjualanMarketingController::class);
 
     // Master Data - Pelanggan

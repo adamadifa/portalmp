@@ -98,10 +98,16 @@
                 <h3 class="font-bold text-base">Data Transaksi Penjualan Marketing</h3>
             </div>
             @can('penjualanmarketing.create')
-            <a href="{{ route('penjualanmarketing.create') }}" class="inline-flex items-center px-3.5 py-2 text-xs font-semibold text-[#294C9A] bg-white rounded-xl hover:bg-gray-50 transition shadow-sm gap-1.5">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-                Input Penjualan
-            </a>
+            <div class="flex gap-2">
+                <button type="button" onclick="toggleModalImport()" class="inline-flex items-center px-3.5 py-2 text-xs font-semibold text-white bg-emerald-600 rounded-xl hover:bg-emerald-700 transition shadow-sm gap-1.5">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                    Import Excel
+                </button>
+                <a href="{{ route('penjualanmarketing.create') }}" class="inline-flex items-center px-3.5 py-2 text-xs font-semibold text-[#294C9A] bg-white rounded-xl hover:bg-gray-50 transition shadow-sm gap-1.5">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                    Input Penjualan
+                </a>
+            </div>
             @endcan
         </div>
         <div class="overflow-x-auto">
@@ -187,8 +193,99 @@
         @endif
     </div>
 
+    <!-- Modal Import Excel -->
+    <div id="modalImport" class="fixed inset-0 z-50 flex items-center justify-center hidden bg-black/40 backdrop-blur-sm overflow-y-auto">
+        <div class="bg-white rounded-2xl shadow-xl w-full max-w-md mx-4 overflow-hidden border border-gray-100">
+            <div class="p-5 border-b border-gray-100 flex justify-between items-center bg-gradient-to-r from-[#294C9A] to-[#1E3A70] text-white">
+                <div class="flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                    <h3 class="font-bold text-base text-white">Import Penjualan Excel</h3>
+                </div>
+                <button type="button" class="btn-close-modal text-white hover:text-gray-200 transition" onclick="toggleModalImport()">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            <form action="{{ route('penjualanmarketing.import') }}" method="POST" enctype="multipart/form-data" class="p-6 space-y-4">
+                @csrf
+                <div>
+                    <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Pilih File Excel (.xlsx, .xls, .csv)</label>
+                    <input type="file" id="file_excel" name="file_excel" accept=".xlsx,.xls,.csv" required class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-[#294C9A] hover:file:bg-blue-100 transition border border-gray-200 rounded-xl p-2" />
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Pilih Sheet</label>
+                    <select name="sheet_name" id="import_sheet_name" class="w-full text-sm border-gray-200 rounded-xl focus:border-blue-500 focus:ring-blue-500 p-2.5">
+                        <option value="">-- Unggah File Excel Dahulu --</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Jenis Transaksi</label>
+                    <select name="jenis_transaksi" id="import_jenis_transaksi" class="w-full text-sm border-gray-200 rounded-xl focus:border-blue-500 focus:ring-blue-500 p-2.5" required>
+                        <option value="K">Kredit (Tempo)</option>
+                        <option value="T">Tunai (Cash)</option>
+                    </select>
+                </div>
+                <div id="import_jenis_bayar_container" class="hidden">
+                    <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Jenis Bayar</label>
+                    <select name="jenis_bayar" class="w-full text-sm border-gray-200 rounded-xl focus:border-blue-500 focus:ring-blue-500 p-2.5">
+                        <option value="TN">Cash / Tunai</option>
+                        <option value="TR">Transfer</option>
+                    </select>
+                </div>
+                <div class="flex justify-end gap-3 pt-4 border-t border-gray-100">
+                    <button type="button" class="px-4 py-2 text-xs font-semibold text-gray-700 bg-gray-100 rounded-xl hover:bg-gray-200 transition" onclick="toggleModalImport()">Batal</button>
+                    <button type="submit" class="px-4 py-2 text-xs font-semibold text-white bg-[#294C9A] rounded-xl hover:bg-[#1E3A70] transition shadow-sm">Proses Import</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     @push('myscript')
         <script>
+            function toggleModalImport() {
+                $('#modalImport').toggleClass('hidden');
+            }
+
+            $('#file_excel').change(function() {
+                var file = this.files[0];
+                if (!file) return;
+
+                var formData = new FormData();
+                formData.append('file_excel', file);
+                formData.append('_token', '{{ csrf_token() }}');
+
+                $('#import_sheet_name').html('<option value="">Sedang membaca sheet...</option>');
+
+                $.ajax({
+                    url: '{{ route("penjualanmarketing.getsheets") }}',
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function(response) {
+                        if (response.success) {
+                            var options = '<option value="">-- Pilih Sheet / Deteksi Otomatis --</option>';
+                            response.sheets.forEach(function(sheetName) {
+                                options += '<option value="' + sheetName + '">' + sheetName + '</option>';
+                            });
+                            $('#import_sheet_name').html(options);
+                        } else {
+                            $('#import_sheet_name').html('<option value="">Gagal membaca sheet: ' + response.message + '</option>');
+                        }
+                    },
+                    error: function() {
+                        $('#import_sheet_name').html('<option value="">Gagal menghubungi server</option>');
+                    }
+                });
+            });
+
+            $('#import_jenis_transaksi').change(function() {
+                if ($(this).val() == 'T') {
+                    $('#import_jenis_bayar_container').removeClass('hidden');
+                } else {
+                    $('#import_jenis_bayar_container').addClass('hidden');
+                }
+            });
+
             // SweetAlert2 Delete Confirmation
             $(document).on('click', '.btn-delete', function(e) {
                 e.preventDefault();
