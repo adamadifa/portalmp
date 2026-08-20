@@ -50,37 +50,61 @@
                 </thead>
                 <tbody>
                     @php
+                        $grouped = $penjualan->groupBy('no_bukti');
                         $grand_qty = 0;
                         $grand_dpp = 0;
                         $grand_ppn = 0;
                         $grand_total = 0;
+                        $global_index = 1;
                     @endphp
-                    @foreach ($penjualan as $d)
+                    @foreach ($grouped as $no_bukti => $items)
                         @php
-                            $dpp = $d->harga * $d->qty;
-                            $ppn = $dpp * 0.11;
-                            $total = $dpp + $ppn;
-
-                            $grand_qty += $d->qty;
-                            $grand_dpp += $dpp;
-                            $grand_ppn += $ppn;
-                            $grand_total += $total;
+                            $sub_qty = 0;
+                            $sub_dpp = 0;
+                            $sub_ppn = 0;
+                            $sub_total = 0;
                         @endphp
-                        <tr>
-                            <td class="center">{{ $loop->iteration }}</td>
-                            <td class="center">{{ date('d-m-Y', strtotime($d->tanggal)) }}</td>
-                            <td class="center font-mono">{{ $d->no_bukti }}</td>
-                            <td>{{ $d->nama_pelanggan }}</td>
-                            <td class="center font-mono">{{ $d->kode_produk }}</td>
-                            <td>{{ $d->nama_produk }}</td>
-                            <td class="center">
-                                <span style="text-transform: uppercase;">{{ $d->satuan }}</span>
-                            </td>
-                            <td class="right">{{ formatAngkaDesimal($d->qty) }}</td>
-                            <td class="right">Rp {{ formatAngkaDesimal($d->harga) }}</td>
-                            <td class="right">Rp {{ formatAngkaDesimal($dpp) }}</td>
-                            <td class="right">Rp {{ formatAngkaDesimal($ppn) }}</td>
-                            <td class="right" style="font-weight: bold;">Rp {{ formatAngkaDesimal($total) }}</td>
+                        @foreach ($items as $d)
+                            @php
+                                $dpp = $d->harga * $d->qty;
+                                $ppn = $dpp * 0.11;
+                                $total = $dpp + $ppn;
+
+                                $sub_qty += $d->qty;
+                                $sub_dpp += $dpp;
+                                $sub_ppn += $ppn;
+                                $sub_total += $total;
+
+                                $grand_qty += $d->qty;
+                                $grand_dpp += $dpp;
+                                $grand_ppn += $ppn;
+                                $grand_total += $total;
+                            @endphp
+                            <tr>
+                                <td class="center">{{ $global_index++ }}</td>
+                                <td class="center">{{ date('d-m-Y', strtotime($d->tanggal)) }}</td>
+                                <td class="center font-mono">{{ $d->no_bukti }}</td>
+                                <td>{{ $d->nama_pelanggan }}</td>
+                                <td class="center font-mono">{{ $d->kode_produk }}</td>
+                                <td>{{ $d->nama_produk }}</td>
+                                <td class="center">
+                                    <span style="text-transform: uppercase;">{{ $d->satuan }}</span>
+                                </td>
+                                <td class="right">{{ formatAngkaDesimal($d->qty) }}</td>
+                                <td class="right">Rp {{ formatAngkaDesimal($d->harga) }}</td>
+                                <td class="right">Rp {{ formatAngkaDesimal($dpp) }}</td>
+                                <td class="right">Rp {{ formatAngkaDesimal($ppn) }}</td>
+                                <td class="right" style="font-weight: bold;">Rp {{ formatAngkaDesimal($total) }}</td>
+                            </tr>
+                        @endforeach
+                        <!-- Subtotal Row per No Bukti -->
+                        <tr style="background-color: #f8fafc; font-weight: bold; font-style: italic;">
+                            <td colspan="7" class="right" style="color: #4b5563;">SUBTOTAL ({{ $no_bukti }}) :</td>
+                            <td class="right" style="color: #1e3a8a;">{{ formatAngkaDesimal($sub_qty) }}</td>
+                            <td></td>
+                            <td class="right" style="color: #1e3a8a;">Rp {{ formatAngkaDesimal($sub_dpp) }}</td>
+                            <td class="right" style="color: #1e3a8a;">Rp {{ formatAngkaDesimal($sub_ppn) }}</td>
+                            <td class="right" style="color: #1e3a8a;">Rp {{ formatAngkaDesimal($sub_total) }}</td>
                         </tr>
                     @endforeach
                 </tbody>
