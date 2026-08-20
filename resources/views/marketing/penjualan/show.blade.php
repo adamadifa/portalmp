@@ -26,8 +26,8 @@
             $total_jumlah = 0;
             
             foreach ($detail as $d) {
-                $dpp = $d->subtotal;
-                $ppn = $dpp * (11/12) * 0.12;
+                $dpp = $d->harga_dus * $d->jumlah;
+                $ppn = $dpp * 0.11;
                 $jumlah_item = $dpp + $ppn;
                 
                 $total_dpp += $dpp;
@@ -177,8 +177,8 @@
                     <tbody class="divide-y divide-gray-100 bg-white text-sm">
                         @foreach ($detail as $d)
                             @php
-                                $dpp = $d->subtotal;
-                                $ppn = $dpp * (11/12) * 0.12;
+                                $dpp = $d->harga_dus * $d->jumlah;
+                                $ppn = $dpp * 0.11;
                                 $jumlah_item = $dpp + $ppn;
                             @endphp
                             <tr class="hover:bg-gray-50/50 transition-colors">
