@@ -43,9 +43,7 @@
                         <th style="width:4%">CABANG</th>
                         <th style="width:8%">TOTAL PIUTANG</th>
                         <th style="width:8%">SALDO AWAL</th>
-                        <th style="width:8%">BRUTO</th>
-                        <th style="width:8%">PPN (11%)</th>
-                        <th style="width:8%">NETTO</th>
+                        <th style="width:8%">NETTO PENJUALAN</th>
                         <th style="width:8%">PEMBAYARAN</th>
                         <th style="width:10%">SALDO AKHIR</th>
                     </tr>
@@ -54,8 +52,6 @@
                     @php
                         $grand_total_piutang = 0;
                         $grand_saldo_awal = 0;
-                        $grand_bruto = 0;
-                        $grand_ppn = 0;
                         $grand_netto = 0;
                         $grand_bayar = 0;
                         $grand_saldo_akhir = 0;
@@ -64,8 +60,6 @@
                         @php
                             $grand_total_piutang += $d->total_piutang;
                             $grand_saldo_awal += $d->saldo_awal;
-                            $grand_bruto += $d->bruto;
-                            $grand_ppn += $d->ppn;
                             $grand_netto += $d->netto;
                             $grand_bayar += $d->jmlbayar;
                             $grand_saldo_akhir += $d->saldo_akhir;
@@ -80,8 +74,6 @@
                             <td class="center font-mono">{{ $d->kode_cabang }}</td>
                             <td class="right">Rp {{ formatAngkaDesimal($d->total_piutang) }}</td>
                             <td class="right">Rp {{ formatAngkaDesimal($d->saldo_awal) }}</td>
-                            <td class="right">Rp {{ formatAngkaDesimal($d->bruto) }}</td>
-                            <td class="right">Rp {{ formatAngkaDesimal($d->ppn) }}</td>
                             <td class="right">Rp {{ formatAngkaDesimal($d->netto) }}</td>
                             <td class="right" style="color: #16a34a;">Rp {{ formatAngkaDesimal($d->jmlbayar) }}</td>
                             <td class="right" style="font-weight: bold; color: #dc2626;">Rp {{ formatAngkaDesimal($d->saldo_akhir) }}</td>
@@ -93,8 +85,6 @@
                         <th colspan="7" align="center"><b>TOTAL</b></th>
                         <th class="right">Rp {{ formatAngkaDesimal($grand_total_piutang) }}</th>
                         <th class="right">Rp {{ formatAngkaDesimal($grand_saldo_awal) }}</th>
-                        <th class="right">Rp {{ formatAngkaDesimal($grand_bruto) }}</th>
-                        <th class="right">Rp {{ formatAngkaDesimal($grand_ppn) }}</th>
                         <th class="right">Rp {{ formatAngkaDesimal($grand_netto) }}</th>
                         <th class="right">Rp {{ formatAngkaDesimal($grand_bayar) }}</th>
                         <th class="right">Rp {{ formatAngkaDesimal($grand_saldo_akhir) }}</th>
