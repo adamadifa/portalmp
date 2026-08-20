@@ -38,12 +38,10 @@
                         <th style="width:5%">TANGGAL</th>
                         <th style="width:7%">NO BUKTI</th>
                         <th style="width:6%">KODE PEL.</th>
-                        <th style="width:12%">NAMA PELANGGAN</th>
-                        <th style="width:15%">ALAMAT</th>
-                        <th style="width:4%">CABANG</th>
+                        <th style="width:15%">NAMA PELANGGAN</th>
                         <th style="width:8%">TOTAL PIUTANG</th>
                         <th style="width:8%">SALDO AWAL</th>
-                        <th style="width:8%">NETTO PENJUALAN</th>
+                        <th style="width:8%">PENJUALAN</th>
                         <th style="width:8%">PEMBAYARAN</th>
                         <th style="width:10%">SALDO AKHIR</th>
                     </tr>
@@ -70,8 +68,6 @@
                             <td class="center font-mono">{{ $d->no_bukti }}</td>
                             <td class="center font-mono">{{ $d->kode_pelanggan }}</td>
                             <td>{{ $d->nama_pelanggan }}</td>
-                            <td>{{ $d->alamat }}</td>
-                            <td class="center font-mono">{{ $d->kode_cabang }}</td>
                             <td class="right">Rp {{ formatAngkaDesimal($d->total_piutang) }}</td>
                             <td class="right">Rp {{ formatAngkaDesimal($d->saldo_awal) }}</td>
                             <td class="right">Rp {{ formatAngkaDesimal($d->netto) }}</td>
@@ -82,7 +78,7 @@
                 </tbody>
                 <tfoot class="table-dark">
                     <tr style="font-weight: bold; background-color: #f3f4f6;">
-                        <th colspan="7" align="center"><b>TOTAL</b></th>
+                        <th colspan="5" align="center"><b>TOTAL</b></th>
                         <th class="right">Rp {{ formatAngkaDesimal($grand_total_piutang) }}</th>
                         <th class="right">Rp {{ formatAngkaDesimal($grand_saldo_awal) }}</th>
                         <th class="right">Rp {{ formatAngkaDesimal($grand_netto) }}</th>
