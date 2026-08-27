@@ -15,12 +15,7 @@
                     <th>Supplier</th>
                     <td class="text-end">{{ $pembelian->nama_supplier }}</td>
                 </tr>
-                <tr>
-                    <th>Asal Ajuan</th>
-                    <td class="text-end">
-                        {{ array_key_exists($pembelian->kode_asal_pengajuan, $asal_pengajuan) ? $asal_pengajuan[$pembelian->kode_asal_pengajuan] : 'UNDIFINED' }}
-                    </td>
-                </tr>
+
                 <tr>
                     <th>PPN</th>
                     <td class="text-end">{!! $pembelian->ppn == '1' ? '<i class="ti ti-checks text-success"></i>' : '<i class="ti ti-square-rounded-x text-danger"></i>' !!} </td>

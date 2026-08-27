@@ -15,12 +15,7 @@
                 <span class="block text-gray-500 font-semibold mb-1">Supplier</span>
                 <span class="font-medium text-gray-900">{{ $pembelian->nama_supplier }}</span>
             </div>
-            <div>
-                <span class="block text-gray-500 font-semibold mb-1">Asal Ajuan</span>
-                <span class="font-medium text-gray-900">
-                    {{ array_key_exists($pembelian->kode_asal_pengajuan, $asal_pengajuan) ? $asal_pengajuan[$pembelian->kode_asal_pengajuan] : 'UNDIFINED' }}
-                </span>
-            </div>
+
             <div>
                 <span class="block text-gray-500 font-semibold mb-1">PPN</span>
                 <span>

@@ -43,7 +43,6 @@
                         <th style="width:2%">JT</th>
                         <th style="width:4%">QTY</th>
                         <th style="width:5%">HARGA</th>
-                        <th style="width:5%">SUBTOTAL</th>
                         <th style="width:5%">DPP</th>
                         <th style="width:5%">DPP LAIN</th>
                         <th style="width:5%">PPN</th>
@@ -94,7 +93,6 @@
                             <td class="center">{{ $d->jenis_transaksi }}</td>
                             <td class="right">{{ formatAngkaDesimal($d->jumlah) }}</td>
                             <td class="right">{{ formatAngkaDesimal($d->harga) }}</td>
-                            <td class="right">{{ formatAngkaDesimal($subtotal) }}</td>
                             <td class="right">{{ formatAngkaDesimal($dpp_val) }}</td>
                             <td class="right">{{ formatAngkaDesimal($dpp_lain_val) }}</td>
                             <td class="right">{{ formatAngkaDesimal($ppn_val) }}</td>
@@ -106,7 +104,7 @@
                 </tbody>
                 <tfoot class="table-dark">
                     <tr>
-                        <th colspan="10" align="center"><b>TOTAL</b></th>
+                        <th colspan="9" align="center"><b>TOTAL</b></th>
                         <th class="right">{{ formatAngkaDesimal($total_dpp) }}</th>
                         <th class="right">{{ formatAngkaDesimal($total_dpp_lain) }}</th>
                         <th class="right">{{ formatAngkaDesimal($total_ppn) }}</th>
@@ -121,7 +119,7 @@
 <script>
     $(".freeze-table").freezeTable({
         'scrollable': true,
-        'columnNum': 10,
+        'columnNum': 9,
         'shadow': true,
     });
 </script>

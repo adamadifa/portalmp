@@ -71,23 +71,7 @@
                 </div>
 
                 @can('pembelian.harga')
-                    <div class="md:col-span-2">
-                        <div class="c-fl-group">
-                            <span class="c-fl-icon">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
-                            </span>
-                            <select name="kode_asal_pengajuan_search" id="kode_asal_pengajuan_search" class="fi">
-                                <option value="">Asal Ajuan</option>
-                                @foreach ($asal_ajuan as $d)
-                                    <option value="{{ $d['kode_group'] }}" {{ Request('kode_asal_pengajuan_search') == $d['kode_group'] ? 'selected' : '' }}>
-                                        {{ $d['nama_group'] }}</option>
-                                @endforeach
-                            </select>
-                            <label for="kode_asal_pengajuan_search" class="c-fl-label">Asal Ajuan</label>
-                        </div>
-                    </div>
-
-                    <div class="md:col-span-4">
+                    <div class="md:col-span-6">
                         <div class="c-fl-group">
                             <span class="c-fl-icon">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
@@ -194,7 +178,6 @@
                         <th class="px-4 py-3 font-bold">NO. BUKTI</th>
                         <th class="px-4 py-3 font-bold">TANGGAL</th>
                         <th class="px-4 py-3 font-bold">SUPPLIER</th>
-                        <th class="px-4 py-3 font-bold text-center">AJUAN</th>
                         @can('pembelian.harga')
                             <th class="px-4 py-3 font-bold text-end">TOTAL</th>
                             <th class="px-4 py-3 font-bold text-end">BAYAR</th>
@@ -215,11 +198,6 @@
                             <td class="px-4 py-3 font-bold text-[#294C9A] font-mono">{{ $d->no_bukti }}</td>
                             <td class="px-4 py-3 font-medium text-gray-900">{{ formatIndo($d->tanggal) }}</td>
                             <td class="px-4 py-3 font-medium text-gray-900">{{ $d->nama_supplier }}</td>
-                            <td class="px-4 py-3 text-center">
-                                <span class="px-2 py-0.5 text-[10px] font-semibold bg-blue-50 text-blue-700 rounded-md border border-blue-150">
-                                    {{ $d->kode_asal_pengajuan }}
-                                </span>
-                            </td>
                             @can('pembelian.harga')
                                 <td class="px-4 py-3 text-end font-bold text-gray-900">{{ formatAngkaDesimal($total) }}</td>
                                 <td class="px-4 py-3 text-end font-bold text-emerald-600">{{ formatAngkaDesimal($d->totalbayar) }}</td>

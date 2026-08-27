@@ -202,11 +202,9 @@
                     <td class="info-sep">:</td>
                     <td class="info-value">{{ formatIndo($pembelian->tanggal) }}</td>
 
-                    <td class="info-label">Asal Ajuan</td>
-                    <td class="info-sep">:</td>
-                    <td class="info-value"><span
-                            style="background: #eef3ff; padding: 2px 6px; border-radius: 3px; font-weight: bold; color: #002e65;">{{ $pembelian->kode_asal_pengajuan }}</span>
-                    </td>
+                    <td class="info-label"></td>
+                    <td class="info-sep"></td>
+                    <td class="info-value"></td>
                 </tr>
                 <tr>
                     <td class="info-label">Jenis Pembayaran</td>
