@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\CoaController;
 use App\Http\Controllers\ProdukController;
 use App\Http\Controllers\ProdukHargaController;
 use App\Http\Controllers\PenjualanMarketingController;
@@ -102,6 +103,9 @@ Route::middleware('auth')->group(function () {
     Route::post('/pembelian/splitbarang', [PembelianController::class, 'splitbarang']);
     Route::post('/pembelian/getbarangpembelian', [PembelianController::class, 'getbarangpembelian']);
 
+    Route::post('/pembelian/reset', [PembelianController::class, 'resetData'])->name('pembelian.reset');
+    Route::post('/pembelian/import', [PembelianController::class, 'importExcel'])->name('pembelian.import');
+    Route::post('/pembelian/getsheets', [PembelianController::class, 'getSheets'])->name('pembelian.getsheets');
     Route::resource('pembelian', PembelianController::class);
     Route::delete('/pembelian/{no_bukti}/delete', [PembelianController::class, 'destroy'])->name('pembelian.delete');
     Route::get('/pembelian/{no_bukti}/show', [PembelianController::class, 'show'])->name('pembelian.show');
@@ -145,6 +149,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/kontrabonpembelian/{no_kontrabon}/approve', [KontrabonpembelianController::class, 'approve'])->name('kontrabonpmb.approve');
     Route::get('/kontrabonpembelian/{no_kontrabon}/cancel', [KontrabonpembelianController::class, 'cancel'])->name('kontrabonpmb.cancel');
     Route::get('/kontrabonpembelian/{no_kontrabon}/proses', [KontrabonpembelianController::class, 'proses'])->name('kontrabonpmb.proses');
+
+    // Accounting
+    Route::get('/coa', [CoaController::class, 'index'])->name('coa.index');
     Route::post('/kontrabonpembelian/{no_kontrabon}/storeproses', [KontrabonpembelianController::class, 'storeproses'])->name('kontrabonpmb.storeproses');
     Route::delete('/kontrabonpembelian/{no_kontrabon}/cancelproses', [KontrabonpembelianController::class, 'cancelproses'])->name('kontrabonpmb.cancelproses');
     Route::get('/kontrabonkeuangan/pembelian', [KontrabonpembelianController::class, 'index'])->name('kontrabonkeuangan.pembelian');
@@ -298,6 +305,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/laporangudanglogistik/cetakpersediaan', 'cetakpersediaan')->name('laporangudanglogistik.cetakpersediaan');
         Route::post('/laporangudanglogistik/cetakrekappersediaan', 'cetakrekappersediaan')->name('laporangudanglogistik.cetakrekappersediaan');
         Route::post('/laporangudanglogistik/cetakkartugudang', 'cetakkartugudang')->name('laporangudanglogistik.cetakkartugudang');
+        Route::post('/laporangudanglogistik/cetakbpb', 'cetakbpb')->name('laporangudanglogistik.cetakbpb')->can('gl.bpb');
     });
 
     // Gudang Logistik - Barang Masuk
@@ -347,4 +355,4 @@ Route::middleware('auth')->group(function () {
 Route::post('/api/sync/pembelian', [App\Http\Controllers\Api\SyncPembelianController::class, 'sync']);
 Route::post('/api/sync/pembelian/delete', [App\Http\Controllers\Api\SyncPembelianController::class, 'delete']);
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

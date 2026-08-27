@@ -31,6 +31,7 @@ class DatabaseSeeder extends Seeder
         $groupGudangLogistik = \App\Models\Permission_group::updateOrCreate(['name' => 'Gudang Logistik']);
         $groupPembelian = \App\Models\Permission_group::updateOrCreate(['name' => 'Pembelian']);
         $groupMarketing = \App\Models\Permission_group::updateOrCreate(['name' => 'Marketing']);
+        $groupAccounting = \App\Models\Permission_group::updateOrCreate(['name' => 'Accounting']);
 
         // Create basic permissions with group associations
         $permissions = [
@@ -194,6 +195,9 @@ class DatabaseSeeder extends Seeder
             ['name' => 'penjualanmarketing.edit', 'id_permission_group' => $groupMarketing->id],
             ['name' => 'penjualanmarketing.delete', 'id_permission_group' => $groupMarketing->id],
             ['name' => 'laporanmarketing.index', 'id_permission_group' => $groupMarketing->id],
+
+            // Accounting Group
+            ['name' => 'coa.index', 'id_permission_group' => $groupAccounting->id],
         ];
 
         foreach ($permissions as $p) {
@@ -227,5 +231,7 @@ class DatabaseSeeder extends Seeder
 
         // Assign super admin role
         $superAdminUser->assignRole($roleSuperAdmin);
+
+        $this->call(CoaSeeder::class);
     }
 }

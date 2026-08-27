@@ -23,6 +23,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Redis;
 use Yajra\DataTables\Facades\DataTables;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 
 class PembelianController extends Controller
 {
@@ -952,5 +953,313 @@ class PembelianController extends Controller
         }
 
         return response()->json($data);
+    }
+
+    public function resetData()
+    {
+        abort_if(!auth()->user()->can('pembelian.create'), 403);
+
+        try {
+            DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+            
+            $tables = [
+                'pembelian_historibayar',
+                'pembelian_kontrabon_detail',
+                'pembelian_kontrabon',
+                'pembelian_detail',
+                'pembelian',
+                'accounting_costratio',
+                'gudang_logistik_barang_masuk_detail',
+                'gudang_logistik_barang_masuk',
+                'maintenance_barang_masuk_detail',
+                'maintenance_barang_masuk'
+            ];
+
+            foreach ($tables as $table) {
+                if (\Illuminate\Support\Facades\Schema::hasTable($table)) {
+                    DB::table($table)->truncate();
+                }
+            }
+
+            DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+
+            return Redirect::route('pembelian.index')->with(messageSuccess('Seluruh Data Pembelian Berhasil Direset'));
+        } catch (\Exception $e) {
+            DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+            return Redirect::back()->with(messageError('Gagal mereset data: ' . $e->getMessage()));
+        }
+    }
+
+    public function importExcel(Request $request)
+    {
+        abort_if(!auth()->user()->can('pembelian.create'), 403);
+
+        $request->validate([
+            'file_excel' => 'required|mimes:xlsx,xls,csv',
+            'jenis_transaksi' => 'required'
+        ]);
+
+        $file = $request->file('file_excel');
+        $jenis_transaksi = $request->jenis_transaksi;
+
+        try {
+            $spreadsheet = IOFactory::load($file->getRealPath());
+            
+            $sanitize = function($str) {
+                return preg_replace('/[^a-z0-9]/', '', strtolower(trim($str)));
+            };
+
+            $sheet = null;
+            $headerRow = 1;
+
+            $inputSheet = $request->sheet_name;
+            if (!empty($inputSheet)) {
+                if (is_numeric($inputSheet)) {
+                    $sheetIndex = (int)$inputSheet - 1;
+                    if ($sheetIndex >= 0 && $sheetIndex < $spreadsheet->getSheetCount()) {
+                        $sheet = $spreadsheet->getSheet($sheetIndex);
+                    }
+                } else {
+                    $sheet = $spreadsheet->getSheetByName($inputSheet);
+                }
+            }
+
+            // Auto-detect sheet if not found
+            if (!$sheet) {
+                foreach ($spreadsheet->getAllSheets() as $currentSheet) {
+                    $highestRow = $currentSheet->getHighestRow();
+                    for ($r = 1; $r <= min(5, $highestRow); $r++) {
+                        for ($col = 1; $col <= 20; $col++) {
+                            $val = $sanitize($currentSheet->getCell([$col, $r])->getValue() ?? '');
+                            if ($val === 'nobukti' || $val === 'nomorbukti' || $val === 'tanggal') {
+                                $sheet = $currentSheet;
+                                $headerRow = $r;
+                                break 2;
+                            }
+                        }
+                    }
+                    if ($sheet) {
+                        break;
+                    }
+                }
+            } else {
+                $highestRow = $sheet->getHighestRow();
+                for ($r = 1; $r <= min(5, $highestRow); $r++) {
+                    for ($col = 1; $col <= 20; $col++) {
+                        $val = $sanitize($sheet->getCell([$col, $r])->getValue() ?? '');
+                        if ($val === 'nobukti' || $val === 'nomorbukti' || $val === 'tanggal') {
+                            $headerRow = $r;
+                            break 2;
+                        }
+                    }
+                }
+            }
+
+            if (!$sheet) {
+                throw new \Exception("Tidak ditemukan sheet yang memiliki kolom 'No. Bukti' atau 'Tanggal'.");
+            }
+
+            $highestRow = $sheet->getHighestRow();
+            $highestColumn = $sheet->getHighestColumn();
+            $highestColumnIndex = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::columnIndexFromString($highestColumn);
+
+            $colMap = [];
+            for ($col = 1; $col <= $highestColumnIndex; $col++) {
+                $rawVal = $sheet->getCell([$col, $headerRow])->getValue();
+                if ($rawVal !== null && $rawVal !== '') {
+                    $cleanedVal = $sanitize($rawVal);
+                    $colMap[$cleanedVal] = $col;
+                }
+            }
+
+            // Find mandatory columns
+            $colNoBukti = $colMap['nobukti'] ?? $colMap['nomorbukti'] ?? null;
+            $colTanggal = $colMap['tanggal'] ?? null;
+            $colSupplier = $colMap['codesupplier'] ?? $colMap['kodesupplier'] ?? null;
+            $colBarang = $colMap['codeproduk'] ?? $colMap['kodeproduk'] ?? $colMap['kodebarang'] ?? $colMap['codebarang'] ?? null;
+            $colQty = $colMap['qty'] ?? $colMap['jumlah'] ?? null;
+            $colHarga = $colMap['harga'] ?? null;
+            $colAkun = $colMap['kodeakun'] ?? null;
+            $colFakturPajak = $colMap['nofakturpajak'] ?? null;
+            $colJenis = $colMap['jenis'] ?? $colMap['kategoritransaksi'] ?? null;
+            $colKeterangan = $colMap['jenisproduct'] ?? $colMap['namaproduk'] ?? $colMap['namabarang'] ?? null;
+            $colPpn = $colMap['ppn'] ?? null;
+
+            if (!$colNoBukti || !$colTanggal || !$colSupplier || !$colBarang || !$colQty || !$colHarga || !$colAkun) {
+                throw new \Exception("Kolom minimal wajib (No. Bukti, Tanggal, Supplier, Produk/Barang, Qty, Harga, Kode Akun) tidak ditemukan.");
+            }
+
+            $rows = [];
+            $consecutiveEmpty = 0;
+            for ($r = $headerRow + 1; $r <= $highestRow; $r++) {
+                $noBuktiVal = trim($sheet->getCell([$colNoBukti, $r])->getCalculatedValue() ?? '');
+                if (empty($noBuktiVal)) {
+                    $consecutiveEmpty++;
+                    if ($consecutiveEmpty >= 20) {
+                        break;
+                    }
+                    continue;
+                }
+                $consecutiveEmpty = 0;
+
+                $tanggalCell = $sheet->getCell([$colTanggal, $r]);
+                $tanggalVal = trim($tanggalCell->getCalculatedValue() ?? '');
+                if (\PhpOffice\PhpSpreadsheet\Shared\Date::isDateTime($tanggalCell)) {
+                    $tanggal = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($tanggalCell->getValue())->format('Y-m-d');
+                } else {
+                    $tanggal = date('Y-m-d', strtotime($tanggalVal));
+                }
+
+                $kodeSupplier = trim($sheet->getCell([$colSupplier, $r])->getCalculatedValue() ?? '');
+                $kodeBarang = trim($sheet->getCell([$colBarang, $r])->getCalculatedValue() ?? '');
+                $qty = (float) toNumber(trim($sheet->getCell([$colQty, $r])->getCalculatedValue() ?? 0));
+                $harga = (float) toNumber(trim($sheet->getCell([$colHarga, $r])->getCalculatedValue() ?? 0));
+                $kodeAkun = trim($sheet->getCell([$colAkun, $r])->getCalculatedValue() ?? '');
+                
+                $noFakPajak = $colFakturPajak ? trim($sheet->getCell([$colFakturPajak, $r])->getCalculatedValue() ?? '') : null;
+                $kategoriTransaksi = $colJenis ? trim($sheet->getCell([$colJenis, $r])->getCalculatedValue() ?? '') : 'PPM';
+                $keterangan = $colKeterangan ? trim($sheet->getCell([$colKeterangan, $r])->getCalculatedValue() ?? '') : null;
+                
+                $ppnVal = 0;
+                if ($colPpn) {
+                    $ppnVal = (float) toNumber(trim($sheet->getCell([$colPpn, $r])->getCalculatedValue() ?? 0));
+                }
+
+                if (empty($kodeSupplier) || empty($kodeBarang)) {
+                    continue;
+                }
+
+                $rows[] = [
+                    'no_bukti' => $noBuktiVal,
+                    'tanggal' => $tanggal,
+                    'kode_supplier' => $kodeSupplier,
+                    'kode_barang' => $kodeBarang,
+                    'qty' => $qty,
+                    'harga' => $harga,
+                    'kode_akun' => $kodeAkun,
+                    'no_fak_pajak' => $noFakPajak,
+                    'kategori_transaksi' => substr($kategoriTransaksi, 0, 2),
+                    'keterangan' => $keterangan,
+                    'ppn_val' => $ppnVal
+                ];
+            }
+
+            if (empty($rows)) {
+                throw new \Exception("Tidak ada data pembelian yang valid untuk diimport.");
+            }
+
+            // Group by no_bukti
+            $grouped = [];
+            foreach ($rows as $row) {
+                $grouped[$row['no_bukti']][] = $row;
+            }
+
+            DB::beginTransaction();
+
+            foreach ($grouped as $noBukti => $items) {
+                $firstItem = $items[0];
+
+                // Validate Supplier
+                $supplier = Supplier::where('kode_supplier', $firstItem['kode_supplier'])->first();
+                if (!$supplier) {
+                    throw new \Exception("Kode Supplier '{$firstItem['kode_supplier']}' tidak ditemukan di database.");
+                }
+
+                // Check if pembelian already exists
+                $existing = Pembelian::where('no_bukti', $noBukti)->first();
+                if ($existing) {
+                    throw new \Exception("Transaksi dengan No. Bukti '{$noBukti}' sudah ada di database.");
+                }
+
+                // Determine PPN
+                $hasPpn = '0';
+                foreach ($items as $item) {
+                    if ($item['ppn_val'] > 0) {
+                        $hasPpn = '1';
+                        break;
+                    }
+                }
+
+                // Insert Header
+                Pembelian::create([
+                    'no_bukti' => $noBukti,
+                    'tanggal' => $firstItem['tanggal'],
+                    'kode_supplier' => $firstItem['kode_supplier'],
+                    'kode_asal_pengajuan' => 'GDL',
+                    'kode_akun' => $firstItem['kode_akun'],
+                    'ppn' => $hasPpn,
+                    'no_fak_pajak' => $firstItem['no_fak_pajak'],
+                    'jatuh_tempo' => $jenis_transaksi == 'K' ? date('Y-m-d', strtotime($firstItem['tanggal'] . ' +30 days')) : $firstItem['tanggal'],
+                    'jenis_transaksi' => $jenis_transaksi,
+                    'kategori_transaksi' => $firstItem['kategori_transaksi'],
+                    'id_user' => auth()->user()->id
+                ]);
+
+                // Insert Details
+                $detailData = [];
+                foreach ($items as $item) {
+                    // Validate Barang
+                    $barang = Barangpembelian::where('kode_barang', $item['kode_barang'])->first();
+                    if (!$barang) {
+                        $barang = Barangpembelian::create([
+                            'kode_barang' => $item['kode_barang'],
+                            'nama_barang' => $item['keterangan'] ?? 'ITEM BARU ' . $item['kode_barang'],
+                            'satuan' => 'BUAH',
+                            'kode_jenis_barang' => 'LN',
+                            'kode_kategori' => 'K001',
+                            'kode_group' => 'GDL',
+                            'status' => '1'
+                        ]);
+                    }
+
+                    $detailData[] = [
+                        'no_bukti' => $noBukti,
+                        'kode_barang' => $item['kode_barang'],
+                        'jumlah' => $item['qty'],
+                        'harga' => $item['harga'],
+                        'penyesuaian' => 0,
+                        'keterangan' => $item['keterangan'] ?? $barang->nama_barang,
+                        'kode_transaksi' => 'PMB',
+                        'kode_akun' => $item['kode_akun'],
+                        'kode_cabang' => auth()->user()->kode_cabang ?? 'PST',
+                        'created_at' => now(),
+                        'updated_at' => now()
+                    ];
+                }
+
+                Detailpembelian::insert($detailData);
+            }
+
+            DB::commit();
+            return Redirect::route('pembelian.index')->with(messageSuccess('Data Pembelian Berhasil Diimport dari Excel'));
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return Redirect::back()->with(messageError('Gagal melakukan import: ' . $e->getMessage()));
+        }
+    }
+
+    public function getSheets(Request $request)
+    {
+        abort_if(!auth()->user()->can('pembelian.create'), 403);
+
+        $request->validate([
+            'file_excel' => 'required|mimes:xlsx,xls,csv'
+        ]);
+
+        try {
+            $file = $request->file('file_excel');
+            $spreadsheet = IOFactory::load($file->getRealPath());
+            $sheetNames = $spreadsheet->getSheetNames();
+
+            return response()->json([
+                'success' => true,
+                'sheets' => $sheetNames
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ]);
+        }
     }
 }
