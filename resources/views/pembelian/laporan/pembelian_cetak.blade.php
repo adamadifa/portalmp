@@ -74,9 +74,15 @@
                                 $namabarang = $d->nama_barang;
                             }
 
-                            $dpp_val = $subtotal * 100 / 111;
-                            $dpp_lain_val = $dpp_val * 11 / 12;
-                            $ppn_val = $dpp_lain_val * 0.12;
+                            if ($d->ppn == '1') {
+                                $dpp_val = $subtotal * 100 / 111;
+                                $dpp_lain_val = $dpp_val * 11 / 12;
+                                $ppn_val = $dpp_lain_val * 0.12;
+                            } else {
+                                $dpp_val = $total;
+                                $dpp_lain_val = 0;
+                                $ppn_val = 0;
+                            }
 
                             $total_dpp += $dpp_val;
                             $total_dpp_lain += $dpp_lain_val;
