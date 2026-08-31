@@ -75,7 +75,7 @@ class PembelianController extends Controller
             ->orderBy('pembelian_historibayar.tanggal', 'desc')
             ->get();
 
-        $data['banks'] = DB::table('bank')->orderBy('nama_bank')->get();
+        $data['banks'] = DB::table('bank')->where('kode_cabang', 'PST')->orderBy('nama_bank')->get();
         $data['cabang'] = Cabang::orderBy('kode_cabang')->get();
         $data['crypted_no_bukti'] = Crypt::encrypt($no_bukti);
 

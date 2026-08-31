@@ -175,7 +175,7 @@
                         </div>
                         <div>
                             <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1.5">Pilih Bank</label>
-                            <select name="kode_bank" required class="w-full text-xs border-slate-200 rounded-xl focus:border-emerald-500 focus:ring-emerald-500 p-2.5 bg-white shadow-sm">
+                            <select name="kode_bank" id="kode_bank_pembayaran" required class="w-full text-xs border-slate-200 rounded-xl focus:border-emerald-500 focus:ring-emerald-500 p-2.5 bg-white shadow-sm">
                                 <option value="">-- Pilih Bank --</option>
                                 @foreach($banks as $b)
                                     <option value="{{ $b->kode_bank }}">{{ $b->kode_bank }} - {{ $b->nama_bank }}</option>
@@ -272,6 +272,12 @@
 <script>
     function toggleFormPembayaran() {
         $('#formInputPembayaran').toggleClass('hidden');
+        if (!$('#formInputPembayaran').hasClass('hidden')) {
+            $('#kode_bank_pembayaran').select2({
+                dropdownParent: $('#modalDialog'),
+                width: '100%'
+            });
+        }
     }
 
     $('#formStorePembayaran').on('submit', function(e) {
