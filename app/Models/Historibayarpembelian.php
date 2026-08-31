@@ -9,7 +9,7 @@ class Historibayarpembelian extends Model
 {
     use HasFactory;
     protected $table = "pembelian_historibayar";
-    protected $primaryKey = "no_bukti";
+    protected $primaryKey = "id";
     protected $guarded = [];
-    public $incrementing  = false;
+    public $incrementing = true;
 }

@@ -122,20 +122,12 @@ class PembelianController extends Controller
     {
         abort_if(!auth()->user()->can('pembelian.delete'), 403);
 
-        $no_bukti = Crypt::decrypt($no_bukti);
         $request->validate([
-            'tanggal' => 'required|date',
-            'kode_bank' => 'required|string',
-            'jumlah' => 'required|numeric',
+            'id' => 'required|exists:pembelian_historibayar,id',
         ]);
 
         try {
-            DB::table('pembelian_historibayar')
-                ->where('no_bukti', $no_bukti)
-                ->where('tanggal', $request->tanggal)
-                ->where('kode_bank', $request->kode_bank)
-                ->where('jumlah', $request->jumlah)
-                ->delete();
+            DB::table('pembelian_historibayar')->where('id', $request->id)->delete();
 
             return response()->json([
                 'success' => true,

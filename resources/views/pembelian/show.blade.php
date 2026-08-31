@@ -218,7 +218,7 @@
                                 <td class="px-5 py-3.5 text-right font-bold text-emerald-700">{{ formatAngkaDesimal($d->jumlah) }}</td>
                                 @can('pembelian.delete')
                                 <td class="px-5 py-3.5 text-center">
-                                    <button type="button" onclick="deletePembayaran('{{ $d->tanggal }}', '{{ $d->kode_bank }}', {{ $d->jumlah }})" class="text-rose-600 hover:text-rose-800 transition" title="Hapus Pembayaran">
+                                    <button type="button" onclick="deletePembayaran({{ $d->id }})" class="text-rose-600 hover:text-rose-800 transition" title="Hapus Pembayaran">
                                         <svg class="w-4 h-4 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                                     </button>
                                 </td>
@@ -231,6 +231,23 @@
                             </tr>
                         @endif
                     </tbody>
+                    @php
+                        $total_paid = $historibayar->sum('jumlah');
+                        $grand_total = $total_pembelian - $total_potongan + $pembelian->penyesuaian_jk;
+                        $remaining = $grand_total - $total_paid;
+                    @endphp
+                    <tfoot class="border-t border-slate-200 bg-slate-50/70">
+                        <tr class="border-b border-slate-200/60">
+                            <td colspan="{{ auth()->user()->can('pembelian.delete') ? 4 : 3 }}" class="px-5 py-3 text-right font-semibold uppercase text-slate-500 text-xs">Total Pembayaran</td>
+                            <td class="px-5 py-3 text-right font-bold text-emerald-700">{{ formatAngkaDesimal($total_paid) }}</td>
+                            @can('pembelian.delete')<td></td>@endcan
+                        </tr>
+                        <tr class="{{ $remaining <= 0 ? 'bg-emerald-50/50 text-emerald-800' : 'bg-rose-50/50 text-rose-800' }}">
+                            <td colspan="{{ auth()->user()->can('pembelian.delete') ? 4 : 3 }}" class="px-5 py-3 text-right font-bold uppercase text-xs tracking-wider">Sisa Pembayaran</td>
+                            <td class="px-5 py-3 text-right font-black text-base {{ $remaining <= 0 ? 'text-emerald-700' : 'text-rose-700' }}">{{ formatAngkaDesimal($remaining) }}</td>
+                            @can('pembelian.delete')<td></td>@endcan
+                        </tr>
+                    </tfoot>
                 </table>
             </div>
         </div>
@@ -327,7 +344,7 @@
         });
     });
 
-    function deletePembayaran(tanggal, kodeBank, jumlah) {
+    function deletePembayaran(id) {
         Swal.fire({
             title: 'Hapus Pembayaran?',
             text: "Histori pembayaran ini akan dihapus secara permanen!",
@@ -344,9 +361,7 @@
                     type: 'POST',
                     data: {
                         _token: '{{ csrf_token() }}',
-                        tanggal: tanggal,
-                        kode_bank: kodeBank,
-                        jumlah: jumlah
+                        id: id
                     },
                     success: function(response) {
                         if (response.success) {
