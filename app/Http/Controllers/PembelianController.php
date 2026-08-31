@@ -111,10 +111,7 @@ class PembelianController extends Controller
     {
         $data['supplier'] = Supplier::orderBy('nama_supplier')->get();
         $data['asal_ajuan'] = config('pembelian.list_asal_pengajuan');
-        $data['coa'] = Coadepartemen::where('kode_dept', 'PMB')
-            ->join('coa', 'coa_departemen.kode_akun', '=', 'coa.kode_akun')
-            ->orderBy('coa_departemen.kode_akun')
-            ->get();
+        $data['coa'] = Coa::orderBy('kode_akun')->get();
 
         $data['cabang'] = Cabang::orderBy('kode_cabang')->get();
         return view('pembelian.create', $data);
@@ -345,10 +342,7 @@ class PembelianController extends Controller
 
         $data['supplier'] = Supplier::orderBy('nama_supplier')->get();
         $data['asal_ajuan'] = config('pembelian.list_asal_pengajuan');
-        $data['coa'] = Coadepartemen::where('kode_dept', 'PMB')
-            ->join('coa', 'coa_departemen.kode_akun', '=', 'coa.kode_akun')
-            ->orderBy('coa_departemen.kode_akun')
-            ->get();
+        $data['coa'] = Coa::orderBy('kode_akun')->get();
 
         $data['cekhistoribayar'] = Detailkontrabonpembelian::where('no_bukti', $no_bukti)
             ->leftJoin('pembelian_historibayar', 'pembelian_kontrabon_detail.no_kontrabon', '=', 'pembelian_historibayar.no_kontrabon')
@@ -363,10 +357,7 @@ class PembelianController extends Controller
 
     public function createpotongan()
     {
-        $data['coa'] = Coadepartemen::where('kode_dept', 'PMB')
-            ->join('coa', 'coa_departemen.kode_akun', '=', 'coa.kode_akun')
-            ->orderBy('coa_departemen.kode_akun')
-            ->get();
+        $data['coa'] = Coa::orderBy('kode_akun')->get();
 
         return view('pembelian.createpotongan', $data);
     }
@@ -375,10 +366,7 @@ class PembelianController extends Controller
     {
         $datapotongan = $request->datapotongan;
         $data['datapotongan'] = $datapotongan;
-        $data['coa'] = Coadepartemen::where('kode_dept', 'PMB')
-            ->join('coa', 'coa_departemen.kode_akun', '=', 'coa.kode_akun')
-            ->orderBy('coa_departemen.kode_akun')
-            ->get();
+        $data['coa'] = Coa::orderBy('kode_akun')->get();
         return view('pembelian.editpotongan', $data);
     }
 
@@ -388,10 +376,7 @@ class PembelianController extends Controller
         $data['databarang'] = $databarang;
 
         $data['barang'] = Barangpembelian::where('kode_barang', $databarang['kode_barang'])->first();
-        $data['coa'] = Coadepartemen::where('kode_dept', 'PMB')
-            ->join('coa', 'coa_departemen.kode_akun', '=', 'coa.kode_akun')
-            ->orderBy('coa_departemen.kode_akun')
-            ->get();
+        $data['coa'] = Coa::orderBy('kode_akun')->get();
         $data['cabang'] = Cabang::orderBy('kode_cabang')->get();
         return view('pembelian.editbarang', $data);
     }
@@ -403,10 +388,7 @@ class PembelianController extends Controller
         $data['databarang'] = $databarang;
 
         $data['barang'] = Barangpembelian::where('kode_barang', $databarang['kode_barang'])->first();
-        $data['coa'] = Coadepartemen::where('kode_dept', 'PMB')
-            ->join('coa', 'coa_departemen.kode_akun', '=', 'coa.kode_akun')
-            ->orderBy('coa_departemen.kode_akun')
-            ->get();
+        $data['coa'] = Coa::orderBy('kode_akun')->get();
         $data['akun'] = Coa::where('kode_akun', $databarang['kode_akun'])->first();
         $data['cabang'] = Cabang::orderBy('kode_cabang')->get();
         return view('pembelian.splitbarang', $data);

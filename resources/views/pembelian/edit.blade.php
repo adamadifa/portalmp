@@ -4,6 +4,9 @@
     </x-slot>
 
     <style>
+    .swal2-container {
+        z-index: 999999 !important;
+    }
     /* ── Isolated Floating Label & Icon Group ──────────── */
     .c-fl-group {
         position: relative !important;
