@@ -118,6 +118,37 @@ class PembelianController extends Controller
         }
     }
 
+    public function destroyPembayaran(Request $request, $no_bukti)
+    {
+        abort_if(!auth()->user()->can('pembelian.delete'), 403);
+
+        $no_bukti = Crypt::decrypt($no_bukti);
+        $request->validate([
+            'tanggal' => 'required|date',
+            'kode_bank' => 'required|string',
+            'jumlah' => 'required|numeric',
+        ]);
+
+        try {
+            DB::table('pembelian_historibayar')
+                ->where('no_bukti', $no_bukti)
+                ->where('tanggal', $request->tanggal)
+                ->where('kode_bank', $request->kode_bank)
+                ->where('jumlah', $request->jumlah)
+                ->delete();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Pembayaran berhasil dihapus.',
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal menghapus pembayaran: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
     public function cetak($no_bukti)
     {
         $no_bukti = Crypt::decrypt($no_bukti);

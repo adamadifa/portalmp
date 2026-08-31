@@ -203,6 +203,9 @@
                             <th class="px-5 py-3 font-semibold uppercase tracking-wider">Bank</th>
                             <th class="px-5 py-3 font-semibold uppercase tracking-wider w-36">Cabang</th>
                             <th class="px-5 py-3 font-semibold uppercase tracking-wider text-right w-44">Jumlah</th>
+                            @can('pembelian.delete')
+                            <th class="px-5 py-3 font-semibold uppercase tracking-wider text-center w-24">Aksi</th>
+                            @endcan
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100 text-slate-700 bg-white">
@@ -213,11 +216,18 @@
                                 <td class="px-5 py-3.5 text-slate-700">{{ $d->nama_bank }}</td>
                                 <td class="px-5 py-3.5 uppercase font-medium text-slate-500">{{ $d->kode_cabang }}</td>
                                 <td class="px-5 py-3.5 text-right font-bold text-emerald-700">{{ formatAngkaDesimal($d->jumlah) }}</td>
+                                @can('pembelian.delete')
+                                <td class="px-5 py-3.5 text-center">
+                                    <button type="button" onclick="deletePembayaran('{{ $d->tanggal }}', '{{ $d->kode_bank }}', {{ $d->jumlah }})" class="text-rose-600 hover:text-rose-800 transition" title="Hapus Pembayaran">
+                                        <svg class="w-4 h-4 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                    </button>
+                                </td>
+                                @endcan
                             </tr>
                         @endforeach
                         @if ($historibayar->isEmpty())
                             <tr>
-                                <td colspan="5" class="px-5 py-8 text-center text-slate-400">Belum ada catatan pembayaran.</td>
+                                <td colspan="6" class="px-5 py-8 text-center text-slate-400">Belum ada catatan pembayaran.</td>
                             </tr>
                         @endif
                     </tbody>
@@ -310,4 +320,59 @@
             }
         });
     });
+
+    function deletePembayaran(tanggal, kodeBank, jumlah) {
+        Swal.fire({
+            title: 'Hapus Pembayaran?',
+            text: "Histori pembayaran ini akan dihapus secara permanen!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Ya, Hapus!',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: '{{ route("pembelian.destroypembayaran", $crypted_no_bukti) }}',
+                    type: 'POST',
+                    data: {
+                        _token: '{{ csrf_token() }}',
+                        tanggal: tanggal,
+                        kode_bank: kodeBank,
+                        jumlah: jumlah
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Berhasil',
+                                text: response.message,
+                                showConfirmButton: false,
+                                timer: 1500
+                            });
+                            $("#modalBody").load('/pembelian/{{ $crypted_no_bukti }}/show');
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Gagal',
+                                text: response.message
+                            });
+                        }
+                    },
+                    error: function(xhr) {
+                        var msg = 'Terjadi kesalahan pada server.';
+                        if (xhr.responseJSON && xhr.responseJSON.message) {
+                            msg = xhr.responseJSON.message;
+                        }
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Gagal',
+                            text: msg
+                        });
+                    }
+                });
+            }
+        });
+    }
 </script>

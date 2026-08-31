@@ -315,7 +315,11 @@ class LaporanpembelianController extends Controller
         );
 
         $query->where('pembelian.tanggal', '<=', $request->sampai);
-        $query->whereRaw("(IFNULL(IFNULL(totalhutang,0) + IFNULL(penyesuaianbulanlalu,0) - IFNULL(jmlbayarbulanlalu,0) ,0))  != 0");
+        $query->where(function($q) {
+            $q->whereRaw("(IFNULL(IFNULL(totalhutang,0) + IFNULL(penyesuaianbulanlalu,0) - IFNULL(jmlbayarbulanlalu,0) ,0))  != 0")
+              ->orWhere('jmlbayarbulanini', '!=', 0);
+        });
+
         if (!empty($request->kode_supplier_kartuhutang)) {
             $query->where('pembelian.kode_supplier', $request->kode_supplier_kartuhutang);
         }
@@ -323,22 +327,6 @@ class LaporanpembelianController extends Controller
         if (!empty($request->jenis_hutang)) {
             $query->where('pembelian.kode_akun', $request->jenis_hutang);
         }
-
-        if ($request->ppn === "0") {
-            $query->where('pembelian.ppn', 0);
-        } else if ($request->ppn == "1") {
-            $query->where('pembelian.ppn', 1);
-        }
-        $query->orWhere('pembelian.tanggal', '<=', $request->sampai);
-        $query->where('jmlbayarbulanini', '!=', 0);
-        if (!empty($request->kode_supplier_kartuhutang)) {
-            $query->where('pembelian.kode_supplier', $request->kode_supplier_kartuhutang);
-        }
-
-        if (!empty($request->jenis_hutang)) {
-            $query->where('pembelian.kode_akun', $request->jenis_hutang);
-        }
-
 
         if ($request->ppn === "0") {
             $query->where('pembelian.ppn', 0);
