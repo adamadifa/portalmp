@@ -39,6 +39,19 @@
         <label for="ppn_pembelian" class="c-fl-label">PPN Status</label>
     </div>
 
+    <div class="c-fl-group">
+        <span class="c-fl-icon">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+        </span>
+        <select name="kode_akun" id="kode_akun_pembelian" class="select2Kodeakun">
+            <option value="">Semua Akun</option>
+            @foreach ($akun as $d)
+                <option value="{{ $d->kode_akun }}">{{ $d->kode_akun }} - {{ $d->nama_akun }}</option>
+            @endforeach
+        </select>
+        <label for="kode_akun_pembelian" class="c-fl-label">Kode Akun</label>
+    </div>
+
     <div class="grid grid-cols-2 gap-4">
         <div class="c-fl-group">
             <span class="c-fl-icon">

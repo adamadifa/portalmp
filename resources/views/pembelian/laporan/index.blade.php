@@ -527,7 +527,7 @@
             validatePeriode("formLapRekapPo", "dari_rekappo", "sampai_rekappo");
 
             // Select2 Initializations
-            $(".select2Kodesupplier, .select2Kodebarang, .select2Kodesupplierpembayaran").each(function() {
+            $(".select2Kodesupplier, .select2Kodebarang, .select2Kodesupplierpembayaran, .select2Kodeakun").each(function() {
                 var $this = $(this);
                 $this.wrap('<div class="position-relative"></div>').select2({
                     placeholder: 'Semua',

@@ -21,6 +21,12 @@ class LaporanpembelianController extends Controller
         $data['asal_ajuan'] = config('pembelian.list_asal_pengajuan');
         $data['list_jenis_barang'] = config('pembelian.list_jenis_barang');
         $data['barangbahankemasan'] = Barangpembelian::whereIn('kode_jenis_barang', ['BB', 'BT', 'KM'])->get();
+        $data['akun'] = DB::table('pembelian_detail')
+            ->join('coa', 'pembelian_detail.kode_akun', '=', 'coa.kode_akun')
+            ->select('pembelian_detail.kode_akun', 'coa.nama_akun')
+            ->groupBy('pembelian_detail.kode_akun', 'coa.nama_akun')
+            ->orderBy('pembelian_detail.kode_akun')
+            ->get();
         return view('pembelian.laporan.index', $data);
     }
 
@@ -54,6 +60,10 @@ class LaporanpembelianController extends Controller
         $query->whereBetween('tanggal', [$request->dari, $request->sampai]);
         if (!empty($request->kode_supplier)) {
             $query->where('pembelian.kode_supplier', $request->kode_supplier);
+        }
+
+        if (!empty($request->kode_akun)) {
+            $query->where('pembelian_detail.kode_akun', $request->kode_akun);
         }
 
         if ($request->ppn === "0") {
