@@ -311,7 +311,7 @@
 
     <!-- Modal Dialog -->
     <div id="modalDialog" class="fixed inset-0 z-50 hidden overflow-y-auto bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
-        <div class="relative w-full max-w-4xl bg-white rounded-2xl shadow-2xl overflow-hidden transform transition-all">
+        <div class="relative w-full max-w-6xl bg-white rounded-2xl shadow-2xl overflow-hidden transform transition-all">
             <!-- Modal Header -->
             <div class="px-6 py-4 bg-[#294C9A] text-white flex justify-between items-center">
                 <h3 id="modalTitle" class="text-base font-bold">Modal Title</h3>

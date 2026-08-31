@@ -75,9 +75,47 @@ class PembelianController extends Controller
             ->orderBy('pembelian_historibayar.tanggal', 'desc')
             ->get();
 
+        $data['banks'] = DB::table('bank')->orderBy('nama_bank')->get();
+        $data['cabang'] = Cabang::orderBy('kode_cabang')->get();
+        $data['crypted_no_bukti'] = Crypt::encrypt($no_bukti);
 
         $data['asal_pengajuan'] = config('pembelian.asal_pengajuan');
         return view('pembelian.show', $data);
+    }
+
+    public function storePembayaran(Request $request, $no_bukti)
+    {
+        abort_if(!auth()->user()->can('pembelian.create'), 403);
+
+        $no_bukti = Crypt::decrypt($no_bukti);
+        $request->validate([
+            'tanggal' => 'required|date',
+            'jumlah' => 'required|numeric|min:0.01',
+            'kode_bank' => 'required|exists:bank,kode_bank',
+        ]);
+
+        try {
+            DB::table('pembelian_historibayar')->insert([
+                'no_bukti' => $no_bukti,
+                'tanggal' => $request->tanggal,
+                'jumlah' => $request->jumlah,
+                'kode_bank' => $request->kode_bank,
+                'kode_cabang' => 'PST',
+                'id_user' => auth()->user()->id,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Pembayaran berhasil disimpan.',
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal menyimpan pembayaran: ' . $e->getMessage(),
+            ], 500);
+        }
     }
 
     public function cetak($no_bukti)

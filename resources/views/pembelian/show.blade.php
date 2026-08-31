@@ -1,59 +1,68 @@
-<div class="space-y-6">
-    <!-- Top General Info Grid -->
-    <div class="bg-gray-50 rounded-2xl border border-gray-200 p-5">
-        <h4 class="font-bold text-gray-900 border-b border-gray-200 pb-2.5 mb-4 uppercase tracking-wider text-xs">Informasi Transaksi</h4>
-        <div class="grid grid-cols-2 md:grid-cols-3 gap-4 text-xs">
+<div class="space-y-6 max-w-5xl mx-auto p-2 pb-8">
+    <!-- Header Card (Clean & Formal, No Left Accent Bar) -->
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
-                <span class="block text-gray-500 font-semibold mb-1">No. Bukti</span>
-                <span class="font-bold text-gray-900 font-mono text-sm">{{ $pembelian->no_bukti }}</span>
+                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Informasi Transaksi</span>
+                <h3 class="text-lg font-bold text-slate-800 font-mono tracking-tight">{{ $pembelian->no_bukti }}</h3>
             </div>
-            <div>
-                <span class="block text-gray-500 font-semibold mb-1">Tanggal</span>
-                <span class="font-medium text-gray-900">{{ DateToIndo($pembelian->tanggal) }}</span>
+            <div class="flex items-center gap-3">
+                <span class="text-xs text-slate-500 font-medium">Status PPN:</span>
+                @if($pembelian->ppn == '1')
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                        PPN Aktif
+                    </span>
+                @else
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-slate-50 text-slate-600 border border-slate-200">
+                        <span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
+                        Non-PPN
+                    </span>
+                @endif
             </div>
-            <div>
-                <span class="block text-gray-500 font-semibold mb-1">Supplier</span>
-                <span class="font-medium text-gray-900">{{ $pembelian->nama_supplier }}</span>
-            </div>
+        </div>
 
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mt-6 pt-6 border-t border-slate-100 text-xs">
             <div>
-                <span class="block text-gray-500 font-semibold mb-1">PPN</span>
-                <span>
-                    @if($pembelian->ppn == '1')
-                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-250">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
-                            Ya
-                        </span>
-                    @else
-                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium bg-rose-50 text-rose-700 border border-rose-250">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                            Tidak
-                        </span>
-                    @endif
-                </span>
+                <span class="block text-slate-400 font-semibold uppercase tracking-wider mb-1.5">Tanggal Transaksi</span>
+                <span class="font-bold text-slate-850 text-sm">{{ DateToIndo($pembelian->tanggal) }}</span>
+            </div>
+            <div>
+                <span class="block text-slate-400 font-semibold uppercase tracking-wider mb-1.5">Nama Supplier</span>
+                <span class="font-bold text-slate-850 text-sm">{{ $pembelian->nama_supplier }}</span>
+            </div>
+            <div>
+                <span class="block text-slate-400 font-semibold uppercase tracking-wider mb-1.5">Jenis Transaksi</span>
+                <div>
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded text-xs font-bold uppercase {{ $pembelian->jenis_transaksi == 'K' ? 'bg-amber-50 text-amber-800 border border-amber-200' : 'bg-blue-50 text-blue-700 border border-blue-200' }}">
+                        {{ $pembelian->jenis_transaksi == 'K' ? 'Kredit (Tempo)' : 'Tunai' }}
+                    </span>
+                </div>
             </div>
         </div>
     </div>
 
     @can('pembelian.harga')
-        <!-- Detail Barang Pembelian -->
-        <div class="space-y-2">
-            <h4 class="font-bold text-gray-800 text-xs uppercase tracking-wider">Data Barang Pembelian</h4>
-            <div class="overflow-x-auto rounded-xl border border-gray-200 shadow-sm">
+        <!-- Data Barang Pembelian -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+            <div class="px-5 py-4 bg-slate-100 border-b border-slate-200">
+                <h4 class="font-bold text-slate-850 text-xs uppercase tracking-wider">Detail Barang Pembelian</h4>
+            </div>
+            <div class="overflow-x-auto">
                 <table class="w-full text-xs text-left">
-                    <thead class="text-[11px] uppercase bg-gradient-to-r from-[#294C9A] to-[#1E3A70] text-white">
-                        <tr>
-                            <th class="px-3.5 py-2.5">Kode</th>
-                            <th class="px-3.5 py-2.5">Nama Barang</th>
-                            <th class="px-3.5 py-2.5">Keterangan</th>
-                            <th class="px-3.5 py-2.5 text-center">Qty</th>
-                            <th class="px-3.5 py-2.5 text-right">Harga</th>
-                            <th class="px-3.5 py-2.5 text-right">Subtotal</th>
-                            <th class="px-3.5 py-2.5 text-right">Peny</th>
-                            <th class="px-3.5 py-2.5 text-right">Total</th>
+                    <thead>
+                        <tr class="bg-slate-100/50 text-slate-500 border-b border-slate-200">
+                            <th class="px-5 py-3 font-semibold uppercase tracking-wider w-24">Kode</th>
+                            <th class="px-5 py-3 font-semibold uppercase tracking-wider">Nama Barang</th>
+                            <th class="px-5 py-3 font-semibold uppercase tracking-wider">Keterangan</th>
+                            <th class="px-5 py-3 font-semibold uppercase tracking-wider text-center w-20">Qty</th>
+                            <th class="px-5 py-3 font-semibold uppercase tracking-wider text-right w-28">Harga</th>
+                            <th class="px-5 py-3 font-semibold uppercase tracking-wider text-right w-28">Subtotal</th>
+                            <th class="px-5 py-3 font-semibold uppercase tracking-wider text-right w-24">Peny</th>
+                            <th class="px-5 py-3 font-semibold uppercase tracking-wider text-right w-32">Total</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-gray-100 bg-white text-gray-700">
+                    <tbody class="divide-y divide-slate-100 text-slate-700 bg-white">
                         @php
                             $total_pembelian = 0;
                         @endphp
@@ -62,47 +71,40 @@
                                 $subtotal = $d->jumlah * $d->harga;
                                 $total = $subtotal + $d->penyesuaian;
                                 $total_pembelian += $total;
-                                $bg = '';
-                                if (!empty($d->kode_cr)) {
-                                    $bg = 'bg-blue-50 text-blue-900';
-                                }
+                                $bg = !empty($d->kode_cr) ? 'bg-blue-50/40 text-blue-900' : '';
                             @endphp
-                            <tr class="{{ $bg }} hover:bg-gray-50/50 transition">
-                                <td class="px-3.5 py-2 font-medium text-gray-900 font-mono">{{ $d->kode_barang }}</td>
-                                <td class="px-3.5 py-2">{{ textCamelCase($d->nama_barang) }}</td>
-                                <td class="px-3.5 py-2 text-gray-500">{{ textCamelCase($d->keterangan) }}</td>
-                                <td class="px-3.5 py-2 text-center">{{ formatAngkaDesimal($d->jumlah) }}</td>
-                                <td class="px-3.5 py-2 text-right">{{ formatAngkaDesimal($d->harga) }}</td>
-                                <td class="px-3.5 py-2 text-right">{{ formatAngkaDesimal($subtotal) }}</td>
-                                <td class="px-3.5 py-2 text-right">{{ formatAngkaDesimal($d->penyesuaian) }}</td>
-                                <td class="px-3.5 py-2 text-right font-bold text-gray-950">{{ formatAngkaDesimal($total) }}</td>
+                            <tr class="{{ $bg }} hover:bg-slate-50/30 transition">
+                                <td class="px-5 py-3.5 font-mono text-slate-500 font-medium">{{ $d->kode_barang }}</td>
+                                <td class="px-5 py-3.5 font-semibold text-slate-850">{{ textCamelCase($d->nama_barang) }}</td>
+                                <td class="px-5 py-3.5 text-slate-500">{{ textCamelCase($d->keterangan) }}</td>
+                                <td class="px-5 py-3.5 text-center font-medium">{{ formatAngkaDesimal($d->jumlah) }}</td>
+                                <td class="px-5 py-3.5 text-right font-medium text-slate-600">{{ formatAngkaDesimal($d->harga) }}</td>
+                                <td class="px-5 py-3.5 text-right font-medium text-slate-600">{{ formatAngkaDesimal($subtotal) }}</td>
+                                <td class="px-5 py-3.5 text-right font-medium text-slate-500">{{ formatAngkaDesimal($d->penyesuaian) }}</td>
+                                <td class="px-5 py-3.5 text-right font-bold text-slate-900">{{ formatAngkaDesimal($total) }}</td>
                             </tr>
                         @endforeach
                     </tbody>
-                    <tfoot class="bg-gray-50 text-gray-900 font-bold border-t border-gray-200">
-                        <tr>
-                            <td colspan="7" class="px-3.5 py-2.5 text-left uppercase">TOTAL</td>
-                            <td class="px-3.5 py-2.5 text-right text-base text-[#294C9A]">{{ formatAngkaDesimal($total_pembelian) }}</td>
-                        </tr>
-                    </tfoot>
                 </table>
             </div>
         </div>
 
-        <!-- Potongan Pembelian -->
-        <div class="space-y-2">
-            <h4 class="font-bold text-red-800 text-xs uppercase tracking-wider">Potongan Pembelian</h4>
-            <div class="overflow-x-auto rounded-xl border border-gray-200 shadow-sm">
+        <!-- Potongan Pembelian (Full Width with integrated Summary in Table Footer) -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+            <div class="px-5 py-4 bg-rose-100/70 border-b border-rose-250">
+                <h4 class="font-bold text-rose-800 text-xs uppercase tracking-wider">Potongan Pembelian & Ikhtisar Biaya</h4>
+            </div>
+            <div class="overflow-x-auto">
                 <table class="w-full text-xs text-left">
-                    <thead class="text-[11px] uppercase bg-red-600 text-white">
-                        <tr>
-                            <th class="px-3.5 py-2.5">Keterangan</th>
-                            <th class="px-3.5 py-2.5 text-center">Qty</th>
-                            <th class="px-3.5 py-2.5 text-right">Harga</th>
-                            <th class="px-3.5 py-2.5 text-right">Total</th>
+                    <thead>
+                        <tr class="bg-rose-50/10 text-slate-550 border-b border-rose-100">
+                            <th class="px-5 py-3 font-semibold uppercase tracking-wider">Keterangan</th>
+                            <th class="px-5 py-3 font-semibold uppercase tracking-wider text-center w-24">Qty</th>
+                            <th class="px-5 py-3 font-semibold uppercase tracking-wider text-right w-36">Harga</th>
+                            <th class="px-5 py-3 font-semibold uppercase tracking-wider text-right w-44">Total</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-gray-100 bg-white text-gray-700">
+                    <tbody class="divide-y divide-slate-100 text-slate-700 bg-white">
                         @php
                             $total_potongan = 0;
                         @endphp
@@ -111,26 +113,35 @@
                                 $subtotal = $d->jumlah * $d->harga;
                                 $total_potongan += $subtotal;
                             @endphp
-                            <tr class="hover:bg-gray-50/50 transition">
-                                <td class="px-3.5 py-2">{{ textCamelCase($d->keterangan_penjualan) }}</td>
-                                <td class="px-3.5 py-2 text-center">{{ formatAngkaDesimal($d->jumlah) }}</td>
-                                <td class="px-3.5 py-2 text-right">{{ formatAngkaDesimal($d->harga) }}</td>
-                                <td class="px-3.5 py-2 text-right font-semibold text-gray-900">{{ formatAngkaDesimal($subtotal) }}</td>
+                            <tr class="hover:bg-rose-50/10 transition">
+                                <td class="px-5 py-3.5 font-medium text-slate-800">{{ textCamelCase($d->keterangan_penjualan) }}</td>
+                                <td class="px-5 py-3.5 text-center font-medium">{{ formatAngkaDesimal($d->jumlah) }}</td>
+                                <td class="px-5 py-3.5 text-right text-slate-600">{{ formatAngkaDesimal($d->harga) }}</td>
+                                <td class="px-5 py-3.5 text-right font-bold text-rose-700">{{ formatAngkaDesimal($subtotal) }}</td>
                             </tr>
                         @endforeach
+                        @if ($potongan->isEmpty())
+                            <tr>
+                                <td colspan="4" class="px-5 py-6 text-center text-slate-400">Tidak ada potongan pembelian.</td>
+                            </tr>
+                        @endif
                     </tbody>
-                    <tfoot class="bg-gray-50 text-gray-900 font-bold border-t border-gray-200">
-                        <tr>
-                            <td colspan="3" class="px-3.5 py-2 uppercase">TOTAL POTONGAN</td>
-                            <td class="px-3.5 py-2 text-right text-red-650">{{ formatAngkaDesimal($total_potongan) }}</td>
+                    <tfoot class="border-t border-slate-200 bg-slate-50/70 text-slate-750">
+                        <tr class="border-b border-slate-200/60">
+                            <td colspan="3" class="px-5 py-3 text-right font-semibold uppercase text-slate-500">Total Pembelian</td>
+                            <td class="px-5 py-3 text-right font-bold text-slate-800">{{ formatAngkaDesimal($total_pembelian) }}</td>
                         </tr>
-                        <tr>
-                            <td colspan="3" class="px-3.5 py-2 uppercase">PENY. JURNAL KOREKSI</td>
-                            <td class="px-3.5 py-2 text-right text-amber-600">{{ formatAngkaDesimal($pembelian->penyesuaian_jk) }}</td>
+                        <tr class="border-b border-slate-200/60">
+                            <td colspan="3" class="px-5 py-3 text-right font-semibold uppercase text-slate-500">Total Potongan</td>
+                            <td class="px-5 py-3 text-right font-bold text-rose-700">- {{ formatAngkaDesimal($total_potongan) }}</td>
                         </tr>
-                        <tr class="bg-emerald-50 text-emerald-950 text-sm">
-                            <td colspan="3" class="px-3.5 py-3 uppercase">GRAND TOTAL</td>
-                            <td class="px-3.5 py-3 text-right font-black">{{ formatAngkaDesimal($total_pembelian - $total_potongan + $pembelian->penyesuaian_jk) }}</td>
+                        <tr class="border-b border-slate-200/60">
+                            <td colspan="3" class="px-5 py-3 text-right font-semibold uppercase text-slate-500">Peny. Jurnal Koreksi</td>
+                            <td class="px-5 py-3 text-right font-bold text-amber-700">{{ formatAngkaDesimal($pembelian->penyesuaian_jk) }}</td>
+                        </tr>
+                        <tr class="bg-emerald-50/50 text-[#294C9A]">
+                            <td colspan="3" class="px-5 py-4 text-right font-bold uppercase tracking-wider text-xs">Grand Total</td>
+                            <td class="px-5 py-4 text-right font-black text-base">{{ formatAngkaDesimal($total_pembelian - $total_potongan + $pembelian->penyesuaian_jk) }}</td>
                         </tr>
                     </tfoot>
                 </table>
@@ -138,32 +149,75 @@
         </div>
 
         <!-- Histori Pembayaran -->
-        <div class="space-y-2">
-            <h4 class="font-bold text-emerald-800 text-xs uppercase tracking-wider">Histori Pembayaran</h4>
-            <div class="overflow-x-auto rounded-xl border border-gray-200 shadow-sm">
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+            <div class="px-5 py-3 bg-emerald-100/70 border-b border-emerald-250 flex justify-between items-center">
+                <h4 class="font-bold text-emerald-800 text-xs uppercase tracking-wider">Histori Pembayaran</h4>
+                @can('pembelian.create')
+                <button type="button" onclick="toggleFormPembayaran()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-emerald-600 text-white hover:bg-emerald-700 transition shadow-sm">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                    Input Pembayaran
+                </button>
+                @endcan
+            </div>
+            @can('pembelian.create')
+            @php
+                $total_paid = $historibayar->sum('jumlah');
+                $grand_total = $total_pembelian - $total_potongan + $pembelian->penyesuaian_jk;
+                $unpaid_balance = max(0, $grand_total - $total_paid);
+            @endphp
+            <div id="formInputPembayaran" class="hidden p-5 bg-slate-50/50 border-b border-slate-100">
+                <form id="formStorePembayaran" class="space-y-4">
+                    @csrf
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1.5">Tanggal Bayar</label>
+                            <input type="date" name="tanggal" value="{{ date('Y-m-d') }}" required class="w-full text-xs border-slate-200 rounded-xl focus:border-emerald-500 focus:ring-emerald-500 p-2.5 bg-white shadow-sm" />
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1.5">Pilih Bank</label>
+                            <select name="kode_bank" required class="w-full text-xs border-slate-200 rounded-xl focus:border-emerald-500 focus:ring-emerald-500 p-2.5 bg-white shadow-sm">
+                                <option value="">-- Pilih Bank --</option>
+                                @foreach($banks as $b)
+                                    <option value="{{ $b->kode_bank }}">{{ $b->kode_bank }} - {{ $b->nama_bank }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1.5">Jumlah Bayar</label>
+                            <input type="number" step="0.01" min="0.01" name="jumlah" value="{{ $unpaid_balance }}" required class="w-full text-xs border-slate-200 rounded-xl focus:border-emerald-500 focus:ring-emerald-500 p-2.5 bg-white shadow-sm font-bold text-slate-800" />
+                        </div>
+                    </div>
+                    <div class="flex justify-end gap-2 pt-2">
+                        <button type="button" onclick="toggleFormPembayaran()" class="px-4 py-2 text-xs font-semibold text-slate-700 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition shadow-sm">Batal</button>
+                        <button type="submit" class="px-4 py-2 text-xs font-semibold text-white bg-emerald-600 rounded-xl hover:bg-emerald-700 transition shadow-sm">Simpan Pembayaran</button>
+                    </div>
+                </form>
+            </div>
+            @endcan
+            <div class="overflow-x-auto">
                 <table class="w-full text-xs text-left">
-                    <thead class="text-[11px] uppercase bg-emerald-600 text-white">
-                        <tr>
-                            <th class="px-3.5 py-2.5">No</th>
-                            <th class="px-3.5 py-2.5">Tanggal Bayar</th>
-                            <th class="px-3.5 py-2.5">Bank</th>
-                            <th class="px-3.5 py-2.5">Cabang</th>
-                            <th class="px-3.5 py-2.5 text-right">Jumlah</th>
+                    <thead>
+                        <tr class="bg-emerald-50/10 text-slate-550 border-b border-emerald-100">
+                            <th class="px-5 py-3 font-semibold uppercase tracking-wider w-16">No</th>
+                            <th class="px-5 py-3 font-semibold uppercase tracking-wider w-40">Tanggal Bayar</th>
+                            <th class="px-5 py-3 font-semibold uppercase tracking-wider">Bank</th>
+                            <th class="px-5 py-3 font-semibold uppercase tracking-wider w-36">Cabang</th>
+                            <th class="px-5 py-3 font-semibold uppercase tracking-wider text-right w-44">Jumlah</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-gray-100 bg-white text-gray-700">
+                    <tbody class="divide-y divide-slate-100 text-slate-700 bg-white">
                         @foreach ($historibayar as $d)
-                            <tr class="hover:bg-gray-50/50 transition">
-                                <td class="px-3.5 py-2 font-mono font-semibold text-gray-900">{{ $loop->iteration }}</td>
-                                <td class="px-3.5 py-2">{{ DateToIndo($d->tanggal) }}</td>
-                                <td class="px-3.5 py-2">{{ $d->nama_bank }}</td>
-                                <td class="px-3.5 py-2 uppercase">{{ $d->kode_cabang }}</td>
-                                <td class="px-3.5 py-2 text-right font-bold text-emerald-700">{{ formatAngkaDesimal($d->jumlah) }}</td>
+                            <tr class="hover:bg-emerald-50/10 transition">
+                                <td class="px-5 py-3.5 font-mono text-slate-500 font-semibold">{{ $loop->iteration }}</td>
+                                <td class="px-5 py-3.5 font-medium text-slate-800">{{ DateToIndo($d->tanggal) }}</td>
+                                <td class="px-5 py-3.5 text-slate-700">{{ $d->nama_bank }}</td>
+                                <td class="px-5 py-3.5 uppercase font-medium text-slate-500">{{ $d->kode_cabang }}</td>
+                                <td class="px-5 py-3.5 text-right font-bold text-emerald-700">{{ formatAngkaDesimal($d->jumlah) }}</td>
                             </tr>
                         @endforeach
                         @if ($historibayar->isEmpty())
                             <tr>
-                                <td colspan="5" class="px-3.5 py-3 text-center text-gray-400">Belum ada pembayaran.</td>
+                                <td colspan="5" class="px-5 py-8 text-center text-slate-400">Belum ada catatan pembayaran.</td>
                             </tr>
                         @endif
                     </tbody>
@@ -172,31 +226,30 @@
         </div>
     @else
         <!-- Non-Harga View (Simple Detail) -->
-        <div class="space-y-2">
-            <h4 class="font-bold text-gray-800 text-xs uppercase tracking-wider">Data Barang Pembelian</h4>
-            <div class="overflow-x-auto rounded-xl border border-gray-200 shadow-sm">
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+            <div class="px-5 py-4 bg-slate-50 border-b border-slate-100">
+                <h4 class="font-bold text-slate-800 text-xs uppercase tracking-wider">Data Barang Pembelian</h4>
+            </div>
+            <div class="overflow-x-auto">
                 <table class="w-full text-xs text-left">
-                    <thead class="text-[11px] uppercase bg-gradient-to-r from-[#294C9A] to-[#1E3A70] text-white">
-                        <tr>
-                            <th class="px-3.5 py-2.5">Kode</th>
-                            <th class="px-3.5 py-2.5">Nama Barang</th>
-                            <th class="px-3.5 py-2.5">Keterangan</th>
-                            <th class="px-3.5 py-2.5 text-center">Qty</th>
+                    <thead>
+                        <tr class="bg-slate-100/50 text-slate-500 border-b border-slate-200">
+                            <th class="px-5 py-3 font-semibold uppercase tracking-wider w-24">Kode</th>
+                            <th class="px-5 py-3 font-semibold uppercase tracking-wider">Nama Barang</th>
+                            <th class="px-5 py-3 font-semibold uppercase tracking-wider">Keterangan</th>
+                            <th class="px-5 py-3 font-semibold uppercase tracking-wider text-center w-24">Qty</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-gray-100 bg-white text-gray-700">
+                    <tbody class="divide-y divide-slate-100 text-slate-700 bg-white">
                         @foreach ($detail as $d)
                             @php
-                                $bg = '';
-                                if (!empty($d->kode_cr)) {
-                                    $bg = 'bg-blue-50 text-blue-900';
-                                }
+                                $bg = !empty($d->kode_cr) ? 'bg-blue-50/40 text-blue-900' : '';
                             @endphp
-                            <tr class="{{ $bg }} hover:bg-gray-50/50 transition">
-                                <td class="px-3.5 py-2 font-mono text-gray-900">{{ $d->kode_barang }}</td>
-                                <td class="px-3.5 py-2">{{ textCamelCase($d->nama_barang) }}</td>
-                                <td class="px-3.5 py-2 text-gray-500">{{ textCamelCase($d->keterangan) }}</td>
-                                <td class="px-3.5 py-2 text-center">{{ formatAngkaDesimal($d->jumlah) }}</td>
+                            <tr class="{{ $bg }} hover:bg-slate-50/30 transition">
+                                <td class="px-5 py-3.5 font-mono text-slate-500 font-medium">{{ $d->kode_barang }}</td>
+                                <td class="px-5 py-3.5 font-semibold text-slate-800">{{ textCamelCase($d->nama_barang) }}</td>
+                                <td class="px-5 py-3.5 text-slate-500">{{ textCamelCase($d->keterangan) }}</td>
+                                <td class="px-5 py-3.5 text-center font-bold text-slate-900">{{ formatAngkaDesimal($d->jumlah) }}</td>
                             </tr>
                         @endforeach
                     </tbody>
@@ -205,3 +258,56 @@
         </div>
     @endcan
 </div>
+
+<script>
+    function toggleFormPembayaran() {
+        $('#formInputPembayaran').toggleClass('hidden');
+    }
+
+    $('#formStorePembayaran').on('submit', function(e) {
+        e.preventDefault();
+        
+        var form = $(this);
+        var submitBtn = form.find('button[type="submit"]');
+        submitBtn.prop('disabled', true).text('Menyimpan...');
+
+        $.ajax({
+            url: '{{ route("pembelian.storepembayaran", $crypted_no_bukti) }}',
+            type: 'POST',
+            data: form.serialize(),
+            success: function(response) {
+                if (response.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Berhasil',
+                        text: response.message,
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                    
+                    // Reload modal content dynamically
+                    $("#modalBody").load('/pembelian/{{ $crypted_no_bukti }}/show');
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Gagal',
+                        text: response.message
+                    });
+                    submitBtn.prop('disabled', false).text('Simpan Pembayaran');
+                }
+            },
+            error: function(xhr) {
+                var msg = 'Terjadi kesalahan pada server.';
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    msg = xhr.responseJSON.message;
+                }
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Gagal',
+                    text: msg
+                });
+                submitBtn.prop('disabled', false).text('Simpan Pembayaran');
+            }
+        });
+    });
+</script>
