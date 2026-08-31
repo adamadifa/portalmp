@@ -13,6 +13,7 @@ use App\Models\Detailbarangmasukgudanglogistik;
 use App\Models\Detailbarangmasukmaintenance;
 use App\Models\Detailkontrabonpembelian;
 use App\Models\Detailpembelian;
+use App\Models\Historibayarpembelian;
 use App\Models\Kontrabonpembelian;
 use App\Models\Pembelian;
 use App\Models\Supplier;
@@ -68,16 +69,10 @@ class PembelianController extends Controller
             ->where('pembelian_detail.kode_transaksi', 'PNJ')
             ->get();
 
-        $data['kontrabon'] = Detailkontrabonpembelian::select(
-            'pembelian_kontrabon_detail.*',
-            'pembelian_kontrabon.tanggal as tanggal_kontrabon',
-            'kategori',
-            'pembelian_historibayar.tanggal as tanggal_bayar'
-        )
-            ->join('pembelian_kontrabon', 'pembelian_kontrabon_detail.no_kontrabon', '=', 'pembelian_kontrabon.no_kontrabon')
-            ->leftjoin('pembelian_historibayar', 'pembelian_historibayar.no_kontrabon', '=', 'pembelian_kontrabon.no_kontrabon')
+        $data['historibayar'] = Historibayarpembelian::select('pembelian_historibayar.*', 'nama_bank')
+            ->leftJoin('bank', 'pembelian_historibayar.kode_bank', '=', 'bank.kode_bank')
             ->where('no_bukti', $no_bukti)
-            ->orderBy('pembelian_kontrabon.tanggal', 'desc')
+            ->orderBy('pembelian_historibayar.tanggal', 'desc')
             ->get();
 
 
@@ -275,10 +270,7 @@ class PembelianController extends Controller
             $pembelian = Pembelian::where('no_bukti', $no_bukti)->first();
             $detailpembelian = Detailpembelian::where('no_bukti', $no_bukti)->get();
             $cektutuplaporan = cektutupLaporan($pembelian->tanggal, "pembelian");
-            $cekkontrabonpembeliansudahbayar = Detailkontrabonpembelian::leftJoin('pembelian_historibayar', 'pembelian_kontrabon_detail.no_kontrabon', '=', 'pembelian_historibayar.no_kontrabon')
-                ->whereNotNull('pembelian_historibayar.no_kontrabon')
-                ->where('pembelian_kontrabon_detail.no_bukti', $no_bukti)
-                ->count();
+            $cekkontrabonpembeliansudahbayar = Historibayarpembelian::where('no_bukti', $no_bukti)->count();
 
 
             if ($cektutuplaporan > 0) {
@@ -344,9 +336,7 @@ class PembelianController extends Controller
         $data['asal_ajuan'] = config('pembelian.list_asal_pengajuan');
         $data['coa'] = Coa::orderBy('kode_akun')->get();
 
-        $data['cekhistoribayar'] = Detailkontrabonpembelian::where('no_bukti', $no_bukti)
-            ->leftJoin('pembelian_historibayar', 'pembelian_kontrabon_detail.no_kontrabon', '=', 'pembelian_historibayar.no_kontrabon')
-            ->whereNotNull('pembelian_historibayar.no_kontrabon')->count();
+        $data['cekhistoribayar'] = Historibayarpembelian::where('no_bukti', $no_bukti)->count();
 
         //dd($data['cekhistoribayar']);
 
@@ -496,10 +486,7 @@ class PembelianController extends Controller
 
             $pembelian = Pembelian::where('no_bukti', $no_bukti)->first();
             $detailpembelian = Detailpembelian::where('no_bukti', $no_bukti)->get();
-            $cekhistoribayar = Detailkontrabonpembelian::where('no_bukti', $no_bukti)
-                ->leftJoin('pembelian_historibayar', 'pembelian_kontrabon_detail.no_kontrabon', '=', 'pembelian_historibayar.no_kontrabon')
-                ->whereNotNull('pembelian_historibayar.no_kontrabon')
-                ->count();
+            $cekhistoribayar = Historibayarpembelian::where('no_bukti', $no_bukti)->count();
 
             //Jika Ubah Transaksi dari Kredit ke Tunai
             if ($pembelian->jenis_transaksi == "K" && $request->jenis_transaksi == "T") {
@@ -1217,6 +1204,140 @@ class PembelianController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             return Redirect::back()->with(messageError('Gagal melakukan import: ' . $e->getMessage()));
+        }
+    }
+
+    public function importPembayaranExcel(Request $request)
+    {
+        abort_if(!auth()->user()->can('pembelian.create'), 403);
+
+        $request->validate([
+            'file_excel' => 'required|mimes:xlsx,xls,csv',
+        ]);
+
+        $file = $request->file('file_excel');
+        
+        try {
+            $spreadsheet = IOFactory::load($file->getRealPath());
+            
+            $sheet = null;
+            $inputSheet = $request->sheet_name;
+            if (!empty($inputSheet)) {
+                if (is_numeric($inputSheet)) {
+                    $sheetIndex = (int)$inputSheet - 1;
+                    if ($sheetIndex >= 0 && $sheetIndex < $spreadsheet->getSheetCount()) {
+                        $sheet = $spreadsheet->getSheet($sheetIndex);
+                    }
+                } else {
+                    $sheet = $spreadsheet->getSheetByName($inputSheet);
+                }
+            }
+            if (!$sheet) {
+                $sheet = $spreadsheet->getActiveSheet();
+            }
+
+            $highestRow = $sheet->getHighestRow();
+            $highestColumn = $sheet->getHighestColumn();
+            $highestColumnIndex = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::columnIndexFromString($highestColumn);
+
+            // Find the header rows.
+            $headerRowIndex = 1;
+            for ($r = 1; $r <= min(10, $highestRow); $r++) {
+                for ($c = 1; $c <= $highestColumnIndex; $c++) {
+                    $val = strtolower(trim($sheet->getCell([$c, $r])->getValue() ?? ''));
+                    if ($val === 'no bukti' || $val === 'no_bukti' || $val === 'nomor bukti') {
+                        $headerRowIndex = $r;
+                        break 2;
+                    }
+                }
+            }
+
+            $colMap = [];
+            $bankCols = [];
+
+            $validBankCodes = DB::table('bank')->pluck('kode_bank')->toArray();
+            $validBankCodesLower = array_map('strtolower', $validBankCodes);
+            $bankCodeMap = array_combine($validBankCodesLower, $validBankCodes);
+
+            // Check both header row and the row below it for column names.
+            for ($c = 1; $c <= $highestColumnIndex; $c++) {
+                $val1 = strtolower(trim($sheet->getCell([$c, $headerRowIndex])->getValue() ?? ''));
+                $val2 = strtolower(trim($sheet->getCell([$c, $headerRowIndex + 1])->getValue() ?? ''));
+
+                if ($val1 === 'no bukti' || $val1 === 'no_bukti' || $val1 === 'nomor bukti') {
+                    $colMap['no_bukti'] = $c;
+                } elseif ($val1 === 'tgl' || $val1 === 'tanggal') {
+                    $colMap['tanggal'] = $c;
+                }
+
+                if (isset($bankCodeMap[$val1])) {
+                    $bankCols[$c] = $bankCodeMap[$val1];
+                } elseif (isset($bankCodeMap[$val2])) {
+                    $bankCols[$c] = $bankCodeMap[$val2];
+                }
+            }
+
+            if (!isset($colMap['no_bukti'])) $colMap['no_bukti'] = 3;
+            if (!isset($colMap['tanggal'])) $colMap['tanggal'] = 2;
+
+            $dataStartRow = $headerRowIndex + 2;
+            
+            DB::beginTransaction();
+
+            $insertedCount = 0;
+            $bankBranches = DB::table('bank')->pluck('kode_cabang', 'kode_bank')->toArray();
+
+            for ($row = $dataStartRow; $row <= $highestRow; $row++) {
+                $noBukti = trim($sheet->getCell([$colMap['no_bukti'], $row])->getValue() ?? '');
+                if (empty($noBukti)) {
+                    continue;
+                }
+
+                $tglVal = $sheet->getCell([$colMap['tanggal'], $row])->getValue();
+                if (\PhpOffice\PhpSpreadsheet\Shared\Date::isDateTime($sheet->getCell([$colMap['tanggal'], $row]))) {
+                    $tglFormatted = date('Y-m-d', \PhpOffice\PhpSpreadsheet\Shared\Date::excelToTimestamp($tglVal));
+                } else {
+                    $tglFormatted = !empty($tglVal) ? date('Y-m-d', strtotime(str_replace('/', '-', $tglVal))) : date('Y-m-d');
+                }
+
+                $pembelianExists = DB::table('pembelian')->where('no_bukti', $noBukti)->exists();
+                if (!$pembelianExists) {
+                    throw new \Exception("No Bukti '$noBukti' pada baris $row tidak ditemukan di data pembelian.");
+                }
+
+                foreach ($bankCols as $colIndex => $bankCode) {
+                    $amountVal = $sheet->getCell([$colIndex, $row])->getValue();
+                    if ($amountVal !== null && $amountVal !== '') {
+                        $amountClean = str_replace('.', '', $amountVal);
+                        $amountClean = str_replace(',', '.', $amountClean);
+                        $amountClean = (float)$amountClean;
+
+                        if ($amountClean > 0) {
+                            $kodeCabang = $bankBranches[$bankCode] ?? 'PST';
+
+                            DB::table('pembelian_historibayar')->insert([
+                                'no_bukti' => $noBukti,
+                                'tanggal' => $tglFormatted,
+                                'jumlah' => $amountClean,
+                                'kode_bank' => $bankCode,
+                                'kode_cabang' => $kodeCabang,
+                                'id_user' => auth()->user()->id,
+                                'created_at' => now(),
+                                'updated_at' => now()
+                            ]);
+                            $insertedCount++;
+                        }
+                    }
+                }
+            }
+
+            DB::commit();
+
+            return Redirect::route('pembelian.index')->with(messageSuccess("$insertedCount data pembayaran berhasil diimport."));
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return Redirect::back()->with(messageError('Gagal melakukan import pembayaran: ' . $e->getMessage()));
         }
     }
 

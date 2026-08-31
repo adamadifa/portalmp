@@ -137,46 +137,35 @@
             </div>
         </div>
 
-        <!-- Histori Kontrabon -->
+        <!-- Histori Pembayaran -->
         <div class="space-y-2">
-            <h4 class="font-bold text-emerald-800 text-xs uppercase tracking-wider">Histori Kontrabon</h4>
+            <h4 class="font-bold text-emerald-800 text-xs uppercase tracking-wider">Histori Pembayaran</h4>
             <div class="overflow-x-auto rounded-xl border border-gray-200 shadow-sm">
                 <table class="w-full text-xs text-left">
                     <thead class="text-[11px] uppercase bg-emerald-600 text-white">
                         <tr>
-                            <th class="px-3.5 py-2.5">No. Kontrabon</th>
-                            <th class="px-3.5 py-2.5">Tanggal</th>
+                            <th class="px-3.5 py-2.5">No</th>
+                            <th class="px-3.5 py-2.5">Tanggal Bayar</th>
+                            <th class="px-3.5 py-2.5">Bank</th>
+                            <th class="px-3.5 py-2.5">Cabang</th>
                             <th class="px-3.5 py-2.5 text-right">Jumlah</th>
-                            <th class="px-3.5 py-2.5 text-center">Jenis Kontrabon</th>
-                            <th class="px-3.5 py-2.5 text-center">Tanggal Bayar</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-100 bg-white text-gray-700">
-                        @foreach ($kontrabon as $d)
+                        @foreach ($historibayar as $d)
                             <tr class="hover:bg-gray-50/50 transition">
-                                <td class="px-3.5 py-2 font-mono font-semibold text-gray-900">{{ $d->no_kontrabon }}</td>
-                                <td class="px-3.5 py-2">{{ DateToIndo($d->tanggal_kontrabon) }}</td>
-                                <td class="px-3.5 py-2 text-right font-semibold text-gray-900">{{ formatAngkaDesimal($d->jumlah) }}</td>
-                                <td class="px-3.5 py-2 text-center uppercase">
-                                    <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-gray-100 text-gray-800 border border-gray-250">
-                                        {{ $d->kategori == 'TN' ? 'TUNAI' : textUpperCase($d->kategori) }}
-                                    </span>
-                                </td>
-                                <td class="px-3.5 py-2 text-center">
-                                    @if (!empty($d->tanggal_bayar))
-                                        <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-250">
-                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3.5" d="M5 13l4 4L19 7"></path></svg>
-                                            {{ DateToIndo($d->tanggal_bayar) }}
-                                        </span>
-                                    @else
-                                        <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-250">
-                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                                            Belum Bayar
-                                        </span>
-                                    @endif
-                                </td>
+                                <td class="px-3.5 py-2 font-mono font-semibold text-gray-900">{{ $loop->iteration }}</td>
+                                <td class="px-3.5 py-2">{{ DateToIndo($d->tanggal) }}</td>
+                                <td class="px-3.5 py-2">{{ $d->nama_bank }}</td>
+                                <td class="px-3.5 py-2 uppercase">{{ $d->kode_cabang }}</td>
+                                <td class="px-3.5 py-2 text-right font-bold text-emerald-700">{{ formatAngkaDesimal($d->jumlah) }}</td>
                             </tr>
                         @endforeach
+                        @if ($historibayar->isEmpty())
+                            <tr>
+                                <td colspan="5" class="px-3.5 py-3 text-center text-gray-400">Belum ada pembayaran.</td>
+                            </tr>
+                        @endif
                     </tbody>
                 </table>
             </div>

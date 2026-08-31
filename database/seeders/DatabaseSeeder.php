@@ -233,5 +233,6 @@ class DatabaseSeeder extends Seeder
         $superAdminUser->assignRole($roleSuperAdmin);
 
         $this->call(CoaSeeder::class);
+        $this->call(BankSeeder::class);
     }
 }

@@ -38,7 +38,6 @@
                         <th rowspan="2">TGL</th>
                         <th rowspan="2">NO BUKTI</th>
                         <th rowspan="2">SUPPLIER</th>
-                        <th rowspan="2">NO KONTRABON</th>
                         <th colspan="{{ count($bank) }}">BANK</th>
                         <th rowspan="2">TOTAL</th>
                     </tr>
@@ -61,7 +60,6 @@
                             <td>{{ formatIndo($d->tglbayar) }}</td>
                             <td>{{ $d->no_bukti }}</td>
                             <td>{{ $d->nama_supplier }}</td>
-                            <td>{{ $d->no_kontrabon }}</td>
                             @php
                                 $total_bayar = 0;
                             @endphp
@@ -81,7 +79,7 @@
                 </tbody>
                 <tfoot class="table-dark">
                     <tr>
-                        <td colspan="5">TOTAL</td>
+                        <td colspan="4">TOTAL</td>
                         @foreach ($bank as $b)
                             <td class="right" style="font-weight: bold">{{ formatAngkaDesimal(${"total_$b->kode_bank"}) }}</td>
                         @endforeach

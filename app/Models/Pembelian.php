@@ -69,10 +69,9 @@ class Pembelian extends Model
             DB::raw('(
                 SELECT
                 no_bukti,
-                SUM(pembelian_kontrabon_detail.jumlah) as totalbayar
+                SUM(jumlah) as totalbayar
                 FROM
-                pembelian_historibayar hb
-                INNER JOIN pembelian_kontrabon_detail ON hb.no_kontrabon = pembelian_kontrabon_detail.no_kontrabon
+                pembelian_historibayar
                 GROUP BY
                 no_bukti
             ) historibayar'),

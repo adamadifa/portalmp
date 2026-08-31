@@ -112,25 +112,23 @@ class LaporanpembelianController extends Controller
 
         $selectColumnsbank = [];
         foreach ($bank as $b) {
-            $selectColumnsbank[] = DB::raw('SUM(IF(kode_bank="' . $b->kode_bank . '",pembelian_kontrabon_detail.jumlah,0)) as ' . $b->kode_bank);
+            $selectColumnsbank[] = DB::raw('SUM(IF(kode_bank="' . $b->kode_bank . '",pembelian_historibayar.jumlah,0)) as ' . $b->kode_bank);
         }
 
 
-        $query = Detailkontrabonpembelian::select(
-            'pembelian_kontrabon_detail.no_bukti',
-            'pembelian_kontrabon_detail.no_kontrabon',
+        $query = Historibayarpembelian::select(
+            'pembelian_historibayar.no_bukti',
             'nama_supplier',
             'pembelian_historibayar.tanggal as tglbayar',
             ...$selectColumnsbank
         );
-        $query->join('pembelian_historibayar', 'pembelian_kontrabon_detail.no_kontrabon', '=', 'pembelian_historibayar.no_kontrabon');
-        $query->join('pembelian_kontrabon', 'pembelian_kontrabon_detail.no_kontrabon', '=', 'pembelian_kontrabon.no_kontrabon');
-        $query->join('supplier', 'pembelian_kontrabon.kode_supplier', '=', 'supplier.kode_supplier');
+        $query->join('pembelian', 'pembelian_historibayar.no_bukti', '=', 'pembelian.no_bukti');
+        $query->join('supplier', 'pembelian.kode_supplier', '=', 'supplier.kode_supplier');
         $query->whereBetween('pembelian_historibayar.tanggal', [$request->dari, $request->sampai]);
         $query->orderBy('pembelian_historibayar.tanggal');
-        $query->groupBy('pembelian_kontrabon_detail.no_kontrabon', 'pembelian_kontrabon_detail.no_bukti', 'pembelian_historibayar.tanggal', 'nama_supplier');
+        $query->groupBy('pembelian_historibayar.no_bukti', 'pembelian_historibayar.tanggal', 'nama_supplier');
         if (!empty($request->kode_supplier_pembayaran)) {
-            $query->where('pembelian_kontrabon.kode_supplier', $request->kode_supplier_pembayaran);
+            $query->where('pembelian.kode_supplier', $request->kode_supplier_pembayaran);
         }
         $data['pembayaran'] = $query->get();
         $data['supplier'] = Supplier::where('kode_supplier', $request->kode_supplier_pembayaran)->first();
@@ -288,10 +286,9 @@ class LaporanpembelianController extends Controller
         );
         $query->leftJoin(
             DB::raw("(
-                SELECT no_bukti,SUM(IF(tanggal<'$request->dari',pembelian_kontrabon_detail.jumlah,0)) as jmlbayarbulanlalu,
-                SUM(IF(tanggal BETWEEN '$request->dari' AND '$request->sampai',pembelian_kontrabon_detail.jumlah,0)) as jmlbayarbulanini
+                SELECT no_bukti,SUM(IF(tanggal<'$request->dari',jumlah,0)) as jmlbayarbulanlalu,
+                SUM(IF(tanggal BETWEEN '$request->dari' AND '$request->sampai',jumlah,0)) as jmlbayarbulanini
                 FROM pembelian_historibayar hb
-                INNER JOIN pembelian_kontrabon_detail on hb.no_kontrabon = pembelian_kontrabon_detail.no_kontrabon
                 GROUP BY no_bukti
             ) historibayar"),
             function ($join) {
@@ -445,9 +442,8 @@ class LaporanpembelianController extends Controller
         INNER JOIN pembelian ON pembelian_detail.no_bukti = pembelian.no_bukti
         INNER JOIN supplier ON pembelian.kode_supplier = supplier.kode_supplier
         LEFT JOIN (
-            SELECT no_bukti,SUM(IF(hb.tanggal <='$request->tanggal',pembelian_kontrabon_detail.jumlah,0)) as jmlbayar
+            SELECT no_bukti,SUM(IF(hb.tanggal <='$request->tanggal',jumlah,0)) as jmlbayar
             FROM pembelian_historibayar hb
-            INNER JOIN pembelian_kontrabon_detail on hb.no_kontrabon = pembelian_kontrabon_detail.no_kontrabon
             GROUP BY no_bukti
         ) hb ON hb.no_bukti = pembelian_detail.no_bukti
         LEFT JOIN (

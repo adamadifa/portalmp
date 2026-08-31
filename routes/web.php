@@ -105,6 +105,7 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/pembelian/reset', [PembelianController::class, 'resetData'])->name('pembelian.reset');
     Route::post('/pembelian/import', [PembelianController::class, 'importExcel'])->name('pembelian.import');
+    Route::post('/pembelian/importpembayaran', [PembelianController::class, 'importPembayaranExcel'])->name('pembelian.importpembayaran');
     Route::post('/pembelian/getsheets', [PembelianController::class, 'getSheets'])->name('pembelian.getsheets');
     Route::resource('pembelian', PembelianController::class);
     Route::delete('/pembelian/{no_bukti}/delete', [PembelianController::class, 'destroy'])->name('pembelian.delete');
