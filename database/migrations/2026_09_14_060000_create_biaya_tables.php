@@ -14,11 +14,11 @@ return new class extends Migration
         // 1. Header Table: biaya
         if (!Schema::hasTable('biaya')) {
             Schema::create('biaya', function (Blueprint $table) {
-                $table->char('no_bukti', 20)->primary();
+                $table->string('no_bukti', 50)->primary();
                 $table->date('tanggal');
                 $table->char('kode_supplier', 6)->nullable();
                 $table->char('kode_asal_pengajuan', 3)->nullable();
-                $table->char('kode_akun', 10)->nullable();
+                $table->string('kode_akun', 10)->nullable();
                 $table->char('ppn', 1)->default('0');
                 $table->string('no_fak_pajak', 30)->nullable();
                 $table->date('tanggal_jatuh_tempo')->nullable();
@@ -28,6 +28,7 @@ return new class extends Migration
                 $table->bigInteger('id_user');
                 $table->timestamps();
 
+                $table->foreign('kode_supplier')->references('kode_supplier')->on('supplier')->nullOnDelete()->cascadeOnUpdate();
                 $table->index('tanggal');
                 $table->index('kode_supplier');
             });
@@ -37,8 +38,8 @@ return new class extends Migration
         if (!Schema::hasTable('biaya_detail')) {
             Schema::create('biaya_detail', function (Blueprint $table) {
                 $table->id();
-                $table->char('no_bukti', 20);
-                $table->char('kode_akun', 10);
+                $table->string('no_bukti', 50);
+                $table->string('kode_akun', 10);
                 $table->string('keterangan')->nullable();
                 $table->double('jumlah', 10, 2)->default(1);
                 $table->double('harga', 15, 2)->default(0);
@@ -48,6 +49,7 @@ return new class extends Migration
                 $table->timestamps();
 
                 $table->foreign('no_bukti')->references('no_bukti')->on('biaya')->onDelete('cascade')->onUpdate('cascade');
+                $table->foreign('kode_akun')->references('kode_akun')->on('coa')->restrictOnDelete()->cascadeOnUpdate();
                 $table->index('no_bukti');
                 $table->index('kode_akun');
             });
@@ -57,7 +59,7 @@ return new class extends Migration
         if (!Schema::hasTable('biaya_historibayar')) {
             Schema::create('biaya_historibayar', function (Blueprint $table) {
                 $table->id();
-                $table->char('no_bukti', 20);
+                $table->string('no_bukti', 50);
                 $table->date('tanggal');
                 $table->double('jumlah', 15, 2);
                 $table->char('kode_bank', 5);
@@ -83,3 +85,4 @@ return new class extends Migration
         Schema::dropIfExists('biaya');
     }
 };
+
