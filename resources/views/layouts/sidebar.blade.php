@@ -169,13 +169,28 @@
         </div>
         @endcanany
 
-        <!-- Biaya Menu -->
-        <a href="{{ route('biaya.index') }}" class="flex items-center px-2 py-2 text-sm font-medium {{ Request::is('biaya*') ? 'text-white bg-white/10' : 'text-blue-100/70 hover:bg-white/5 hover:text-white' }} rounded-lg group transition">
-            <svg class="w-5 h-5 mr-3 {{ Request::is('biaya*') ? 'text-white' : 'text-blue-200/70 group-hover:text-white' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
-            </svg>
-            <span>Biaya</span>
-        </a>
+        <!-- Biaya Dropdown -->
+        <div x-data="{ open: {{ (Request::is('biaya*') || Request::is('laporanbiaya*')) ? 'true' : 'false' }} }">
+            <button @click="open = !open" class="flex items-center justify-between w-full px-2 py-2 text-sm font-medium text-blue-100/70 hover:bg-white/5 hover:text-white rounded-lg group transition">
+                <div class="flex items-center">
+                    <svg class="w-5 h-5 mr-3 text-blue-200/70 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                    </svg>
+                    <span>Biaya</span>
+                </div>
+                <svg class="w-4 h-4 text-blue-200 transition-transform duration-200" :class="{ 'rotate-180': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+            </button>
+            <div x-show="open" x-transition class="mt-1 ml-4 pl-4 space-y-0.5 border-l-2 border-white/20">
+                <a href="{{ route('biaya.index') }}" class="relative flex items-center px-2 py-1.5 text-xs font-semibold {{ (Request::is('biaya*') && !Request::is('laporanbiaya*')) ? 'text-white bg-white/10' : 'text-blue-100/60 hover:text-white hover:bg-white/5' }} rounded-lg transition">
+                    <span class="absolute -left-[21px] w-2 h-2 rounded-full {{ (Request::is('biaya*') && !Request::is('laporanbiaya*')) ? 'bg-white' : 'bg-white/30' }}"></span>
+                    Biaya
+                </a>
+                <a href="{{ route('laporanbiaya.index') }}" class="relative flex items-center px-2 py-1.5 text-xs font-semibold {{ Request::is('laporanbiaya*') ? 'text-white bg-white/10' : 'text-blue-100/60 hover:text-white hover:bg-white/5' }} rounded-lg transition">
+                    <span class="absolute -left-[21px] w-2 h-2 rounded-full {{ Request::is('laporanbiaya*') ? 'bg-white' : 'bg-white/30' }}"></span>
+                    Laporan Biaya
+                </a>
+            </div>
+        </div>
 
         <!-- Marketing Dropdown -->
         @canany(['penjualanmarketing.view', 'laporanmarketing.index'])

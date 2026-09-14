@@ -153,6 +153,14 @@ Route::middleware('auth')->group(function () {
     Route::delete('/biaya/deletepembayaran/{id}', [BiayaController::class, 'deletepembayaran'])->name('biaya.deletepembayaran');
     Route::resource('biaya', BiayaController::class);
 
+    // Laporan Biaya
+    Route::controller(\App\Http\Controllers\LaporanbiayaController::class)->group(function () {
+        Route::get('/laporanbiaya', 'index')->name('laporanbiaya.index');
+        Route::post('/laporanbiaya/cetakbiaya', 'cetakbiaya')->name('laporanbiaya.cetakbiaya');
+        Route::post('/laporanbiaya/cetakpembayaran', 'cetakpembayaran')->name('laporanbiaya.cetakpembayaran');
+        Route::post('/laporanbiaya/cetakrekapakun', 'cetakrekapakun')->name('laporanbiaya.cetakrekapakun');
+    });
+
     // Kontrabon Pembelian
     Route::get('/kontrabonpembelian', [KontrabonpembelianController::class, 'index'])->name('kontrabonpmb.index');
     Route::get('/kontrabonpembelian/create', [KontrabonpembelianController::class, 'create'])->name('kontrabonpmb.create');
