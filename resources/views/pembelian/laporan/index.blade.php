@@ -518,6 +518,20 @@
             validatePeriode("formLapRekapSupplier", "dari_rekapsupplier", "sampai_rekapsupplier");
             validatePeriode("formLapRekapPembelian", "dari_rekappembelian", "sampai_rekappembelian");
             validatePeriode("formLapKartuHutang", "dari_kartuhutang", "sampai_kartuhutang");
+            $("#formLapKartuHutang").submit(function() {
+                const formatlaporan = $(this).find("#formatlaporan_kartuhutang").val();
+                if (formatlaporan == "") {
+                    Swal.fire({
+                        title: "Oops!",
+                        text: 'Jenis Laporan Harus Diisi !',
+                        icon: "warning",
+                        customClass: { confirmButton: 'inline-flex items-center px-4 py-2 text-sm font-semibold text-white bg-[#294C9A] rounded-md' },
+                        buttonsStyling: false,
+                        didClose: () => $(this).find("#formatlaporan_kartuhutang").focus(),
+                    });
+                    return false;
+                }
+            });
             validatePeriode("formLapAuh", "dari_auh", "sampai_auh");
             validatePeriode("formLapBahanKemasan", "dari_bahankemasan", "sampai_bahankemasan");
             validatePeriode("formLapRekapBahanKemasan", "dari_rekapbahankemasan", "sampai_rekapbahankemasan");

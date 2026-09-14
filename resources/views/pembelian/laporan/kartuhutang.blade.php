@@ -5,13 +5,49 @@
         <span class="c-fl-icon">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
         </span>
-        <select name="kode_supplier" id="kode_supplier_kartuhutang" class="select2Kodesupplier">
+        <select name="kode_supplier_kartuhutang" id="kode_supplier_kartuhutang" class="select2Kodesupplier">
             <option value="">Semua Supplier</option>
             @foreach ($supplier as $d)
                 <option value="{{ $d->kode_supplier }}">{{ strtoupper($d->nama_supplier) }}</option>
             @endforeach
         </select>
         <label for="kode_supplier_kartuhutang" class="c-fl-label">Supplier</label>
+    </div>
+
+    <div class="c-fl-group">
+        <span class="c-fl-icon">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+        </span>
+        <select name="jenis_hutang" id="jenis_hutang_kartuhutang" class="fi">
+            <option value="">Jenis Hutang</option>
+            <option value="2-1200">Hutang Dagang</option>
+            <option value="2-1300">Hutang Lainnya</option>
+        </select>
+        <label for="jenis_hutang_kartuhutang" class="c-fl-label">Jenis Hutang</label>
+    </div>
+
+    <div class="c-fl-group">
+        <span class="c-fl-icon">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+        </span>
+        <select name="formatlaporan" id="formatlaporan_kartuhutang" class="fi">
+            <option value="">Jenis Laporan</option>
+            <option value="1">Detail Kartu Hutang</option>
+            <option value="2">Rekap Kartu Hutang</option>
+        </select>
+        <label for="formatlaporan_kartuhutang" class="c-fl-label">Jenis Laporan *</label>
+    </div>
+
+    <div class="c-fl-group">
+        <span class="c-fl-icon">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        </span>
+        <select name="ppn" id="ppn_kartuhutang" class="fi">
+            <option value="">PPN / NON PPN</option>
+            <option value="1">PPN</option>
+            <option value="0">NON PPN</option>
+        </select>
+        <label for="ppn_kartuhutang" class="c-fl-label">PPN Status</label>
     </div>
 
     <div class="grid grid-cols-2 gap-4">

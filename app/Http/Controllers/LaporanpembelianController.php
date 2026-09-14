@@ -320,8 +320,9 @@ class LaporanpembelianController extends Controller
               ->orWhere('jmlbayarbulanini', '!=', 0);
         });
 
-        if (!empty($request->kode_supplier_kartuhutang)) {
-            $query->where('pembelian.kode_supplier', $request->kode_supplier_kartuhutang);
+        $kode_supplier = $request->kode_supplier_kartuhutang ?? $request->kode_supplier;
+        if (!empty($kode_supplier)) {
+            $query->where('pembelian.kode_supplier', $kode_supplier);
         }
 
         if (!empty($request->jenis_hutang)) {
@@ -348,7 +349,7 @@ class LaporanpembelianController extends Controller
         $data['dari'] = $request->dari;
         $data['sampai'] = $request->sampai;
         $data['jenis_hutang'] = $request->jenis_hutang;
-        $data['supplier'] = Supplier::where('kode_supplier', $request->kode_supplier_kartuhutang)->first();
+        $data['supplier'] = Supplier::where('kode_supplier', $kode_supplier)->first();
 
         if (isset($_POST['exportButton'])) {
             header("Content-type: application/vnd-ms-excel");
