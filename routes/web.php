@@ -32,6 +32,7 @@ use App\Http\Controllers\LaporangudanglogistikController;
 use App\Http\Controllers\OpnamegudangbahanController;
 use App\Http\Controllers\SaldoawalgudangbahanController;
 use App\Http\Controllers\SaldoawalhargagudangbahanController;
+use App\Http\Controllers\BiayaController;
 use Illuminate\Support\Facades\Route;
 
 Route::redirect('/', '/login');
@@ -82,6 +83,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('pelanggan', PelangganController::class);
 
     // Master Data - Supplier
+    Route::post('/supplier/import', [SupplierController::class, 'import'])->name('supplier.import');
     Route::resource('supplier', SupplierController::class);
 
     // Master Data - Angkutan
@@ -139,6 +141,17 @@ Route::middleware('auth')->group(function () {
         Route::post('/laporanpembelian/cetakrekapkontrabon', 'cetakrekapkontrabon')->name('laporanpembelian.cetakrekapkontrabon');
         Route::post('/laporanpembelian/cetakrekappo', 'cetakrekappo')->name('laporanpembelian.cetakrekappo');
     });
+
+    // Biaya Operasional
+    Route::post('/biaya/reset', [BiayaController::class, 'resetData'])->name('biaya.reset');
+    Route::post('/biaya/import', [BiayaController::class, 'importExcel'])->name('biaya.import');
+    Route::post('/biaya/importpembayaran', [BiayaController::class, 'importPembayaranExcel'])->name('biaya.importpembayaran');
+    Route::post('/biaya/getsheets', [BiayaController::class, 'getSheets'])->name('biaya.getsheets');
+    Route::get('/biaya/{no_bukti}/createprosespembayaran', [BiayaController::class, 'createprosespembayaran'])->name('biaya.createprosespembayaran');
+    Route::post('/biaya/{no_bukti}/storeprosespembayaran', [BiayaController::class, 'storeprosespembayaran'])->name('biaya.storeprosespembayaran');
+    Route::get('/biaya/{no_bukti}/showpembayaran', [BiayaController::class, 'showpembayaran'])->name('biaya.showpembayaran');
+    Route::delete('/biaya/deletepembayaran/{id}', [BiayaController::class, 'deletepembayaran'])->name('biaya.deletepembayaran');
+    Route::resource('biaya', BiayaController::class);
 
     // Kontrabon Pembelian
     Route::get('/kontrabonpembelian', [KontrabonpembelianController::class, 'index'])->name('kontrabonpmb.index');

@@ -11,7 +11,10 @@
     .c-fl-group {
         position: relative !important;
         width: 100% !important;
-        margin-top: 10px !important;
+        margin-top: 22px !important;
+    }
+    .c-fl-group:first-child {
+        margin-top: 6px !important;
     }
 
     .c-fl-icon {
@@ -117,49 +120,107 @@
         border-width: 5px 4px 0 4px !important;
     }
 
-    /* DataTable Style Customization */
-    .dataTables_wrapper .dataTables_filter {
-        margin-bottom: 16px !important;
-    }
-    .dataTables_wrapper .dataTables_filter input {
-        border: 1px solid #D1D5DB !important;
-        border-radius: 8px !important;
-        padding: 6px 12px !important;
-        outline: none !important;
+    /* ── Polished DataTable Styles ──────────── */
+    .dataTables_wrapper {
         font-size: 12px !important;
-        margin-left: 8px !important;
     }
-    .dataTables_wrapper .dataTables_filter input:focus {
-        border-color: #294C9A !important;
-        box-shadow: 0 0 0 3px rgba(41, 76, 154, 0.10) !important;
+    .dataTables_wrapper .dataTables_length {
+        margin-bottom: 14px !important;
     }
     .dataTables_wrapper .dataTables_length select {
         border: 1px solid #D1D5DB !important;
         border-radius: 8px !important;
-        padding: 4px 8px !important;
+        padding: 5px 28px 5px 10px !important;
+        font-size: 12px !important;
+        font-weight: 500 !important;
+        color: #374151 !important;
+        outline: none !important;
+        background-color: #F9FAFB !important;
+        cursor: pointer !important;
+    }
+    .dataTables_wrapper .dataTables_filter {
+        margin-bottom: 14px !important;
+    }
+    .dataTables_wrapper .dataTables_filter input {
+        border: 1px solid #D1D5DB !important;
+        border-radius: 8px !important;
+        padding: 6px 14px !important;
         outline: none !important;
         font-size: 12px !important;
+        color: #111827 !important;
+        margin-left: 8px !important;
+        min-width: 220px !important;
+        transition: all 0.15s ease !important;
+    }
+    .dataTables_wrapper .dataTables_filter input:focus {
+        border-color: #294C9A !important;
+        background-color: #FFFFFF !important;
+        box-shadow: 0 0 0 3px rgba(41, 76, 154, 0.12) !important;
+    }
+    #tabelbarang {
+        border-collapse: separate !important;
+        border-spacing: 0 !important;
+        width: 100% !important;
+    }
+    #tabelbarang thead th {
+        background-color: #F8FAFC !important;
+        color: #475569 !important;
+        font-weight: 700 !important;
+        font-size: 11px !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.05em !important;
+        border-top: 1px solid #E2E8F0 !important;
+        border-bottom: 2px solid #CBD5E1 !important;
+        padding: 11px 14px !important;
+    }
+    #tabelbarang tbody td {
+        padding: 10px 14px !important;
+        vertical-align: middle !important;
+        border-bottom: 1px solid #F1F5F9 !important;
+        color: #334155 !important;
+    }
+    #tabelbarang tbody tr:hover {
+        background-color: #F8FAFC !important;
+    }
+    .dataTables_wrapper .dataTables_info {
+        padding-top: 14px !important;
+        font-size: 12px !important;
+        color: #64748B !important;
+        font-weight: 500 !important;
     }
     .dataTables_wrapper .dataTables_paginate {
         margin-top: 12px !important;
     }
     .dataTables_wrapper .dataTables_paginate .paginate_button {
-        padding: 4px 10px !important;
+        padding: 5px 11px !important;
         margin: 0 2px !important;
-        border-radius: 6px !important;
+        border-radius: 7px !important;
         font-size: 12px !important;
         font-weight: 500 !important;
-        transition: all 0.15s !important;
+        border: 1px solid #E2E8F0 !important;
+        background: #FFFFFF !important;
+        color: #475569 !important;
+        cursor: pointer !important;
+        transition: all 0.15s ease !important;
     }
     .dataTables_wrapper .dataTables_paginate .paginate_button.current {
         background: #294C9A !important;
-        color: white !important;
+        color: #FFFFFF !important;
         border: 1px solid #294C9A !important;
+        font-weight: 600 !important;
+        box-shadow: 0 1px 2px rgba(41, 76, 154, 0.25) !important;
     }
-    .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+    .dataTables_wrapper .dataTables_paginate .paginate_button:hover:not(.current) {
         background: #EEF2FF !important;
         color: #294C9A !important;
-        border: 1px solid #D1D5DB !important;
+        border-color: #C7D2FE !important;
+    }
+    .dataTables_wrapper .dataTables_paginate .paginate_button.disabled,
+    .dataTables_wrapper .dataTables_paginate .paginate_button.disabled:hover {
+        color: #94A3B8 !important;
+        border-color: #F1F5F9 !important;
+        background: #F8FAFC !important;
+        cursor: not-allowed !important;
     }
     </style>
 
@@ -577,31 +638,41 @@
     <x-modal-form id="modal" size="" show="loadmodal" title="" />
 
     <!-- Modal Data Barang -->
-    <div id="modalBarang" class="fixed inset-0 z-50 hidden overflow-y-auto bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
-        <div class="relative w-full max-w-5xl bg-white rounded-2xl shadow-2xl overflow-hidden transform transition-all">
+    <div id="modalBarang" class="fixed inset-0 z-50 hidden overflow-y-auto bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+        <div class="relative w-full max-w-5xl bg-white rounded-2xl shadow-2xl overflow-hidden transform transition-all border border-gray-100">
             <!-- Modal Header -->
-            <div class="px-6 py-4 bg-[#294C9A] text-white flex justify-between items-center">
-                <h3 class="text-base font-bold">Data Barang</h3>
-                <button type="button" onclick="$('#modalBarang').addClass('hidden')" class="text-white/80 hover:text-white transition">
+            <div class="px-6 py-4 bg-gradient-to-r from-[#1E3A8A] via-[#294C9A] to-[#1E3A8A] text-white flex justify-between items-center shadow-sm">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center border border-white/20 shadow-inner">
+                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
+                    </div>
+                    <div>
+                        <h3 class="text-base font-bold tracking-tight text-white">Data Master Barang</h3>
+                        <p class="text-xs text-blue-100 font-normal">Pilih barang untuk dimasukkan ke dalam daftar transaksi</p>
+                    </div>
+                </div>
+                <button type="button" onclick="$('#modalBarang').addClass('hidden')" class="text-white/80 hover:text-white p-1.5 rounded-lg hover:bg-white/10 transition">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                 </button>
             </div>
             <!-- Modal Body -->
-            <div class="p-6 max-h-[80vh] overflow-y-auto">
-                <div class="overflow-x-auto rounded-xl border border-gray-200 shadow-sm">
-                    <table class="w-full text-xs text-left text-gray-600" id="tabelbarang" style="width:100% !important;">
-                        <thead class="text-xs uppercase bg-gray-50 text-gray-700 border-b border-gray-200">
-                            <tr>
-                                <th class="px-4 py-3 font-bold">Kode</th>
-                                <th class="px-4 py-3 font-bold">Nama Barang</th>
-                                <th class="px-4 py-3 font-bold">Satuan</th>
-                                <th class="px-4 py-3 font-bold">Jenis Barang</th>
-                                <th class="px-4 py-3 font-bold">Kategori</th>
-                                <th class="px-4 py-3 font-bold text-center">#</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-gray-100 bg-white"></tbody>
-                    </table>
+            <div class="p-6 max-h-[80vh] overflow-y-auto bg-gray-50/40">
+                <div class="bg-white rounded-xl border border-gray-200/80 shadow-xs p-4">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-xs text-left text-gray-600" id="tabelbarang" style="width:100% !important;">
+                            <thead>
+                                <tr>
+                                    <th style="width: 12%;">Kode</th>
+                                    <th style="width: 38%;">Nama Barang</th>
+                                    <th style="width: 12%;">Satuan</th>
+                                    <th style="width: 16%;">Jenis Barang</th>
+                                    <th style="width: 14%;">Kategori</th>
+                                    <th style="width: 8%;" class="text-center">#</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
@@ -712,50 +783,13 @@
                 ajax: `/barangpembelian/${kode_group}/getbarangjson`,
                 bAutoWidth: false,
                 bDestroy: true,
-                columns: [{
-                        data: 'kode_barang',
-                        name: 'kode_barang',
-                        orderable: true,
-                        searchable: true,
-                        width: '10%'
-                    },
-                    {
-                        data: 'namabarang',
-                        name: 'nama_barang',
-                        orderable: true,
-                        searchable: true,
-                        width: '40%'
-                    },
-                    {
-                        data: 'satuan',
-                        name: 'satuan',
-                        orderable: true,
-                        searchable: false,
-                        width: '10%'
-                    },
-
-                    {
-                        data: 'jenisbarang',
-                        name: 'jenisbarang',
-                        orderable: true,
-                        searchable: false,
-                        width: '20%'
-                    },
-                    {
-                        data: 'nama_kategori',
-                        name: 'nama_kategori',
-                        orderable: true,
-                        searchable: false,
-                        width: '20%'
-                    },
-
-                    {
-                        data: 'action',
-                        name: 'action',
-                        orderable: false,
-                        searchable: false,
-                        width: '5%'
-                    }
+                columns: [
+                    { data: 'kode_barang_badge', name: 'kode_barang', orderable: true, searchable: true },
+                    { data: 'namabarang', name: 'nama_barang', orderable: true, searchable: true },
+                    { data: 'satuan_badge', name: 'satuan', orderable: true, searchable: false },
+                    { data: 'jenisbarang', name: 'jenisbarang', orderable: true, searchable: false },
+                    { data: 'kategori_badge', name: 'nama_kategori', orderable: true, searchable: false },
+                    { data: 'action', name: 'action', orderable: false, searchable: false, className: 'text-center' }
                 ],
 
                 rowCallback: function(row, data, index) {

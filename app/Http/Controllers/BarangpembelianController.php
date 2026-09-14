@@ -201,16 +201,29 @@ class BarangpembelianController extends Controller
             return DataTables::of($query)
                 ->addIndexColumn()
                 ->addColumn('action', function ($row) {
-                    return '<button type="button" class="pilihBarang inline-flex items-center px-2.5 py-1 text-xs font-semibold text-white bg-[#294C9A] hover:bg-[#1E3A70] rounded-lg transition shadow-sm" kode_barang="' . $row->kode_barang . '" nama_barang="' . $row->nama_barang . '" kode_jenis_barang="' . $row->kode_jenis_barang . '">Pilih</button>';
+                    return '<button type="button" class="pilihBarang inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-[#294C9A] hover:bg-[#1E3A70] rounded-lg shadow-sm hover:shadow transition-all duration-150 active:scale-95 cursor-pointer" kode_barang="' . $row->kode_barang . '" nama_barang="' . e($row->nama_barang) . '" kode_jenis_barang="' . $row->kode_jenis_barang . '">
+                        <span>Pilih</span>
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
+                    </button>';
+                })
+                ->addColumn('kode_barang_badge', function ($row) {
+                    return '<span class="font-mono font-bold text-[11px] text-[#294C9A] bg-blue-50/80 px-2.5 py-1 rounded-md border border-blue-200/70 shadow-xs">' . e($row->kode_barang) . '</span>';
                 })
                 ->addColumn('namabarang', function ($row) {
-                    return textUpperCase($row->nama_barang);
+                    return '<div class="font-semibold text-gray-900 text-xs tracking-tight">' . e(textUpperCase($row->nama_barang)) . '</div>';
+                })
+                ->addColumn('satuan_badge', function ($row) {
+                    return '<span class="inline-block px-2.5 py-0.5 text-[11px] font-medium text-slate-700 bg-slate-100 rounded-md border border-slate-200">' . e(textUpperCase($row->satuan)) . '</span>';
                 })
                 ->addColumn('jenisbarang', function ($row) {
                     $jenis_barang = config('pembelian.jenis_barang');
-                    return $jenis_barang[$row->kode_jenis_barang] ?? '-';
+                    $val = $jenis_barang[$row->kode_jenis_barang] ?? '-';
+                    return '<span class="text-xs text-gray-700 font-medium">' . e($val) . '</span>';
                 })
-                ->rawColumns(['action', 'jenisbarang', 'namabarang'])
+                ->addColumn('kategori_badge', function ($row) {
+                    return '<span class="inline-block px-2.5 py-0.5 text-[11px] font-medium text-emerald-700 bg-emerald-50 rounded-md border border-emerald-200">' . e(textUpperCase($row->nama_kategori)) . '</span>';
+                })
+                ->rawColumns(['action', 'kode_barang_badge', 'namabarang', 'satuan_badge', 'jenisbarang', 'kategori_badge'])
                 ->make(true);
         }
     }

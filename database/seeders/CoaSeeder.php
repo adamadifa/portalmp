@@ -130,6 +130,8 @@ class CoaSeeder extends Seeder
             ['kode_akun' => '6-23102', 'nama_akun' => 'JASA KONSULTAN', 'sub_akun' => '6-23100', 'level' => 2],
             ['kode_akun' => '6-23103', 'nama_akun' => 'Jasa Lab', 'sub_akun' => '6-23100', 'level' => 2],
             ['kode_akun' => '6-23104', 'nama_akun' => 'Jasa Sertifikasi', 'sub_akun' => '6-23100', 'level' => 2],
+            ['kode_akun' => '6-23105', 'nama_akun' => 'Jasa Rekrutmen / Iklan Lowongan', 'sub_akun' => '6-23100', 'level' => 2],
+            ['kode_akun' => '6-23106', 'nama_akun' => 'Jasa Bengkel / Tambal Ban', 'sub_akun' => '6-23100', 'level' => 2],
 
             ['kode_akun' => '6-24100', 'nama_akun' => 'Biaya Impor', 'sub_akun' => null, 'level' => 1],
             ['kode_akun' => '6-24101', 'nama_akun' => 'BIAYA IMPOR', 'sub_akun' => '6-24100', 'level' => 2],
