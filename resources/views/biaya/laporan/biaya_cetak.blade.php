@@ -63,9 +63,9 @@
 
                             if ($d->ppn == '1') {
                                 $bgcolor = '#ececc8';
-                                $dpp_val = $subtotal * 100 / 111;
-                                $dpp_lain_val = $dpp_val * 11 / 12;
-                                $ppn_val = $dpp_lain_val * 0.12;
+                                $dpp_val = (100 / 111) * $total;
+                                $dpp_lain_val = $dpp_val * (11 / 12);
+                                $ppn_val = $dpp_lain_val * (12 / 100);
                             } else {
                                 $bgcolor = '';
                                 $dpp_val = $total;
