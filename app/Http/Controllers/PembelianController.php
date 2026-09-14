@@ -1320,14 +1320,16 @@ class PembelianController extends Controller
             $validBankCodesLower = array_map('strtolower', $validBankCodes);
             $bankCodeMap = array_combine($validBankCodesLower, $validBankCodes);
 
-            // Check both header row and the row below it for column names.
+            // Check header row and subsequent 2 rows for column names and bank codes.
+            $maxHeaderRowOffset = 1;
             for ($c = 1; $c <= $highestColumnIndex; $c++) {
                 $val1 = strtolower(trim($sheet->getCell([$c, $headerRowIndex])->getValue() ?? ''));
                 $val2 = strtolower(trim($sheet->getCell([$c, $headerRowIndex + 1])->getValue() ?? ''));
+                $val3 = strtolower(trim($sheet->getCell([$c, $headerRowIndex + 2])->getValue() ?? ''));
 
-                if ($val1 === 'no bukti' || $val1 === 'no_bukti' || $val1 === 'nomor bukti') {
+                if (in_array($val1, ['no bukti', 'no_bukti', 'nomor bukti', 'no. bukti'])) {
                     $colMap['no_bukti'] = $c;
-                } elseif ($val1 === 'tgl' || $val1 === 'tanggal') {
+                } elseif (in_array($val1, ['tgl', 'tanggal', 'tgl bayar', 'tglbayar'])) {
                     $colMap['tanggal'] = $c;
                 }
 
@@ -1335,13 +1337,25 @@ class PembelianController extends Controller
                     $bankCols[$c] = $bankCodeMap[$val1];
                 } elseif (isset($bankCodeMap[$val2])) {
                     $bankCols[$c] = $bankCodeMap[$val2];
+                    $maxHeaderRowOffset = max($maxHeaderRowOffset, 2);
+                } elseif (isset($bankCodeMap[$val3])) {
+                    $bankCols[$c] = $bankCodeMap[$val3];
+                    $maxHeaderRowOffset = max($maxHeaderRowOffset, 3);
                 }
             }
 
             if (!isset($colMap['no_bukti'])) $colMap['no_bukti'] = 3;
             if (!isset($colMap['tanggal'])) $colMap['tanggal'] = 2;
 
-            $dataStartRow = $headerRowIndex + 2;
+            // Determine data start row (handles both 2-row and 3-row headers)
+            $dataStartRow = $headerRowIndex + $maxHeaderRowOffset;
+            
+            // If the row directly below the bank codes is still header (e.g. Bank Name row without transaction number)
+            $checkSampleVal = trim($sheet->getCell([$colMap['no_bukti'], $dataStartRow])->getValue() ?? '');
+            $checkNoCol = trim($sheet->getCell([1, $dataStartRow])->getValue() ?? '');
+            if (empty($checkSampleVal) || !is_numeric($checkNoCol) || strtolower($checkSampleVal) === 'no bukti' || strtolower($checkSampleVal) === 'supplier') {
+                $dataStartRow++;
+            }
             
             DB::beginTransaction();
 
@@ -1350,7 +1364,7 @@ class PembelianController extends Controller
 
             for ($row = $dataStartRow; $row <= $highestRow; $row++) {
                 $noBukti = trim($sheet->getCell([$colMap['no_bukti'], $row])->getValue() ?? '');
-                if (empty($noBukti)) {
+                if (empty($noBukti) || in_array(strtolower($noBukti), ['total', 'grand total', 'grandtotal', 'no bukti', 'no_bukti'])) {
                     continue;
                 }
 
