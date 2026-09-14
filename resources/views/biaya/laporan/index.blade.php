@@ -250,30 +250,17 @@
                         <label class="c-fl-label">Akun (COA)</label>
                     </div>
 
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div class="c-fl-group">
-                            <span class="c-fl-icon">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
-                            </span>
-                            <select name="kode_cabang" class="fi">
-                                <option value="">Semua Cabang</option>
-                                @foreach ($cabang as $c)
-                                    <option value="{{ $c->kode_cabang }}">{{ $c->nama_cabang }}</option>
-                                @endforeach
-                            </select>
-                            <label class="c-fl-label">Cabang</label>
-                        </div>
-                        <div class="c-fl-group">
-                            <span class="c-fl-icon">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                            </span>
-                            <select name="jenis_transaksi" class="fi">
-                                <option value="">Semua Jenis Transaksi</option>
-                                <option value="T">Tunai</option>
-                                <option value="K">Kredit (Tempo)</option>
-                            </select>
-                            <label class="c-fl-label">Jenis Transaksi</label>
-                        </div>
+                    <div class="c-fl-group">
+                        <span class="c-fl-icon">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+                        </span>
+                        <select name="kode_cabang" class="fi">
+                            <option value="">Semua Cabang</option>
+                            @foreach ($cabang as $c)
+                                <option value="{{ $c->kode_cabang }}">{{ $c->nama_cabang }}</option>
+                            @endforeach
+                        </select>
+                        <label class="c-fl-label">Cabang</label>
                     </div>
 
                     <div class="grid grid-cols-2 gap-4">

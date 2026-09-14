@@ -182,7 +182,7 @@
                     </div>
                 </div>
 
-                <div class="md:col-span-6">
+                <div class="md:col-span-8">
                     <div class="c-fl-group">
                         <span class="c-fl-icon">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
@@ -195,20 +195,6 @@
                                 </option>
                             @endforeach
                         </select>
-                    </div>
-                </div>
-
-                <div class="md:col-span-2">
-                    <div class="c-fl-group">
-                        <span class="c-fl-icon">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
-                        </span>
-                        <select name="jenis_transaksi_search" id="jenis_transaksi_search" class="fi">
-                            <option value="">Tunai / Kredit</option>
-                            <option value="T" {{ Request('jenis_transaksi_search') == 'T' ? 'selected' : '' }}>Tunai</option>
-                            <option value="K" {{ Request('jenis_transaksi_search') == 'K' ? 'selected' : '' }}>Kredit</option>
-                        </select>
-                        <label for="jenis_transaksi_search" class="c-fl-label">Tunai / Kredit</label>
                     </div>
                 </div>
 
@@ -273,7 +259,6 @@
                         <th class="px-4 py-3 font-bold text-end">BAYAR</th>
                         <th class="px-4 py-3 font-bold text-end">SISA</th>
                         <th class="px-4 py-3 font-bold text-center">KET</th>
-                        <th class="px-4 py-3 font-bold text-center">T/K</th>
                         <th class="px-4 py-3 font-bold text-center">AKSI</th>
                     </tr>
                 </thead>
@@ -292,11 +277,6 @@
                                 @else
                                     <span class="px-2 py-0.5 text-[10px] font-semibold bg-red-100 text-red-800 rounded-full">Belum Lunas</span>
                                 @endif
-                            </td>
-                            <td class="px-4 py-3 text-center">
-                                <span class="px-2 py-0.5 text-[10px] font-semibold rounded-md {{ $d->jenis_transaksi == 'T' ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-amber-50 text-amber-700 border border-amber-200' }}">
-                                    {{ $d->jenis_transaksi == 'T' ? 'Tunai' : 'Kredit' }}
-                                </span>
                             </td>
                             <td class="px-4 py-3 text-center">
                                 <div class="flex items-center justify-center gap-2">
@@ -337,7 +317,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="9" class="px-4 py-8 text-center text-gray-400">
+                            <td colspan="8" class="px-4 py-8 text-center text-gray-400"> text-center text-gray-400">
                                 <svg class="w-12 h-12 mx-auto mb-2 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path></svg>
                                 Data Transaksi Biaya Operasional tidak ditemukan.
                             </td>

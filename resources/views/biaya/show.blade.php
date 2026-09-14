@@ -6,17 +6,6 @@
                 <p class="text-[11px] font-semibold uppercase text-slate-400 tracking-wider">No. Bukti Transaksi</p>
                 <h3 class="text-base font-bold font-mono text-slate-900">{{ $biaya->no_bukti }}</h3>
             </div>
-            <div class="flex items-center gap-2">
-                @if($biaya->jenis_transaksi == 'K')
-                    <span class="px-2.5 py-1 text-xs font-semibold rounded bg-amber-50 text-amber-800 border border-amber-200">
-                        Kredit (Tempo)
-                    </span>
-                @else
-                    <span class="px-2.5 py-1 text-xs font-semibold rounded bg-slate-100 text-slate-700 border border-slate-200">
-                        Tunai
-                    </span>
-                @endif
-            </div>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 text-xs">

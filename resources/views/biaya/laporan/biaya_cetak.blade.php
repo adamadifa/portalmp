@@ -40,7 +40,6 @@
                         <th style="width:10%">SUPPLIER / REKANAN</th>
                         <th style="width:12%">KETERANGAN / RINCIAN</th>
                         <th style="width:8%">KODE AKUN</th>
-                        <th style="width:2%">JT</th>
                         <th style="width:3%">QTY</th>
                         <th style="width:5%">HARGA</th>
                         <th style="width:4%">PENY</th>
@@ -65,7 +64,6 @@
                             <td>{{ $d->nama_supplier ?? '-' }}</td>
                             <td>{{ $d->keterangan }}</td>
                             <td>{{ $d->kode_akun }} - {{ $d->nama_akun }}</td>
-                            <td class="center">{{ $d->jenis_transaksi }}</td>
                             <td class="center">{{ formatAngkaDesimal($d->jumlah) }}</td>
                             <td class="right">{{ formatAngkaDesimal($d->harga) }}</td>
                             <td class="right">{{ formatAngkaDesimal($d->penyesuaian) }}</td>
@@ -75,13 +73,13 @@
                     @endforeach
                     @if($biaya->isEmpty())
                         <tr>
-                            <td colspan="12" style="text-align: center; color: #888; padding: 20px;">Tidak ada data biaya pada periode ini.</td>
+                            <td colspan="11" style="text-align: center; color: #888; padding: 20px;">Tidak ada data biaya pada periode ini.</td>
                         </tr>
                     @endif
                 </tbody>
                 <tfoot>
                     <tr>
-                        <th colspan="10" style="text-align: right">GRAND TOTAL</th>
+                        <th colspan="9" style="text-align: right">GRAND TOTAL</th>
                         <th class="right" style="font-weight: bold">{{ formatAngkaDesimal($grandtotal) }}</th>
                         <th></th>
                     </tr>
