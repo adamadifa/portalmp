@@ -53,7 +53,6 @@ class BiayaController extends Controller
             return Redirect::back()->withInput()->with(['error' => 'No. Bukti Biaya sudah ada di database. Silakan gunakan nomor lain.']);
         }
 
-        $kode_barang_item = $request->kode_barang_item ?? [];
         $nama_barang_item = $request->nama_barang_item ?? [];
         $kode_akun_item = $request->kode_akun_item ?? [];
         $keterangan_item = $request->keterangan_item ?? [];
@@ -91,7 +90,6 @@ class BiayaController extends Controller
 
                 Detailbiaya::create([
                     'no_bukti' => $request->no_bukti,
-                    'kode_barang' => $kode_barang_item[$i] ?? null,
                     'kode_akun' => $kode_akun_item[$i],
                     'keterangan' => $keterangan_item[$i] ?? ($nama_barang_item[$i] ?? null),
                     'jumlah' => $jml,
@@ -125,8 +123,7 @@ class BiayaController extends Controller
 
         $data['detail'] = Detailbiaya::where('biaya_detail.no_bukti', $no_bukti_decrypted)
             ->join('coa', 'biaya_detail.kode_akun', '=', 'coa.kode_akun')
-            ->leftJoin('pembelian_barang', 'biaya_detail.kode_barang', '=', 'pembelian_barang.kode_barang')
-            ->select('biaya_detail.*', 'coa.nama_akun', 'pembelian_barang.nama_barang')
+            ->select('biaya_detail.*', 'coa.nama_akun')
             ->get();
 
         $data['historibayar'] = Historibayarbiaya::where('no_bukti', $no_bukti_decrypted)
@@ -148,8 +145,7 @@ class BiayaController extends Controller
 
         $data['biaya'] = Biaya::findOrFail($no_bukti_decrypted);
         $data['detail'] = Detailbiaya::where('biaya_detail.no_bukti', $no_bukti_decrypted)
-            ->leftJoin('pembelian_barang', 'biaya_detail.kode_barang', '=', 'pembelian_barang.kode_barang')
-            ->select('biaya_detail.*', 'pembelian_barang.nama_barang')
+            ->select('biaya_detail.*')
             ->get();
         $data['supplier'] = Supplier::orderBy('nama_supplier')->get();
         $data['coa'] = Coa::orderBy('kode_akun')->get();
@@ -174,7 +170,6 @@ class BiayaController extends Controller
             'kode_akun_item' => 'required|array|min:1',
         ]);
 
-        $kode_barang_item = $request->kode_barang_item ?? [];
         $nama_barang_item = $request->nama_barang_item ?? [];
         $kode_akun_item = $request->kode_akun_item ?? [];
         $keterangan_item = $request->keterangan_item ?? [];
@@ -203,7 +198,6 @@ class BiayaController extends Controller
 
                 Detailbiaya::create([
                     'no_bukti' => $no_bukti_decrypted,
-                    'kode_barang' => $kode_barang_item[$i] ?? null,
                     'kode_akun' => $kode_akun_item[$i],
                     'keterangan' => $keterangan_item[$i] ?? ($nama_barang_item[$i] ?? null),
                     'jumlah' => $jml,
@@ -604,7 +598,6 @@ class BiayaController extends Controller
                     'tanggal' => $tanggalFormatted,
                     'kode_supplier' => $finalKodeSupplier,
                     'kode_akun' => $kodeAkunVal,
-                    'kode_barang' => null,
                     'keterangan' => $keteranganItem,
                     'qty' => $qty,
                     'harga' => $harga,
@@ -657,7 +650,6 @@ class BiayaController extends Controller
                 foreach ($items as $item) {
                     Detailbiaya::create([
                         'no_bukti' => $noBukti,
-                        'kode_barang' => $item['kode_barang'],
                         'kode_akun' => $item['kode_akun'],
                         'keterangan' => $item['keterangan'],
                         'jumlah' => $item['qty'],
