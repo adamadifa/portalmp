@@ -43,7 +43,8 @@ class LaporanbiayaController extends Controller
             'biaya_detail.*',
             'biaya.tanggal',
             'biaya.kode_supplier',
-            'biaya.jenis_transaksi',
+            'biaya.ppn',
+            'biaya.no_fak_pajak',
             'biaya.tanggal_jatuh_tempo',
             'biaya.created_at as created_at_header',
             'supplier.nama_supplier',
@@ -66,8 +67,8 @@ class LaporanbiayaController extends Controller
             $query->where('biaya_detail.kode_cabang', $request->kode_cabang);
         }
 
-        if (!empty($request->jenis_transaksi)) {
-            $query->where('biaya.jenis_transaksi', $request->jenis_transaksi);
+        if ($request->ppn !== null && $request->ppn !== '') {
+            $query->where('biaya.ppn', $request->ppn);
         }
 
         $query->orderBy('biaya.tanggal', 'asc');

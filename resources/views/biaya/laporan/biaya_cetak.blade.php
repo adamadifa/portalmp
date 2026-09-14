@@ -31,7 +31,7 @@
     </div>
     <div class="content">
         <div class="freeze-table">
-            <table class="datatable3" style="width: 100%">
+            <table class="datatable3" style="width: 125%">
                 <thead>
                     <tr>
                         <th style="width:1%">NO</th>
@@ -42,7 +42,9 @@
                         <th style="width:8%">KODE AKUN</th>
                         <th style="width:3%">QTY</th>
                         <th style="width:5%">HARGA</th>
-                        <th style="width:4%">PENY</th>
+                        <th style="width:5%">DPP</th>
+                        <th style="width:5%">DPP LAIN</th>
+                        <th style="width:5%">PPN</th>
                         <th style="width:6%">TOTAL</th>
                         <th style="width:4%">DIBUAT</th>
                     </tr>
@@ -50,14 +52,33 @@
                 <tbody>
                     @php
                         $grandtotal = 0;
+                        $total_dpp = 0;
+                        $total_dpp_lain = 0;
+                        $total_ppn = 0;
                     @endphp
                     @foreach ($biaya as $key => $d)
                         @php
                             $subtotal = $d->jumlah * $d->harga;
                             $total = $subtotal + $d->penyesuaian;
+
+                            if ($d->ppn == '1') {
+                                $bgcolor = '#ececc8';
+                                $dpp_val = $subtotal * 100 / 111;
+                                $dpp_lain_val = $dpp_val * 11 / 12;
+                                $ppn_val = $dpp_lain_val * 0.12;
+                            } else {
+                                $bgcolor = '';
+                                $dpp_val = $total;
+                                $dpp_lain_val = 0;
+                                $ppn_val = 0;
+                            }
+
+                            $total_dpp += $dpp_val;
+                            $total_dpp_lain += $dpp_lain_val;
+                            $total_ppn += $ppn_val;
                             $grandtotal += $total;
                         @endphp
-                        <tr>
+                        <tr style="background-color: {{ $bgcolor }}">
                             <td>{{ $loop->iteration }}</td>
                             <td>{{ formatIndo($d->tanggal) }}</td>
                             <td>{{ $d->no_bukti }}</td>
@@ -66,20 +87,25 @@
                             <td>{{ $d->kode_akun }} - {{ $d->nama_akun }}</td>
                             <td class="center">{{ formatAngkaDesimal($d->jumlah) }}</td>
                             <td class="right">{{ formatAngkaDesimal($d->harga) }}</td>
-                            <td class="right">{{ formatAngkaDesimal($d->penyesuaian) }}</td>
+                            <td class="right">{{ formatAngkaDesimal($dpp_val) }}</td>
+                            <td class="right">{{ formatAngkaDesimal($dpp_lain_val) }}</td>
+                            <td class="right">{{ formatAngkaDesimal($ppn_val) }}</td>
                             <td class="right" style="font-weight: bold">{{ formatAngkaDesimal($total) }}</td>
                             <td>{{ date('d-m-Y H:i', strtotime($d->created_at_header ?? $d->created_at)) }}</td>
                         </tr>
                     @endforeach
                     @if($biaya->isEmpty())
                         <tr>
-                            <td colspan="11" style="text-align: center; color: #888; padding: 20px;">Tidak ada data biaya pada periode ini.</td>
+                            <td colspan="13" style="text-align: center; color: #888; padding: 20px;">Tidak ada data biaya pada periode ini.</td>
                         </tr>
                     @endif
                 </tbody>
                 <tfoot>
                     <tr>
-                        <th colspan="9" style="text-align: right">GRAND TOTAL</th>
+                        <th colspan="8" style="text-align: right">GRAND TOTAL</th>
+                        <th class="right" style="font-weight: bold">{{ formatAngkaDesimal($total_dpp) }}</th>
+                        <th class="right" style="font-weight: bold">{{ formatAngkaDesimal($total_dpp_lain) }}</th>
+                        <th class="right" style="font-weight: bold">{{ formatAngkaDesimal($total_ppn) }}</th>
                         <th class="right" style="font-weight: bold">{{ formatAngkaDesimal($grandtotal) }}</th>
                         <th></th>
                     </tr>
