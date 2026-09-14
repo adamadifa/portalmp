@@ -489,14 +489,34 @@ class BiayaController extends Controller
                     }
                 }
 
-                // 2. Kode Akun (Wajib terdaftar di tabel COA)
+                // 2. Kode Akun (Auto create di tabel COA jika belum terdaftar)
                 $kodeAkunVal = $colAkun ? trim($sheet->getCell([$colAkun, $r])->getCalculatedValue() ?? '') : '';
                 if (empty($kodeAkunVal)) {
                     throw new \Exception("Gagal Import: Kolom Kode Akun kosong pada baris Excel ke-{$r} (No. Bukti: {$noBuktiVal}).");
                 }
-                if (!isset($coaMap[$kodeAkunVal])) {
-                    throw new \Exception("Gagal Import: Kode Akun COA '{$kodeAkunVal}' pada baris ke-{$r} (No. Bukti: {$noBuktiVal}) tidak terdaftar dalam Master COA!");
+
+                $cleanKodeAkun = trim($kodeAkunVal);
+                if (!isset($coaMap[$cleanKodeAkun])) {
+                    $namaAkunRaw = $colNamaAkun ? trim($sheet->getCell([$colNamaAkun, $r])->getCalculatedValue() ?? '') : '';
+                    if (empty($namaAkunRaw)) {
+                        $namaAkunRaw = $colProduk ? trim($sheet->getCell([$colProduk, $r])->getCalculatedValue() ?? '') : '';
+                    }
+                    if (empty($namaAkunRaw)) {
+                        $namaAkunRaw = 'BIAYA ' . $cleanKodeAkun;
+                    }
+
+                    Coa::create([
+                        'kode_akun' => $cleanKodeAkun,
+                        'nama_akun' => strtoupper($namaAkunRaw),
+                        'sub_akun' => null,
+                        'level' => 3,
+                        'jenis_akun' => null,
+                        'kode_kategori' => null,
+                    ]);
+
+                    $coaMap[$cleanKodeAkun] = true;
                 }
+                $kodeAkunVal = $cleanKodeAkun;
 
                 // 3. Supplier handling
                 $namaSupplierRaw = $colNamaSupplier ? trim($sheet->getCell([$colNamaSupplier, $r])->getCalculatedValue() ?? '') : '';
