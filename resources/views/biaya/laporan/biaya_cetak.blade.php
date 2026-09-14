@@ -61,24 +61,16 @@
                             $subtotal = $d->jumlah * $d->harga;
                             $total = $subtotal + $d->penyesuaian;
 
-                            if ($d->ppn == '1') {
-                                $bgcolor = '#ececc8';
-                                $dpp_val = (100 / 111) * $total;
-                                $dpp_lain_val = $dpp_val * (11 / 12);
-                                $ppn_val = $dpp_lain_val * (12 / 100);
-                            } else {
-                                $bgcolor = '';
-                                $dpp_val = $total;
-                                $dpp_lain_val = 0;
-                                $ppn_val = 0;
-                            }
+                            $dpp_val = (100 / 111) * $total;
+                            $dpp_lain_val = $dpp_val * (11 / 12);
+                            $ppn_val = $dpp_lain_val * (12 / 100);
 
                             $total_dpp += $dpp_val;
                             $total_dpp_lain += $dpp_lain_val;
                             $total_ppn += $ppn_val;
                             $grandtotal += $total;
                         @endphp
-                        <tr style="background-color: {{ $bgcolor }}">
+                        <tr>
                             <td>{{ $loop->iteration }}</td>
                             <td>{{ formatIndo($d->tanggal) }}</td>
                             <td>{{ $d->no_bukti }}</td>
