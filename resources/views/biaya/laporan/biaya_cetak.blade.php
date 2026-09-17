@@ -61,9 +61,15 @@
                             $subtotal = $d->jumlah * $d->harga;
                             $total = $subtotal + $d->penyesuaian;
 
-                            $dpp_val = (100 / 111) * $total;
-                            $dpp_lain_val = $dpp_val * (11 / 12);
-                            $ppn_val = $dpp_lain_val * (12 / 100);
+                            if ($d->ppn == '1') {
+                                $dpp_val = (100 / 111) * $total;
+                                $dpp_lain_val = $dpp_val * (11 / 12);
+                                $ppn_val = $dpp_lain_val * (12 / 100);
+                            } else {
+                                $dpp_val = 0;
+                                $dpp_lain_val = 0;
+                                $ppn_val = 0;
+                            }
 
                             $total_dpp += $dpp_val;
                             $total_dpp_lain += $dpp_lain_val;
