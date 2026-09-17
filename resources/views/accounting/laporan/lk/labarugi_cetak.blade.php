@@ -130,17 +130,18 @@
                     @if (substr($acc->kode_akun, 0, 1) === '4')
                         @php
                             $indent = ($acc->level ?? 0) * 16;
-                            if ($acc->level >= 3) {
+                            $isLeaf = $acc->is_leaf ?? ($acc->level >= 3);
+                            if ($isLeaf) {
                                 $totalPendapatan += $acc->total;
                             }
                         @endphp
-                        @if ($acc->level < 3 || $acc->total != 0)
-                            <tr style="{{ $acc->level < 3 ? 'font-weight: bold; background-color: #fafafa;' : '' }}">
+                        @if (!$isLeaf || $acc->total != 0)
+                            <tr style="{{ !$isLeaf ? 'font-weight: bold; background-color: #fafafa;' : '' }}">
                                 <td style="padding-left: {{ max(16, $indent) }}px;">
                                     {{ $acc->kode_akun }} - {{ $acc->nama_akun }}
                                 </td>
                                 <td class="text-right">
-                                    {{ $acc->level >= 3 ? formatAngka($acc->total) : '' }}
+                                    {{ $isLeaf ? formatAngka($acc->total) : '' }}
                                 </td>
                             </tr>
                         @endif
@@ -159,17 +160,18 @@
                     @if (substr($acc->kode_akun, 0, 1) === '5')
                         @php
                             $indent = ($acc->level ?? 0) * 16;
-                            if ($acc->level >= 3) {
+                            $isLeaf = $acc->is_leaf ?? ($acc->level >= 3);
+                            if ($isLeaf) {
                                 $totalHpp += $acc->total;
                             }
                         @endphp
-                        @if ($acc->level < 3 || $acc->total != 0)
-                            <tr style="{{ $acc->level < 3 ? 'font-weight: bold; background-color: #fafafa;' : '' }}">
+                        @if (!$isLeaf || $acc->total != 0)
+                            <tr style="{{ !$isLeaf ? 'font-weight: bold; background-color: #fafafa;' : '' }}">
                                 <td style="padding-left: {{ max(16, $indent) }}px;">
                                     {{ $acc->kode_akun }} - {{ $acc->nama_akun }}
                                 </td>
                                 <td class="text-right">
-                                    {{ $acc->level >= 3 ? formatAngka($acc->total) : '' }}
+                                    {{ $isLeaf ? formatAngka($acc->total) : '' }}
                                 </td>
                             </tr>
                         @endif
@@ -197,17 +199,18 @@
                     @if (substr($acc->kode_akun, 0, 1) === '6')
                         @php
                             $indent = ($acc->level ?? 0) * 16;
-                            if ($acc->level >= 3) {
+                            $isLeaf = $acc->is_leaf ?? ($acc->level >= 3);
+                            if ($isLeaf) {
                                 $totalBeban += $acc->total;
                             }
                         @endphp
-                        @if ($acc->level < 3 || $acc->total != 0)
-                            <tr style="{{ $acc->level < 3 ? 'font-weight: bold; background-color: #fafafa;' : '' }}">
+                        @if (!$isLeaf || $acc->total != 0)
+                            <tr style="{{ !$isLeaf ? 'font-weight: bold; background-color: #fafafa;' : '' }}">
                                 <td style="padding-left: {{ max(16, $indent) }}px;">
                                     {{ $acc->kode_akun }} - {{ $acc->nama_akun }}
                                 </td>
                                 <td class="text-right">
-                                    {{ $acc->level >= 3 ? formatAngka($acc->total) : '' }}
+                                    {{ $isLeaf ? formatAngka($acc->total) : '' }}
                                 </td>
                             </tr>
                         @endif

@@ -122,17 +122,18 @@
                     @if (substr($acc->kode_akun, 0, 1) === '1')
                         @php
                             $indent = ($acc->level ?? 0) * 16;
-                            if ($acc->level >= 3) {
+                            $isLeaf = $acc->is_leaf ?? ($acc->level >= 3);
+                            if ($isLeaf) {
                                 $totalAktiva += $acc->saldo_akhir;
                             }
                         @endphp
-                        @if ($acc->level < 3 || $acc->saldo_akhir != 0)
-                            <tr style="{{ $acc->level < 3 ? 'font-weight: bold; background-color: #fafafa;' : '' }}">
+                        @if (!$isLeaf || $acc->saldo_akhir != 0)
+                            <tr style="{{ !$isLeaf ? 'font-weight: bold; background-color: #fafafa;' : '' }}">
                                 <td style="padding-left: {{ max(16, $indent) }}px;">
                                     {{ $acc->kode_akun }} - {{ $acc->nama_akun }}
                                 </td>
                                 <td class="text-right">
-                                    {{ $acc->level >= 3 ? formatAngka($acc->saldo_akhir) : '' }}
+                                    {{ $isLeaf ? formatAngka($acc->saldo_akhir) : '' }}
                                 </td>
                             </tr>
                         @endif
@@ -151,17 +152,18 @@
                     @if (in_array(substr($acc->kode_akun, 0, 1), ['2', '3']))
                         @php
                             $indent = ($acc->level ?? 0) * 16;
-                            if ($acc->level >= 3) {
+                            $isLeaf = $acc->is_leaf ?? ($acc->level >= 3);
+                            if ($isLeaf) {
                                 $totalPasiva += $acc->saldo_akhir;
                             }
                         @endphp
-                        @if ($acc->level < 3 || $acc->saldo_akhir != 0)
-                            <tr style="{{ $acc->level < 3 ? 'font-weight: bold; background-color: #fafafa;' : '' }}">
+                        @if (!$isLeaf || $acc->saldo_akhir != 0)
+                            <tr style="{{ !$isLeaf ? 'font-weight: bold; background-color: #fafafa;' : '' }}">
                                 <td style="padding-left: {{ max(16, $indent) }}px;">
                                     {{ $acc->kode_akun }} - {{ $acc->nama_akun }}
                                 </td>
                                 <td class="text-right">
-                                    {{ $acc->level >= 3 ? formatAngka($acc->saldo_akhir) : '' }}
+                                    {{ $isLeaf ? formatAngka($acc->saldo_akhir) : '' }}
                                 </td>
                             </tr>
                         @endif

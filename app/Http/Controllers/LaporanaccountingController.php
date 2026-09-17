@@ -198,7 +198,8 @@ class LaporanaccountingController extends Controller
 
         // FORMAT 1: BUKU BESAR
         if ($format == '1') {
-            $coaQuery = Coa::where('level', 3)->orderBy('kode_akun', 'asc');
+            $parents = DB::table('coa')->whereNotNull('sub_akun')->where('sub_akun', '!=', '')->pluck('sub_akun')->unique()->toArray();
+            $coaQuery = Coa::whereNotIn('kode_akun', $parents)->orderBy('kode_akun', 'asc');
             if (!empty($request->kode_akun_dari) && !empty($request->kode_akun_sampai)) {
                 $coaQuery->whereBetween('kode_akun', [$request->kode_akun_dari, $request->kode_akun_sampai]);
             }
@@ -272,11 +273,14 @@ class LaporanaccountingController extends Controller
 
             $labaBerjalan = $pendapatanTotal - $hppTotal - $biayaTotal;
 
+            $parents = DB::table('coa')->whereNotNull('sub_akun')->where('sub_akun', '!=', '')->pluck('sub_akun')->unique()->toArray();
+            $allParentsMap = array_flip($parents);
+
             // Ambil akun Aktiva (1), Kewajiban (2), Ekuitas (3)
             $neracaAccounts = Coa::whereRaw('LEFT(kode_akun, 1) IN (1, 2, 3)')
                 ->orderBy('kode_akun', 'asc')
                 ->get()
-                ->map(function ($acc) use ($allSums, $labaBerjalan) {
+                ->map(function ($acc) use ($allSums, $labaBerjalan, $allParentsMap) {
                     $row = $allSums[$acc->kode_akun] ?? null;
                     $prefix = substr($acc->kode_akun, 0, 1);
                     if ($prefix === '1') {
@@ -293,6 +297,7 @@ class LaporanaccountingController extends Controller
                     }
 
                     $acc->saldo_akhir = $saldo;
+                    $acc->is_leaf = !isset($allParentsMap[$acc->kode_akun]);
                     return $acc;
                 });
 
@@ -308,6 +313,9 @@ class LaporanaccountingController extends Controller
 
         // FORMAT 3: LABA RUGI
         if ($format == '3') {
+            $parents = DB::table('coa')->whereNotNull('sub_akun')->where('sub_akun', '!=', '')->pluck('sub_akun')->unique()->toArray();
+            $allParentsMap = array_flip($parents);
+
             $mutasiLR = DB::query()->fromSub($unionQuery, 'u')
                 ->whereBetween('tanggal', [$dari, $sampai])
                 ->selectRaw('kode_akun, SUM(jml_debet) as debet, SUM(jml_kredit) as kredit')
@@ -318,7 +326,7 @@ class LaporanaccountingController extends Controller
             $lrAccounts = Coa::whereRaw('LEFT(kode_akun, 1) IN (4, 5, 6)')
                 ->orderBy('kode_akun', 'asc')
                 ->get()
-                ->map(function ($acc) use ($mutasiLR) {
+                ->map(function ($acc) use ($mutasiLR, $allParentsMap) {
                     $row = $mutasiLR[$acc->kode_akun] ?? null;
                     $prefix = substr($acc->kode_akun, 0, 1);
                     if ($prefix === '4') {
@@ -328,6 +336,7 @@ class LaporanaccountingController extends Controller
                         // Beban / HPP (Debet - Kredit)
                         $acc->total = $row ? ((float)$row->debet - (float)$row->kredit) : 0;
                     }
+                    $acc->is_leaf = !isset($allParentsMap[$acc->kode_akun]);
                     return $acc;
                 });
 
