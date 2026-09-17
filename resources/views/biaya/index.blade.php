@@ -182,7 +182,7 @@
                     </div>
                 </div>
 
-                <div class="md:col-span-8">
+                <div class="md:col-span-5">
                     <div class="c-fl-group">
                         <span class="c-fl-icon">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
@@ -195,6 +195,20 @@
                                 </option>
                             @endforeach
                         </select>
+                    </div>
+                </div>
+
+                <div class="md:col-span-3">
+                    <div class="c-fl-group">
+                        <span class="c-fl-icon">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        </span>
+                        <select name="ppn" id="ppn" class="fi">
+                            <option value="">Semua PPN / Non PPN</option>
+                            <option value="1" {{ Request('ppn') === '1' ? 'selected' : '' }}>PPN</option>
+                            <option value="0" {{ Request('ppn') === '0' ? 'selected' : '' }}>Non PPN</option>
+                        </select>
+                        <label for="ppn" class="c-fl-label">Status PPN</label>
                     </div>
                 </div>
 
@@ -234,9 +248,6 @@
                 <button type="button" onclick="toggleModalImport()" class="inline-flex items-center px-3.5 py-2 text-xs font-semibold text-white bg-emerald-600 rounded-xl hover:bg-emerald-700 transition shadow-sm gap-1.5">
                     Import Excel
                 </button>
-                <button type="button" onclick="toggleModalImportPembayaran()" class="inline-flex items-center px-3.5 py-2 text-xs font-semibold text-white bg-teal-600 rounded-xl hover:bg-teal-700 transition shadow-sm gap-1.5">
-                    Import Pembayaran
-                </button>
                 <button type="button" onclick="resetBiaya()" class="inline-flex items-center px-3.5 py-2 text-xs font-semibold text-white bg-red-600 rounded-xl hover:bg-red-700 transition shadow-sm gap-1.5">
                     Reset Biaya
                 </button>
@@ -255,6 +266,7 @@
                         <th class="px-4 py-3 font-bold">NO. BUKTI</th>
                         <th class="px-4 py-3 font-bold">TANGGAL</th>
                         <th class="px-4 py-3 font-bold">REKANAN / SUPPLIER</th>
+                        <th class="px-4 py-3 font-bold text-center">PPN</th>
                         <th class="px-4 py-3 font-bold text-end">TOTAL</th>
                         <th class="px-4 py-3 font-bold text-end">BAYAR</th>
                         <th class="px-4 py-3 font-bold text-end">SISA</th>
@@ -268,6 +280,13 @@
                             <td class="px-4 py-3 font-bold text-[#294C9A] font-mono">{{ $d->no_bukti }}</td>
                             <td class="px-4 py-3 font-medium text-gray-900">{{ formatIndo($d->tanggal) }}</td>
                             <td class="px-4 py-3 font-medium text-gray-900">{{ $d->nama_supplier ?? ($d->kode_supplier ?: '-') }}</td>
+                            <td class="px-4 py-3 text-center">
+                                @if ($d->ppn == '1')
+                                    <span class="px-2 py-0.5 text-[10px] font-bold bg-blue-100 text-blue-800 rounded-full">PPN</span>
+                                @else
+                                    <span class="px-2 py-0.5 text-[10px] font-medium bg-gray-100 text-gray-600 rounded-full">Non PPN</span>
+                                @endif
+                            </td>
                             <td class="px-4 py-3 text-end font-bold text-gray-900">{{ formatAngkaDesimal($d->total_biaya) }}</td>
                             <td class="px-4 py-3 text-end font-bold text-emerald-600">{{ formatAngkaDesimal($d->total_bayar) }}</td>
                             <td class="px-4 py-3 text-end font-bold {{ $d->sisa_bayar > 0 ? 'text-red-600' : 'text-gray-400' }}">{{ formatAngkaDesimal($d->sisa_bayar) }}</td>

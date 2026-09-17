@@ -105,6 +105,10 @@ class Biaya extends Model
                 $query->where('biaya.kategori_transaksi', $request->kategori_transaksi_search);
             }
 
+            if ($request->ppn !== null && $request->ppn !== '') {
+                $query->where('biaya.ppn', $request->ppn);
+            }
+
             if ($request->status_bayar === '1') { // Lunas
                 $query->havingRaw('(total_biaya - total_bayar) <= 0');
             } elseif ($request->status_bayar === '0') { // Belum Lunas
