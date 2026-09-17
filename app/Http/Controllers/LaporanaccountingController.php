@@ -71,7 +71,7 @@ class LaporanaccountingController extends Controller
                 DB::raw('2 as urutan')
             );
 
-        // 3. Transaksi Pembelian
+        // 3. Transaksi Pembelian (Hanya DPP yang dicatat ke akun HPP/Beban)
         $pembelianSub = DB::table('pembelian_detail')
             ->join('pembelian', 'pembelian_detail.no_bukti', '=', 'pembelian.no_bukti')
             ->whereBetween('pembelian.tanggal', [sprintf('%04d-%02d-01', $tahun, $bulan), $sampai])
@@ -81,13 +81,13 @@ class LaporanaccountingController extends Controller
                 'pembelian.no_bukti',
                 DB::raw("'PEMBELIAN' as sumber"),
                 DB::raw("COALESCE(pembelian_detail.keterangan, 'Pembelian Barang') as keterangan"),
-                DB::raw('((pembelian_detail.jumlah * pembelian_detail.harga) + pembelian_detail.penyesuaian) as jml_debet'),
+                DB::raw('CASE WHEN pembelian.ppn = "1" THEN ((pembelian_detail.jumlah * pembelian_detail.harga) * 100 / 111) ELSE ((pembelian_detail.jumlah * pembelian_detail.harga) + pembelian_detail.penyesuaian) END as jml_debet'),
                 DB::raw('0 as jml_kredit'),
                 DB::raw('0 as saldo_awal_val'),
                 DB::raw('2 as urutan')
             );
 
-        // 4. Transaksi Penjualan Marketing
+        // 4. Transaksi Penjualan Marketing (Hanya DPP = harga_dus * jumlah yang dicatat ke akun Pendapatan)
         $penjualanSub = DB::table('marketing_penjualan_detail')
             ->join('marketing_penjualan', 'marketing_penjualan_detail.no_bukti', '=', 'marketing_penjualan.no_bukti')
             ->whereBetween('marketing_penjualan.tanggal', [sprintf('%04d-%02d-01', $tahun, $bulan), $sampai])
@@ -98,7 +98,7 @@ class LaporanaccountingController extends Controller
                 DB::raw("'PENJUALAN' as sumber"),
                 DB::raw("'Penjualan Produk Marketing' as keterangan"),
                 DB::raw('0 as jml_debet'),
-                'marketing_penjualan_detail.subtotal as jml_kredit',
+                DB::raw('(marketing_penjualan_detail.harga_dus * marketing_penjualan_detail.jumlah) as jml_kredit'),
                 DB::raw('0 as saldo_awal_val'),
                 DB::raw('2 as urutan')
             );
