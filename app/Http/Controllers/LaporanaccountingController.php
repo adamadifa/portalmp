@@ -90,13 +90,14 @@ class LaporanaccountingController extends Controller
         // 4. Transaksi Penjualan Marketing (Hanya DPP = harga_dus * jumlah yang dicatat ke akun Pendapatan)
         $penjualanSub = DB::table('marketing_penjualan_detail')
             ->join('marketing_penjualan', 'marketing_penjualan_detail.no_bukti', '=', 'marketing_penjualan.no_bukti')
+            ->leftJoin('pelanggan', 'marketing_penjualan.kode_pelanggan', '=', 'pelanggan.kode_pelanggan')
             ->whereBetween('marketing_penjualan.tanggal', [sprintf('%04d-%02d-01', $tahun, $bulan), $sampai])
             ->select(
                 DB::raw("'4-11101' as kode_akun"),
                 'marketing_penjualan.tanggal',
                 'marketing_penjualan.no_bukti',
                 DB::raw("'PENJUALAN' as sumber"),
-                DB::raw("'Penjualan Produk Marketing' as keterangan"),
+                DB::raw("CONCAT('Penjualan ', COALESCE(pelanggan.nama_pelanggan, '')) as keterangan"),
                 DB::raw('0 as jml_debet'),
                 DB::raw('(marketing_penjualan_detail.harga_dus * marketing_penjualan_detail.jumlah) as jml_kredit'),
                 DB::raw('0 as saldo_awal_val'),
@@ -106,13 +107,14 @@ class LaporanaccountingController extends Controller
         // 5. Transaksi PPN Keluaran (2-11301) dari Penjualan Marketing
         $ppnKeluaranSub = DB::table('marketing_penjualan_detail')
             ->join('marketing_penjualan', 'marketing_penjualan_detail.no_bukti', '=', 'marketing_penjualan.no_bukti')
+            ->leftJoin('pelanggan', 'marketing_penjualan.kode_pelanggan', '=', 'pelanggan.kode_pelanggan')
             ->whereBetween('marketing_penjualan.tanggal', [sprintf('%04d-%02d-01', $tahun, $bulan), $sampai])
             ->select(
                 DB::raw("'2-11301' as kode_akun"),
                 'marketing_penjualan.tanggal',
                 'marketing_penjualan.no_bukti',
                 DB::raw("'PENJUALAN' as sumber"),
-                DB::raw("'PPN Keluaran Penjualan' as keterangan"),
+                DB::raw("CONCAT('PPN Keluaran ', COALESCE(pelanggan.nama_pelanggan, '')) as keterangan"),
                 DB::raw('0 as jml_debet'),
                 DB::raw('(marketing_penjualan_detail.subtotal - (marketing_penjualan_detail.harga_dus * marketing_penjualan_detail.jumlah)) as jml_kredit'),
                 DB::raw('0 as saldo_awal_val'),
@@ -122,13 +124,14 @@ class LaporanaccountingController extends Controller
         // 6. Transaksi Piutang Usaha (1-11201) dari Total Netto Penjualan Marketing (Debet)
         $piutangPenjualanSub = DB::table('marketing_penjualan_detail')
             ->join('marketing_penjualan', 'marketing_penjualan_detail.no_bukti', '=', 'marketing_penjualan.no_bukti')
+            ->leftJoin('pelanggan', 'marketing_penjualan.kode_pelanggan', '=', 'pelanggan.kode_pelanggan')
             ->whereBetween('marketing_penjualan.tanggal', [sprintf('%04d-%02d-01', $tahun, $bulan), $sampai])
             ->select(
                 DB::raw("'1-11201' as kode_akun"),
                 'marketing_penjualan.tanggal',
                 'marketing_penjualan.no_bukti',
                 DB::raw("'PENJUALAN' as sumber"),
-                DB::raw("'Piutang Penjualan Netto' as keterangan"),
+                DB::raw("CONCAT('Piutang Penjualan ', COALESCE(pelanggan.nama_pelanggan, '')) as keterangan"),
                 'marketing_penjualan_detail.subtotal as jml_debet',
                 DB::raw('0 as jml_kredit'),
                 DB::raw('0 as saldo_awal_val'),
@@ -195,7 +198,7 @@ class LaporanaccountingController extends Controller
 
         // FORMAT 1: BUKU BESAR
         if ($format == '1') {
-            $coaQuery = Coa::orderBy('kode_akun', 'asc');
+            $coaQuery = Coa::where('level', 3)->orderBy('kode_akun', 'asc');
             if (!empty($request->kode_akun_dari) && !empty($request->kode_akun_sampai)) {
                 $coaQuery->whereBetween('kode_akun', [$request->kode_akun_dari, $request->kode_akun_sampai]);
             }

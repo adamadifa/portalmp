@@ -136,10 +136,6 @@
                 }
 
                 $txs = $mutasiPeriode[$kode_akun] ?? collect();
-                // Lewatkan akun jika tidak ada saldo awal dan tidak ada mutasi pada periode
-                if ($runningBalance == 0 && $txs->isEmpty()) {
-                    continue;
-                }
 
                 $totalDebet = 0;
                 $totalKredit = 0;
@@ -174,7 +170,7 @@
                     </tr>
 
                     <!-- Baris Mutasi Transaksi -->
-                    @foreach ($txs as $tx)
+                    @forelse ($txs as $tx)
                         @php
                             $debet = (float) $tx->jml_debet;
                             $kredit = (float) $tx->jml_kredit;
@@ -196,7 +192,11 @@
                             <td class="text-right">{{ $kredit > 0 ? formatAngka($kredit) : '-' }}</td>
                             <td class="text-right font-medium">{{ formatAngka($runningBalance) }}</td>
                         </tr>
-                    @endforeach
+                    @empty
+                        <tr>
+                            <td colspan="7" class="text-center" style="color: #94a3b8; font-style: italic; padding: 8px;">Tidak ada transaksi pada periode ini</td>
+                        </tr>
+                    @endforelse
 
                     <!-- Baris Total & Saldo Akhir -->
                     <tr class="row-total">
