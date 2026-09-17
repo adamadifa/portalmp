@@ -202,9 +202,8 @@
             </div>
         </div>
 
-        @if(($pembelian->kategori_pembelian ?? 'L') == 'L')
         @php
-            // Perhitungan Rincian Akun Akuntansi Pembelian (Khusus Pembelian Lokal)
+            // Perhitungan Rincian Akun Akuntansi Pembelian
             $grand_total_pmb = $total_pembelian - $total_potongan + ($pembelian->penyesuaian_jk ?? 0);
             $pembelianByAkun = [];
 
@@ -409,7 +408,6 @@
                 </table>
             </div>
         </div>
-        @endif
 
         <!-- Histori Pembayaran -->
         <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
