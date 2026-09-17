@@ -141,6 +141,20 @@ class SaldoawalbukubesarController extends Controller
             if ($ppnKeluaranTotal > 0) {
                 $saldo_map['2-11301'] = ($saldo_map['2-11301'] ?? 0) + (float) $ppnKeluaranTotal;
             }
+
+            // Mutasi Piutang Usaha (1-11201) dari Total Netto Penjualan (Debet) dikurangi Pelunasan (Kredit)
+            $nettoPenjualanTotal = DB::table('marketing_penjualan_detail')
+                ->join('marketing_penjualan', 'marketing_penjualan_detail.no_bukti', '=', 'marketing_penjualan.no_bukti')
+                ->whereBetween('marketing_penjualan.tanggal', [$start_date, $end_date])
+                ->sum('subtotal');
+            $pelunasanPiutangTotal = DB::table('marketing_penjualan_historibayar')
+                ->whereBetween('tanggal', [$start_date, $end_date])
+                ->sum('jumlah');
+
+            $mutasiPiutang = (float)$nettoPenjualanTotal - (float)$pelunasanPiutangTotal;
+            if ($mutasiPiutang != 0) {
+                $saldo_map['1-11201'] = ($saldo_map['1-11201'] ?? 0) + $mutasiPiutang;
+            }
         }
 
         // Ambil struktur akun Neraca (1-Aktiva, 2-Kewajiban, 3-Ekuitas) untuk saldo awal

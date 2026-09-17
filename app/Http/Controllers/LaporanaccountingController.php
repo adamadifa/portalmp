@@ -119,7 +119,38 @@ class LaporanaccountingController extends Controller
                 DB::raw('2 as urutan')
             );
 
-        // 6. Pembayaran Hutang Pembelian (Kas/Bank keluar)
+        // 6. Transaksi Piutang Usaha (1-11201) dari Total Netto Penjualan Marketing (Debet)
+        $piutangPenjualanSub = DB::table('marketing_penjualan_detail')
+            ->join('marketing_penjualan', 'marketing_penjualan_detail.no_bukti', '=', 'marketing_penjualan.no_bukti')
+            ->whereBetween('marketing_penjualan.tanggal', [sprintf('%04d-%02d-01', $tahun, $bulan), $sampai])
+            ->select(
+                DB::raw("'1-11201' as kode_akun"),
+                'marketing_penjualan.tanggal',
+                'marketing_penjualan.no_bukti',
+                DB::raw("'PENJUALAN' as sumber"),
+                DB::raw("'Piutang Penjualan Netto' as keterangan"),
+                'marketing_penjualan_detail.subtotal as jml_debet',
+                DB::raw('0 as jml_kredit'),
+                DB::raw('0 as saldo_awal_val'),
+                DB::raw('2 as urutan')
+            );
+
+        // 7. Penerimaan Pembayaran Piutang Penjualan (Kredit pada Piutang Usaha 1-11201)
+        $bayarPiutangSub = DB::table('marketing_penjualan_historibayar')
+            ->whereBetween('marketing_penjualan_historibayar.tanggal', [sprintf('%04d-%02d-01', $tahun, $bulan), $sampai])
+            ->select(
+                DB::raw("'1-11201' as kode_akun"),
+                'marketing_penjualan_historibayar.tanggal',
+                'marketing_penjualan_historibayar.no_bukti',
+                DB::raw("'PELUNASAN PIUTANG' as sumber"),
+                DB::raw("CONCAT('Penerimaan Piutang Penjualan ', COALESCE(marketing_penjualan_historibayar.no_bukti_penjualan, '')) as keterangan"),
+                DB::raw('0 as jml_debet'),
+                'marketing_penjualan_historibayar.jumlah as jml_kredit',
+                DB::raw('0 as saldo_awal_val'),
+                DB::raw('3 as urutan')
+            );
+
+        // 8. Pembayaran Hutang Pembelian (Kas/Bank keluar)
         $bayarPembelianSub = DB::table('pembelian_historibayar')
             ->leftJoin('bank', 'pembelian_historibayar.kode_bank', '=', 'bank.kode_bank')
             ->whereBetween('pembelian_historibayar.tanggal', [sprintf('%04d-%02d-01', $tahun, $bulan), $sampai])
@@ -135,7 +166,7 @@ class LaporanaccountingController extends Controller
                 DB::raw('3 as urutan')
             );
 
-        // 7. Pembayaran Biaya (Kas/Bank keluar)
+        // 9. Pembayaran Biaya (Kas/Bank keluar)
         $bayarBiayaSub = DB::table('biaya_historibayar')
             ->leftJoin('bank', 'biaya_historibayar.kode_bank', '=', 'bank.kode_bank')
             ->whereBetween('biaya_historibayar.tanggal', [sprintf('%04d-%02d-01', $tahun, $bulan), $sampai])
@@ -157,6 +188,8 @@ class LaporanaccountingController extends Controller
             ->unionAll($pembelianSub)
             ->unionAll($penjualanSub)
             ->unionAll($ppnKeluaranSub)
+            ->unionAll($piutangPenjualanSub)
+            ->unionAll($bayarPiutangSub)
             ->unionAll($bayarPembelianSub)
             ->unionAll($bayarBiayaSub);
 
