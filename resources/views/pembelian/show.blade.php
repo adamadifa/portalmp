@@ -70,21 +70,42 @@
                             <th class="px-5 py-3 font-semibold uppercase tracking-wider">Nama Barang</th>
                             <th class="px-5 py-3 font-semibold uppercase tracking-wider">Keterangan</th>
                             <th class="px-5 py-3 font-semibold uppercase tracking-wider text-center w-20">Qty</th>
-                            <th class="px-5 py-3 font-semibold uppercase tracking-wider text-right w-28">Harga</th>
-                            <th class="px-5 py-3 font-semibold uppercase tracking-wider text-right w-28">Subtotal</th>
-                            <th class="px-5 py-3 font-semibold uppercase tracking-wider text-right w-24">Peny</th>
-                            <th class="px-5 py-3 font-semibold uppercase tracking-wider text-right w-32">Total</th>
+                            <th class="px-5 py-3 font-semibold uppercase tracking-wider text-right w-24">Harga</th>
+                            <th class="px-5 py-3 font-semibold uppercase tracking-wider text-right w-24">Subtotal</th>
+                            <th class="px-5 py-3 font-semibold uppercase tracking-wider text-right w-20">Peny</th>
+                            <th class="px-5 py-3 font-semibold uppercase tracking-wider text-right w-28">DPP</th>
+                            <th class="px-5 py-3 font-semibold uppercase tracking-wider text-right w-28">DPP Lain</th>
+                            <th class="px-5 py-3 font-semibold uppercase tracking-wider text-right w-24">PPN</th>
+                            <th class="px-5 py-3 font-semibold uppercase tracking-wider text-right w-28">Total</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100 text-slate-700 bg-white">
                         @php
                             $total_pembelian = 0;
+                            $total_dpp_detail = 0;
+                            $total_dpp_lain_detail = 0;
+                            $total_ppn_detail = 0;
                         @endphp
                         @foreach ($detail as $d)
                             @php
                                 $subtotal = $d->jumlah * $d->harga;
                                 $total = $subtotal + $d->penyesuaian;
                                 $total_pembelian += $total;
+
+                                if ($pembelian->ppn == '1') {
+                                    $dpp_val = $subtotal * 100 / 111;
+                                    $dpp_lain_val = $dpp_val * 11 / 12;
+                                    $ppn_val = $dpp_lain_val * 0.12;
+                                } else {
+                                    $dpp_val = $total;
+                                    $dpp_lain_val = 0;
+                                    $ppn_val = 0;
+                                }
+
+                                $total_dpp_detail += $dpp_val;
+                                $total_dpp_lain_detail += $dpp_lain_val;
+                                $total_ppn_detail += $ppn_val;
+
                                 $bg = !empty($d->kode_cr) ? 'bg-blue-50/40 text-blue-900' : '';
                             @endphp
                             <tr class="{{ $bg }} hover:bg-slate-50/30 transition">
@@ -102,10 +123,22 @@
                                 <td class="px-5 py-3.5 text-right font-medium text-slate-600">{{ formatAngkaDesimal($d->harga) }}</td>
                                 <td class="px-5 py-3.5 text-right font-medium text-slate-600">{{ formatAngkaDesimal($subtotal) }}</td>
                                 <td class="px-5 py-3.5 text-right font-medium text-slate-500">{{ formatAngkaDesimal($d->penyesuaian) }}</td>
+                                <td class="px-5 py-3.5 text-right font-medium text-indigo-700">{{ formatAngkaDesimal($dpp_val) }}</td>
+                                <td class="px-5 py-3.5 text-right font-medium text-violet-700">{{ formatAngkaDesimal($dpp_lain_val) }}</td>
+                                <td class="px-5 py-3.5 text-right font-medium text-emerald-700">{{ formatAngkaDesimal($ppn_val) }}</td>
                                 <td class="px-5 py-3.5 text-right font-bold text-slate-900">{{ formatAngkaDesimal($total) }}</td>
                             </tr>
                         @endforeach
                     </tbody>
+                    <tfoot class="border-t border-slate-200 bg-slate-50/80 font-bold text-slate-800">
+                        <tr>
+                            <td colspan="7" class="px-5 py-3 text-right uppercase tracking-wider text-[11px] text-slate-500">Subtotal Barang</td>
+                            <td class="px-5 py-3 text-right font-bold text-indigo-800">{{ formatAngkaDesimal($total_dpp_detail) }}</td>
+                            <td class="px-5 py-3 text-right font-bold text-violet-800">{{ formatAngkaDesimal($total_dpp_lain_detail) }}</td>
+                            <td class="px-5 py-3 text-right font-bold text-emerald-800">{{ formatAngkaDesimal($total_ppn_detail) }}</td>
+                            <td class="px-5 py-3 text-right font-black text-slate-900">{{ formatAngkaDesimal($total_pembelian) }}</td>
+                        </tr>
+                    </tfoot>
                 </table>
             </div>
         </div>
