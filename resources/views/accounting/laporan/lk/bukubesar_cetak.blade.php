@@ -124,14 +124,16 @@
                 $isDebetNormal = in_array($prefix, ['1', '5', '6']);
 
                 // Saldo awal akumulasi sampai hari sebelum $dari
-                $saList = $mutasiSebelum[$kode_akun] ?? collect();
-                $runningBalance = 0;
-                foreach ($saList as $item) {
-                    $runningBalance += (float)$item->saldo_awal_val;
+                $initSaldoAwal = (float)($saldoAwalMap[$kode_akun] ?? 0);
+                $runningBalance = $initSaldoAwal;
+                $prevTx = $mutasiSebelum[$kode_akun] ?? null;
+                if ($prevTx) {
+                    $debetPrev = (float)$prevTx->total_debet_prev;
+                    $kreditPrev = (float)$prevTx->total_kredit_prev;
                     if ($isDebetNormal) {
-                        $runningBalance += ((float)$item->jml_debet - (float)$item->jml_kredit);
+                        $runningBalance += ($debetPrev - $kreditPrev);
                     } else {
-                        $runningBalance += ((float)$item->jml_kredit - (float)$item->jml_debet);
+                        $runningBalance += ($kreditPrev - $debetPrev);
                     }
                 }
 

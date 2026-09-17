@@ -204,10 +204,18 @@ class LaporanaccountingController extends Controller
             }
             $coaList = $coaQuery->get();
 
-            // Ambil mutasi sebelum tanggal 'dari' (untuk saldo awal berjalan)
+            // Ambil data Saldo Awal periode (kode_sa: SA{bulan}{tahun})
+            $saldoAwalMap = DB::table('bukubesar_saldoawal_detail')
+                ->join('bukubesar_saldoawal', 'bukubesar_saldoawal_detail.kode_saldo_awal', '=', 'bukubesar_saldoawal.kode_saldo_awal')
+                ->where('bukubesar_saldoawal.kode_saldo_awal', $kode_sa)
+                ->pluck('bukubesar_saldoawal_detail.jumlah', 'bukubesar_saldoawal_detail.kode_akun')
+                ->toArray();
+
+            // Ambil mutasi transaksi sebelum tanggal 'dari' (jika filter 'dari' bukan tanggal 1)
             $mutasiSebelum = DB::query()->fromSub($unionQuery, 'u')
+                ->where('sumber', '!=', 'SALDO AWAL')
                 ->where('tanggal', '<', $dari)
-                ->selectRaw('kode_akun, SUM(saldo_awal_val) as init_val, SUM(jml_debet) as total_debet_prev, SUM(jml_kredit) as total_kredit_prev')
+                ->selectRaw('kode_akun, SUM(jml_debet) as total_debet_prev, SUM(jml_kredit) as total_kredit_prev')
                 ->groupBy('kode_akun')
                 ->get()
                 ->keyBy('kode_akun');
@@ -224,6 +232,7 @@ class LaporanaccountingController extends Controller
                 ->groupBy('kode_akun');
 
             $data['coaList'] = $coaList;
+            $data['saldoAwalMap'] = $saldoAwalMap;
             $data['mutasiSebelum'] = $mutasiSebelum;
             $data['mutasiPeriode'] = $mutasiPeriode;
 
