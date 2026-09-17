@@ -57,8 +57,9 @@ class PembelianController extends Controller
         $pmb = new Pembelian();
         $data['pembelian'] = $pmb->getPembelian(no_bukti: $no_bukti)->first();
 
-        $data['detail'] = Detailpembelian::select('pembelian_detail.*', 'nama_barang')
+        $data['detail'] = Detailpembelian::select('pembelian_detail.*', 'nama_barang', 'coa.nama_akun')
             ->join('pembelian_barang', 'pembelian_detail.kode_barang', '=', 'pembelian_barang.kode_barang')
+            ->leftJoin('coa', 'pembelian_detail.kode_akun', '=', 'coa.kode_akun')
             ->where('no_bukti', $no_bukti)
             ->where('pembelian_detail.kode_transaksi', 'PMB')
             ->get();

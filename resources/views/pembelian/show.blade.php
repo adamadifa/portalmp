@@ -75,7 +75,14 @@
                             @endphp
                             <tr class="{{ $bg }} hover:bg-slate-50/30 transition">
                                 <td class="px-5 py-3.5 font-mono text-slate-500 font-medium">{{ $d->kode_barang }}</td>
-                                <td class="px-5 py-3.5 font-semibold text-slate-850">{{ textCamelCase($d->nama_barang) }}</td>
+                                <td class="px-5 py-3.5 font-semibold text-slate-850">
+                                    <div>{{ textCamelCase($d->nama_barang) }}</div>
+                                    @if(!empty($d->kode_akun))
+                                        <div class="text-[10px] text-slate-400 font-mono font-normal mt-0.5">
+                                            <span class="inline-flex items-center px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 font-semibold">{{ $d->kode_akun }}</span> {{ $d->nama_akun }}
+                                        </div>
+                                    @endif
+                                </td>
                                 <td class="px-5 py-3.5 text-slate-500">{{ textCamelCase($d->keterangan) }}</td>
                                 <td class="px-5 py-3.5 text-center font-medium">{{ formatAngkaDesimal($d->jumlah) }}</td>
                                 <td class="px-5 py-3.5 text-right font-medium text-slate-600">{{ formatAngkaDesimal($d->harga) }}</td>
@@ -142,6 +149,213 @@
                         <tr class="bg-emerald-50/50 text-[#294C9A]">
                             <td colspan="3" class="px-5 py-4 text-right font-bold uppercase tracking-wider text-xs">Grand Total</td>
                             <td class="px-5 py-4 text-right font-black text-base">{{ formatAngkaDesimal($total_pembelian - $total_potongan + $pembelian->penyesuaian_jk) }}</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+
+        @php
+            // Perhitungan Rincian Akun Akuntansi Pembelian
+            $grand_total_pmb = $total_pembelian - $total_potongan + ($pembelian->penyesuaian_jk ?? 0);
+            $pembelianByAkun = [];
+
+            $itemBreakdowns = [];
+            $total_dpp_items = 0;
+            $total_ppn_items = 0;
+            $total_hutang_items = 0;
+
+            foreach ($detail as $d) {
+                $sub = ($d->jumlah * $d->harga) + $d->penyesuaian;
+                $dpp = ($pembelian->ppn == '1') ? (($d->jumlah * $d->harga) * 100 / 111) : $sub;
+                $ppn = ($pembelian->ppn == '1') ? ($sub - $dpp) : 0;
+                $hutang = $sub;
+
+                $kdAkun = $d->kode_akun ?? ($pembelian->kode_akun ?? '5-11101');
+                $nmAkun = $d->nama_akun ?? 'Pembelian';
+
+                $itemBreakdowns[] = [
+                    'kode_barang' => $d->kode_barang,
+                    'nama_barang' => $d->nama_barang,
+                    'keterangan' => $d->keterangan,
+                    'jumlah' => $d->jumlah,
+                    'harga' => $d->harga,
+                    'kode_akun' => $kdAkun,
+                    'nama_akun' => $nmAkun,
+                    'dpp' => $dpp,
+                    'ppn' => $ppn,
+                    'hutang' => $hutang,
+                ];
+
+                $total_dpp_items += $dpp;
+                $total_ppn_items += $ppn;
+                $total_hutang_items += $hutang;
+
+                if (!isset($pembelianByAkun[$kdAkun])) {
+                    $pembelianByAkun[$kdAkun] = [
+                        'kode_akun' => $kdAkun,
+                        'nama_akun' => $nmAkun,
+                        'jumlah' => 0
+                    ];
+                }
+                $pembelianByAkun[$kdAkun]['jumlah'] += $dpp;
+            }
+
+            $total_dpp_pmb = array_sum(array_column($pembelianByAkun, 'jumlah'));
+            $ppn_masukan_pmb = ($pembelian->ppn == '1') ? max(0, $grand_total_pmb - $total_dpp_pmb) : 0;
+            $total_debet_pmb = $total_dpp_pmb + $ppn_masukan_pmb;
+            $total_kredit_pmb = $grand_total_pmb;
+        @endphp
+
+        <!-- Rincian Akun Per Item Detail Pembelian & Jurnal -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+            <div class="px-5 py-4 bg-indigo-50 border-b border-indigo-100 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div>
+                    <h4 class="font-bold text-indigo-900 text-xs uppercase tracking-wider">Rincian Akun Per Item Detail Pembelian</h4>
+                    <p class="text-[11px] text-slate-500 mt-0.5">Rincian nilai DPP Pembelian (Beban), PPN Masukan, dan Hutang Usaha per item transaksi</p>
+                </div>
+                <div>
+                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-semibold bg-white text-indigo-700 border border-indigo-200 shadow-2xs">
+                        {{ $pembelian->ppn == '1' ? 'Termasuk PPN 11%' : 'Non-PPN' }}
+                    </span>
+                </div>
+            </div>
+
+            <!-- Tabel Rincian Per Item Detail Pembelian -->
+            <div class="overflow-x-auto">
+                <table class="w-full text-xs text-left">
+                    <thead>
+                        <tr class="bg-slate-50 text-slate-600 border-b border-slate-200">
+                            <th class="px-5 py-3 font-semibold uppercase tracking-wider w-12 text-center">No</th>
+                            <th class="px-5 py-3 font-semibold uppercase tracking-wider">Nama Barang / Item</th>
+                            <th class="px-5 py-3 font-semibold uppercase tracking-wider w-36">Akun Pembelian</th>
+                            <th class="px-5 py-3 font-semibold uppercase tracking-wider text-right w-36">DPP Pembelian (Rp)</th>
+                            <th class="px-5 py-3 font-semibold uppercase tracking-wider text-right w-32">PPN Masukan (Rp)</th>
+                            <th class="px-5 py-3 font-semibold uppercase tracking-wider text-right w-36">Hutang Usaha (Rp)</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100 text-slate-700 bg-white">
+                        @foreach ($itemBreakdowns as $item)
+                            <tr class="hover:bg-slate-50/40 transition">
+                                <td class="px-5 py-3.5 text-center font-mono text-slate-500 font-medium">{{ $loop->iteration }}</td>
+                                <td class="px-5 py-3.5 font-semibold text-slate-850">
+                                    <div>{{ textCamelCase($item['nama_barang']) }}</div>
+                                    <div class="text-[10px] text-slate-400 font-mono font-normal mt-0.5">
+                                        {{ $item['kode_barang'] }} @if(!empty($item['keterangan'])) &bull; {{ textCamelCase($item['keterangan']) }} @endif
+                                    </div>
+                                </td>
+                                <td class="px-5 py-3.5">
+                                    <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-mono font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">
+                                        {{ $item['kode_akun'] }}
+                                    </span>
+                                    <span class="block text-[10px] text-slate-500 mt-0.5">{{ $item['nama_akun'] }}</span>
+                                </td>
+                                <td class="px-5 py-3.5 text-right font-medium text-slate-800">{{ formatAngkaDesimal($item['dpp']) }}</td>
+                                <td class="px-5 py-3.5 text-right font-medium {{ $item['ppn'] > 0 ? 'text-emerald-700' : 'text-slate-400' }}">
+                                    {{ $item['ppn'] > 0 ? formatAngkaDesimal($item['ppn']) : '-' }}
+                                </td>
+                                <td class="px-5 py-3.5 text-right font-bold text-slate-900">{{ formatAngkaDesimal($item['hutang']) }}</td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                    <tfoot class="border-t border-slate-200 bg-slate-50/70 font-semibold text-slate-750">
+                        <tr class="border-b border-slate-200/60">
+                            <td colspan="3" class="px-5 py-3 text-right uppercase text-slate-500 text-xs">Subtotal Item Detail</td>
+                            <td class="px-5 py-3 text-right font-bold text-slate-800">{{ formatAngkaDesimal($total_dpp_items) }}</td>
+                            <td class="px-5 py-3 text-right font-bold text-emerald-700">{{ formatAngkaDesimal($total_ppn_items) }}</td>
+                            <td class="px-5 py-3 text-right font-bold text-slate-900">{{ formatAngkaDesimal($total_hutang_items) }}</td>
+                        </tr>
+                        @if($total_potongan > 0 || !empty($pembelian->penyesuaian_jk))
+                            <tr class="text-[11px] text-slate-500 border-b border-slate-200/60">
+                                <td colspan="5" class="px-5 py-2 text-right">Potongan Pembelian & Penyesuaian JK:</td>
+                                <td class="px-5 py-2 text-right font-bold {{ ($pembelian->penyesuaian_jk - $total_potongan) < 0 ? 'text-rose-700' : 'text-slate-800' }}">
+                                    {{ formatAngkaDesimal($pembelian->penyesuaian_jk - $total_potongan) }}
+                                </td>
+                            </tr>
+                        @endif
+                    </tfoot>
+                </table>
+            </div>
+
+            <!-- Ikhtisar Rekapitulasi Jurnal Akuntansi -->
+            <div class="px-5 py-3 bg-slate-100/70 border-t border-b border-slate-200">
+                <h5 class="font-bold text-slate-700 text-[11px] uppercase tracking-wider">Rekapitulasi Jurnal Akuntansi</h5>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-xs text-left">
+                    <thead>
+                        <tr class="bg-white text-slate-500 border-b border-slate-200">
+                            <th class="px-5 py-2.5 font-semibold uppercase tracking-wider w-36">Kode Akun</th>
+                            <th class="px-5 py-2.5 font-semibold uppercase tracking-wider">Nama Akun</th>
+                            <th class="px-5 py-2.5 font-semibold uppercase tracking-wider w-24">Posisi</th>
+                            <th class="px-5 py-2.5 font-semibold uppercase tracking-wider text-right w-44">Debet (Rp)</th>
+                            <th class="px-5 py-2.5 font-semibold uppercase tracking-wider text-right w-44">Kredit (Rp)</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100 text-slate-700 bg-white">
+                        <!-- Akun Pembelian / Beban (DPP) -->
+                        @foreach ($pembelianByAkun as $itemAkun)
+                            <tr class="hover:bg-slate-50/40 transition">
+                                <td class="px-5 py-3 font-mono font-bold text-indigo-700">{{ $itemAkun['kode_akun'] }}</td>
+                                <td class="px-5 py-3 font-semibold text-slate-850">
+                                    {{ $itemAkun['nama_akun'] }}
+                                    <span class="text-[10px] text-slate-400 font-normal block">
+                                        {{ $pembelian->ppn == '1' ? 'Nilai DPP (Dasar Pengenaan Pajak)' : 'Nilai Transaksi Pembelian' }}
+                                    </span>
+                                </td>
+                                <td class="px-5 py-3">
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-blue-50 text-blue-700 border border-blue-200">
+                                        Debet
+                                    </span>
+                                </td>
+                                <td class="px-5 py-3 text-right font-bold text-slate-850">{{ formatAngkaDesimal($itemAkun['jumlah']) }}</td>
+                                <td class="px-5 py-3 text-right text-slate-400">-</td>
+                            </tr>
+                        @endforeach
+
+                        <!-- Akun PPN Masukan (Jika ada PPN) -->
+                        @if($pembelian->ppn == '1' && $ppn_masukan_pmb > 0)
+                            <tr class="hover:bg-slate-50/40 transition">
+                                <td class="px-5 py-3 font-mono font-bold text-indigo-700">1-11501</td>
+                                <td class="px-5 py-3 font-semibold text-slate-850">
+                                    PPN Masukan
+                                    <span class="text-[10px] text-slate-400 font-normal block">PPN Masukan (11%)</span>
+                                </td>
+                                <td class="px-5 py-3">
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-blue-50 text-blue-700 border border-blue-200">
+                                        Debet
+                                    </span>
+                                </td>
+                                <td class="px-5 py-3 text-right font-bold text-emerald-700">{{ formatAngkaDesimal($ppn_masukan_pmb) }}</td>
+                                <td class="px-5 py-3 text-right text-slate-400">-</td>
+                            </tr>
+                        @endif
+
+                        <!-- Akun Hutang Usaha / Kas (Kredit) -->
+                        <tr class="hover:bg-slate-50/40 transition">
+                            <td class="px-5 py-3 font-mono font-bold text-indigo-700">
+                                {{ $pembelian->jenis_transaksi == 'K' ? '2-11101' : '1-11101' }}
+                            </td>
+                            <td class="px-5 py-3 font-semibold text-slate-850">
+                                {{ $pembelian->jenis_transaksi == 'K' ? 'Hutang Usaha' : 'Kas / Bank' }}
+                                <span class="text-[10px] text-slate-400 font-normal block">
+                                    {{ $pembelian->jenis_transaksi == 'K' ? 'Kewajiban Hutang kepada ' . ($pembelian->nama_supplier ?? 'Supplier') : 'Pembelian Tunai' }}
+                                </span>
+                            </td>
+                            <td class="px-5 py-3">
+                                <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-amber-50 text-amber-700 border border-amber-200">
+                                    Kredit
+                                </span>
+                            </td>
+                            <td class="px-5 py-3 text-right text-slate-400">-</td>
+                            <td class="px-5 py-3 text-right font-bold text-indigo-900">{{ formatAngkaDesimal($total_kredit_pmb) }}</td>
+                        </tr>
+                    </tbody>
+                    <tfoot class="border-t border-slate-200 bg-slate-50 font-bold text-slate-800">
+                        <tr>
+                            <td colspan="3" class="px-5 py-3.5 text-right uppercase tracking-wider text-xs">Total Jurnal</td>
+                            <td class="px-5 py-3.5 text-right font-black text-slate-900">{{ formatAngkaDesimal($total_debet_pmb) }}</td>
+                            <td class="px-5 py-3.5 text-right font-black text-slate-900">{{ formatAngkaDesimal($total_kredit_pmb) }}</td>
                         </tr>
                     </tfoot>
                 </table>
