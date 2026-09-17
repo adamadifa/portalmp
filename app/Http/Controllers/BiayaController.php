@@ -406,6 +406,7 @@ class BiayaController extends Controller
             $colKodeSupplier = $colMap['kodesupplier'] ?? $colMap['kode_supplier'] ?? $colMap['codesupplier'] ?? null;
             $colProduk = $colMap['produk'] ?? $colMap['namaproduk'] ?? $colMap['nama_produk'] ?? $colMap['product'] ?? $colMap['namabarang'] ?? $colMap['nama_barang'] ?? $colMap['rincian'] ?? $colMap['keterangan'] ?? null;
             $colJenisProduk = $colMap['jenisproduct'] ?? $colMap['jenisproduk'] ?? null;
+            $colJenisPpn = $colMap['jenis'] ?? $colMap['ppn'] ?? $colMap['statusppn'] ?? $colMap['jenistransaksi'] ?? null;
             $colKodeProduk = $colMap['kodeproduk'] ?? $colMap['kode_produk'] ?? $colMap['codeproduk'] ?? $colMap['kodebarang'] ?? $colMap['kode_barang'] ?? $colMap['codebarang'] ?? null;
             $colQty = $colMap['qty'] ?? $colMap['jumlah'] ?? $colMap['volume'] ?? $colMap['kuantiti'] ?? null;
             $colHarga = $colMap['harga'] ?? $colMap['hargasatuan'] ?? $colMap['harga_satuan'] ?? null;
@@ -593,6 +594,10 @@ class BiayaController extends Controller
 
                 $peny = $colPeny ? (float) toNumber(trim($sheet->getCell([$colPeny, $r])->getCalculatedValue() ?? 0)) : 0;
 
+                // 6. Deteksi PPN / Non PPN dari kolom JENIS
+                $jenisPpnRaw = $colJenisPpn ? strtoupper(trim((string)($sheet->getCell([$colJenisPpn, $r])->getCalculatedValue() ?? ''))) : '';
+                $isPpn = (str_contains($jenisPpnRaw, 'PPN') && !str_contains($jenisPpnRaw, 'NON') && !str_contains($jenisPpnRaw, 'TIDAK')) ? '1' : '0';
+
                 $rows[] = [
                     'no_bukti' => $noBuktiVal,
                     'tanggal' => $tanggalFormatted,
@@ -602,6 +607,7 @@ class BiayaController extends Controller
                     'qty' => $qty,
                     'harga' => $harga,
                     'penyesuaian' => $peny,
+                    'ppn' => $isPpn,
                 ];
             }
 
@@ -623,6 +629,15 @@ class BiayaController extends Controller
             foreach ($grouped as $noBukti => $items) {
                 $firstItem = $items[0];
 
+                // Jika salah satu item bernilai PPN, set header sebagai PPN
+                $hasPpn = '0';
+                foreach ($items as $it) {
+                    if (($it['ppn'] ?? '0') === '1') {
+                        $hasPpn = '1';
+                        break;
+                    }
+                }
+
                 // Check or Create Biaya Header
                 $biaya = Biaya::where('no_bukti', $noBukti)->first();
                 if (!$biaya) {
@@ -631,14 +646,18 @@ class BiayaController extends Controller
                         'tanggal' => $firstItem['tanggal'],
                         'kode_supplier' => $firstItem['kode_supplier'],
                         'kode_akun' => $firstItem['kode_akun'],
+                        'ppn' => $hasPpn,
                         'jenis_transaksi' => $jenis_transaksi,
                         'id_user' => auth()->user()->id ?? 1
                     ]);
                 } else {
-                    // Update header info if supplier is now available
+                    // Update header info if supplier is now available or ppn status updated
                     $updateData = [];
                     if (empty($biaya->kode_supplier) && !empty($firstItem['kode_supplier'])) {
                         $updateData['kode_supplier'] = $firstItem['kode_supplier'];
+                    }
+                    if ($biaya->ppn !== $hasPpn) {
+                        $updateData['ppn'] = $hasPpn;
                     }
                     if (!empty($updateData)) {
                         $biaya->update($updateData);
