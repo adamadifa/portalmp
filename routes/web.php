@@ -33,6 +33,8 @@ use App\Http\Controllers\OpnamegudangbahanController;
 use App\Http\Controllers\SaldoawalgudangbahanController;
 use App\Http\Controllers\SaldoawalhargagudangbahanController;
 use App\Http\Controllers\BiayaController;
+use App\Http\Controllers\SaldoawalbukubesarController;
+use App\Http\Controllers\LaporanaccountingController;
 use Illuminate\Support\Facades\Route;
 
 Route::redirect('/', '/login');
@@ -176,6 +178,10 @@ Route::middleware('auth')->group(function () {
 
     // Accounting
     Route::get('/coa', [CoaController::class, 'index'])->name('coa.index');
+    Route::resource('saldoawalbukubesar', SaldoawalbukubesarController::class);
+    Route::post('/saldoawalbukubesar/getsaldo', [SaldoawalbukubesarController::class, 'getsaldo'])->name('saldoawalbukubesar.getsaldo');
+    Route::get('/laporanaccounting', [LaporanaccountingController::class, 'index'])->name('laporanaccounting.index');
+    Route::post('/laporanaccounting/cetakbukubesar', [LaporanaccountingController::class, 'cetakbukubesar'])->name('laporanaccounting.cetakbukubesar');
     Route::post('/kontrabonpembelian/{no_kontrabon}/storeproses', [KontrabonpembelianController::class, 'storeproses'])->name('kontrabonpmb.storeproses');
     Route::delete('/kontrabonpembelian/{no_kontrabon}/cancelproses', [KontrabonpembelianController::class, 'cancelproses'])->name('kontrabonpmb.cancelproses');
     Route::get('/kontrabonkeuangan/pembelian', [KontrabonpembelianController::class, 'index'])->name('kontrabonkeuangan.pembelian');

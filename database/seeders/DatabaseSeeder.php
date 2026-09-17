@@ -198,6 +198,13 @@ class DatabaseSeeder extends Seeder
 
             // Accounting Group
             ['name' => 'coa.index', 'id_permission_group' => $groupAccounting->id],
+            ['name' => 'saldoawalbukubesar.index', 'id_permission_group' => $groupAccounting->id],
+            ['name' => 'saldoawalbukubesar.create', 'id_permission_group' => $groupAccounting->id],
+            ['name' => 'saldoawalbukubesar.show', 'id_permission_group' => $groupAccounting->id],
+            ['name' => 'saldoawalbukubesar.edit', 'id_permission_group' => $groupAccounting->id],
+            ['name' => 'saldoawalbukubesar.delete', 'id_permission_group' => $groupAccounting->id],
+            ['name' => 'laporanaccounting.index', 'id_permission_group' => $groupAccounting->id],
+            ['name' => 'laporanaccounting.cetak', 'id_permission_group' => $groupAccounting->id],
         ];
 
         foreach ($permissions as $p) {

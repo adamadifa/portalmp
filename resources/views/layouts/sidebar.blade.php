@@ -220,8 +220,8 @@
         @endcanany
 
         <!-- Accounting Dropdown -->
-        @canany(['coa.index'])
-        <div x-data="{ open: {{ (Request::is('coa*')) ? 'true' : 'false' }} }">
+        @canany(['coa.index', 'saldoawalbukubesar.index', 'laporanaccounting.index'])
+        <div x-data="{ open: {{ (Request::is('coa*', 'saldoawalbukubesar*', 'laporanaccounting*')) ? 'true' : 'false' }} }">
             <button @click="open = !open" class="flex items-center justify-between w-full px-2 py-2 text-sm font-medium text-blue-100/70 hover:bg-white/5 hover:text-white rounded-lg group transition">
                 <div class="flex items-center">
                     <svg class="w-5 h-5 mr-3 text-blue-200/70 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
@@ -234,6 +234,18 @@
                 <a href="{{ route('coa.index') }}" class="relative flex items-center px-2 py-1.5 text-xs font-semibold {{ Request::is('coa*') ? 'text-white bg-white/10' : 'text-blue-100/60 hover:text-white hover:bg-white/5' }} rounded-lg transition">
                     <span class="absolute -left-[21px] w-2 h-2 rounded-full {{ Request::is('coa*') ? 'bg-white' : 'bg-white/30' }}"></span>
                     COA
+                </a>
+                @endcan
+                @can('saldoawalbukubesar.index')
+                <a href="{{ route('saldoawalbukubesar.index') }}" class="relative flex items-center px-2 py-1.5 text-xs font-semibold {{ Request::is('saldoawalbukubesar*') ? 'text-white bg-white/10' : 'text-blue-100/60 hover:text-white hover:bg-white/5' }} rounded-lg transition">
+                    <span class="absolute -left-[21px] w-2 h-2 rounded-full {{ Request::is('saldoawalbukubesar*') ? 'bg-white' : 'bg-white/30' }}"></span>
+                    Saldo Awal Buku Besar
+                </a>
+                @endcan
+                @can('laporanaccounting.index')
+                <a href="{{ route('laporanaccounting.index') }}" class="relative flex items-center px-2 py-1.5 text-xs font-semibold {{ Request::is('laporanaccounting*') ? 'text-white bg-white/10' : 'text-blue-100/60 hover:text-white hover:bg-white/5' }} rounded-lg transition">
+                    <span class="absolute -left-[21px] w-2 h-2 rounded-full {{ Request::is('laporanaccounting*') ? 'bg-white' : 'bg-white/30' }}"></span>
+                    Laporan Accounting
                 </a>
                 @endcan
             </div>
