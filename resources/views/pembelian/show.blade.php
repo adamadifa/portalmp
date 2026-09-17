@@ -22,7 +22,7 @@
             </div>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mt-6 pt-6 border-t border-slate-100 text-xs">
+        <div class="grid grid-cols-1 sm:grid-cols-4 gap-6 mt-6 pt-6 border-t border-slate-100 text-xs">
             <div>
                 <span class="block text-slate-400 font-semibold uppercase tracking-wider mb-1.5">Tanggal Transaksi</span>
                 <span class="font-bold text-slate-850 text-sm">{{ DateToIndo($pembelian->tanggal) }}</span>
@@ -37,6 +37,20 @@
                     <span class="inline-flex items-center px-2.5 py-0.5 rounded text-xs font-bold uppercase {{ $pembelian->jenis_transaksi == 'K' ? 'bg-amber-50 text-amber-800 border border-amber-200' : 'bg-blue-50 text-blue-700 border border-blue-200' }}">
                         {{ $pembelian->jenis_transaksi == 'K' ? 'Kredit (Tempo)' : 'Tunai' }}
                     </span>
+                </div>
+            </div>
+            <div>
+                <span class="block text-slate-400 font-semibold uppercase tracking-wider mb-1.5">Kategori</span>
+                <div>
+                    @if(($pembelian->kategori_pembelian ?? 'L') == 'I')
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded text-xs font-bold uppercase bg-purple-50 text-purple-800 border border-purple-200">
+                            Import
+                        </span>
+                    @else
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded text-xs font-bold uppercase bg-sky-50 text-sky-700 border border-sky-200">
+                            Lokal
+                        </span>
+                    @endif
                 </div>
             </div>
         </div>
@@ -155,8 +169,9 @@
             </div>
         </div>
 
+        @if(($pembelian->kategori_pembelian ?? 'L') == 'L')
         @php
-            // Perhitungan Rincian Akun Akuntansi Pembelian
+            // Perhitungan Rincian Akun Akuntansi Pembelian (Khusus Pembelian Lokal)
             $grand_total_pmb = $total_pembelian - $total_potongan + ($pembelian->penyesuaian_jk ?? 0);
             $pembelianByAkun = [];
 
@@ -361,6 +376,7 @@
                 </table>
             </div>
         </div>
+        @endif
 
         <!-- Histori Pembayaran -->
         <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
