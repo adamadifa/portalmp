@@ -129,6 +129,10 @@ class Pembelian extends Model
             if (!empty($request->jenis_transaksi_search)) {
                 $query->where('pembelian.jenis_transaksi', $request->jenis_transaksi_search);
             }
+
+            if (!empty($request->kategori_pembelian_search)) {
+                $query->where('pembelian.kategori_pembelian', $request->kategori_pembelian_search);
+            }
         } else {
             $query->whereBetween('pembelian.tanggal', [$start_date, $end_date]);
         }

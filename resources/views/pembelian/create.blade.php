@@ -346,6 +346,20 @@
                             </label>
                         </div>
                     </div>
+
+                    <div>
+                        <span class="text-xs font-semibold text-gray-700 block mb-2">Kategori Pembelian</span>
+                        <div class="grid grid-cols-2 gap-2">
+                            <label class="inline-flex items-center cursor-pointer">
+                                <input type="radio" name="kategori_pembelian" id="kategori_pembelian_l" value="L" checked class="rounded-full border-gray-300 text-[#294C9A] focus:ring-[#294C9A]" />
+                                <span class="ml-2 text-xs">Lokal</span>
+                            </label>
+                            <label class="inline-flex items-center cursor-pointer">
+                                <input type="radio" name="kategori_pembelian" id="kategori_pembelian_i" value="I" class="rounded-full border-gray-300 text-[#294C9A] focus:ring-[#294C9A]" />
+                                <span class="ml-2 text-xs">Import</span>
+                            </label>
+                        </div>
+                    </div>
                 </div>
             </div>
 

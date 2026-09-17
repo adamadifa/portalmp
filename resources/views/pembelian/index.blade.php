@@ -71,7 +71,7 @@
                 </div>
 
                 @can('pembelian.harga')
-                    <div class="md:col-span-6">
+                    <div class="md:col-span-4">
                         <div class="c-fl-group">
                             <span class="c-fl-icon">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
@@ -115,13 +115,27 @@
                     </div>
 
                     <div class="md:col-span-2">
+                        <div class="c-fl-group">
+                            <span class="c-fl-icon">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            </span>
+                            <select name="kategori_pembelian_search" id="kategori_pembelian_search" class="fi">
+                                <option value="">Semua Kategori</option>
+                                <option value="L" {{ Request('kategori_pembelian_search') == 'L' ? 'selected' : '' }}>Lokal</option>
+                                <option value="I" {{ Request('kategori_pembelian_search') == 'I' ? 'selected' : '' }}>Import</option>
+                            </select>
+                            <label for="kategori_pembelian_search" class="c-fl-label">Lokal / Import</label>
+                        </div>
+                    </div>
+
+                    <div class="md:col-span-2">
                         <button type="submit" class="w-full inline-flex items-center justify-center px-4 py-2 text-xs font-semibold text-white bg-[#294C9A] hover:bg-[#1E3A70] rounded-xl transition shadow-sm gap-1.5 h-[38px]">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                             Cari
                         </button>
                     </div>
                 @else
-                    <div class="md:col-span-10">
+                    <div class="md:col-span-8">
                         <div class="c-fl-group">
                             <span class="c-fl-icon">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
@@ -134,6 +148,20 @@
                                     </option>
                                 @endforeach
                             </select>
+                        </div>
+                    </div>
+
+                    <div class="md:col-span-2">
+                        <div class="c-fl-group">
+                            <span class="c-fl-icon">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            </span>
+                            <select name="kategori_pembelian_search" id="kategori_pembelian_search" class="fi">
+                                <option value="">Semua Kategori</option>
+                                <option value="L" {{ Request('kategori_pembelian_search') == 'L' ? 'selected' : '' }}>Lokal</option>
+                                <option value="I" {{ Request('kategori_pembelian_search') == 'I' ? 'selected' : '' }}>Import</option>
+                            </select>
+                            <label for="kategori_pembelian_search" class="c-fl-label">Lokal / Import</label>
                         </div>
                     </div>
 
@@ -175,12 +203,42 @@
         </div>
 
         <div class="overflow-x-auto">
+            <!-- Bulk Action Floating / Bar -->
+            <div id="bulkActionBar" class="hidden bg-blue-50/90 border-b border-blue-200 px-5 py-2.5 flex items-center justify-between text-xs transition">
+                <div class="flex items-center gap-2 text-[#294C9A] font-semibold">
+                    <span id="selectedCount" class="bg-[#294C9A] text-white px-2 py-0.5 rounded-full text-[11px]">0</span>
+                    <span>item terpilih</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div class="inline-flex items-center gap-1.5">
+                        <span class="text-gray-600 font-medium">Ubah Kategori:</span>
+                        <button type="button" onclick="bulkUpdateKategori('L')" class="px-2.5 py-1.5 bg-sky-100 text-sky-800 hover:bg-sky-200 border border-sky-300 rounded-lg font-medium transition shadow-xs">
+                            Lokal
+                        </button>
+                        <button type="button" onclick="bulkUpdateKategori('I')" class="px-2.5 py-1.5 bg-purple-100 text-purple-800 hover:bg-purple-200 border border-purple-300 rounded-lg font-medium transition shadow-xs">
+                            Import
+                        </button>
+                    </div>
+                    @can('pembelian.delete')
+                        <span class="text-gray-300 mx-1">|</span>
+                        <button type="button" onclick="bulkDelete()" class="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium transition shadow-xs inline-flex items-center gap-1">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                            Hapus Terpilih
+                        </button>
+                    @endcan
+                </div>
+            </div>
+
             <table class="w-full text-xs text-left text-gray-600">
                 <thead class="text-xs uppercase bg-gradient-to-r from-[#294C9A] to-[#1E3A70] text-white">
                     <tr>
+                        <th class="px-3 py-3 text-center w-10">
+                            <input type="checkbox" id="checkAll" class="rounded border-gray-300 text-[#294C9A] focus:ring-[#294C9A]">
+                        </th>
                         <th class="px-4 py-3 font-bold">NO. BUKTI</th>
                         <th class="px-4 py-3 font-bold">TANGGAL</th>
                         <th class="px-4 py-3 font-bold">SUPPLIER</th>
+                        <th class="px-4 py-3 font-bold text-center">KATEGORI</th>
                         @can('pembelian.harga')
                             <th class="px-4 py-3 font-bold text-end">TOTAL</th>
                             <th class="px-4 py-3 font-bold text-end">BAYAR</th>
@@ -198,9 +256,19 @@
                             $total = $d->subtotal + $d->penyesuaian_jk;
                         @endphp
                         <tr class="hover:bg-gray-50/80 transition">
+                            <td class="px-3 py-3 text-center">
+                                <input type="checkbox" class="checkItem rounded border-gray-300 text-[#294C9A] focus:ring-[#294C9A]" value="{{ $d->no_bukti }}">
+                            </td>
                             <td class="px-4 py-3 font-bold text-[#294C9A] font-mono">{{ $d->no_bukti }}</td>
                             <td class="px-4 py-3 font-medium text-gray-900">{{ formatIndo($d->tanggal) }}</td>
                             <td class="px-4 py-3 font-medium text-gray-900">{{ $d->nama_supplier }}</td>
+                            <td class="px-4 py-3 text-center">
+                                @if (($d->kategori_pembelian ?? 'L') == 'I')
+                                    <span class="px-2 py-0.5 text-[10px] font-semibold bg-purple-100 text-purple-800 border border-purple-200 rounded-md">Import</span>
+                                @else
+                                    <span class="px-2 py-0.5 text-[10px] font-semibold bg-sky-50 text-sky-700 border border-sky-200 rounded-md">Lokal</span>
+                                @endif
+                            </td>
                             @can('pembelian.harga')
                                 <td class="px-4 py-3 text-end font-bold text-gray-900">{{ formatAngkaDesimal($total) }}</td>
                                 <td class="px-4 py-3 text-end font-bold text-emerald-600">{{ formatAngkaDesimal($d->totalbayar) }}</td>
@@ -294,7 +362,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="11" class="px-4 py-8 text-center text-gray-400">
+                            <td colspan="13" class="px-4 py-8 text-center text-gray-400">
                                 <svg class="w-12 h-12 mx-auto mb-2 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path></svg>
                                 Data Transaksi Pembelian tidak ditemukan.
                             </td>
@@ -568,6 +636,165 @@
                 }
             });
         });
+        // Bulk Selection & Actions
+        function updateBulkBar() {
+            var selected = $('.checkItem:checked').map(function() {
+                return $(this).val();
+            }).get();
+
+            var count = selected.length;
+            $('#selectedCount').text(count);
+
+            if (count > 0) {
+                $('#bulkActionBar').removeClass('hidden');
+            } else {
+                $('#bulkActionBar').addClass('hidden');
+            }
+
+            var totalItems = $('.checkItem').length;
+            $('#checkAll').prop('checked', totalItems > 0 && count === totalItems);
+        }
+
+        $('#checkAll').on('change', function() {
+            var isChecked = $(this).is(':checked');
+            $('.checkItem').prop('checked', isChecked);
+            updateBulkBar();
+        });
+
+        $(document).on('change', '.checkItem', function() {
+            updateBulkBar();
+        });
+
+        window.bulkUpdateKategori = function(kategori) {
+            var selected = $('.checkItem:checked').map(function() {
+                return $(this).val();
+            }).get();
+
+            if (selected.length === 0) {
+                Swal.fire({
+                    title: 'Peringatan',
+                    text: 'Pilih minimal satu data pembelian!',
+                    icon: 'warning',
+                    confirmButtonColor: '#294C9A'
+                });
+                return;
+            }
+
+            var label = kategori === 'I' ? 'Import' : 'Lokal';
+
+            Swal.fire({
+                title: 'Konfirmasi Ubah Kategori',
+                text: `Ubah ${selected.length} data pembelian terpilih menjadi kategori ${label}?`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#294C9A',
+                cancelButtonColor: '#6B7280',
+                confirmButtonText: 'Ya, Ubah',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({
+                        title: 'Memproses...',
+                        text: 'Mohon tunggu sebentar',
+                        allowOutsideClick: false,
+                        didOpen: () => { Swal.showLoading(); }
+                    });
+
+                    $.ajax({
+                        url: "{{ route('pembelian.bulkupdatekategori') }}",
+                        type: 'POST',
+                        data: {
+                            _token: $('meta[name="csrf-token"]').attr('content'),
+                            no_bukti: selected,
+                            kategori_pembelian: kategori
+                        },
+                        success: function(response) {
+                            Swal.fire({
+                                title: 'Berhasil!',
+                                text: response.message,
+                                icon: 'success',
+                                confirmButtonColor: '#294C9A'
+                            }).then(() => {
+                                window.location.reload();
+                            });
+                        },
+                        error: function(xhr) {
+                            var errMsg = xhr.responseJSON && xhr.responseJSON.message ? xhr.responseJSON.message : 'Terjadi kesalahan saat memproses data.';
+                            Swal.fire({
+                                title: 'Gagal!',
+                                text: errMsg,
+                                icon: 'error',
+                                confirmButtonColor: '#d33'
+                            });
+                        }
+                    });
+                }
+            });
+        };
+
+        window.bulkDelete = function() {
+            var selected = $('.checkItem:checked').map(function() {
+                return $(this).val();
+            }).get();
+
+            if (selected.length === 0) {
+                Swal.fire({
+                    title: 'Peringatan',
+                    text: 'Pilih minimal satu data pembelian untuk dihapus!',
+                    icon: 'warning',
+                    confirmButtonColor: '#294C9A'
+                });
+                return;
+            }
+
+            Swal.fire({
+                title: 'Apakah Anda Yakin?',
+                text: `Menghapus ${selected.length} data pembelian terpilih. Data yang periode laporannya sudah ditutup atau memiliki kontrabon yang sudah dibayar tidak akan dihapus! Tindakan ini tidak dapat dibatalkan.`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#6B7280',
+                confirmButtonText: 'Ya, Hapus Terpilih!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({
+                        title: 'Menghapus...',
+                        text: 'Mohon tunggu sebentar',
+                        allowOutsideClick: false,
+                        didOpen: () => { Swal.showLoading(); }
+                    });
+
+                    $.ajax({
+                        url: "{{ route('pembelian.bulkdelete') }}",
+                        type: 'POST',
+                        data: {
+                            _token: $('meta[name="csrf-token"]').attr('content'),
+                            no_bukti: selected
+                        },
+                        success: function(response) {
+                            Swal.fire({
+                                title: 'Selesai!',
+                                text: response.message,
+                                icon: response.deleted_count > 0 ? 'success' : 'warning',
+                                confirmButtonColor: '#294C9A'
+                            }).then(() => {
+                                window.location.reload();
+                            });
+                        },
+                        error: function(xhr) {
+                            var errMsg = xhr.responseJSON && xhr.responseJSON.message ? xhr.responseJSON.message : 'Gagal menghapus data.';
+                            Swal.fire({
+                                title: 'Gagal!',
+                                text: errMsg,
+                                icon: 'error',
+                                confirmButtonColor: '#d33'
+                            });
+                        }
+                    });
+                }
+            });
+        };
     });
 </script>
 @endpush

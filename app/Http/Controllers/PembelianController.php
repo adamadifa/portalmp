@@ -273,6 +273,7 @@ class PembelianController extends Controller
                 'jatuh_tempo' => $request->jenis_transaksi == "K" ? $request->jatuh_tempo : $request->tanggal,
                 'ppn' => $request->ppn,
                 'kategori_transaksi' => $request->kategori_transaksi,
+                'kategori_pembelian' => $request->kategori_pembelian ?? 'L',
                 'kode_akun' => $request->kode_asal_pengajuan == 'GDB' ? '2-1200' : '2-1300',
                 'no_po' => $no_po,
                 'id_user' => auth()->user()->id
@@ -366,9 +367,107 @@ class PembelianController extends Controller
             DB::commit();
             return Redirect::back()->with(messageSuccess('Data Berhasil Dihapus'));
         } catch (\Exception $e) {
-            dd($e);
             DB::rollBack();
             return Redirect::back()->with(messageError($e->getMessage()));
+        }
+    }
+
+    public function bulkUpdateKategori(Request $request)
+    {
+        $request->validate([
+            'no_bukti' => 'required|array|min:1',
+            'kategori_pembelian' => 'required|in:L,I',
+        ]);
+
+        try {
+            $updated = Pembelian::whereIn('no_bukti', $request->no_bukti)
+                ->update(['kategori_pembelian' => $request->kategori_pembelian]);
+
+            $label = $request->kategori_pembelian == 'I' ? 'Import' : 'Lokal';
+            return response()->json([
+                'success' => true,
+                'message' => "Berhasil memperbarui {$updated} data pembelian menjadi kategori {$label}.",
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal memperbarui kategori: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function bulkDelete(Request $request)
+    {
+        $request->validate([
+            'no_bukti' => 'required|array|min:1',
+        ]);
+
+        $deletedCount = 0;
+        $skippedMessages = [];
+
+        DB::beginTransaction();
+        try {
+            foreach ($request->no_bukti as $no_bukti) {
+                $pembelian = Pembelian::where('no_bukti', $no_bukti)->first();
+                if (!$pembelian) {
+                    continue;
+                }
+
+                $cektutuplaporan = cektutupLaporan($pembelian->tanggal, "pembelian");
+                if ($cektutuplaporan > 0) {
+                    $skippedMessages[] = "No. Bukti {$no_bukti}: Periode laporan sudah ditutup.";
+                    continue;
+                }
+
+                $cekkontrabonpembeliansudahbayar = Historibayarpembelian::where('no_bukti', $no_bukti)->count();
+                if ($cekkontrabonpembeliansudahbayar > 0) {
+                    $skippedMessages[] = "No. Bukti {$no_bukti}: Memiliki kontrabon yang sudah dibayar.";
+                    continue;
+                }
+
+                $detailpembelian = Detailpembelian::where('no_bukti', $no_bukti)->get();
+
+                // Hapus Cost Ratio
+                foreach ($detailpembelian as $d) {
+                    if (!empty($d->kode_cr)) {
+                        Costratio::where('kode_cr', $d->kode_cr)->delete();
+                    }
+                }
+
+                // List Kontrabon Pembelian
+                $kontrabonpembelian = Detailkontrabonpembelian::where('no_bukti', $no_bukti)->get();
+                foreach ($kontrabonpembelian as $d) {
+                    Detailkontrabonpembelian::where('no_bukti', $no_bukti)->where('no_kontrabon', $d->no_kontrabon)->delete();
+                    $cekdetailkontrabon = Detailkontrabonpembelian::where('no_kontrabon', $d->no_kontrabon)->count();
+                    if (empty($cekdetailkontrabon)) {
+                        Kontrabonpembelian::where('no_kontrabon', $d->no_kontrabon)->delete();
+                    }
+                }
+
+                Detailpembelian::where('no_bukti', $no_bukti)->delete();
+                Pembelian::where('no_bukti', $no_bukti)->delete();
+                $deletedCount++;
+            }
+
+            DB::commit();
+
+            $message = "Berhasil menghapus {$deletedCount} data pembelian.";
+            if (!empty($skippedMessages)) {
+                $message .= " Beberapa data dilewati:\n" . implode("\n", $skippedMessages);
+            }
+
+            return response()->json([
+                'success' => true,
+                'deleted_count' => $deletedCount,
+                'skipped' => $skippedMessages,
+                'message' => $message,
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal menghapus data pembelian: ' . $e->getMessage(),
+            ], 500);
         }
     }
 
@@ -632,6 +731,7 @@ class PembelianController extends Controller
                 'jatuh_tempo' => $request->jenis_transaksi == "K" ? $request->jatuh_tempo : $request->tanggal,
                 'ppn' => $request->ppn,
                 'kategori_transaksi' => $request->kategori_transaksi,
+                'kategori_pembelian' => $request->kategori_pembelian ?? 'L',
                 'id_user' => auth()->user()->id
             ]);
 
