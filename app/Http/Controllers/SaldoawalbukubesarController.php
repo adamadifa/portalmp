@@ -124,13 +124,22 @@ class SaldoawalbukubesarController extends Controller
                 $saldo_map[$pr->kode_akun] = ($saldo_map[$pr->kode_akun] ?? 0) + (float) $pr->total;
             }
 
-            // Mutasi dari Penjualan Marketing (Hanya DPP)
+            // Mutasi dari Penjualan Marketing (Hanya DPP ke akun 4-11101)
             $penjualanTotal = DB::table('marketing_penjualan_detail')
                 ->join('marketing_penjualan', 'marketing_penjualan_detail.no_bukti', '=', 'marketing_penjualan.no_bukti')
                 ->whereBetween('marketing_penjualan.tanggal', [$start_date, $end_date])
                 ->sum(DB::raw('harga_dus * jumlah'));
             if ($penjualanTotal > 0) {
                 $saldo_map['4-11101'] = ($saldo_map['4-11101'] ?? 0) + (float) $penjualanTotal;
+            }
+
+            // Mutasi PPN Keluaran (ke akun Kewajiban 2-11301)
+            $ppnKeluaranTotal = DB::table('marketing_penjualan_detail')
+                ->join('marketing_penjualan', 'marketing_penjualan_detail.no_bukti', '=', 'marketing_penjualan.no_bukti')
+                ->whereBetween('marketing_penjualan.tanggal', [$start_date, $end_date])
+                ->sum(DB::raw('subtotal - (harga_dus * jumlah)'));
+            if ($ppnKeluaranTotal > 0) {
+                $saldo_map['2-11301'] = ($saldo_map['2-11301'] ?? 0) + (float) $ppnKeluaranTotal;
             }
         }
 

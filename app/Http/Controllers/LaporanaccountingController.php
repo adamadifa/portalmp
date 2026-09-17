@@ -103,7 +103,23 @@ class LaporanaccountingController extends Controller
                 DB::raw('2 as urutan')
             );
 
-        // 5. Pembayaran Hutang Pembelian (Kas/Bank keluar)
+        // 5. Transaksi PPN Keluaran (2-11301) dari Penjualan Marketing
+        $ppnKeluaranSub = DB::table('marketing_penjualan_detail')
+            ->join('marketing_penjualan', 'marketing_penjualan_detail.no_bukti', '=', 'marketing_penjualan.no_bukti')
+            ->whereBetween('marketing_penjualan.tanggal', [sprintf('%04d-%02d-01', $tahun, $bulan), $sampai])
+            ->select(
+                DB::raw("'2-11301' as kode_akun"),
+                'marketing_penjualan.tanggal',
+                'marketing_penjualan.no_bukti',
+                DB::raw("'PENJUALAN' as sumber"),
+                DB::raw("'PPN Keluaran Penjualan' as keterangan"),
+                DB::raw('0 as jml_debet'),
+                DB::raw('(marketing_penjualan_detail.subtotal - (marketing_penjualan_detail.harga_dus * marketing_penjualan_detail.jumlah)) as jml_kredit'),
+                DB::raw('0 as saldo_awal_val'),
+                DB::raw('2 as urutan')
+            );
+
+        // 6. Pembayaran Hutang Pembelian (Kas/Bank keluar)
         $bayarPembelianSub = DB::table('pembelian_historibayar')
             ->leftJoin('bank', 'pembelian_historibayar.kode_bank', '=', 'bank.kode_bank')
             ->whereBetween('pembelian_historibayar.tanggal', [sprintf('%04d-%02d-01', $tahun, $bulan), $sampai])
@@ -119,7 +135,7 @@ class LaporanaccountingController extends Controller
                 DB::raw('3 as urutan')
             );
 
-        // 6. Pembayaran Biaya (Kas/Bank keluar)
+        // 7. Pembayaran Biaya (Kas/Bank keluar)
         $bayarBiayaSub = DB::table('biaya_historibayar')
             ->leftJoin('bank', 'biaya_historibayar.kode_bank', '=', 'bank.kode_bank')
             ->whereBetween('biaya_historibayar.tanggal', [sprintf('%04d-%02d-01', $tahun, $bulan), $sampai])
@@ -140,6 +156,7 @@ class LaporanaccountingController extends Controller
             ->unionAll($biayaSub)
             ->unionAll($pembelianSub)
             ->unionAll($penjualanSub)
+            ->unionAll($ppnKeluaranSub)
             ->unionAll($bayarPembelianSub)
             ->unionAll($bayarBiayaSub);
 
