@@ -200,6 +200,51 @@ class LaporanaccountingController extends Controller
                 DB::raw('2 as urutan')
             );
 
+        // 11. PPN Masukan (1-11501) dari Pembelian yang PPN Aktif
+        // Rumus: dpp = (jumlah*harga) * 100/111
+        //        dpp_lain = dpp * 11/12
+        //        ppn = dpp_lain * 0.12
+        $ppnMasukanSub = DB::table('pembelian_detail')
+            ->join('pembelian', 'pembelian_detail.no_bukti', '=', 'pembelian.no_bukti')
+            ->whereBetween('pembelian.tanggal', [sprintf('%04d-%02d-01', $tahun, $bulan), $sampai])
+            ->where('pembelian.ppn', '1')
+            ->where('pembelian_detail.kode_transaksi', 'PMB')
+            ->select(
+                DB::raw("'1-11501' as kode_akun"),
+                'pembelian.tanggal',
+                'pembelian.no_bukti',
+                DB::raw("'PEMBELIAN' as sumber"),
+                DB::raw("CONCAT('PPN Masukan - ', COALESCE(pembelian_detail.keterangan, 'Pembelian Barang')) as keterangan"),
+                DB::raw('((((pembelian_detail.jumlah * pembelian_detail.harga) * 100 / 111) * 11 / 12) * 0.12) as jml_debet'),
+                DB::raw('0 as jml_kredit'),
+                DB::raw('0 as saldo_awal_val'),
+                DB::raw('2 as urutan')
+            );
+
+        // 12. Hutang Usaha (2-11101) dari Pembelian Kredit
+        // Untuk Import + PPN: hutang = DPP (subtotal * 100/111)
+        // Untuk Lokal / non-PPN: hutang = subtotal + penyesuaian
+        $hutangPembelianSub = DB::table('pembelian_detail')
+            ->join('pembelian', 'pembelian_detail.no_bukti', '=', 'pembelian.no_bukti')
+            ->leftJoin('supplier', 'pembelian.kode_supplier', '=', 'supplier.kode_supplier')
+            ->whereBetween('pembelian.tanggal', [sprintf('%04d-%02d-01', $tahun, $bulan), $sampai])
+            ->where('pembelian.jenis_transaksi', 'K')
+            ->where('pembelian_detail.kode_transaksi', 'PMB')
+            ->select(
+                DB::raw("'2-11101' as kode_akun"),
+                'pembelian.tanggal',
+                'pembelian.no_bukti',
+                DB::raw("'PEMBELIAN' as sumber"),
+                DB::raw("CONCAT('Hutang Pembelian - ', COALESCE(supplier.nama_supplier, '')) as keterangan"),
+                DB::raw('0 as jml_debet'),
+                DB::raw('CASE WHEN pembelian.kategori_pembelian = "I" AND pembelian.ppn = "1"
+                    THEN ((pembelian_detail.jumlah * pembelian_detail.harga) * 100 / 111)
+                    ELSE ((pembelian_detail.jumlah * pembelian_detail.harga) + pembelian_detail.penyesuaian)
+                END as jml_kredit'),
+                DB::raw('0 as saldo_awal_val'),
+                DB::raw('2 as urutan')
+            );
+
         // Satukan semua aliran data
         $unionQuery = $saldoAwalSub
             ->unionAll($biayaSub)
@@ -210,7 +255,9 @@ class LaporanaccountingController extends Controller
             ->unionAll($bayarPiutangSub)
             ->unionAll($bayarPembelianSub)
             ->unionAll($bayarBiayaSub)
-            ->unionAll($jurnalUmumSub);
+            ->unionAll($jurnalUmumSub)
+            ->unionAll($ppnMasukanSub)
+            ->unionAll($hutangPembelianSub);
 
         // FORMAT 1: BUKU BESAR
         if ($format == '1') {
