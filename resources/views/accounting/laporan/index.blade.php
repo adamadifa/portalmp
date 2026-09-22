@@ -122,7 +122,7 @@
     <!-- Header & Subtitle -->
     <div class="mb-6">
         <h2 class="text-2xl font-semibold text-gray-900 tracking-tight">Laporan Accounting</h2>
-        <p class="text-sm text-gray-500 mt-1">Mencetak laporan keuangan: Buku Besar, Neraca, dan Laba Rugi.</p>
+        <p class="text-sm text-gray-500 mt-1">Mencetak laporan keuangan: Buku Besar, Neraca, Laba Rugi, dan Jurnal Umum.</p>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
@@ -137,6 +137,18 @@
                     <span class="text-[11px] font-normal text-gray-500">Buku Besar, Neraca, Laba Rugi</span>
                 </div>
             </button>
+
+            @can('akt.jurnalumum')
+            <button type="button" data-tab="jurnalumum" class="tab-btn w-full flex items-center gap-3 px-4 py-3 text-xs font-semibold rounded-xl text-gray-600 hover:bg-gray-50 transition-all text-left">
+                <div class="w-8 h-8 rounded-lg bg-gray-100 text-gray-600 flex items-center justify-center shrink-0">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                </div>
+                <div>
+                    <span class="block text-sm font-bold">Jurnal Umum</span>
+                    <span class="text-[11px] font-normal text-gray-500">Daftar Jurnal Umum Periode</span>
+                </div>
+            </button>
+            @endcan
         </div>
 
         <!-- Tab Content Cards -->
@@ -152,6 +164,13 @@
                 <div id="tab-bukubesar" class="tab-content">
                     @include('accounting.laporan.lk.bukubesar')
                 </div>
+
+                @can('akt.jurnalumum')
+                <!-- Tab Panel: Jurnal Umum -->
+                <div id="tab-jurnalumum" class="tab-content hidden">
+                    @include('accounting.laporan.jurnalumum')
+                </div>
+                @endcan
             </div>
         </div>
     </div>
@@ -188,7 +207,29 @@
             showCoa();
 
             formLedger.find("#formatlaporan_ledger").on('change', function() {
-                showCoa();
+            // Tab switching
+            $('.tab-btn').on('click', function() {
+                $('.tab-btn').removeClass('active text-[#294C9A] bg-blue-50/80')
+                    .addClass('text-gray-600 hover:bg-gray-50');
+                $('.tab-btn .w-8').removeClass('bg-[#294C9A] text-white')
+                    .addClass('bg-gray-100 text-gray-600');
+
+                $(this).addClass('active text-[#294C9A] bg-blue-50/80')
+                    .removeClass('text-gray-600 hover:bg-gray-50');
+                $(this).find('.w-8').addClass('bg-[#294C9A] text-white')
+                    .removeClass('bg-gray-100 text-gray-600');
+
+                const targetTab = $(this).data('tab');
+                $('.tab-content').addClass('hidden');
+                $(`#tab-${targetTab}`).removeClass('hidden');
+
+                if (targetTab === 'bukubesar') {
+                    $('#panel-title').text('Laporan Keuangan');
+                    $('#panel-desc').text('Filter dan cetak format Buku Besar, Neraca, atau Laba Rugi.');
+                } else if (targetTab === 'jurnalumum') {
+                    $('#panel-title').text('Laporan Jurnal Umum');
+                    $('#panel-desc').text('Filter dan cetak transaksi Jurnal Umum per periode.');
+                }
             });
 
             formLedger.on('submit', function(e) {

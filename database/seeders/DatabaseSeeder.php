@@ -205,6 +205,11 @@ class DatabaseSeeder extends Seeder
             ['name' => 'saldoawalbukubesar.delete', 'id_permission_group' => $groupAccounting->id],
             ['name' => 'laporanaccounting.index', 'id_permission_group' => $groupAccounting->id],
             ['name' => 'laporanaccounting.cetak', 'id_permission_group' => $groupAccounting->id],
+            ['name' => 'jurnalumum.index', 'id_permission_group' => $groupAccounting->id],
+            ['name' => 'jurnalumum.create', 'id_permission_group' => $groupAccounting->id],
+            ['name' => 'jurnalumum.edit', 'id_permission_group' => $groupAccounting->id],
+            ['name' => 'jurnalumum.delete', 'id_permission_group' => $groupAccounting->id],
+            ['name' => 'akt.jurnalumum', 'id_permission_group' => $groupAccounting->id],
         ];
 
         foreach ($permissions as $p) {

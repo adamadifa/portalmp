@@ -253,7 +253,7 @@
                 <tbody class="divide-y divide-gray-100 bg-white">
                     @forelse ($pembelian as $d)
                         @php
-                            $total = $d->subtotal + $d->penyesuaian_jk;
+                            $total = $d->total_pembelian;
                         @endphp
                         <tr class="hover:bg-gray-50/80 transition">
                             <td class="px-3 py-3 text-center">

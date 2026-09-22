@@ -185,6 +185,21 @@ class LaporanaccountingController extends Controller
                 DB::raw('3 as urutan')
             );
 
+        // 10. Transaksi Jurnal Umum
+        $jurnalUmumSub = DB::table('accounting_jurnalumum')
+            ->whereBetween('accounting_jurnalumum.tanggal', [sprintf('%04d-%02d-01', $tahun, $bulan), $sampai])
+            ->select(
+                'accounting_jurnalumum.kode_akun',
+                'accounting_jurnalumum.tanggal',
+                'accounting_jurnalumum.kode_ju as no_bukti',
+                DB::raw("'JURNAL UMUM' as sumber"),
+                'accounting_jurnalumum.keterangan',
+                DB::raw("CASE WHEN accounting_jurnalumum.debet_kredit = 'D' THEN accounting_jurnalumum.jumlah ELSE 0 END as jml_debet"),
+                DB::raw("CASE WHEN accounting_jurnalumum.debet_kredit = 'K' THEN accounting_jurnalumum.jumlah ELSE 0 END as jml_kredit"),
+                DB::raw('0 as saldo_awal_val'),
+                DB::raw('2 as urutan')
+            );
+
         // Satukan semua aliran data
         $unionQuery = $saldoAwalSub
             ->unionAll($biayaSub)
@@ -194,7 +209,8 @@ class LaporanaccountingController extends Controller
             ->unionAll($piutangPenjualanSub)
             ->unionAll($bayarPiutangSub)
             ->unionAll($bayarPembelianSub)
-            ->unionAll($bayarBiayaSub);
+            ->unionAll($bayarBiayaSub)
+            ->unionAll($jurnalUmumSub);
 
         // FORMAT 1: BUKU BESAR
         if ($format == '1') {
@@ -349,6 +365,37 @@ class LaporanaccountingController extends Controller
             return view('accounting.laporan.lk.labarugi_cetak', $data);
         }
 
-        return Redirect::back()->with(['error' => 'Format laporan tidak valid.']);
+        return redirect()->back()->with(['error' => 'Format laporan tidak valid.']);
+    }
+
+    public function cetakjurnalumum(Request $request)
+    {
+        $request->validate([
+            'dari' => 'required|date',
+            'sampai' => 'required|date',
+        ]);
+
+        $query = DB::table('accounting_jurnalumum')
+            ->join('coa', 'accounting_jurnalumum.kode_akun', '=', 'coa.kode_akun')
+            ->whereBetween('accounting_jurnalumum.tanggal', [$request->dari, $request->sampai]);
+
+        if (!empty($request->kode_akun)) {
+            $query->where('accounting_jurnalumum.kode_akun', $request->kode_akun);
+        }
+
+        $query->orderBy('accounting_jurnalumum.tanggal', 'asc');
+        $query->orderBy('accounting_jurnalumum.kode_ju', 'asc');
+        $jurnalumum = $query->select('accounting_jurnalumum.*', 'coa.nama_akun')->get();
+
+        $data['jurnalumum'] = $jurnalumum;
+        $data['dari'] = $request->dari;
+        $data['sampai'] = $request->sampai;
+
+        if (isset($_POST['exportButton'])) {
+            header("Content-type: application/vnd-ms-excel");
+            header("Content-Disposition: attachment; filename=Jurnal_Umum_{$request->dari}_{$request->sampai}.xls");
+        }
+
+        return view('accounting.laporan.jurnalumum_cetak', $data);
     }
 }
