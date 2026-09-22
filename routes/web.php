@@ -119,6 +119,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/pembelian/{no_bukti}/show', [PembelianController::class, 'show'])->name('pembelian.show');
     Route::post('/pembelian/{no_bukti}/bayar', [PembelianController::class, 'storePembayaran'])->name('pembelian.storepembayaran');
     Route::post('/pembelian/{no_bukti}/bayar/delete', [PembelianController::class, 'destroyPembayaran'])->name('pembelian.destroypembayaran');
+    Route::post('/pembelian/{no_bukti}/storejurnalumum', [PembelianController::class, 'storeJurnalUmum'])->name('pembelian.storejurnalumum');
+    Route::post('/pembelian/{no_bukti}/destroyjurnalumum', [PembelianController::class, 'destroyJurnalUmum'])->name('pembelian.destroyjurnalumum');
     Route::get('/pembelian/{no_bukti}/cetak', [PembelianController::class, 'cetak'])->name('pembelian.cetak');
     Route::get('/pembelian/{no_bukti}/approvegdl', [PembelianController::class, 'approvegdl'])->name('pembelian.approvegdl');
     Route::post('/pembelian/{no_bukti}/storeapprovegdl', [PembelianController::class, 'storeapprovegdl'])->name('pembelian.storeapprovegdl');

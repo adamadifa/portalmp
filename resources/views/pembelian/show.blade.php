@@ -290,7 +290,7 @@
                             <th class="px-5 py-3 font-semibold uppercase tracking-wider w-36">Akun Pembelian</th>
                             <th class="px-5 py-3 font-semibold uppercase tracking-wider text-right w-36">DPP Pembelian (Rp)</th>
                             <th class="px-5 py-3 font-semibold uppercase tracking-wider text-right w-32">PPN Masukan (Rp)</th>
-                            <th class="px-5 py-3 font-semibold uppercase tracking-wider text-right w-36">Hutang Usaha (Rp)</th>
+                            <th class="px-5 py-3 font-semibold uppercase tracking-wider text-right w-36">{{ $is_import ? 'Nilai DPP/Hutang (Rp)' : 'Hutang Usaha (Rp)' }}</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100 text-slate-700 bg-white">
@@ -390,31 +390,42 @@
                             </tr>
                         @endif
 
-                        <!-- Akun Hutang Usaha / Kas (Kredit) -->
-                        <tr class="hover:bg-slate-50/40 transition">
-                            <td class="px-5 py-3 font-mono font-bold text-indigo-700">
-                                {{ $pembelian->jenis_transaksi == 'K' ? '2-11101' : '1-11101' }}
-                            </td>
-                            <td class="px-5 py-3 font-semibold text-slate-850">
-                                {{ $pembelian->jenis_transaksi == 'K' ? 'Hutang Usaha' : 'Kas / Bank' }}
-                                <span class="text-[10px] text-slate-400 font-normal block">
-                                    {{ $pembelian->jenis_transaksi == 'K' ? 'Kewajiban Hutang kepada ' . ($pembelian->nama_supplier ?? 'Supplier') : 'Pembelian Tunai' }}
-                                </span>
-                            </td>
-                            <td class="px-5 py-3">
-                                <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-amber-50 text-amber-700 border border-amber-200">
-                                    Kredit
-                                </span>
-                            </td>
-                            <td class="px-5 py-3 text-right text-slate-400">-</td>
-                            <td class="px-5 py-3 text-right font-bold text-indigo-900">{{ formatAngkaDesimal($total_kredit_pmb) }}</td>
-                        </tr>
+                        <!-- Akun Hutang Usaha / Kas (Kredit) - Dikecualikan jika kategori Import -->
+                        @if(!$is_import)
+                            <tr class="hover:bg-slate-50/40 transition">
+                                <td class="px-5 py-3 font-mono font-bold text-indigo-700">
+                                    {{ $pembelian->jenis_transaksi == 'K' ? '2-11101' : '1-11101' }}
+                                </td>
+                                <td class="px-5 py-3 font-semibold text-slate-850">
+                                    {{ $pembelian->jenis_transaksi == 'K' ? 'Hutang Usaha' : 'Kas / Bank' }}
+                                    <span class="text-[10px] text-slate-400 font-normal block">
+                                        {{ $pembelian->jenis_transaksi == 'K' ? 'Kewajiban Hutang kepada ' . ($pembelian->nama_supplier ?? 'Supplier') : 'Pembelian Tunai' }}
+                                    </span>
+                                </td>
+                                <td class="px-5 py-3">
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-amber-50 text-amber-700 border border-amber-200">
+                                        Kredit
+                                    </span>
+                                </td>
+                                <td class="px-5 py-3 text-right text-slate-400">-</td>
+                                <td class="px-5 py-3 text-right font-bold text-indigo-900">{{ formatAngkaDesimal($total_kredit_pmb) }}</td>
+                            </tr>
+                        @else
+                            <tr class="bg-violet-50/50">
+                                <td colspan="5" class="px-5 py-3 text-violet-800 text-[11px]">
+                                    <div class="flex items-center gap-2">
+                                        <svg class="w-4 h-4 shrink-0 text-violet-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                        <span><strong>Pembelian Kategori Import:</strong> Lawan akun Hutang Usaha (2-11101) dikecualikan. Lawan akun dicatat manual melalui form <strong>Jurnal Umum</strong> di bawah.</span>
+                                    </div>
+                                </td>
+                            </tr>
+                        @endif
                     </tbody>
                     <tfoot class="border-t border-slate-200 bg-slate-50 font-bold text-slate-800">
                         <tr>
                             <td colspan="3" class="px-5 py-3.5 text-right uppercase tracking-wider text-xs">Total Jurnal</td>
                             <td class="px-5 py-3.5 text-right font-black text-slate-900">{{ formatAngkaDesimal($total_debet_pmb) }}</td>
-                            <td class="px-5 py-3.5 text-right font-black text-slate-900">{{ formatAngkaDesimal($total_kredit_pmb) }}</td>
+                            <td class="px-5 py-3.5 text-right font-black text-slate-900">{{ formatAngkaDesimal($is_import ? 0 : $total_kredit_pmb) }}</td>
                         </tr>
                     </tfoot>
                 </table>
@@ -534,6 +545,131 @@
                 </table>
             </div>
         </div>
+
+        @if($is_import)
+            <!-- Section: Jurnal Umum (Khusus Import) -->
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                <div class="px-5 py-3 bg-violet-100/70 border-b border-violet-250 flex justify-between items-center">
+                    <div class="flex items-center gap-2">
+                        <span class="inline-flex items-center justify-center w-6 h-6 rounded-lg bg-violet-600 text-white text-xs font-bold">JU</span>
+                        <div>
+                            <h4 class="font-bold text-violet-900 text-xs uppercase tracking-wider">Jurnal Umum (Import)</h4>
+                            <p class="text-[10px] text-violet-700">Pencatatan manual lawan akun untuk transaksi pembelian Import</p>
+                        </div>
+                    </div>
+                    @can('jurnalumum.create')
+                    <button type="button" onclick="toggleFormJurnalUmum()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-violet-600 text-white hover:bg-violet-700 transition shadow-sm">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                        Input Jurnal Umum
+                    </button>
+                    @endcan
+                </div>
+
+                @can('jurnalumum.create')
+                <div id="formInputJurnalUmum" class="hidden p-5 bg-violet-50/30 border-b border-violet-100">
+                    <form id="formStoreJurnalUmum" class="space-y-4">
+                        @csrf
+                        <div class="flex items-center justify-between pb-2 border-b border-slate-200">
+                            <span class="text-xs font-bold text-slate-700">Tambah Baris Jurnal</span>
+                            <button type="button" onclick="tambahBarisJurnal()" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold bg-white border border-violet-300 text-violet-700 hover:bg-violet-50 transition">
+                                + Tambah Akun
+                            </button>
+                        </div>
+                        <div id="containerBarisJurnal" class="space-y-3">
+                            <div class="baris-jurnal grid grid-cols-1 md:grid-cols-12 gap-2 p-3 bg-white rounded-xl border border-slate-200 items-end">
+                                <div class="md:col-span-2">
+                                    <label class="block text-[11px] font-semibold text-slate-600 mb-1">Tanggal</label>
+                                    <input type="date" name="tanggal_item[]" value="{{ date('Y-m-d') }}" class="w-full text-xs rounded-lg border-slate-200 focus:border-violet-500 focus:ring-violet-500" required>
+                                </div>
+                                <div class="md:col-span-4">
+                                    <label class="block text-[11px] font-semibold text-slate-600 mb-1">Kode / Nama Akun</label>
+                                    <select name="kode_akun_item[]" class="select2-akun w-full text-xs rounded-lg border-slate-200" required>
+                                        <option value="">-- Pilih Akun --</option>
+                                        @foreach($coa ?? [] as $c)
+                                            <option value="{{ $c->kode_akun }}">{{ $c->kode_akun }} - {{ $c->nama_akun }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="md:col-span-2">
+                                    <label class="block text-[11px] font-semibold text-slate-600 mb-1">Posisi</label>
+                                    <select name="debet_kredit_item[]" class="w-full text-xs rounded-lg border-slate-200 focus:border-violet-500 focus:ring-violet-500" required>
+                                        <option value="K">Kredit</option>
+                                        <option value="D">Debet</option>
+                                    </select>
+                                </div>
+                                <div class="md:col-span-2">
+                                    <label class="block text-[11px] font-semibold text-slate-600 mb-1">Jumlah (Rp)</label>
+                                    <input type="text" name="jumlah_item[]" class="input-rupiah w-full text-xs text-right rounded-lg border-slate-200 focus:border-violet-500 focus:ring-violet-500" placeholder="0" required>
+                                </div>
+                                <div class="md:col-span-2 flex items-center gap-1">
+                                    <input type="text" name="keterangan_item[]" value="Import - {{ $pembelian->no_bukti }}" class="w-full text-xs rounded-lg border-slate-200 focus:border-violet-500 focus:ring-violet-500" placeholder="Keterangan">
+                                    <button type="button" onclick="hapusBarisJurnal(this)" class="p-1.5 text-rose-500 hover:bg-rose-50 rounded-lg">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex justify-end gap-2 pt-2">
+                            <button type="button" onclick="toggleFormJurnalUmum()" class="px-3 py-1.5 text-xs text-slate-600 hover:bg-slate-100 rounded-xl transition">Batal</button>
+                            <button type="submit" class="px-4 py-1.5 text-xs font-semibold bg-violet-600 text-white rounded-xl hover:bg-violet-700 transition shadow-sm">Simpan Jurnal</button>
+                        </div>
+                    </form>
+                </div>
+                @endcan
+
+                <!-- Tabel Data Jurnal Umum Terkait -->
+                <div class="overflow-x-auto">
+                    <table class="w-full text-xs text-left">
+                        <thead>
+                            <tr class="bg-violet-50/50 text-violet-900 border-b border-violet-100 font-semibold uppercase tracking-wider">
+                                <th class="px-5 py-3 w-12 text-center">No</th>
+                                <th class="px-5 py-3 w-28">No. Bukti JU</th>
+                                <th class="px-5 py-3 w-24">Tanggal</th>
+                                <th class="px-5 py-3 w-32">Kode Akun</th>
+                                <th class="px-5 py-3">Nama Akun</th>
+                                <th class="px-5 py-3">Keterangan</th>
+                                <th class="px-5 py-3 w-20 text-center">Posisi</th>
+                                <th class="px-5 py-3 text-right w-36">Jumlah (Rp)</th>
+                                @can('jurnalumum.create')<th class="px-5 py-3 text-center w-16">Aksi</th>@endcan
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100 text-slate-700 bg-white">
+                            @forelse($jurnalumum ?? [] as $ju)
+                                <tr class="hover:bg-slate-50/40 transition">
+                                    <td class="px-5 py-3 text-center font-mono text-slate-400">{{ $loop->iteration }}</td>
+                                    <td class="px-5 py-3 font-mono font-bold text-violet-700">{{ $ju->kode_ju }}</td>
+                                    <td class="px-5 py-3 text-slate-600">{{ DateToIndo($ju->tanggal) }}</td>
+                                    <td class="px-5 py-3 font-mono font-semibold text-slate-800">{{ $ju->kode_akun }}</td>
+                                    <td class="px-5 py-3 font-semibold text-slate-850">{{ $ju->nama_akun ?? '-' }}</td>
+                                    <td class="px-5 py-3 text-slate-600">{{ $ju->keterangan }}</td>
+                                    <td class="px-5 py-3 text-center">
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase {{ $ju->debet_kredit == 'D' ? 'bg-blue-50 text-blue-700 border border-blue-200' : 'bg-amber-50 text-amber-700 border border-amber-200' }}">
+                                            {{ $ju->debet_kredit == 'D' ? 'Debet' : 'Kredit' }}
+                                        </span>
+                                    </td>
+                                    <td class="px-5 py-3 text-right font-bold {{ $ju->debet_kredit == 'D' ? 'text-blue-700' : 'text-amber-700' }}">
+                                        {{ formatAngkaDesimal($ju->jumlah) }}
+                                    </td>
+                                    @can('jurnalumum.create')
+                                    <td class="px-5 py-3 text-center">
+                                        <button type="button" onclick="deleteJurnalUmum('{{ $ju->kode_ju }}')" class="p-1 text-rose-500 hover:bg-rose-50 rounded-lg transition" title="Hapus Jurnal">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                        </button>
+                                    </td>
+                                    @endcan
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="{{ auth()->user()->can('jurnalumum.create') ? 9 : 8 }}" class="px-5 py-6 text-center text-slate-400 italic">
+                                        Belum ada data Jurnal Umum untuk pembelian import ini.
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        @endif
     @else
         <!-- Non-Harga View (Simple Detail) -->
         <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
@@ -645,6 +781,168 @@
                     data: {
                         _token: '{{ csrf_token() }}',
                         id: id
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Berhasil',
+                                text: response.message,
+                                showConfirmButton: false,
+                                timer: 1500
+                            });
+                            $("#modalBody").load('/pembelian/{{ $crypted_no_bukti }}/show');
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Gagal',
+                                text: response.message
+                            });
+                        }
+                    },
+                    error: function(xhr) {
+                        var msg = 'Terjadi kesalahan pada server.';
+                        if (xhr.responseJSON && xhr.responseJSON.message) {
+                            msg = xhr.responseJSON.message;
+                        }
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Gagal',
+                            text: msg
+                        });
+                    }
+                });
+            }
+        });
+    }
+
+    function initSelect2Akun(element) {
+        element.select2({
+            dropdownParent: $('#modalDialog'),
+            width: '100%'
+        });
+    }
+
+    function toggleFormJurnalUmum() {
+        $('#formInputJurnalUmum').toggleClass('hidden');
+        if (!$('#formInputJurnalUmum').hasClass('hidden')) {
+            initSelect2Akun($('.select2-akun'));
+        }
+    }
+
+    function tambahBarisJurnal() {
+        var rowHtml = `
+            <div class="baris-jurnal grid grid-cols-1 md:grid-cols-12 gap-2 p-3 bg-white rounded-xl border border-slate-200 items-end">
+                <div class="md:col-span-2">
+                    <label class="block text-[11px] font-semibold text-slate-600 mb-1">Tanggal</label>
+                    <input type="date" name="tanggal_item[]" value="{{ date('Y-m-d') }}" class="w-full text-xs rounded-lg border-slate-200 focus:border-violet-500 focus:ring-violet-500" required>
+                </div>
+                <div class="md:col-span-4">
+                    <label class="block text-[11px] font-semibold text-slate-600 mb-1">Kode / Nama Akun</label>
+                    <select name="kode_akun_item[]" class="select2-akun w-full text-xs rounded-lg border-slate-200" required>
+                        <option value="">-- Pilih Akun --</option>
+                        @foreach($coa ?? [] as $c)
+                            <option value="{{ $c->kode_akun }}">{{ $c->kode_akun }} - {{ $c->nama_akun }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="md:col-span-2">
+                    <label class="block text-[11px] font-semibold text-slate-600 mb-1">Posisi</label>
+                    <select name="debet_kredit_item[]" class="w-full text-xs rounded-lg border-slate-200 focus:border-violet-500 focus:ring-violet-500" required>
+                        <option value="K">Kredit</option>
+                        <option value="D">Debet</option>
+                    </select>
+                </div>
+                <div class="md:col-span-2">
+                    <label class="block text-[11px] font-semibold text-slate-600 mb-1">Jumlah (Rp)</label>
+                    <input type="text" name="jumlah_item[]" class="input-rupiah w-full text-xs text-right rounded-lg border-slate-200 focus:border-violet-500 focus:ring-violet-500" placeholder="0" required>
+                </div>
+                <div class="md:col-span-2 flex items-center gap-1">
+                    <input type="text" name="keterangan_item[]" value="Import - {{ $pembelian->no_bukti }}" class="w-full text-xs rounded-lg border-slate-200 focus:border-violet-500 focus:ring-violet-500" placeholder="Keterangan">
+                    <button type="button" onclick="hapusBarisJurnal(this)" class="p-1.5 text-rose-500 hover:bg-rose-50 rounded-lg">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
+                </div>
+            </div>`;
+        var newRow = $(rowHtml);
+        $('#containerBarisJurnal').append(newRow);
+        initSelect2Akun(newRow.find('.select2-akun'));
+    }
+
+    function hapusBarisJurnal(btn) {
+        if ($('#containerBarisJurnal .baris-jurnal').length > 1) {
+            $(btn).closest('.baris-jurnal').remove();
+        } else {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Perhatian',
+                text: 'Minimal harus ada 1 baris akun jurnal.'
+            });
+        }
+    }
+
+    $('#formStoreJurnalUmum').on('submit', function(e) {
+        e.preventDefault();
+        var form = $(this);
+        var submitBtn = form.find('button[type="submit"]');
+        submitBtn.prop('disabled', true).text('Menyimpan...');
+
+        $.ajax({
+            url: '{{ route("pembelian.storejurnalumum", $crypted_no_bukti) }}',
+            type: 'POST',
+            data: form.serialize(),
+            success: function(response) {
+                if (response.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Berhasil',
+                        text: response.message,
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                    $("#modalBody").load('/pembelian/{{ $crypted_no_bukti }}/show');
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Gagal',
+                        text: response.message
+                    });
+                    submitBtn.prop('disabled', false).text('Simpan Jurnal');
+                }
+            },
+            error: function(xhr) {
+                var msg = 'Terjadi kesalahan pada server.';
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    msg = xhr.responseJSON.message;
+                }
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Gagal',
+                    text: msg
+                });
+                submitBtn.prop('disabled', false).text('Simpan Jurnal');
+            }
+        });
+    });
+
+    function deleteJurnalUmum(kode_ju) {
+        Swal.fire({
+            title: 'Hapus Jurnal?',
+            text: 'Jurnal ' + kode_ju + ' ini akan dihapus dari Jurnal Umum!',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Ya, Hapus!',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: '{{ route("pembelian.destroyjurnalumum", $crypted_no_bukti) }}',
+                    type: 'POST',
+                    data: {
+                        _token: '{{ csrf_token() }}',
+                        kode_ju: kode_ju
                     },
                     success: function(response) {
                         if (response.success) {

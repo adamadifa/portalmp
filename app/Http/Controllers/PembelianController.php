@@ -79,9 +79,86 @@ class PembelianController extends Controller
         $data['banks'] = DB::table('bank')->where('kode_cabang', 'PST')->orderBy('nama_bank')->get();
         $data['cabang'] = Cabang::orderBy('kode_cabang')->get();
         $data['crypted_no_bukti'] = Crypt::encrypt($no_bukti);
+        $data['coa'] = DB::table('coa')->orderBy('kode_akun')->get();
+        $data['jurnalumum'] = DB::table('accounting_jurnalumum')
+            ->join('coa', 'accounting_jurnalumum.kode_akun', '=', 'coa.kode_akun')
+            ->where('accounting_jurnalumum.no_bukti', $no_bukti)
+            ->orderBy('accounting_jurnalumum.tanggal')
+            ->orderBy('accounting_jurnalumum.kode_ju')
+            ->select('accounting_jurnalumum.*', 'coa.nama_akun')
+            ->get();
 
         $data['asal_pengajuan'] = config('pembelian.asal_pengajuan');
         return view('pembelian.show', $data);
+    }
+
+    public function storeJurnalUmum(Request $request, $no_bukti)
+    {
+        abort_if(!auth()->user()->can('jurnalumum.create'), 403);
+
+        $no_bukti = Crypt::decrypt($no_bukti);
+
+        $kode_akun_items   = $request->kode_akun_item ?? [];
+        $keterangan_items  = $request->keterangan_item ?? [];
+        $jumlah_items      = $request->jumlah_item ?? [];
+        $debet_kredit_items = $request->debet_kredit_item ?? [];
+        $tanggal_items     = $request->tanggal_item ?? [];
+
+        if (empty($kode_akun_items)) {
+            return response()->json(['success' => false, 'message' => 'Data jurnal kosong.'], 422);
+        }
+
+        DB::beginTransaction();
+        try {
+            for ($i = 0; $i < count($kode_akun_items); $i++) {
+                $tgl    = $tanggal_items[$i] ?? now()->toDateString();
+                $prefix = 'JL' . date('ym', strtotime($tgl));
+
+                $last = DB::table('accounting_jurnalumum')
+                    ->whereRaw('LEFT(kode_ju, 6) = ?', [$prefix])
+                    ->orderBy('kode_ju', 'desc')
+                    ->value('kode_ju');
+
+                $kode_ju = buatkode($last ?? '', $prefix, 3);
+
+                DB::table('accounting_jurnalumum')->insert([
+                    'kode_ju'      => $kode_ju,
+                    'no_bukti'     => $no_bukti,
+                    'tanggal'      => $tgl,
+                    'kode_akun'    => $kode_akun_items[$i],
+                    'keterangan'   => $keterangan_items[$i] ?? 'Jurnal Import - ' . $no_bukti,
+                    'debet_kredit' => $debet_kredit_items[$i],
+                    'kode_dept'    => 'AKT',
+                    'jumlah'       => toNumber($jumlah_items[$i] ?? 0),
+                    'id_user'      => auth()->user()->id,
+                    'created_at'   => now(),
+                    'updated_at'   => now(),
+                ]);
+            }
+
+            DB::commit();
+            return response()->json(['success' => true, 'message' => 'Jurnal berhasil disimpan.']);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+        }
+    }
+
+    public function destroyJurnalUmum(Request $request, $no_bukti)
+    {
+        abort_if(!auth()->user()->can('jurnalumum.create'), 403);
+        $no_bukti = Crypt::decrypt($no_bukti);
+        $kode_ju  = $request->kode_ju;
+
+        try {
+            DB::table('accounting_jurnalumum')
+                ->where('kode_ju', $kode_ju)
+                ->where('no_bukti', $no_bukti)
+                ->delete();
+            return response()->json(['success' => true, 'message' => 'Jurnal berhasil dihapus.']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+        }
     }
 
     public function storePembayaran(Request $request, $no_bukti)

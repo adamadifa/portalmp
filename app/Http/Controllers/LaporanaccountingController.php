@@ -229,6 +229,7 @@ class LaporanaccountingController extends Controller
             ->leftJoin('supplier', 'pembelian.kode_supplier', '=', 'supplier.kode_supplier')
             ->whereBetween('pembelian.tanggal', [sprintf('%04d-%02d-01', $tahun, $bulan), $sampai])
             ->where('pembelian.jenis_transaksi', 'K')
+            ->where('pembelian.kategori_pembelian', '!=', 'I')
             ->where('pembelian_detail.kode_transaksi', 'PMB')
             ->select(
                 DB::raw("'2-11101' as kode_akun"),
