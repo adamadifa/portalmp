@@ -287,7 +287,7 @@
                                     @endif
                                 </td>
                                 <td class="px-4 py-3 text-center">
-                                    @if ($total <= ($d->totalbayar ?? 0))
+                                    @if (round($total, 2) <= round($d->totalbayar ?? 0, 2))
                                     <span class="px-1.5 py-0.5 text-[10px] font-semibold bg-green-100 text-green-800 rounded-full">Lunas</span>
                                 @else
                                     <span class="px-1.5 py-0.5 text-[10px] font-semibold bg-red-100 text-red-800 rounded-full">Belum Lunas</span>

@@ -30,7 +30,7 @@ class Pembelian extends Model
             'penyesuaian_jk',
             'totalbayar',
             'cek_kontrabon',
-            DB::raw('IF(pembelian.kategori_pembelian = "I", IF(pembelian.ppn = "1", IFNULL(subtotal_tanpa_penyesuaian,0) * 100 / 111, IFNULL(subtotal,0)), IFNULL(subtotal,0) + IFNULL(penyesuaian_jk,0)) as total_pembelian'),
+            DB::raw('ROUND(IF(pembelian.kategori_pembelian = "I", IF(pembelian.ppn = "1", IFNULL(subtotal_tanpa_penyesuaian,0) * 100 / 111, IFNULL(subtotal,0)), IFNULL(subtotal,0) + IFNULL(penyesuaian_jk,0)), 2) as total_pembelian'),
             'gudang_logistik_barang_masuk.no_bukti as no_bukti_gdl',
             'maintenance_barang_masuk.no_bukti as no_bukti_mtc',
         );
@@ -146,7 +146,7 @@ class Pembelian extends Model
             $query->where('pembelian.kode_supplier', $kode_supplier);
             $query->where('pembelian.jenis_transaksi', '!=', 'T');
             // Belum lunas: total_pembelian (DPP untuk Import) != totalbayar
-            $query->whereRaw('IF(pembelian.kategori_pembelian = "I", IF(pembelian.ppn = "1", IFNULL(subtotal_tanpa_penyesuaian,0) * 100 / 111, IFNULL(subtotal,0)), IFNULL(subtotal,0) + IFNULL(penyesuaian_jk,0)) != IFNULL(totalbayar,0)');
+            $query->whereRaw('ROUND(IF(pembelian.kategori_pembelian = "I", IF(pembelian.ppn = "1", IFNULL(subtotal_tanpa_penyesuaian,0) * 100 / 111, IFNULL(subtotal,0)), IFNULL(subtotal,0) + IFNULL(penyesuaian_jk,0)), 2) != IFNULL(totalbayar,0)');
         }
 
         if ($user->hasRole(['admin gudang logistik'])) {
