@@ -182,7 +182,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/kontrabonpembelian/{no_kontrabon}/proses', [KontrabonpembelianController::class, 'proses'])->name('kontrabonpmb.proses');
 
     // Accounting
-    Route::get('/coa', [CoaController::class, 'index'])->name('coa.index');
+    Route::resource('coa', CoaController::class);
     Route::resource('saldoawalbukubesar', SaldoawalbukubesarController::class);
     Route::post('/saldoawalbukubesar/getsaldo', [SaldoawalbukubesarController::class, 'getsaldo'])->name('saldoawalbukubesar.getsaldo');
     

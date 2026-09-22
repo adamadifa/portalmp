@@ -549,17 +549,17 @@
         @if($is_import)
             <!-- Section: Jurnal Umum (Khusus Import) -->
             <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-                <div class="px-5 py-3 bg-[#EEF2FF] border-b border-[#C7D2FE] flex justify-between items-center">
+                <div class="px-5 py-3 bg-emerald-100/70 border-b border-emerald-250 flex justify-between items-center">
                     <div class="flex items-center gap-2">
-                        <span class="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-[#4F46E5] text-white text-xs font-bold shadow-xs">JU</span>
+                        <span class="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-emerald-700 text-white text-xs font-bold shadow-xs">JU</span>
                         <div>
-                            <h4 class="font-bold text-[#312E81] text-xs uppercase tracking-wider">Jurnal Umum (Import)</h4>
-                            <p class="text-[10px] text-[#4338CA]">Pencatatan manual lawan akun untuk transaksi pembelian Import</p>
+                            <h4 class="font-bold text-emerald-900 text-xs uppercase tracking-wider">Jurnal Umum (Import)</h4>
+                            <p class="text-[10px] text-emerald-700">Pencatatan manual lawan akun untuk transaksi pembelian Import</p>
                         </div>
                     </div>
                     @if(auth()->user()->can('jurnalumum.create') || auth()->user()->can('pembelian.create'))
-                    <button type="button" onclick="toggleFormJurnalUmum()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-[#4F46E5] hover:bg-[#4338CA] text-white transition shadow-sm cursor-pointer">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                    <button type="button" onclick="toggleFormJurnalUmum()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-emerald-600 text-white hover:bg-emerald-700 transition shadow-sm cursor-pointer" style="background-color: #059669 !important; color: #ffffff !important;">
+                        <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
                         Input Jurnal Umum
                     </button>
                     @endif
@@ -611,7 +611,7 @@
                         </div>
                         <div class="flex justify-end gap-2 pt-2">
                             <button type="button" onclick="toggleFormJurnalUmum()" class="px-3 py-1.5 text-xs text-slate-600 hover:bg-slate-100 rounded-xl transition">Batal</button>
-                            <button type="submit" class="px-4 py-1.5 text-xs font-semibold bg-[#4F46E5] hover:bg-[#4338CA] text-white rounded-xl transition shadow-sm">Simpan Jurnal</button>
+                            <button type="submit" class="px-4 py-1.5 text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl transition shadow-sm" style="background-color: #059669 !important; color: #ffffff !important;">Simpan Jurnal</button>
                         </div>
                     </form>
                 </div>
