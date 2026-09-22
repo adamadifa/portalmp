@@ -85,12 +85,18 @@
                             $total_dpp_detail = 0;
                             $total_dpp_lain_detail = 0;
                             $total_ppn_detail = 0;
+                            $is_import = (($pembelian->kategori_pembelian ?? 'L') == 'I');
                         @endphp
                         @foreach ($detail as $d)
                             @php
                                 $subtotal = $d->jumlah * $d->harga;
                                 $total = $subtotal + $d->penyesuaian;
-                                $total_pembelian += $total;
+                                // Untuk Import + PPN: hutang = DPP (subtotal * 100/111), bukan subtotal+penyesuaian
+                                if ($is_import && $pembelian->ppn == '1') {
+                                    $total_pembelian += $subtotal * 100 / 111;
+                                } else {
+                                    $total_pembelian += $total;
+                                }
 
                                 if ($pembelian->ppn == '1') {
                                     $dpp_val = $subtotal * 100 / 111;
@@ -204,7 +210,12 @@
 
         @php
             // Perhitungan Rincian Akun Akuntansi Pembelian
-            $grand_total_pmb = $total_pembelian - $total_potongan + ($pembelian->penyesuaian_jk ?? 0);
+            // Untuk Import + PPN: grand total = total_pembelian (sudah DPP) - potongan (tanpa penyesuaian_jk)
+            if ($is_import && $pembelian->ppn == '1') {
+                $grand_total_pmb = $total_pembelian - $total_potongan;
+            } else {
+                $grand_total_pmb = $total_pembelian - $total_potongan + ($pembelian->penyesuaian_jk ?? 0);
+            }
             $pembelianByAkun = [];
 
             $itemBreakdowns = [];
@@ -216,7 +227,8 @@
                 $sub = ($d->jumlah * $d->harga) + $d->penyesuaian;
                 $dpp = ($pembelian->ppn == '1') ? (($d->jumlah * $d->harga) * 100 / 111) : $sub;
                 $ppn = ($pembelian->ppn == '1') ? ($sub - $dpp) : 0;
-                $hutang = $sub;
+                // Untuk Import + PPN: hutang per item = DPP, bukan sub
+                $hutang = ($is_import && $pembelian->ppn == '1') ? $dpp : $sub;
 
                 $kdAkun = $d->kode_akun ?? ($pembelian->kode_akun ?? '5-11101');
                 $nmAkun = $d->nama_akun ?? 'Pembelian';
@@ -423,7 +435,12 @@
             @can('pembelian.create')
             @php
                 $total_paid = $historibayar->sum('jumlah');
-                $grand_total = $total_pembelian - $total_potongan + $pembelian->penyesuaian_jk;
+                // Untuk Import + PPN: hutang = DPP (tanpa penyesuaian_jk)
+                if ($is_import && $pembelian->ppn == '1') {
+                    $grand_total = $total_pembelian - $total_potongan;
+                } else {
+                    $grand_total = $total_pembelian - $total_potongan + $pembelian->penyesuaian_jk;
+                }
                 $unpaid_balance = max(0, $grand_total - $total_paid);
             @endphp
             <div id="formInputPembayaran" class="hidden p-5 bg-slate-50/50 border-b border-slate-100">
@@ -494,7 +511,12 @@
                     </tbody>
                     @php
                         $total_paid = $historibayar->sum('jumlah');
-                        $grand_total = $total_pembelian - $total_potongan + $pembelian->penyesuaian_jk;
+                        // Konsisten dengan kalkulasi di atas
+                        if ($is_import && $pembelian->ppn == '1') {
+                            $grand_total = $total_pembelian - $total_potongan;
+                        } else {
+                            $grand_total = $total_pembelian - $total_potongan + $pembelian->penyesuaian_jk;
+                        }
                         $remaining = $grand_total - $total_paid;
                     @endphp
                     <tfoot class="border-t border-slate-200 bg-slate-50/70">
