@@ -245,6 +245,24 @@ class LaporanaccountingController extends Controller
                 DB::raw('2 as urutan')
             );
 
+        // 13. PPN Masukan (1-11501) dari Biaya yang PPN Aktif
+        // Rumus sama: dpp_lain * 0.12 = ((jumlah*harga) * 100/111 * 11/12) * 0.12
+        $ppnMasukanBiayaSub = DB::table('biaya_detail')
+            ->join('biaya', 'biaya_detail.no_bukti', '=', 'biaya.no_bukti')
+            ->whereBetween('biaya.tanggal', [sprintf('%04d-%02d-01', $tahun, $bulan), $sampai])
+            ->where('biaya.ppn', '1')
+            ->select(
+                DB::raw("'1-11501' as kode_akun"),
+                'biaya.tanggal',
+                'biaya.no_bukti',
+                DB::raw("'BIAYA' as sumber"),
+                DB::raw("CONCAT('PPN Masukan Biaya - ', COALESCE(biaya_detail.keterangan, 'Biaya Operasional')) as keterangan"),
+                DB::raw('((((biaya_detail.jumlah * biaya_detail.harga) * 100 / 111) * 11 / 12) * 0.12) as jml_debet'),
+                DB::raw('0 as jml_kredit'),
+                DB::raw('0 as saldo_awal_val'),
+                DB::raw('2 as urutan')
+            );
+
         // Satukan semua aliran data
         $unionQuery = $saldoAwalSub
             ->unionAll($biayaSub)
@@ -257,7 +275,9 @@ class LaporanaccountingController extends Controller
             ->unionAll($bayarBiayaSub)
             ->unionAll($jurnalUmumSub)
             ->unionAll($ppnMasukanSub)
-            ->unionAll($hutangPembelianSub);
+            ->unionAll($hutangPembelianSub)
+            ->unionAll($ppnMasukanBiayaSub);
+
 
         // FORMAT 1: BUKU BESAR
         if ($format == '1') {
