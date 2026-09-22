@@ -549,37 +549,37 @@
         @if($is_import)
             <!-- Section: Jurnal Umum (Khusus Import) -->
             <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-                <div class="px-5 py-3 bg-violet-100/70 border-b border-violet-250 flex justify-between items-center">
+                <div class="px-5 py-3 bg-[#EEF2FF] border-b border-[#C7D2FE] flex justify-between items-center">
                     <div class="flex items-center gap-2">
-                        <span class="inline-flex items-center justify-center w-6 h-6 rounded-lg bg-violet-600 text-white text-xs font-bold">JU</span>
+                        <span class="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-[#4F46E5] text-white text-xs font-bold shadow-xs">JU</span>
                         <div>
-                            <h4 class="font-bold text-violet-900 text-xs uppercase tracking-wider">Jurnal Umum (Import)</h4>
-                            <p class="text-[10px] text-violet-700">Pencatatan manual lawan akun untuk transaksi pembelian Import</p>
+                            <h4 class="font-bold text-[#312E81] text-xs uppercase tracking-wider">Jurnal Umum (Import)</h4>
+                            <p class="text-[10px] text-[#4338CA]">Pencatatan manual lawan akun untuk transaksi pembelian Import</p>
                         </div>
                     </div>
-                    @can('jurnalumum.create')
-                    <button type="button" onclick="toggleFormJurnalUmum()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-violet-600 text-white hover:bg-violet-700 transition shadow-sm">
+                    @if(auth()->user()->can('jurnalumum.create') || auth()->user()->can('pembelian.create'))
+                    <button type="button" onclick="toggleFormJurnalUmum()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-[#4F46E5] hover:bg-[#4338CA] text-white transition shadow-sm cursor-pointer">
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
                         Input Jurnal Umum
                     </button>
-                    @endcan
+                    @endif
                 </div>
 
-                @can('jurnalumum.create')
-                <div id="formInputJurnalUmum" class="hidden p-5 bg-violet-50/30 border-b border-violet-100">
+                @if(auth()->user()->can('jurnalumum.create') || auth()->user()->can('pembelian.create'))
+                <div id="formInputJurnalUmum" class="hidden p-5 bg-slate-50/70 border-b border-slate-200">
                     <form id="formStoreJurnalUmum" class="space-y-4">
                         @csrf
                         <div class="flex items-center justify-between pb-2 border-b border-slate-200">
                             <span class="text-xs font-bold text-slate-700">Tambah Baris Jurnal</span>
-                            <button type="button" onclick="tambahBarisJurnal()" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold bg-white border border-violet-300 text-violet-700 hover:bg-violet-50 transition">
+                            <button type="button" onclick="tambahBarisJurnal()" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold bg-white border border-[#4F46E5] text-[#4F46E5] hover:bg-indigo-50 transition">
                                 + Tambah Akun
                             </button>
                         </div>
                         <div id="containerBarisJurnal" class="space-y-3">
-                            <div class="baris-jurnal grid grid-cols-1 md:grid-cols-12 gap-2 p-3 bg-white rounded-xl border border-slate-200 items-end">
+                            <div class="baris-jurnal grid grid-cols-1 md:grid-cols-12 gap-2 p-3 bg-white rounded-xl border border-slate-200 items-end shadow-2xs">
                                 <div class="md:col-span-2">
                                     <label class="block text-[11px] font-semibold text-slate-600 mb-1">Tanggal</label>
-                                    <input type="date" name="tanggal_item[]" value="{{ date('Y-m-d') }}" class="w-full text-xs rounded-lg border-slate-200 focus:border-violet-500 focus:ring-violet-500" required>
+                                    <input type="date" name="tanggal_item[]" value="{{ date('Y-m-d') }}" class="w-full text-xs rounded-lg border-slate-200 focus:border-indigo-500 focus:ring-indigo-500" required>
                                 </div>
                                 <div class="md:col-span-4">
                                     <label class="block text-[11px] font-semibold text-slate-600 mb-1">Kode / Nama Akun</label>
@@ -592,18 +592,18 @@
                                 </div>
                                 <div class="md:col-span-2">
                                     <label class="block text-[11px] font-semibold text-slate-600 mb-1">Posisi</label>
-                                    <select name="debet_kredit_item[]" class="w-full text-xs rounded-lg border-slate-200 focus:border-violet-500 focus:ring-violet-500" required>
+                                    <select name="debet_kredit_item[]" class="w-full text-xs rounded-lg border-slate-200 focus:border-indigo-500 focus:ring-indigo-500" required>
                                         <option value="K">Kredit</option>
                                         <option value="D">Debet</option>
                                     </select>
                                 </div>
                                 <div class="md:col-span-2">
                                     <label class="block text-[11px] font-semibold text-slate-600 mb-1">Jumlah (Rp)</label>
-                                    <input type="text" name="jumlah_item[]" class="input-rupiah w-full text-xs text-right rounded-lg border-slate-200 focus:border-violet-500 focus:ring-violet-500" placeholder="0" required>
+                                    <input type="text" name="jumlah_item[]" class="input-rupiah w-full text-xs text-right rounded-lg border-slate-200 focus:border-indigo-500 focus:ring-indigo-500 font-semibold" placeholder="0" required>
                                 </div>
                                 <div class="md:col-span-2 flex items-center gap-1">
-                                    <input type="text" name="keterangan_item[]" value="Import - {{ $pembelian->no_bukti }}" class="w-full text-xs rounded-lg border-slate-200 focus:border-violet-500 focus:ring-violet-500" placeholder="Keterangan">
-                                    <button type="button" onclick="hapusBarisJurnal(this)" class="p-1.5 text-rose-500 hover:bg-rose-50 rounded-lg">
+                                    <input type="text" name="keterangan_item[]" value="Import - {{ $pembelian->no_bukti }}" class="w-full text-xs rounded-lg border-slate-200 focus:border-indigo-500 focus:ring-indigo-500" placeholder="Keterangan">
+                                    <button type="button" onclick="hapusBarisJurnal(this)" class="p-1.5 text-rose-500 hover:bg-rose-50 rounded-lg transition" title="Hapus Baris">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                                     </button>
                                 </div>
@@ -611,17 +611,17 @@
                         </div>
                         <div class="flex justify-end gap-2 pt-2">
                             <button type="button" onclick="toggleFormJurnalUmum()" class="px-3 py-1.5 text-xs text-slate-600 hover:bg-slate-100 rounded-xl transition">Batal</button>
-                            <button type="submit" class="px-4 py-1.5 text-xs font-semibold bg-violet-600 text-white rounded-xl hover:bg-violet-700 transition shadow-sm">Simpan Jurnal</button>
+                            <button type="submit" class="px-4 py-1.5 text-xs font-semibold bg-[#4F46E5] hover:bg-[#4338CA] text-white rounded-xl transition shadow-sm">Simpan Jurnal</button>
                         </div>
                     </form>
                 </div>
-                @endcan
+                @endif
 
                 <!-- Tabel Data Jurnal Umum Terkait -->
                 <div class="overflow-x-auto">
                     <table class="w-full text-xs text-left">
                         <thead>
-                            <tr class="bg-violet-50/50 text-violet-900 border-b border-violet-100 font-semibold uppercase tracking-wider">
+                            <tr class="bg-indigo-50/70 text-indigo-950 border-b border-indigo-100 font-semibold uppercase tracking-wider">
                                 <th class="px-5 py-3 w-12 text-center">No</th>
                                 <th class="px-5 py-3 w-28">No. Bukti JU</th>
                                 <th class="px-5 py-3 w-24">Tanggal</th>
@@ -630,14 +630,14 @@
                                 <th class="px-5 py-3">Keterangan</th>
                                 <th class="px-5 py-3 w-20 text-center">Posisi</th>
                                 <th class="px-5 py-3 text-right w-36">Jumlah (Rp)</th>
-                                @can('jurnalumum.create')<th class="px-5 py-3 text-center w-16">Aksi</th>@endcan
+                                @if(auth()->user()->can('jurnalumum.create') || auth()->user()->can('pembelian.create'))<th class="px-5 py-3 text-center w-16">Aksi</th>@endif
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-100 text-slate-700 bg-white">
                             @forelse($jurnalumum ?? [] as $ju)
                                 <tr class="hover:bg-slate-50/40 transition">
                                     <td class="px-5 py-3 text-center font-mono text-slate-400">{{ $loop->iteration }}</td>
-                                    <td class="px-5 py-3 font-mono font-bold text-violet-700">{{ $ju->kode_ju }}</td>
+                                    <td class="px-5 py-3 font-mono font-bold text-[#4F46E5]">{{ $ju->kode_ju }}</td>
                                     <td class="px-5 py-3 text-slate-600">{{ DateToIndo($ju->tanggal) }}</td>
                                     <td class="px-5 py-3 font-mono font-semibold text-slate-800">{{ $ju->kode_akun }}</td>
                                     <td class="px-5 py-3 font-semibold text-slate-850">{{ $ju->nama_akun ?? '-' }}</td>
@@ -650,17 +650,17 @@
                                     <td class="px-5 py-3 text-right font-bold {{ $ju->debet_kredit == 'D' ? 'text-blue-700' : 'text-amber-700' }}">
                                         {{ formatAngkaDesimal($ju->jumlah) }}
                                     </td>
-                                    @can('jurnalumum.create')
+                                    @if(auth()->user()->can('jurnalumum.create') || auth()->user()->can('pembelian.create'))
                                     <td class="px-5 py-3 text-center">
                                         <button type="button" onclick="deleteJurnalUmum('{{ $ju->kode_ju }}')" class="p-1 text-rose-500 hover:bg-rose-50 rounded-lg transition" title="Hapus Jurnal">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                                         </button>
                                     </td>
-                                    @endcan
+                                    @endif
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="{{ auth()->user()->can('jurnalumum.create') ? 9 : 8 }}" class="px-5 py-6 text-center text-slate-400 italic">
+                                    <td colspan="{{ (auth()->user()->can('jurnalumum.create') || auth()->user()->can('pembelian.create')) ? 9 : 8 }}" class="px-5 py-6 text-center text-slate-400 italic">
                                         Belum ada data Jurnal Umum untuk pembelian import ini.
                                     </td>
                                 </tr>

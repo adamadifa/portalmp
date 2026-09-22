@@ -94,7 +94,7 @@ class PembelianController extends Controller
 
     public function storeJurnalUmum(Request $request, $no_bukti)
     {
-        abort_if(!auth()->user()->can('jurnalumum.create'), 403);
+        abort_if(!auth()->user()->can('jurnalumum.create') && !auth()->user()->can('pembelian.create'), 403);
 
         $no_bukti = Crypt::decrypt($no_bukti);
 
@@ -146,7 +146,7 @@ class PembelianController extends Controller
 
     public function destroyJurnalUmum(Request $request, $no_bukti)
     {
-        abort_if(!auth()->user()->can('jurnalumum.create'), 403);
+        abort_if(!auth()->user()->can('jurnalumum.create') && !auth()->user()->can('pembelian.create'), 403);
         $no_bukti = Crypt::decrypt($no_bukti);
         $kode_ju  = $request->kode_ju;
 
