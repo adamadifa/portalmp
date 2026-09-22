@@ -29,6 +29,7 @@ class Pembelian extends Model
             'subtotal',
             'penyesuaian_jk',
             'totalbayar',
+            'total_potongan',
             'cek_kontrabon',
             DB::raw('IF(pembelian.kategori_pembelian = "I", IF(pembelian.ppn = "1", IFNULL(subtotal_tanpa_penyesuaian,0) * 100 / 111, IFNULL(subtotal,0)), IFNULL(subtotal,0) + IFNULL(penyesuaian_jk,0)) as total_pembelian'),
             'gudang_logistik_barang_masuk.no_bukti as no_bukti_gdl',
@@ -79,6 +80,21 @@ class Pembelian extends Model
             ) historibayar'),
             function ($join) {
                 $join->on('pembelian.no_bukti', '=', 'historibayar.no_bukti');
+            }
+        );
+
+        $query->leftJoin(
+            DB::raw('(
+                SELECT
+                no_bukti,
+                SUM(jumlah * harga) as total_potongan
+                FROM
+                pembelian_potongan
+                GROUP BY
+                no_bukti
+            ) potongan_pmb'),
+            function ($join) {
+                $join->on('pembelian.no_bukti', '=', 'potongan_pmb.no_bukti');
             }
         );
 
@@ -145,7 +161,8 @@ class Pembelian extends Model
         if (!empty($kode_supplier)) {
             $query->where('pembelian.kode_supplier', $kode_supplier);
             $query->where('pembelian.jenis_transaksi', '!=', 'T');
-            $query->whereRaw('IFNULL(subtotal,0) != IFNULL(totalbayar,0)');
+            // Bandingkan total_pembelian (DPP untuk Import) dengan totalbayar + total_potongan
+            $query->whereRaw('IF(pembelian.kategori_pembelian = "I", IF(pembelian.ppn = "1", IFNULL(subtotal_tanpa_penyesuaian,0) * 100 / 111, IFNULL(subtotal,0)), IFNULL(subtotal,0) + IFNULL(penyesuaian_jk,0)) != (IFNULL(totalbayar,0) + IFNULL(total_potongan,0))');
         }
 
         if ($user->hasRole(['admin gudang logistik'])) {

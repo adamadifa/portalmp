@@ -274,8 +274,18 @@ class LaporanpembelianController extends Controller
         $query->leftJoin(
             DB::raw("(
                 SELECT pembelian_detail.no_bukti,
-                (SUM(IF(kode_transaksi = 'PMB', ((jumlah*harga)+penyesuaian),0)) - SUM(IF(kode_transaksi = 'PNJ',(jumlah*harga), 0))) as totalhutang
-                ,IF(pembelian.tanggal BETWEEN '$request->dari' AND '$request->sampai',(SUM(IF(kode_transaksi = 'PMB', ((jumlah*harga)+penyesuaian), 0 ) ) - SUM(IF(kode_transaksi = 'PNJ',(jumlah*harga), 0 ) ) ),0) as pmbbulanini
+                (SUM(IF(kode_transaksi = 'PMB',
+                    IF(pembelian.kategori_pembelian = 'I' AND pembelian.ppn = '1',
+                        (jumlah*harga) * 100 / 111,
+                        (jumlah*harga)+penyesuaian
+                    ), 0)) - SUM(IF(kode_transaksi = 'PNJ',(jumlah*harga), 0))) as totalhutang
+                ,IF(pembelian.tanggal BETWEEN '$request->dari' AND '$request->sampai',
+                    (SUM(IF(kode_transaksi = 'PMB',
+                        IF(pembelian.kategori_pembelian = 'I' AND pembelian.ppn = '1',
+                            (jumlah*harga) * 100 / 111,
+                            (jumlah*harga)+penyesuaian
+                        ), 0)) - SUM(IF(kode_transaksi = 'PNJ',(jumlah*harga), 0))
+                    ),0) as pmbbulanini
                 FROM pembelian_detail
                 INNER JOIN pembelian ON pembelian_detail.no_bukti = pembelian.no_bukti
                 GROUP BY pembelian_detail.no_bukti,pembelian.tanggal

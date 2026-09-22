@@ -287,11 +287,14 @@
                                     @endif
                                 </td>
                                 <td class="px-4 py-3 text-center">
-                                    @if ($total == $d->totalbayar)
-                                        <span class="px-1.5 py-0.5 text-[10px] font-semibold bg-green-100 text-green-800 rounded-full">Lunas</span>
-                                    @else
-                                        <span class="px-1.5 py-0.5 text-[10px] font-semibold bg-red-100 text-red-800 rounded-full">Belum Lunas</span>
-                                    @endif
+                                    @php
+                                    $total_sudah_bayar = ($d->totalbayar ?? 0) + ($d->total_potongan ?? 0);
+                                @endphp
+                                @if ($total <= $total_sudah_bayar)
+                                    <span class="px-1.5 py-0.5 text-[10px] font-semibold bg-green-100 text-green-800 rounded-full">Lunas</span>
+                                @else
+                                    <span class="px-1.5 py-0.5 text-[10px] font-semibold bg-red-100 text-red-800 rounded-full">Belum Lunas</span>
+                                @endif
                                 </td>
                                 <td class="px-4 py-3 text-center">
                                     <span class="px-2 py-0.5 text-[10px] font-semibold rounded-md {{ $d->jenis_transaksi == 'T' ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-amber-50 text-amber-700 border border-amber-200' }}">
