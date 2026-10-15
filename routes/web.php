@@ -86,6 +86,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('pelanggan', PelangganController::class);
 
     // Master Data - Supplier
+    Route::get('/supplier/export', [SupplierController::class, 'export'])->name('supplier.export');
     Route::post('/supplier/import', [SupplierController::class, 'import'])->name('supplier.import');
     Route::resource('supplier', SupplierController::class);
 

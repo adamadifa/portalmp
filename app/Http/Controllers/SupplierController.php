@@ -255,4 +255,30 @@ class SupplierController extends Controller
             return Redirect::back()->with(['error' => 'Gagal mengimport supplier: ' . $e->getMessage()]);
         }
     }
+
+    /**
+     * Export supplier list to Excel.
+     */
+    public function export(Request $request)
+    {
+        abort_if(!auth()->user()->can('supplier.view'), 403);
+
+        $query = Supplier::query();
+
+        if (!empty($request->nama_supplier)) {
+            $query->where(function($q) use ($request) {
+                $q->where('nama_supplier', 'like', '%' . $request->nama_supplier . '%')
+                  ->orWhere('kode_supplier', 'like', '%' . $request->nama_supplier . '%');
+            });
+        }
+
+        $supplier = $query->orderBy('kode_supplier', 'asc')->get();
+
+        $filename = 'Data_Supplier_' . date('Ymd_His') . '.xls';
+        header("Content-Type: application/vnd.ms-excel; charset=utf-8");
+        header("Content-Disposition: attachment; filename=\"$filename\"");
+        header("Cache-Control: max-age=0");
+
+        return view('settings.supplier.export', compact('supplier'));
+    }
 }
