@@ -395,11 +395,11 @@ class BiayaController extends Controller
                     }
                 }
                 if (
+                    isset($tempColMap['bpb']) ||
                     isset($tempColMap['nobukti']) ||
                     isset($tempColMap['nomorbukti']) ||
-                    isset($tempColMap['no']) ||
                     isset($tempColMap['kodeakun']) ||
-                    isset($tempColMap['produk']) ||
+                    isset($tempColMap['namacustomer']) ||
                     isset($tempColMap['namasupplier'])
                 ) {
                     $headerRow = $r;
@@ -409,38 +409,43 @@ class BiayaController extends Controller
             }
 
             // Identify columns
-            $colNoBukti = $colMap['nobukti'] ?? $colMap['nomorbukti'] ?? $colMap['no_bukti'] ?? null;
+            $colNoBukti = $colMap['bpb'] ?? $colMap['nobukti'] ?? $colMap['nomorbukti'] ?? $colMap['no_bukti'] ?? null;
             $colTanggal = $colMap['tanggal'] ?? $colMap['tgl'] ?? null;
             $colBulanPajak = $colMap['bulan'] ?? $colMap['bulanpajak'] ?? $colMap['blnpajak'] ?? $colMap['bln'] ?? null;
             $colTahunPajak = $colMap['tahun'] ?? $colMap['tahunpajak'] ?? $colMap['thnpajak'] ?? $colMap['thn'] ?? null;
             $colAkun = $colMap['kodeakun'] ?? $colMap['kode_akun'] ?? $colMap['noakun'] ?? $colMap['coa'] ?? null;
             $colNamaAkun = $colMap['namaakun'] ?? $colMap['nama_akun'] ?? null;
-            $colNamaSupplier = $colMap['namasupplier'] ?? $colMap['nama_supplier'] ?? $colMap['supplier'] ?? $colMap['rekanan'] ?? null;
-            $colKodeSupplier = $colMap['kodesupplier'] ?? $colMap['kode_supplier'] ?? $colMap['codesupplier'] ?? null;
-            $colProduk = $colMap['produk'] ?? $colMap['namaproduk'] ?? $colMap['nama_produk'] ?? $colMap['product'] ?? $colMap['namabarang'] ?? $colMap['nama_barang'] ?? $colMap['rincian'] ?? $colMap['keterangan'] ?? null;
-            $colJenisProduk = $colMap['jenisproduct'] ?? $colMap['jenisproduk'] ?? null;
+            $colNamaSupplier = $colMap['namasupplier'] ?? $colMap['namacustomer'] ?? $colMap['nama_supplier'] ?? $colMap['nama_customer'] ?? $colMap['supplier'] ?? $colMap['customer'] ?? $colMap['rekanan'] ?? null;
+            $colKodeSupplier = $colMap['kodepelanggan'] ?? $colMap['kodesupplier'] ?? $colMap['kode_supplier'] ?? $colMap['kode_pelanggan'] ?? $colMap['codesupplier'] ?? null;
+            $colProduk = $colMap['jenisproduct'] ?? $colMap['jenisproduk'] ?? $colMap['jenisproductfp'] ?? $colMap['produk'] ?? $colMap['namaproduk'] ?? $colMap['nama_produk'] ?? $colMap['product'] ?? $colMap['namabarang'] ?? $colMap['nama_barang'] ?? $colMap['rincian'] ?? $colMap['keterangan'] ?? null;
+            $colJenisProduk = $colMap['jenisproductfp'] ?? $colMap['jenisproduct'] ?? $colMap['jenisproduk'] ?? null;
             $colJenisPpn = $colMap['jenis'] ?? $colMap['ppn'] ?? $colMap['statusppn'] ?? $colMap['jenistransaksi'] ?? null;
-            $colKodeProduk = $colMap['kodeproduk'] ?? $colMap['kode_produk'] ?? $colMap['codeproduk'] ?? $colMap['kodebarang'] ?? $colMap['kode_barang'] ?? $colMap['codebarang'] ?? null;
-            $colQty = $colMap['qty'] ?? $colMap['jumlah'] ?? $colMap['volume'] ?? $colMap['kuantiti'] ?? null;
+            $colKodeProduk = $colMap['kodeproduct'] ?? $colMap['kodeproduk'] ?? $colMap['kode_produk'] ?? $colMap['codeproduk'] ?? $colMap['kodebarang'] ?? $colMap['kode_barang'] ?? $colMap['codebarang'] ?? null;
+            $colQty = $colMap['qty'] ?? $colMap['volume'] ?? $colMap['kuantiti'] ?? null;
             $colHarga = $colMap['harga'] ?? $colMap['hargasatuan'] ?? $colMap['harga_satuan'] ?? null;
             $colDpp = $colMap['dpp'] ?? null;
-            $colTotal = $colMap['total'] ?? $colMap['jumlah'] ?? $colMap['subtotal'] ?? $colMap['grandtotal'] ?? null;
+            $colTotal = $colMap['jumlah'] ?? $colMap['total'] ?? $colMap['subtotal'] ?? $colMap['grandtotal'] ?? null;
             $colPeny = $colMap['peny'] ?? $colMap['penyesuaian'] ?? null;
 
             if (!$colNoBukti) {
-                // Fallback default column indices based on standard sheet layout
-                $colNoBukti = 6;
-                $colTanggal = 4;
-                $colBulanPajak = 4; // jika sebelum bpb/bukti
-                $colTahunPajak = 5;
+                // Fallback default column indices based on sheet layout:
+                // 1:NO | 2:KATEGORI JURNAL | 3:KODE AKUN | 4:TANGGAL | 5:BULAN | 6:TAHUN | 7:BPB | 8:JENIS | 9:NAMA AKUN
+                // 10:TGL FP | 11:NO FAKTUR PAJAK | 12:NAMA CUSTOMER | 13:KODE PELANGGAN | 14:JENIS PRODUCT (FP) | 15:JENIS PRODUCT | 16:KODE PRODUCT | 17:QTY | 18:HARGA | 19:DPP | 20:DPP LAIN | 21:PPN | 22:JUMLAH
                 $colAkun = 3;
-                $colNamaSupplier = 11;
-                $colKodeSupplier = 12;
-                $colProduk = 13;
-                $colJenisProduk = 14;
-                $colKodeProduk = 15;
-                $colQty = 16;
-                $colHarga = 17;
+                $colTanggal = 4;
+                $colBulanPajak = 5;
+                $colTahunPajak = 6;
+                $colNoBukti = 7;
+                $colJenisPpn = 8;
+                $colNamaAkun = 9;
+                $colNamaSupplier = 12;
+                $colKodeSupplier = 13;
+                $colProduk = 15;
+                $colKodeProduk = 16;
+                $colQty = 17;
+                $colHarga = 18;
+                $colDpp = 19;
+                $colTotal = 22;
             }
 
             // Prepare cached maps to optimize DB lookups
@@ -566,10 +571,23 @@ class BiayaController extends Controller
                 $namaSupplierRaw = $colNamaSupplier ? trim((string)($sheet->getCell([$colNamaSupplier, $r])->getCalculatedValue() ?? '')) : '';
                 $kodeSupplierRaw = $colKodeSupplier ? trim((string)($sheet->getCell([$colKodeSupplier, $r])->getCalculatedValue() ?? '')) : '';
 
+                // Jika kolom kode supplier tertukar atau berisi teks panjang (nama PT), tukar kembali
+                if (strlen($kodeSupplierRaw) > 6 && strlen($namaSupplierRaw) <= 6 && !empty($namaSupplierRaw)) {
+                    $tmpSwap = $kodeSupplierRaw;
+                    $kodeSupplierRaw = $namaSupplierRaw;
+                    $namaSupplierRaw = $tmpSwap;
+                }
+
                 $cleanKodeSup = trim($kodeSupplierRaw);
-                $isCodeSupValid = !empty($cleanKodeSup) && $cleanKodeSup !== '0' && strtolower($cleanKodeSup) !== 'null' && $cleanKodeSup !== '-';
+                $isCodeSupValid = !empty($cleanKodeSup) && $cleanKodeSup !== '0' && strtolower($cleanKodeSup) !== 'null' && $cleanKodeSup !== '-' && strlen($cleanKodeSup) <= 6;
 
                 $cleanNamaSup = trim($namaSupplierRaw);
+                // Jika cleanNamaSup kosong tetapi cleanKodeSup panjang (misal nama supplier terbaca di kolom kode)
+                if (empty($cleanNamaSup) && strlen($cleanKodeSup) > 6) {
+                    $cleanNamaSup = $cleanKodeSup;
+                    $isCodeSupValid = false;
+                }
+
                 $isNameSupValid = !empty($cleanNamaSup) && $cleanNamaSup !== '0' && strtolower($cleanNamaSup) !== 'null' && $cleanNamaSup !== '-';
 
                 $finalKodeSupplier = null;
@@ -583,7 +601,7 @@ class BiayaController extends Controller
                         if ($isNameSupValid && isset($supplierNameMap[$namaKey])) {
                             $finalKodeSupplier = $supplierNameMap[$namaKey];
                         } else {
-                            $supCodeToUse = strtoupper($cleanKodeSup);
+                            $supCodeToUse = strtoupper(substr($cleanKodeSup, 0, 6));
                             Supplier::create([
                                 'kode_supplier' => $supCodeToUse,
                                 'nama_supplier' => strtoupper($isNameSupValid ? $cleanNamaSup : $cleanKodeSup)
