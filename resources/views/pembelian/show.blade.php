@@ -263,7 +263,8 @@
             $total_dpp_pmb = array_sum(array_column($pembelianByAkun, 'jumlah'));
             $ppn_masukan_pmb = ($pembelian->ppn == '1') ? max(0, $grand_total_pmb - $total_dpp_pmb) : 0;
             $total_debet_pmb = $total_dpp_pmb + $ppn_masukan_pmb;
-            $total_kredit_pmb = $grand_total_pmb;
+            $total_kredit_pmb_base = $is_import ? 0 : $grand_total_pmb;
+            $total_kredit_pmb = $total_kredit_pmb_base;
         @endphp
 
         <!-- Rincian Akun Per Item Detail Pembelian & Jurnal -->
@@ -390,6 +391,45 @@
                             </tr>
                         @endif
 
+                        <!-- Baris Jurnal Umum Terkait (Jika Ada) -->
+                        @if(!empty($jurnalumum) && count($jurnalumum) > 0)
+                            @foreach($jurnalumum as $ju)
+                                @php
+                                    $isDebet = ($ju->debet_kredit == 'D');
+                                    if ($isDebet) {
+                                        $total_debet_pmb += (float) $ju->jumlah;
+                                    } else {
+                                        $total_kredit_pmb += (float) $ju->jumlah;
+                                    }
+                                @endphp
+                                <tr class="hover:bg-indigo-50/20 transition bg-indigo-50/10">
+                                    <td class="px-5 py-3 font-mono font-bold text-indigo-700">{{ $ju->kode_akun }}</td>
+                                    <td class="px-5 py-3 font-semibold text-slate-850">
+                                        <div class="flex items-center gap-1.5">
+                                            <span>{{ $ju->nama_akun ?? '-' }}</span>
+                                            <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-bold bg-indigo-100 text-indigo-800">
+                                                JU: {{ $ju->kode_ju }}
+                                            </span>
+                                        </div>
+                                        <span class="text-[10px] text-slate-500 font-normal block mt-0.5">
+                                            {{ $ju->keterangan }} &bull; {{ DateToIndo($ju->tanggal) }}
+                                        </span>
+                                    </td>
+                                    <td class="px-5 py-3">
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase {{ $isDebet ? 'bg-blue-50 text-blue-700 border border-blue-200' : 'bg-amber-50 text-amber-700 border border-amber-200' }}">
+                                            {{ $isDebet ? 'Debet' : 'Kredit' }}
+                                        </span>
+                                    </td>
+                                    <td class="px-5 py-3 text-right font-bold {{ $isDebet ? 'text-blue-700' : 'text-slate-400' }}">
+                                        {{ $isDebet ? formatAngkaDesimal($ju->jumlah) : '-' }}
+                                    </td>
+                                    <td class="px-5 py-3 text-right font-bold {{ !$isDebet ? 'text-amber-700' : 'text-slate-400' }}">
+                                        {{ !$isDebet ? formatAngkaDesimal($ju->jumlah) : '-' }}
+                                    </td>
+                                </tr>
+                            @endforeach
+                        @endif
+
                         <!-- Akun Hutang Usaha / Kas (Kredit) - Dikecualikan jika kategori Import -->
                         @if(!$is_import)
                             <tr class="hover:bg-slate-50/40 transition">
@@ -408,14 +448,14 @@
                                     </span>
                                 </td>
                                 <td class="px-5 py-3 text-right text-slate-400">-</td>
-                                <td class="px-5 py-3 text-right font-bold text-indigo-900">{{ formatAngkaDesimal($total_kredit_pmb) }}</td>
+                                <td class="px-5 py-3 text-right font-bold text-indigo-900">{{ formatAngkaDesimal($total_kredit_pmb_base) }}</td>
                             </tr>
                         @else
                             <tr class="bg-violet-50/50">
                                 <td colspan="5" class="px-5 py-3 text-violet-800 text-[11px]">
                                     <div class="flex items-center gap-2">
                                         <svg class="w-4 h-4 shrink-0 text-violet-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                                        <span><strong>Pembelian Kategori Import:</strong> Lawan akun Hutang Usaha (2-11101) dikecualikan. Lawan akun dicatat manual melalui form <strong>Jurnal Umum</strong> di bawah.</span>
+                                        <span><strong>Pembelian Kategori Import:</strong> Lawan akun Hutang Usaha otomatis (2-11101) dikecualikan dan menggunakan entri <strong>Jurnal Umum</strong> di atas.</span>
                                     </div>
                                 </td>
                             </tr>
@@ -423,9 +463,9 @@
                     </tbody>
                     <tfoot class="border-t border-slate-200 bg-slate-50 font-bold text-slate-800">
                         <tr>
-                            <td colspan="3" class="px-5 py-3.5 text-right uppercase tracking-wider text-xs">Total Jurnal</td>
+                            <td colspan="3" class="px-5 py-3.5 text-right uppercase tracking-wider text-xs">Total Rekapitulasi Jurnal</td>
                             <td class="px-5 py-3.5 text-right font-black text-slate-900">{{ formatAngkaDesimal($total_debet_pmb) }}</td>
-                            <td class="px-5 py-3.5 text-right font-black text-slate-900">{{ formatAngkaDesimal($is_import ? 0 : $total_kredit_pmb) }}</td>
+                            <td class="px-5 py-3.5 text-right font-black text-slate-900">{{ formatAngkaDesimal($total_kredit_pmb) }}</td>
                         </tr>
                     </tfoot>
                 </table>
