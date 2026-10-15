@@ -12,6 +12,8 @@
             <option value="1">Buku Besar</option>
             <option value="2">Neraca</option>
             <option value="3">Laba Rugi</option>
+            <option value="4">Neraca Tahunan (Horizontal)</option>
+            <option value="5">Laba Rugi Tahunan (Horizontal)</option>
         </select>
     </div>
 
@@ -44,7 +46,7 @@
         </div>
     </div>
 
-    <!-- Periode Tanggal -->
+    <!-- Periode Tanggal (Normal Reports) -->
     <div id="periode_ledger_container" class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div class="c-fl-group">
             <label class="c-fl-label">Dari Tanggal</label>
@@ -60,6 +62,22 @@
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
             </div>
             <input type="text" name="sampai" id="sampai_ledger" class="fi flatpickr-date" placeholder="YYYY-MM-DD" value="{{ date('Y-m-t') }}">
+        </div>
+    </div>
+
+    <!-- Tahun (Horizontal Reports) -->
+    <div id="tahun_ledger_container" class="hidden">
+        <div class="c-fl-group">
+            <label class="c-fl-label">Pilih Tahun</label>
+            <div class="c-fl-icon">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+            </div>
+            <select name="tahun" id="tahun_ledger" class="fi select2Single">
+                <option value="">Pilih Tahun</option>
+                @for ($t = date('Y'); $t >= ($start_year ?? 2020); $t--)
+                    <option value="{{ $t }}" {{ $t == date('Y') ? 'selected' : '' }}>{{ $t }}</option>
+                @endfor
+            </select>
         </div>
     </div>
 

@@ -23,11 +23,382 @@ class LaporanaccountingController extends Controller
     {
         $request->validate([
             'formatlaporan' => 'required',
-            'dari'          => 'required_if:formatlaporan,1,2,3|date',
-            'sampai'        => 'required_if:formatlaporan,1,2,3|date',
+            'dari'          => 'required_if:formatlaporan,1,2,3|nullable|date',
+            'sampai'        => 'required_if:formatlaporan,1,2,3|nullable|date',
+            'tahun'         => 'required_if:formatlaporan,4,5',
         ]);
 
         $format = $request->formatlaporan;
+
+        // FORMAT 4: NERACA TAHUNAN (HORIZONTAL) & FORMAT 5: LABA RUGI TAHUNAN (HORIZONTAL)
+        if (in_array($format, ['4', '5'])) {
+            $tahun = (int) $request->tahun;
+            $data['tahun'] = $tahun;
+
+            // Kumpulkan data mutasi dan saldo awal untuk seluruh 12 bulan
+            // 1. Saldo Awal semua bulan di tahun terpilih
+            $saldoAwalYearSub = DB::table('bukubesar_saldoawal_detail')
+                ->join('bukubesar_saldoawal', 'bukubesar_saldoawal_detail.kode_saldo_awal', '=', 'bukubesar_saldoawal.kode_saldo_awal')
+                ->where('bukubesar_saldoawal.tahun', $tahun)
+                ->select(
+                    'bukubesar_saldoawal_detail.kode_akun',
+                    'bukubesar_saldoawal.bulan',
+                    DB::raw("CONCAT(bukubesar_saldoawal.tahun, '-', LPAD(bukubesar_saldoawal.bulan, 2, '0'), '-01') as tanggal"),
+                    'bukubesar_saldoawal_detail.kode_saldo_awal as no_bukti',
+                    DB::raw("'SALDO AWAL' as sumber"),
+                    DB::raw('0 as jml_debet'),
+                    DB::raw('0 as jml_kredit'),
+                    'bukubesar_saldoawal_detail.jumlah as saldo_awal_val'
+                );
+
+            // 2. Biaya
+            $biayaYearSub = DB::table('biaya_detail')
+                ->join('biaya', 'biaya_detail.no_bukti', '=', 'biaya.no_bukti')
+                ->whereYear('biaya.tanggal', $tahun)
+                ->select(
+                    'biaya_detail.kode_akun',
+                    DB::raw('MONTH(biaya.tanggal) as bulan'),
+                    'biaya.tanggal',
+                    'biaya.no_bukti',
+                    DB::raw("'BIAYA OPERASIONAL' as sumber"),
+                    DB::raw('((biaya_detail.jumlah * biaya_detail.harga) + biaya_detail.penyesuaian) as jml_debet'),
+                    DB::raw('0 as jml_kredit'),
+                    DB::raw('0 as saldo_awal_val')
+                );
+
+            // 3. Pembelian
+            $pembelianYearSub = DB::table('pembelian_detail')
+                ->join('pembelian', 'pembelian_detail.no_bukti', '=', 'pembelian.no_bukti')
+                ->whereYear('pembelian.tanggal', $tahun)
+                ->select(
+                    'pembelian_detail.kode_akun',
+                    DB::raw('MONTH(pembelian.tanggal) as bulan'),
+                    'pembelian.tanggal',
+                    'pembelian.no_bukti',
+                    DB::raw("'PEMBELIAN' as sumber"),
+                    DB::raw('CASE WHEN pembelian.ppn = "1" THEN ((pembelian_detail.jumlah * pembelian_detail.harga) * 100 / 111) ELSE ((pembelian_detail.jumlah * pembelian_detail.harga) + pembelian_detail.penyesuaian) END as jml_debet'),
+                    DB::raw('0 as jml_kredit'),
+                    DB::raw('0 as saldo_awal_val')
+                );
+
+            // 4. Penjualan Marketing
+            $penjualanYearSub = DB::table('marketing_penjualan_detail')
+                ->join('marketing_penjualan', 'marketing_penjualan_detail.no_bukti', '=', 'marketing_penjualan.no_bukti')
+                ->whereYear('marketing_penjualan.tanggal', $tahun)
+                ->select(
+                    DB::raw("'4-11101' as kode_akun"),
+                    DB::raw('MONTH(marketing_penjualan.tanggal) as bulan'),
+                    'marketing_penjualan.tanggal',
+                    'marketing_penjualan.no_bukti',
+                    DB::raw("'PENJUALAN' as sumber"),
+                    DB::raw('0 as jml_debet'),
+                    DB::raw('(marketing_penjualan_detail.harga_dus * marketing_penjualan_detail.jumlah) as jml_kredit'),
+                    DB::raw('0 as saldo_awal_val')
+                );
+
+            // 5. PPN Keluaran
+            $ppnKeluaranYearSub = DB::table('marketing_penjualan_detail')
+                ->join('marketing_penjualan', 'marketing_penjualan_detail.no_bukti', '=', 'marketing_penjualan.no_bukti')
+                ->whereYear('marketing_penjualan.tanggal', $tahun)
+                ->select(
+                    DB::raw("'2-11301' as kode_akun"),
+                    DB::raw('MONTH(marketing_penjualan.tanggal) as bulan'),
+                    'marketing_penjualan.tanggal',
+                    'marketing_penjualan.no_bukti',
+                    DB::raw("'PENJUALAN' as sumber"),
+                    DB::raw('0 as jml_debet'),
+                    DB::raw('(marketing_penjualan_detail.subtotal - (marketing_penjualan_detail.harga_dus * marketing_penjualan_detail.jumlah)) as jml_kredit'),
+                    DB::raw('0 as saldo_awal_val')
+                );
+
+            // 6. Piutang Usaha Penjualan (Debet)
+            $piutangPenjualanYearSub = DB::table('marketing_penjualan_detail')
+                ->join('marketing_penjualan', 'marketing_penjualan_detail.no_bukti', '=', 'marketing_penjualan.no_bukti')
+                ->whereYear('marketing_penjualan.tanggal', $tahun)
+                ->select(
+                    DB::raw("'1-11201' as kode_akun"),
+                    DB::raw('MONTH(marketing_penjualan.tanggal) as bulan'),
+                    'marketing_penjualan.tanggal',
+                    'marketing_penjualan.no_bukti',
+                    DB::raw("'PENJUALAN' as sumber"),
+                    'marketing_penjualan_detail.subtotal as jml_debet',
+                    DB::raw('0 as jml_kredit'),
+                    DB::raw('0 as saldo_awal_val')
+                );
+
+            // 7. Bayar Piutang
+            $bayarPiutangYearSub = DB::table('marketing_penjualan_historibayar')
+                ->whereYear('marketing_penjualan_historibayar.tanggal', $tahun)
+                ->select(
+                    DB::raw("'1-11201' as kode_akun"),
+                    DB::raw('MONTH(marketing_penjualan_historibayar.tanggal) as bulan'),
+                    'marketing_penjualan_historibayar.tanggal',
+                    'marketing_penjualan_historibayar.no_bukti',
+                    DB::raw("'PELUNASAN PIUTANG' as sumber"),
+                    DB::raw('0 as jml_debet'),
+                    'marketing_penjualan_historibayar.jumlah as jml_kredit',
+                    DB::raw('0 as saldo_awal_val')
+                );
+
+            // 8. Bayar Pembelian (Kas/Bank keluar)
+            $bayarPembelianYearSub = DB::table('pembelian_historibayar')
+                ->leftJoin('bank', 'pembelian_historibayar.kode_bank', '=', 'bank.kode_bank')
+                ->whereYear('pembelian_historibayar.tanggal', $tahun)
+                ->select(
+                    DB::raw("COALESCE(bank.kode_akun, '1-11101') as kode_akun"),
+                    DB::raw('MONTH(pembelian_historibayar.tanggal) as bulan'),
+                    'pembelian_historibayar.tanggal',
+                    'pembelian_historibayar.no_bukti',
+                    DB::raw("'BAYAR PEMBELIAN' as sumber"),
+                    DB::raw('0 as jml_debet'),
+                    'pembelian_historibayar.jumlah as jml_kredit',
+                    DB::raw('0 as saldo_awal_val')
+                );
+
+            // 9. Bayar Biaya (Kas/Bank keluar)
+            $bayarBiayaYearSub = DB::table('biaya_historibayar')
+                ->leftJoin('bank', 'biaya_historibayar.kode_bank', '=', 'bank.kode_bank')
+                ->whereYear('biaya_historibayar.tanggal', $tahun)
+                ->select(
+                    DB::raw("COALESCE(bank.kode_akun, '1-11101') as kode_akun"),
+                    DB::raw('MONTH(biaya_historibayar.tanggal) as bulan'),
+                    'biaya_historibayar.tanggal',
+                    'biaya_historibayar.no_bukti',
+                    DB::raw("'BAYAR BIAYA' as sumber"),
+                    DB::raw('0 as jml_debet'),
+                    'biaya_historibayar.jumlah as jml_kredit',
+                    DB::raw('0 as saldo_awal_val')
+                );
+
+            // 10. Jurnal Umum
+            $jurnalUmumYearSub = DB::table('accounting_jurnalumum')
+                ->whereYear('accounting_jurnalumum.tanggal', $tahun)
+                ->select(
+                    'accounting_jurnalumum.kode_akun',
+                    DB::raw('MONTH(accounting_jurnalumum.tanggal) as bulan'),
+                    'accounting_jurnalumum.tanggal',
+                    'accounting_jurnalumum.kode_ju as no_bukti',
+                    DB::raw("'JURNAL UMUM' as sumber"),
+                    DB::raw("CASE WHEN accounting_jurnalumum.debet_kredit = 'D' THEN accounting_jurnalumum.jumlah ELSE 0 END as jml_debet"),
+                    DB::raw("CASE WHEN accounting_jurnalumum.debet_kredit = 'K' THEN accounting_jurnalumum.jumlah ELSE 0 END as jml_kredit"),
+                    DB::raw('0 as saldo_awal_val')
+                );
+
+            // 11. PPN Masukan Pembelian
+            $ppnMasukanYearSub = DB::table('pembelian_detail')
+                ->join('pembelian', 'pembelian_detail.no_bukti', '=', 'pembelian.no_bukti')
+                ->whereYear('pembelian.tanggal', $tahun)
+                ->where('pembelian.ppn', '1')
+                ->where('pembelian_detail.kode_transaksi', 'PMB')
+                ->select(
+                    DB::raw("'1-11501' as kode_akun"),
+                    DB::raw('MONTH(pembelian.tanggal) as bulan'),
+                    'pembelian.tanggal',
+                    'pembelian.no_bukti',
+                    DB::raw("'PEMBELIAN' as sumber"),
+                    DB::raw('((((pembelian_detail.jumlah * pembelian_detail.harga) * 100 / 111) * 11 / 12) * 0.12) as jml_debet'),
+                    DB::raw('0 as jml_kredit'),
+                    DB::raw('0 as saldo_awal_val')
+                );
+
+            // 12. Hutang Pembelian
+            $hutangPembelianYearSub = DB::table('pembelian_detail')
+                ->join('pembelian', 'pembelian_detail.no_bukti', '=', 'pembelian.no_bukti')
+                ->whereYear('pembelian.tanggal', $tahun)
+                ->where('pembelian.jenis_transaksi', 'K')
+                ->where('pembelian.kategori_pembelian', '!=', 'I')
+                ->where('pembelian_detail.kode_transaksi', 'PMB')
+                ->select(
+                    DB::raw("'2-11101' as kode_akun"),
+                    DB::raw('MONTH(pembelian.tanggal) as bulan'),
+                    'pembelian.tanggal',
+                    'pembelian.no_bukti',
+                    DB::raw("'PEMBELIAN' as sumber"),
+                    DB::raw('0 as jml_debet'),
+                    DB::raw('CASE WHEN pembelian.kategori_pembelian = "I" AND pembelian.ppn = "1"
+                        THEN ((pembelian_detail.jumlah * pembelian_detail.harga) * 100 / 111)
+                        ELSE ((pembelian_detail.jumlah * pembelian_detail.harga) + pembelian_detail.penyesuaian)
+                    END as jml_kredit'),
+                    DB::raw('0 as saldo_awal_val')
+                );
+
+            // 13. PPN Masukan Biaya
+            $ppnMasukanBiayaYearSub = DB::table('biaya_detail')
+                ->join('biaya', 'biaya_detail.no_bukti', '=', 'biaya.no_bukti')
+                ->whereYear('biaya.tanggal', $tahun)
+                ->where('biaya.ppn', '1')
+                ->select(
+                    DB::raw("'1-11501' as kode_akun"),
+                    DB::raw('MONTH(biaya.tanggal) as bulan'),
+                    'biaya.tanggal',
+                    'biaya.no_bukti',
+                    DB::raw("'BIAYA' as sumber"),
+                    DB::raw('((((biaya_detail.jumlah * biaya_detail.harga) * 100 / 111) * 11 / 12) * 0.12) as jml_debet'),
+                    DB::raw('0 as jml_kredit'),
+                    DB::raw('0 as saldo_awal_val')
+                );
+
+            $unionYear = $saldoAwalYearSub
+                ->unionAll($biayaYearSub)
+                ->unionAll($pembelianYearSub)
+                ->unionAll($penjualanYearSub)
+                ->unionAll($ppnKeluaranYearSub)
+                ->unionAll($piutangPenjualanYearSub)
+                ->unionAll($bayarPiutangYearSub)
+                ->unionAll($bayarPembelianYearSub)
+                ->unionAll($bayarBiayaYearSub)
+                ->unionAll($jurnalUmumYearSub)
+                ->unionAll($ppnMasukanYearSub)
+                ->unionAll($hutangPembelianYearSub)
+                ->unionAll($ppnMasukanBiayaYearSub);
+
+            // Group by kode_akun and bulan
+            $monthlySums = DB::query()->fromSub($unionYear, 'uy')
+                ->selectRaw('kode_akun, bulan, SUM(saldo_awal_val) as sa, SUM(jml_debet) as debet, SUM(jml_kredit) as kredit')
+                ->groupBy('kode_akun', 'bulan')
+                ->get();
+
+            $monthlyMatrix = [];
+            foreach ($monthlySums as $row) {
+                $m = (int) $row->bulan;
+                if ($m >= 1 && $m <= 12) {
+                    $monthlyMatrix[$row->kode_akun][$m] = [
+                        'sa' => (float) $row->sa,
+                        'debet' => (float) $row->debet,
+                        'kredit' => (float) $row->kredit,
+                    ];
+                }
+            }
+
+            if ($format == '4') {
+                // FORMAT 4: NERACA TAHUNAN (HORIZONTAL)
+                $balances_N = [];
+                $net_profit_loss = array_fill(1, 12, 0.0);
+
+                // Hitung laba berjalan kumulatif untuk tiap bulan (m = 1 s/d 12)
+                for ($m = 1; $m <= 12; $m++) {
+                    $cumPendapatan = 0;
+                    $cumHpp = 0;
+                    $cumBiaya = 0;
+
+                    foreach ($monthlyMatrix as $k => $mMap) {
+                        $prefix = substr($k, 0, 1);
+                        if (in_array($prefix, ['4', '5', '6'])) {
+                            // Hitung kumulatif transaksi dari bulan 1 sampai bulan m
+                            $totDebet = 0;
+                            $totKredit = 0;
+                            for ($subM = 1; $subM <= $m; $subM++) {
+                                if (isset($mMap[$subM])) {
+                                    $totDebet += $mMap[$subM]['debet'];
+                                    $totKredit += $mMap[$subM]['kredit'];
+                                }
+                            }
+                            if ($prefix === '4') {
+                                $cumPendapatan += ($totKredit - $totDebet);
+                            } elseif ($prefix === '5') {
+                                $cumHpp += ($totDebet - $totKredit);
+                            } elseif ($prefix === '6') {
+                                $cumBiaya += ($totDebet - $totKredit);
+                            }
+                        }
+                    }
+                    $net_profit_loss[$m] = $cumPendapatan - $cumHpp - $cumBiaya;
+                }
+
+                // Hitung saldo kumulatif Neraca per bulan
+                $neracaAccounts = Coa::whereRaw('LEFT(kode_akun, 1) IN (1, 2, 3)')
+                    ->orderBy('kode_akun', 'asc')
+                    ->get();
+
+                foreach ($neracaAccounts as $acc) {
+                    $prefix = substr($acc->kode_akun, 0, 1);
+                    for ($m = 1; $m <= 12; $m++) {
+                        // Cek apakah ada saldo awal tersimpan di bulan m (misal SA012026)
+                        $saVal = $monthlyMatrix[$acc->kode_akun][$m]['sa'] ?? null;
+                        
+                        // Hitung akumulasi dari bulan 1 sampai bulan m
+                        $cumDebet = 0;
+                        $cumKredit = 0;
+                        $baseSa = 0;
+                        
+                        // Cari saldo awal paling mutakhir di bulan <= m jika ada
+                        for ($subM = $m; $subM >= 1; $subM--) {
+                            if (isset($monthlyMatrix[$acc->kode_akun][$subM]['sa']) && $monthlyMatrix[$acc->kode_akun][$subM]['sa'] != 0) {
+                                $baseSa = $monthlyMatrix[$acc->kode_akun][$subM]['sa'];
+                                // Hanya hitung mutasi dari bulan subM sampai bulan m
+                                for ($mutM = $subM; $mutM <= $m; $mutM++) {
+                                    if (isset($monthlyMatrix[$acc->kode_akun][$mutM])) {
+                                        $cumDebet += $monthlyMatrix[$acc->kode_akun][$mutM]['debet'];
+                                        $cumKredit += $monthlyMatrix[$acc->kode_akun][$mutM]['kredit'];
+                                    }
+                                }
+                                break;
+                            }
+                        }
+
+                        if ($baseSa == 0) {
+                            for ($mutM = 1; $mutM <= $m; $mutM++) {
+                                if (isset($monthlyMatrix[$acc->kode_akun][$mutM])) {
+                                    $cumDebet += $monthlyMatrix[$acc->kode_akun][$mutM]['debet'];
+                                    $cumKredit += $monthlyMatrix[$acc->kode_akun][$mutM]['kredit'];
+                                }
+                            }
+                        }
+
+                        if ($prefix === '1') {
+                            $saldo = $baseSa + $cumDebet - $cumKredit;
+                        } else {
+                            $saldo = $baseSa + $cumKredit - $cumDebet;
+                        }
+
+                        $balances_N[$acc->kode_akun][$m] = $saldo;
+                    }
+                }
+
+                $data['neraca'] = $neracaAccounts;
+                $data['balances'] = $balances_N;
+                $data['net_profit_loss'] = $net_profit_loss;
+
+                if (isset($_POST['exportButton'])) {
+                    header("Content-type: application/vnd-ms-excel");
+                    header("Content-Disposition: attachment; filename=Neraca_Tahunan_{$tahun}.xls");
+                }
+                return view('accounting.laporan.lk.neraca_tahunan_cetak', $data);
+
+            } elseif ($format == '5') {
+                // FORMAT 5: LABA RUGI TAHUNAN (HORIZONTAL)
+                $balances_LR = [];
+                $lrAccounts = Coa::whereRaw('LEFT(kode_akun, 1) IN (4, 5, 6)')
+                    ->orderBy('kode_akun', 'asc')
+                    ->get();
+
+                foreach ($lrAccounts as $acc) {
+                    $prefix = substr($acc->kode_akun, 0, 1);
+                    for ($m = 1; $m <= 12; $m++) {
+                        $mRow = $monthlyMatrix[$acc->kode_akun][$m] ?? null;
+                        if ($mRow) {
+                            if ($prefix === '4') {
+                                $balances_LR[$acc->kode_akun][$m] = (float) $mRow['kredit'] - (float) $mRow['debet'];
+                            } else {
+                                $balances_LR[$acc->kode_akun][$m] = (float) $mRow['debet'] - (float) $mRow['kredit'];
+                            }
+                        } else {
+                            $balances_LR[$acc->kode_akun][$m] = 0.0;
+                        }
+                    }
+                }
+
+                $data['labarugi'] = $lrAccounts;
+                $data['balances'] = $balances_LR;
+
+                if (isset($_POST['exportButton'])) {
+                    header("Content-type: application/vnd-ms-excel");
+                    header("Content-Disposition: attachment; filename=Laba_Rugi_Tahunan_{$tahun}.xls");
+                }
+                return view('accounting.laporan.lk.labarugi_tahunan_cetak', $data);
+            }
+        }
+
         $dari = $request->dari;
         $sampai = $request->sampai;
 

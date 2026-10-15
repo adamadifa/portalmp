@@ -192,7 +192,7 @@
 
             const formLedger = $("#formLedger");
 
-            // Fungsi toggle COA sesuai format laporan
+            // Fungsi toggle COA & Periode / Tahun sesuai format laporan
             function showCoa() {
                 const formatlaporan = formLedger.find("#formatlaporan_ledger").val();
                 if (formatlaporan == '1') {
@@ -202,11 +202,22 @@
                     formLedger.find("#kode_akun_dari_ledger").val("").trigger('change');
                     formLedger.find("#kode_akun_sampai_ledger").val("").trigger('change');
                 }
+
+                if (formatlaporan == '4' || formatlaporan == '5') {
+                    $("#periode_ledger_container").hide();
+                    $("#tahun_ledger_container").removeClass('hidden').show();
+                } else {
+                    $("#periode_ledger_container").show();
+                    $("#tahun_ledger_container").addClass('hidden').hide();
+                }
             }
 
             showCoa();
 
             formLedger.find("#formatlaporan_ledger").on('change', function() {
+                showCoa();
+            });
+
             // Tab switching
             $('.tab-btn').on('click', function() {
                 $('.tab-btn').removeClass('active text-[#294C9A] bg-blue-50/80')
@@ -236,6 +247,7 @@
                 const formatlaporan = formLedger.find("#formatlaporan_ledger").val();
                 const dari = formLedger.find("#dari_ledger").val();
                 const sampai = formLedger.find("#sampai_ledger").val();
+                const tahun = formLedger.find("#tahun_ledger").val();
 
                 if (!formatlaporan) {
                     e.preventDefault();
@@ -248,26 +260,39 @@
                     return false;
                 }
 
-                if (!dari || !sampai) {
-                    e.preventDefault();
-                    Swal.fire({
-                        title: "Peringatan",
-                        text: 'Periode Dari dan Sampai tanggal harus diisi!',
-                        icon: "warning",
-                        confirmButtonColor: '#294C9A'
-                    });
-                    return false;
-                }
+                if (formatlaporan == '4' || formatlaporan == '5') {
+                    if (!tahun) {
+                        e.preventDefault();
+                        Swal.fire({
+                            title: "Peringatan",
+                            text: 'Pilih Tahun terlebih dahulu!',
+                            icon: "warning",
+                            confirmButtonColor: '#294C9A'
+                        });
+                        return false;
+                    }
+                } else {
+                    if (!dari || !sampai) {
+                        e.preventDefault();
+                        Swal.fire({
+                            title: "Peringatan",
+                            text: 'Periode Dari dan Sampai tanggal harus diisi!',
+                            icon: "warning",
+                            confirmButtonColor: '#294C9A'
+                        });
+                        return false;
+                    }
 
-                if (new Date(dari) > new Date(sampai)) {
-                    e.preventDefault();
-                    Swal.fire({
-                        title: "Peringatan",
-                        text: 'Periode Dari Tanggal tidak boleh lebih besar dari Sampai Tanggal!',
-                        icon: "warning",
-                        confirmButtonColor: '#294C9A'
-                    });
-                    return false;
+                    if (new Date(dari) > new Date(sampai)) {
+                        e.preventDefault();
+                        Swal.fire({
+                            title: "Peringatan",
+                            text: 'Periode Dari Tanggal tidak boleh lebih besar dari Sampai Tanggal!',
+                            icon: "warning",
+                            confirmButtonColor: '#294C9A'
+                        });
+                        return false;
+                    }
                 }
             });
         });
