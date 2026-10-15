@@ -337,7 +337,14 @@
                     @forelse ($biaya as $d)
                         <tr class="hover:bg-gray-50/80 transition">
                             <td class="px-4 py-3 font-bold text-[#294C9A] font-mono">{{ $d->no_bukti }}</td>
-                            <td class="px-4 py-3 font-medium text-gray-900">{{ formatIndo($d->tanggal) }}</td>
+                            <td class="px-4 py-3 font-medium text-gray-900">
+                                <div>{{ formatIndo($d->tanggal) }}</div>
+                                @if(!empty($d->bulan_pajak) || !empty($d->tahun_pajak))
+                                    <div class="text-[10px] text-gray-400 font-semibold mt-0.5">
+                                        Pajak: {{ str_pad($d->bulan_pajak, 2, '0', STR_PAD_LEFT) }}/{{ $d->tahun_pajak }}
+                                    </div>
+                                @endif
+                            </td>
                             <td class="px-4 py-3 font-medium text-gray-900">{{ $d->nama_supplier ?? ($d->kode_supplier ?: '-') }}</td>
                             <td class="px-4 py-3 text-center">
                                 @if ($d->ppn == '1')

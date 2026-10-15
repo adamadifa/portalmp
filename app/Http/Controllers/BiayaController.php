@@ -67,9 +67,15 @@ class BiayaController extends Controller
 
         DB::beginTransaction();
         try {
+            $tgl = $request->tanggal;
+            $bulanPajak = $request->bulan_pajak ?: date('m', strtotime($tgl));
+            $tahunPajak = $request->tahun_pajak ?: date('Y', strtotime($tgl));
+
             Biaya::create([
                 'no_bukti' => $request->no_bukti,
-                'tanggal' => $request->tanggal,
+                'tanggal' => $tgl,
+                'bulan_pajak' => $bulanPajak,
+                'tahun_pajak' => $tahunPajak,
                 'kode_supplier' => $request->kode_supplier,
                 'kode_akun' => $request->kode_akun ?? ($kode_akun_item[0] ?? null),
                 'ppn' => '0',
@@ -180,8 +186,14 @@ class BiayaController extends Controller
 
         DB::beginTransaction();
         try {
+            $tgl = $request->tanggal;
+            $bulanPajak = $request->bulan_pajak ?: date('m', strtotime($tgl));
+            $tahunPajak = $request->tahun_pajak ?: date('Y', strtotime($tgl));
+
             $biaya->update([
-                'tanggal' => $request->tanggal,
+                'tanggal' => $tgl,
+                'bulan_pajak' => $bulanPajak,
+                'tahun_pajak' => $tahunPajak,
                 'kode_supplier' => $request->kode_supplier,
                 'kode_akun' => $request->kode_akun ?? ($kode_akun_item[0] ?? null),
                 'tanggal_jatuh_tempo' => $request->jenis_transaksi == 'K' ? $request->tanggal_jatuh_tempo : null,
@@ -399,7 +411,8 @@ class BiayaController extends Controller
             // Identify columns
             $colNoBukti = $colMap['nobukti'] ?? $colMap['nomorbukti'] ?? $colMap['no_bukti'] ?? null;
             $colTanggal = $colMap['tanggal'] ?? $colMap['tgl'] ?? null;
-            $colBulan = $colMap['bulan'] ?? null;
+            $colBulanPajak = $colMap['bulan'] ?? $colMap['bulanpajak'] ?? $colMap['blnpajak'] ?? $colMap['bln'] ?? null;
+            $colTahunPajak = $colMap['tahun'] ?? $colMap['tahunpajak'] ?? $colMap['thnpajak'] ?? $colMap['thn'] ?? null;
             $colAkun = $colMap['kodeakun'] ?? $colMap['kode_akun'] ?? $colMap['noakun'] ?? $colMap['coa'] ?? null;
             $colNamaAkun = $colMap['namaakun'] ?? $colMap['nama_akun'] ?? null;
             $colNamaSupplier = $colMap['namasupplier'] ?? $colMap['nama_supplier'] ?? $colMap['supplier'] ?? $colMap['rekanan'] ?? null;
@@ -418,6 +431,8 @@ class BiayaController extends Controller
                 // Fallback default column indices based on standard sheet layout
                 $colNoBukti = 6;
                 $colTanggal = 4;
+                $colBulanPajak = 4; // jika sebelum bpb/bukti
+                $colTahunPajak = 5;
                 $colAkun = 3;
                 $colNamaSupplier = 11;
                 $colKodeSupplier = 12;
@@ -632,10 +647,48 @@ class BiayaController extends Controller
                 $jenisPpnRaw = $colJenisPpn ? strtoupper(trim((string)($sheet->getCell([$colJenisPpn, $r])->getCalculatedValue() ?? ''))) : '';
                 $isPpn = (str_contains($jenisPpnRaw, 'PPN') && !str_contains($jenisPpnRaw, 'NON') && !str_contains($jenisPpnRaw, 'TIDAK')) ? '1' : '0';
 
+                // Parse Bulan & Tahun Pajak (dari kolom bulan dan tahun sebelum bpb)
+                $bulanPajakVal = null;
+                if ($colBulanPajak) {
+                    $rawBulan = trim((string)($sheet->getCell([$colBulanPajak, $r])->getCalculatedValue() ?? ''));
+                    if (!empty($rawBulan)) {
+                        if (is_numeric($rawBulan)) {
+                            $bulanPajakVal = str_pad((int)$rawBulan, 2, '0', STR_PAD_LEFT);
+                        } else {
+                            $timeMonth = strtotime("1 $rawBulan " . date('Y'));
+                            if ($timeMonth !== false) {
+                                $bulanPajakVal = date('m', $timeMonth);
+                            } else {
+                                $bulanPajakVal = mb_substr($rawBulan, 0, 2);
+                            }
+                        }
+                    }
+                }
+                if (empty($bulanPajakVal) && !empty($tanggalFormatted)) {
+                    $bulanPajakVal = date('m', strtotime($tanggalFormatted));
+                }
+
+                $tahunPajakVal = null;
+                if ($colTahunPajak) {
+                    $rawTahun = trim((string)($sheet->getCell([$colTahunPajak, $r])->getCalculatedValue() ?? ''));
+                    if (!empty($rawTahun)) {
+                        if (is_numeric($rawTahun)) {
+                            $tahunPajakVal = (strlen($rawTahun) == 2) ? '20' . $rawTahun : substr($rawTahun, 0, 4);
+                        } else {
+                            $tahunPajakVal = mb_substr($rawTahun, 0, 4);
+                        }
+                    }
+                }
+                if (empty($tahunPajakVal) && !empty($tanggalFormatted)) {
+                    $tahunPajakVal = date('Y', strtotime($tanggalFormatted));
+                }
+
                 $rows[] = [
                     'baris' => $r,
                     'no_bukti' => $noBuktiVal,
                     'tanggal' => $tanggalFormatted,
+                    'bulan_pajak' => $bulanPajakVal,
+                    'tahun_pajak' => $tahunPajakVal,
                     'kode_supplier' => $finalKodeSupplier,
                     'kode_akun' => $kodeAkunVal,
                     'keterangan' => $keteranganItem,
@@ -686,6 +739,8 @@ class BiayaController extends Controller
                     $biaya = Biaya::create([
                         'no_bukti' => $noBukti,
                         'tanggal' => $firstItem['tanggal'],
+                        'bulan_pajak' => $firstItem['bulan_pajak'],
+                        'tahun_pajak' => $firstItem['tahun_pajak'],
                         'kode_supplier' => $firstItem['kode_supplier'],
                         'kode_akun' => $firstItem['kode_akun'],
                         'ppn' => $hasPpn,
@@ -700,6 +755,12 @@ class BiayaController extends Controller
                     }
                     if ($biaya->ppn !== $hasPpn) {
                         $updateData['ppn'] = $hasPpn;
+                    }
+                    if (!empty($firstItem['bulan_pajak'])) {
+                        $updateData['bulan_pajak'] = $firstItem['bulan_pajak'];
+                    }
+                    if (!empty($firstItem['tahun_pajak'])) {
+                        $updateData['tahun_pajak'] = $firstItem['tahun_pajak'];
                     }
                     if (!empty($updateData)) {
                         $biaya->update($updateData);
