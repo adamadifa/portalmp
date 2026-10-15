@@ -441,11 +441,21 @@ class BiayaController extends Controller
             $lastKodeSupplier = $lastSupplierRec ? $lastSupplierRec->kode_supplier : 'SP0000';
 
             $rows = [];
+            $skippedRows = [];
             $consecutiveEmpty = 0;
 
             for ($r = $headerRow + 1; $r <= $highestRow; $r++) {
-                $noBuktiVal = trim($sheet->getCell([$colNoBukti, $r])->getCalculatedValue() ?? '');
-                if (empty($noBuktiVal) || in_array(strtolower($noBuktiVal), ['total', 'grand total', 'grandtotal', 'no bukti', 'no_bukti', 'jumlah'])) {
+                // Periksa apakah seluruh baris ini benar-benar kosong
+                $isEmptyRow = true;
+                for ($checkCol = 1; $checkCol <= min(15, $highestColumnIndex); $checkCol++) {
+                    $valCheck = trim((string)($sheet->getCell([$checkCol, $r])->getCalculatedValue() ?? ''));
+                    if ($valCheck !== '') {
+                        $isEmptyRow = false;
+                        break;
+                    }
+                }
+
+                if ($isEmptyRow) {
                     $consecutiveEmpty++;
                     if ($consecutiveEmpty >= 20) {
                         break;
@@ -453,6 +463,25 @@ class BiayaController extends Controller
                     continue;
                 }
                 $consecutiveEmpty = 0;
+
+                $noBuktiVal = trim((string)($sheet->getCell([$colNoBukti, $r])->getCalculatedValue() ?? ''));
+                if (empty($noBuktiVal)) {
+                    $skippedRows[] = [
+                        'baris' => $r,
+                        'no_bukti' => '-',
+                        'alasan' => 'Kolom No. Bukti kosong pada baris ini.'
+                    ];
+                    continue;
+                }
+
+                if (in_array(strtolower($noBuktiVal), ['total', 'grand total', 'grandtotal', 'no bukti', 'no_bukti', 'jumlah', 'subtotal'])) {
+                    $skippedRows[] = [
+                        'baris' => $r,
+                        'no_bukti' => $noBuktiVal,
+                        'alasan' => 'Terdeteksi sebagai baris Total/Footer (' . $noBuktiVal . ').'
+                    ];
+                    continue;
+                }
 
                 // 1. Tanggal parsing
                 $tanggalCell = $colTanggal ? $sheet->getCell([$colTanggal, $r]) : null;
@@ -463,7 +492,7 @@ class BiayaController extends Controller
                             $tanggalFormatted = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($tanggalCell->getValue())->format('Y-m-d');
                         } catch (\Exception $e) {}
                     } else {
-                        $rawTgl = trim($tanggalCell->getCalculatedValue() ?? $tanggalCell->getValue() ?? '');
+                        $rawTgl = trim((string)($tanggalCell->getCalculatedValue() ?? $tanggalCell->getValue() ?? ''));
                         if (!empty($rawTgl)) {
                             if (preg_match('/^(\d{1,2})[-\/ ]([a-zA-Z]{3,})$/', $rawTgl, $m)) {
                                 $day = str_pad($m[1], 2, '0', STR_PAD_LEFT);
@@ -485,16 +514,21 @@ class BiayaController extends Controller
                 }
 
                 // 2. Kode Akun (Auto create di tabel COA jika belum terdaftar)
-                $kodeAkunVal = $colAkun ? trim($sheet->getCell([$colAkun, $r])->getCalculatedValue() ?? '') : '';
+                $kodeAkunVal = $colAkun ? trim((string)($sheet->getCell([$colAkun, $r])->getCalculatedValue() ?? '')) : '';
                 if (empty($kodeAkunVal)) {
-                    throw new \Exception("Gagal Import: Kolom Kode Akun kosong pada baris Excel ke-{$r} (No. Bukti: {$noBuktiVal}).");
+                    $skippedRows[] = [
+                        'baris' => $r,
+                        'no_bukti' => $noBuktiVal,
+                        'alasan' => 'Kolom Kode Akun kosong.'
+                    ];
+                    continue;
                 }
 
                 $cleanKodeAkun = trim($kodeAkunVal);
                 if (!isset($coaMap[$cleanKodeAkun])) {
-                    $namaAkunRaw = $colNamaAkun ? trim($sheet->getCell([$colNamaAkun, $r])->getCalculatedValue() ?? '') : '';
+                    $namaAkunRaw = $colNamaAkun ? trim((string)($sheet->getCell([$colNamaAkun, $r])->getCalculatedValue() ?? '')) : '';
                     if (empty($namaAkunRaw)) {
-                        $namaAkunRaw = $colProduk ? trim($sheet->getCell([$colProduk, $r])->getCalculatedValue() ?? '') : '';
+                        $namaAkunRaw = $colProduk ? trim((string)($sheet->getCell([$colProduk, $r])->getCalculatedValue() ?? '')) : '';
                     }
                     if (empty($namaAkunRaw)) {
                         $namaAkunRaw = 'BIAYA ' . $cleanKodeAkun;
@@ -514,8 +548,8 @@ class BiayaController extends Controller
                 $kodeAkunVal = $cleanKodeAkun;
 
                 // 3. Supplier handling
-                $namaSupplierRaw = $colNamaSupplier ? trim($sheet->getCell([$colNamaSupplier, $r])->getCalculatedValue() ?? '') : '';
-                $kodeSupplierRaw = $colKodeSupplier ? trim($sheet->getCell([$colKodeSupplier, $r])->getCalculatedValue() ?? '') : '';
+                $namaSupplierRaw = $colNamaSupplier ? trim((string)($sheet->getCell([$colNamaSupplier, $r])->getCalculatedValue() ?? '')) : '';
+                $kodeSupplierRaw = $colKodeSupplier ? trim((string)($sheet->getCell([$colKodeSupplier, $r])->getCalculatedValue() ?? '')) : '';
 
                 $cleanKodeSup = trim($kodeSupplierRaw);
                 $isCodeSupValid = !empty($cleanKodeSup) && $cleanKodeSup !== '0' && strtolower($cleanKodeSup) !== 'null' && $cleanKodeSup !== '-';
@@ -563,12 +597,12 @@ class BiayaController extends Controller
                 }
 
                 // 4. Deskripsi / Keterangan Biaya
-                $namaProdukRaw = $colProduk ? trim($sheet->getCell([$colProduk, $r])->getCalculatedValue() ?? '') : '';
+                $namaProdukRaw = $colProduk ? trim((string)($sheet->getCell([$colProduk, $r])->getCalculatedValue() ?? '')) : '';
                 if (empty($namaProdukRaw) && $colJenisProduk) {
-                    $namaProdukRaw = trim($sheet->getCell([$colJenisProduk, $r])->getCalculatedValue() ?? '');
+                    $namaProdukRaw = trim((string)($sheet->getCell([$colJenisProduk, $r])->getCalculatedValue() ?? ''));
                 }
                 if (empty($namaProdukRaw) && $colNamaAkun) {
-                    $namaProdukRaw = trim($sheet->getCell([$colNamaAkun, $r])->getCalculatedValue() ?? '');
+                    $namaProdukRaw = trim((string)($sheet->getCell([$colNamaAkun, $r])->getCalculatedValue() ?? ''));
                 }
                 if (empty($namaProdukRaw)) {
                     $namaProdukRaw = 'BIAYA OPERASIONAL';
@@ -577,12 +611,12 @@ class BiayaController extends Controller
                 $keteranganItem = $namaProdukRaw;
 
                 // 5. Quantity & Price
-                $qty = $colQty ? (float) toNumber(trim($sheet->getCell([$colQty, $r])->getCalculatedValue() ?? 1)) : 1;
+                $qty = $colQty ? (float) toNumber(trim((string)($sheet->getCell([$colQty, $r])->getCalculatedValue() ?? 1))) : 1;
                 if ($qty <= 0) $qty = 1;
 
-                $harga = $colHarga ? (float) toNumber(trim($sheet->getCell([$colHarga, $r])->getCalculatedValue() ?? 0)) : 0;
-                $dpp = $colDpp ? (float) toNumber(trim($sheet->getCell([$colDpp, $r])->getCalculatedValue() ?? 0)) : 0;
-                $totalVal = $colTotal ? (float) toNumber(trim($sheet->getCell([$colTotal, $r])->getCalculatedValue() ?? 0)) : 0;
+                $harga = $colHarga ? (float) toNumber(trim((string)($sheet->getCell([$colHarga, $r])->getCalculatedValue() ?? 0))) : 0;
+                $dpp = $colDpp ? (float) toNumber(trim((string)($sheet->getCell([$colDpp, $r])->getCalculatedValue() ?? 0))) : 0;
+                $totalVal = $colTotal ? (float) toNumber(trim((string)($sheet->getCell([$colTotal, $r])->getCalculatedValue() ?? 0))) : 0;
 
                 if ($harga <= 0) {
                     if ($dpp > 0) {
@@ -592,13 +626,14 @@ class BiayaController extends Controller
                     }
                 }
 
-                $peny = $colPeny ? (float) toNumber(trim($sheet->getCell([$colPeny, $r])->getCalculatedValue() ?? 0)) : 0;
+                $peny = $colPeny ? (float) toNumber(trim((string)($sheet->getCell([$colPeny, $r])->getCalculatedValue() ?? 0))) : 0;
 
                 // 6. Deteksi PPN / Non PPN dari kolom JENIS
                 $jenisPpnRaw = $colJenisPpn ? strtoupper(trim((string)($sheet->getCell([$colJenisPpn, $r])->getCalculatedValue() ?? ''))) : '';
                 $isPpn = (str_contains($jenisPpnRaw, 'PPN') && !str_contains($jenisPpnRaw, 'NON') && !str_contains($jenisPpnRaw, 'TIDAK')) ? '1' : '0';
 
                 $rows[] = [
+                    'baris' => $r,
                     'no_bukti' => $noBuktiVal,
                     'tanggal' => $tanggalFormatted,
                     'kode_supplier' => $finalKodeSupplier,
@@ -612,7 +647,14 @@ class BiayaController extends Controller
             }
 
             if (empty($rows)) {
-                throw new \Exception("Tidak ada data baris yang valid ditemukan pada file Excel.");
+                $errPesan = "Tidak ada data baris yang valid ditemukan pada file Excel.";
+                if (!empty($skippedRows)) {
+                    $errPesan .= " Ada " . count($skippedRows) . " baris yang dilewati.";
+                }
+                return Redirect::back()->with([
+                    'error' => $errPesan,
+                    'import_skipped' => $skippedRows
+                ]);
             }
 
             // Group by no_bukti
@@ -683,7 +725,15 @@ class BiayaController extends Controller
 
             DB::commit();
 
-            return Redirect::back()->with(['success' => "$insertedCount data rincian biaya dari " . count($grouped) . " transaksi berhasil diimport."]);
+            $pesanSuccess = "$insertedCount data rincian biaya dari " . count($grouped) . " transaksi berhasil diimport.";
+            if (count($skippedRows) > 0) {
+                $pesanSuccess .= " (" . count($skippedRows) . " baris Excel dilewati/gagal).";
+            }
+
+            return Redirect::back()->with([
+                'success' => $pesanSuccess,
+                'import_skipped' => $skippedRows
+            ]);
         } catch (\Exception $e) {
             DB::rollBack();
             return Redirect::back()->with(['error' => 'Gagal melakukan import biaya: ' . $e->getMessage()]);

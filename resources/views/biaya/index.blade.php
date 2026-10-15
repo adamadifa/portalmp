@@ -4,30 +4,86 @@
     </x-slot>
 
     <!-- Alert Notifications -->
-    @if(session('success'))
+    @if(session('import_skipped') && count(session('import_skipped')) > 0)
+        @php
+            $skipped = session('import_skipped');
+            $skippedCount = count($skipped);
+            $hasSuccess = session('success') ? true : false;
+        @endphp
         <script>
             document.addEventListener('DOMContentLoaded', function() {
-                Swal.fire({
-                    title: 'Berhasil!',
-                    text: "{{ session('success') }}",
-                    icon: 'success',
-                    confirmButtonColor: '#294C9A'
+                var skippedData = @json($skipped);
+                var rowsHtml = '';
+                skippedData.forEach(function(item, idx) {
+                    rowsHtml += `<tr class="border-b border-gray-100 hover:bg-gray-50/70 text-left">
+                        <td class="px-3 py-2 text-center font-semibold text-gray-700">${item.baris}</td>
+                        <td class="px-3 py-2 font-mono text-xs font-semibold text-blue-700">${item.no_bukti || '-'}</td>
+                        <td class="px-3 py-2 text-red-600 text-xs">${item.alasan}</td>
+                    </tr>`;
                 });
-            });
-        </script>
-    @endif
 
-    @if(session('error'))
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
+                var htmlContent = `
+                    <div class="text-left">
+                        <p class="text-sm text-gray-600 mb-3">
+                            {{ $hasSuccess ? session('success') : session('error') }}
+                        </p>
+                        <div class="bg-amber-50 border border-amber-200 text-amber-800 px-3 py-2 rounded-xl text-xs font-semibold mb-3 flex items-center gap-2">
+                            <svg class="w-4 h-4 flex-shrink-0 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                            <span>Ditemukan <strong>${skippedData.length} baris</strong> Excel yang dilewati / gagal diproses:</span>
+                        </div>
+                        <div class="border border-gray-200 rounded-xl overflow-hidden max-h-64 overflow-y-auto">
+                            <table class="w-full text-xs text-gray-600">
+                                <thead class="bg-gray-100 text-gray-700 font-semibold sticky top-0 uppercase tracking-wider text-[10px]">
+                                    <tr>
+                                        <th class="px-3 py-2 text-center w-16">Baris</th>
+                                        <th class="px-3 py-2 w-36">No. Bukti</th>
+                                        <th class="px-3 py-2">Alasan Dilewati</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${rowsHtml}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                `;
+
                 Swal.fire({
-                    title: 'Gagal!',
-                    text: "{{ session('error') }}",
-                    icon: 'error',
-                    confirmButtonColor: '#d33'
+                    title: '{{ $hasSuccess ? "Hasil Import Biaya" : "Import Biaya Sebagian / Gagal" }}',
+                    html: htmlContent,
+                    icon: '{{ $hasSuccess ? "warning" : "error" }}',
+                    width: '650px',
+                    confirmButtonColor: '#294C9A',
+                    confirmButtonText: 'Tutup & Mengerti'
                 });
             });
         </script>
+    @else
+        @if(session('success'))
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    Swal.fire({
+                        title: 'Berhasil!',
+                        text: "{{ session('success') }}",
+                        icon: 'success',
+                        confirmButtonColor: '#294C9A'
+                    });
+                });
+            </script>
+        @endif
+
+        @if(session('error'))
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    Swal.fire({
+                        title: 'Gagal!',
+                        text: "{{ session('error') }}",
+                        icon: 'error',
+                        confirmButtonColor: '#d33'
+                    });
+                });
+            </script>
+        @endif
     @endif
 
     <style>
