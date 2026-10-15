@@ -339,6 +339,18 @@ class LaporanpembelianController extends Controller
             $query->where('pembelian.kode_akun', $request->jenis_hutang);
         }
 
+        $kategori_pembelian = $request->kategori_pembelian;
+        if ($kategori_pembelian === 'I') {
+            $query->where('pembelian.kategori_pembelian', 'I');
+        } elseif ($kategori_pembelian === 'L' || empty($kategori_pembelian)) {
+            // Default atau 'L': kecualikan kategori Import ('I') dari laporan hutang
+            $query->where(function($q) {
+                $q->where('pembelian.kategori_pembelian', '!=', 'I')
+                  ->orWhereNull('pembelian.kategori_pembelian');
+            });
+        }
+        // Jika $kategori_pembelian === 'ALL', tidak ditambahkan filter (menampilkan semua)
+
         if ($request->ppn === "0") {
             $query->where('pembelian.ppn', 0);
         } else if ($request->ppn == "1") {
@@ -351,14 +363,11 @@ class LaporanpembelianController extends Controller
             $query->orderBy('pembelian.kode_supplier');
         }
 
-
-
-
-
         $data['kartuhutang'] = $query->get();
         $data['dari'] = $request->dari;
         $data['sampai'] = $request->sampai;
         $data['jenis_hutang'] = $request->jenis_hutang;
+        $data['kategori_pembelian'] = $kategori_pembelian;
         $data['supplier'] = Supplier::where('kode_supplier', $kode_supplier)->first();
 
         if (isset($_POST['exportButton'])) {
@@ -379,44 +388,6 @@ class LaporanpembelianController extends Controller
         if (lockreport($request->tanggal) == "error") {
             return Redirect::back()->with(messageError('Data Tidak Ditemukan'));
         }
-
-        // $subqueryBayar = Historibayarpembelian::select(
-        //     'pembelian_kontrabon_detail.no_bukti',
-        //     DB::raw('SUM(pembelian_kontrabon_detail.jumlah) as jmlbayar')
-        // )
-        //     ->join('pembelian_kontrabon_detail', 'pembelian_historibayar.no_kontrabon', '=', 'pembelian_kontrabon_detail.no_kontrabon')
-        //     ->where('pembelian_historibayar.tanggal', '<=', $request->tanggal)
-        //     ->groupBy('pembelian_kontrabon_detail.no_bukti');
-
-        // $subqueryJurnalkoreksi = Jurnalkoreksi::select(
-        //     'pembelian_jurnalkoreksi.no_bukti',
-        //     DB::raw('SUM(IF(debet_kredit="K" AND kode_akun="2-1200" OR debet_kredit="K" AND kode_akun="2-1300",(jumlah*harga),0)) - SUM(IF(debet_kredit="D" AND kode_akun="2-1200" OR debet_kredit="D" AND kode_akun="2-1300",(jumlah*harga),0)) as jml_jk')
-        // )
-        //     ->where('pembelian_jurnalkoreksi.tanggal', '<=', $request->tanggal)
-        //     ->groupBy('pembelian_jurnalkoreksi.no_bukti');
-
-        // $query = Detailpembelian::query();
-        // $query->select(
-        //     'pembelian_detail.no_bukti',
-        //     'pembelian.kode_supplier',
-        //     'nama_supplier',
-        //     DB::raw('SUM(IF(kode_transaksi="PMB",(jumlah*harga)+penyesuaian,0)) - SUM(IF(kode_transaksi="PNJ",(jumlah*harga),0)) - IFNULL(jmlbayar,0) - IFNULL(jml_jk,0) as total'),
-        //     DB::raw("CASE WHEN datediff('$request->tanggal',pembelian.tanggal) between 0 and 30 THEN SUM(IF(kode_transaksi='PMB',(jumlah*harga)+penyesuaian,0)) - SUM(IF(kode_transaksi='PNJ',(jumlah*harga),0)) - IFNULL(jmlbayar,0) - IFNULL(jml_jk,0) END as `bulanberjalan`")
-        // );
-        // $query->join('pembelian', 'pembelian_detail.no_bukti', '=', 'pembelian.no_bukti');
-        // $query->join('supplier', 'pembelian.kode_supplier', '=', 'supplier.kode_supplier');
-        // $query->leftJoinSub($subqueryBayar, 'subqueryBayar', function ($join) {
-        //     $join->on('pembelian_detail.no_bukti', '=', 'subqueryBayar.no_bukti');
-        // });
-        // $query->leftJoinSub($subqueryJurnalkoreksi, 'subqueryJurnalkoreksi', function ($join) {
-        //     $join->on('pembelian_detail.no_bukti', '=', 'subqueryJurnalkoreksi.no_bukti');
-        // });
-        // $query->where('pembelian.tanggal', '<=', $request->tanggal);
-
-        // $query->havingRaw("SUM(IF(kode_transaksi='PMB',(jumlah*harga)+penyesuaian,0)) - SUM(IF(kode_transaksi='PNJ',(jumlah*harga),0)) - IFNULL(jmlbayar,0) - IFNULL(jml_jk,0) != 0");
-        // $query->groupBy('pembelian_detail.no_bukti', 'pembelian.kode_supplier', 'nama_supplier', 'jmlbayar', 'jml_jk');
-        // $query->orderBy('pembelian.kode_supplier');
-        // $data['auh'] = $query->get();
 
         $auh = DB::select("SELECT * FROM
         (
@@ -453,6 +424,7 @@ class LaporanpembelianController extends Controller
         GROUP BY no_bukti
         ) jk ON jk.no_bukti = pembelian_detail.no_bukti
         WHERE pembelian.tanggal <='$request->tanggal'
+        AND (pembelian.kategori_pembelian != 'I' OR pembelian.kategori_pembelian IS NULL)
         GROUP BY pembelian_detail.no_bukti,pembelian.kode_supplier,nama_supplier,hb.jmlbayar,jk.jmlpenyesuaian,pembelian.tanggal
         ORDER BY pembelian.kode_supplier ASC
         ) as kp WHERE sisahutang !=0");

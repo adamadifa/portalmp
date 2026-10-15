@@ -50,6 +50,18 @@
         <label for="ppn_kartuhutang" class="c-fl-label">PPN Status</label>
     </div>
 
+    <div class="c-fl-group">
+        <span class="c-fl-icon">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path></svg>
+        </span>
+        <select name="kategori_pembelian" id="kategori_pembelian_kartuhutang" class="fi">
+            <option value="L" selected>Lokal (Kecualikan Import)</option>
+            <option value="I">Hanya Import</option>
+            <option value="ALL">Semua Kategori</option>
+        </select>
+        <label for="kategori_pembelian_kartuhutang" class="c-fl-label">Kategori Pembelian</label>
+    </div>
+
     <div class="grid grid-cols-2 gap-4">
         <div class="c-fl-group">
             <span class="c-fl-icon">
