@@ -276,20 +276,60 @@
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-2 gap-4">
+                    <div class="c-fl-group">
+                        <span class="c-fl-icon">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                        </span>
+                        <select name="jenis_periode" id="jenis_periode_biaya" class="fi" onchange="togglePeriodeBiaya(this.value)">
+                            <option value="tanggal" selected>Berdasarkan Tanggal Transaksi</option>
+                            <option value="bulan_pajak">Berdasarkan Bulan & Tahun Pajak</option>
+                        </select>
+                        <label class="c-fl-label">Jenis Filter Periode *</label>
+                    </div>
+
+                    <!-- Filter Rentang Tanggal -->
+                    <div id="wrapper_tanggal_biaya" class="grid grid-cols-2 gap-4">
                         <div class="c-fl-group">
                             <span class="c-fl-icon">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                             </span>
-                            <input type="text" name="dari" class="fi flatpickr-date" placeholder="Pilih Tanggal" required autocomplete="off" />
+                            <input type="text" name="dari" id="dari_biaya" class="fi flatpickr-date" placeholder="Pilih Tanggal" autocomplete="off" />
                             <label class="c-fl-label">Dari Tanggal *</label>
                         </div>
                         <div class="c-fl-group">
                             <span class="c-fl-icon">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                             </span>
-                            <input type="text" name="sampai" class="fi flatpickr-date" placeholder="Pilih Tanggal" required autocomplete="off" />
+                            <input type="text" name="sampai" id="sampai_biaya" class="fi flatpickr-date" placeholder="Pilih Tanggal" autocomplete="off" />
                             <label class="c-fl-label">Sampai Tanggal *</label>
+                        </div>
+                    </div>
+
+                    <!-- Filter Bulan & Tahun Pajak -->
+                    <div id="wrapper_bulan_pajak_biaya" class="grid grid-cols-2 gap-4 hidden">
+                        <div class="c-fl-group">
+                            <span class="c-fl-icon">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                            </span>
+                            <select name="bulan" id="bulan_biaya" class="fi">
+                                <option value="">Pilih Bulan Pajak</option>
+                                @foreach ($list_bulan as $d)
+                                    <option value="{{ $d['kode_bulan'] }}" {{ date('m') == $d['kode_bulan'] ? 'selected' : '' }}>{{ $d['nama_bulan'] }}</option>
+                                @endforeach
+                            </select>
+                            <label class="c-fl-label">Bulan Pajak *</label>
+                        </div>
+                        <div class="c-fl-group">
+                            <span class="c-fl-icon">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                            </span>
+                            <select name="tahun" id="tahun_biaya" class="fi">
+                                <option value="">Pilih Tahun Pajak</option>
+                                @for ($t = $start_year; $t <= date('Y') + 1; $t++)
+                                    <option value="{{ $t }}" {{ date('Y') == $t ? 'selected' : '' }}>{{ $t }}</option>
+                                @endfor
+                            </select>
+                            <label class="c-fl-label">Tahun Pajak *</label>
                         </div>
                     </div>
 
@@ -405,20 +445,60 @@
                         <label class="c-fl-label">Cabang</label>
                     </div>
 
-                    <div class="grid grid-cols-2 gap-4">
+                    <div class="c-fl-group">
+                        <span class="c-fl-icon">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                        </span>
+                        <select name="jenis_periode" id="jenis_periode_rekap" class="fi" onchange="togglePeriodeRekap(this.value)">
+                            <option value="tanggal" selected>Berdasarkan Tanggal Transaksi</option>
+                            <option value="bulan_pajak">Berdasarkan Bulan & Tahun Pajak</option>
+                        </select>
+                        <label class="c-fl-label">Jenis Filter Periode *</label>
+                    </div>
+
+                    <!-- Filter Rentang Tanggal -->
+                    <div id="wrapper_tanggal_rekap" class="grid grid-cols-2 gap-4">
                         <div class="c-fl-group">
                             <span class="c-fl-icon">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                             </span>
-                            <input type="text" name="dari" class="fi flatpickr-date" placeholder="Pilih Tanggal" required autocomplete="off" />
+                            <input type="text" name="dari" id="dari_rekap" class="fi flatpickr-date" placeholder="Pilih Tanggal" autocomplete="off" />
                             <label class="c-fl-label">Dari Tanggal *</label>
                         </div>
                         <div class="c-fl-group">
                             <span class="c-fl-icon">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                             </span>
-                            <input type="text" name="sampai" class="fi flatpickr-date" placeholder="Pilih Tanggal" required autocomplete="off" />
+                            <input type="text" name="sampai" id="sampai_rekap" class="fi flatpickr-date" placeholder="Pilih Tanggal" autocomplete="off" />
                             <label class="c-fl-label">Sampai Tanggal *</label>
+                        </div>
+                    </div>
+
+                    <!-- Filter Bulan & Tahun Pajak -->
+                    <div id="wrapper_bulan_pajak_rekap" class="grid grid-cols-2 gap-4 hidden">
+                        <div class="c-fl-group">
+                            <span class="c-fl-icon">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                            </span>
+                            <select name="bulan" id="bulan_rekap" class="fi">
+                                <option value="">Pilih Bulan Pajak</option>
+                                @foreach ($list_bulan as $d)
+                                    <option value="{{ $d['kode_bulan'] }}" {{ date('m') == $d['kode_bulan'] ? 'selected' : '' }}>{{ $d['nama_bulan'] }}</option>
+                                @endforeach
+                            </select>
+                            <label class="c-fl-label">Bulan Pajak *</label>
+                        </div>
+                        <div class="c-fl-group">
+                            <span class="c-fl-icon">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                            </span>
+                            <select name="tahun" id="tahun_rekap" class="fi">
+                                <option value="">Pilih Tahun Pajak</option>
+                                @for ($t = $start_year; $t <= date('Y') + 1; $t++)
+                                    <option value="{{ $t }}" {{ date('Y') == $t ? 'selected' : '' }}>{{ $t }}</option>
+                                @endfor
+                            </select>
+                            <label class="c-fl-label">Tahun Pajak *</label>
                         </div>
                     </div>
 
@@ -441,6 +521,34 @@
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://npmcdn.com/flatpickr/dist/l10n/id.js"></script>
     <script>
+        function togglePeriodeBiaya(val) {
+            if (val === 'bulan_pajak') {
+                $('#wrapper_tanggal_biaya').addClass('hidden');
+                $('#wrapper_bulan_pajak_biaya').removeClass('hidden');
+                $('#dari_biaya, #sampai_biaya').removeAttr('required');
+                $('#bulan_biaya, #tahun_biaya').attr('required', 'required');
+            } else {
+                $('#wrapper_tanggal_biaya').removeClass('hidden');
+                $('#wrapper_bulan_pajak_biaya').addClass('hidden');
+                $('#dari_biaya, #sampai_biaya').attr('required', 'required');
+                $('#bulan_biaya, #tahun_biaya').removeAttr('required');
+            }
+        }
+
+        function togglePeriodeRekap(val) {
+            if (val === 'bulan_pajak') {
+                $('#wrapper_tanggal_rekap').addClass('hidden');
+                $('#wrapper_bulan_pajak_rekap').removeClass('hidden');
+                $('#dari_rekap, #sampai_rekap').removeAttr('required');
+                $('#bulan_rekap, #tahun_rekap').attr('required', 'required');
+            } else {
+                $('#wrapper_tanggal_rekap').removeClass('hidden');
+                $('#wrapper_bulan_pajak_rekap').addClass('hidden');
+                $('#dari_rekap, #sampai_rekap').attr('required', 'required');
+                $('#bulan_rekap, #tahun_rekap').removeAttr('required');
+            }
+        }
+
         $(document).ready(function() {
             $('.select2-filter').select2({
                 width: '100%'
@@ -453,6 +561,10 @@
                 altFormat: "d F Y",
                 allowInput: true
             });
+
+            // Initialize default required state
+            togglePeriodeBiaya($('#jenis_periode_biaya').val());
+            togglePeriodeRekap($('#jenis_periode_rekap').val());
 
             $('.tab-btn').on('click', function() {
                 var targetTab = $(this).data('tab');

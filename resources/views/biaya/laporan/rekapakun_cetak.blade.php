@@ -22,7 +22,11 @@
         <h4 class="title">
             REKAPITULASI AKUN BIAYA (COA)<br>
         </h4>
-        <h4> PERIODE {{ DateToIndo($dari) }} s/d {{ DateToIndo($sampai) }}</h4>
+        @if(($jenis_periode ?? '') == 'bulan_pajak')
+            <h4> BULAN / MASA PAJAK {{ str_pad($bulan, 2, '0', STR_PAD_LEFT) }} TAHUN {{ $tahun }}</h4>
+        @else
+            <h4> PERIODE {{ DateToIndo($dari) }} s/d {{ DateToIndo($sampai) }}</h4>
+        @endif
     </div>
     <div class="content">
         <div class="freeze-table">

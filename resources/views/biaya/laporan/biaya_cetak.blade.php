@@ -22,7 +22,11 @@
         <h4 class="title">
             LAPORAN TRANSAKSI BIAYA<br>
         </h4>
-        <h4> PERIODE {{ DateToIndo($dari) }} s/d {{ DateToIndo($sampai) }}</h4>
+        @if(($jenis_periode ?? '') == 'bulan_pajak')
+            <h4> BULAN / MASA PAJAK {{ str_pad($bulan, 2, '0', STR_PAD_LEFT) }} TAHUN {{ $tahun }}</h4>
+        @else
+            <h4> PERIODE {{ DateToIndo($dari) }} s/d {{ DateToIndo($sampai) }}</h4>
+        @endif
         @if ($supplier != null)
             <h4>
                 {{ $supplier->kode_supplier }} - {{ $supplier->nama_supplier }}
@@ -31,11 +35,12 @@
     </div>
     <div class="content">
         <div class="freeze-table">
-            <table class="datatable3" style="width: 125%">
+            <table class="datatable3" style="width: 130%">
                 <thead>
                     <tr>
                         <th style="width:1%">NO</th>
                         <th style="width:4%">TGL</th>
+                        <th style="width:4%">MASA PAJAK</th>
                         <th style="width:5%">NO BUKTI</th>
                         <th style="width:10%">SUPPLIER / REKANAN</th>
                         <th style="width:12%">KETERANGAN / RINCIAN</th>
@@ -75,10 +80,13 @@
                             $total_dpp_lain += $dpp_lain_val;
                             $total_ppn += $ppn_val;
                             $grandtotal += $total;
+
+                            $masaPajak = (!empty($d->bulan_pajak) ? str_pad($d->bulan_pajak, 2, '0', STR_PAD_LEFT) : date('m', strtotime($d->tanggal))) . '/' . (!empty($d->tahun_pajak) ? $d->tahun_pajak : date('Y', strtotime($d->tanggal)));
                         @endphp
                         <tr>
                             <td>{{ $loop->iteration }}</td>
                             <td>{{ formatIndo($d->tanggal) }}</td>
+                            <td class="center font-mono">{{ $masaPajak }}</td>
                             <td>{{ $d->no_bukti }}</td>
                             <td>{{ $d->nama_supplier ?? '-' }}</td>
                             <td>{{ $d->keterangan }}</td>
@@ -94,7 +102,7 @@
                     @endforeach
                     @if($biaya->isEmpty())
                         <tr>
-                            <td colspan="13" style="text-align: center; color: #888; padding: 20px;">Tidak ada data biaya pada periode ini.</td>
+                            <td colspan="14" style="text-align: center; color: #888; padding: 20px;">Tidak ada data biaya pada periode ini.</td>
                         </tr>
                     @endif
                 </tbody>

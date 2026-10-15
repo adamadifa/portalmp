@@ -21,6 +21,8 @@ class LaporanbiayaController extends Controller
         $data['bank'] = Bank::orderBy('kode_bank')->get();
         $data['cabang'] = Cabang::orderBy('kode_cabang')->get();
         $data['coa'] = Coa::orderBy('kode_akun')->get();
+        $data['list_bulan'] = config('global.list_bulan');
+        $data['start_year'] = config('global.start_year', 2022);
         $data['akun'] = DB::table('biaya_detail')
             ->join('coa', 'biaya_detail.kode_akun', '=', 'coa.kode_akun')
             ->select('biaya_detail.kode_akun', 'coa.nama_akun')
@@ -33,15 +35,28 @@ class LaporanbiayaController extends Controller
 
     public function cetakbiaya(Request $request)
     {
-        $request->validate([
-            'dari' => 'required|date',
-            'sampai' => 'required|date',
-        ]);
+        $jenis_periode = $request->jenis_periode ?? 'tanggal';
+
+        if ($jenis_periode == 'bulan_pajak') {
+            $request->validate([
+                'bulan' => 'required',
+                'tahun' => 'required',
+            ]);
+            $bulan = str_pad($request->bulan, 2, '0', STR_PAD_LEFT);
+            $tahun = $request->tahun;
+        } else {
+            $request->validate([
+                'dari' => 'required|date',
+                'sampai' => 'required|date',
+            ]);
+        }
 
         $query = Detailbiaya::query();
         $query->select(
             'biaya_detail.*',
             'biaya.tanggal',
+            'biaya.bulan_pajak',
+            'biaya.tahun_pajak',
             'biaya.kode_supplier',
             'biaya.ppn',
             'biaya.no_fak_pajak',
@@ -53,7 +68,22 @@ class LaporanbiayaController extends Controller
         $query->join('biaya', 'biaya_detail.no_bukti', '=', 'biaya.no_bukti');
         $query->leftJoin('supplier', 'biaya.kode_supplier', '=', 'supplier.kode_supplier');
         $query->join('coa', 'biaya_detail.kode_akun', '=', 'coa.kode_akun');
-        $query->whereBetween('biaya.tanggal', [$request->dari, $request->sampai]);
+
+        if ($jenis_periode == 'bulan_pajak') {
+            $query->where(function($q) use ($bulan, $tahun) {
+                $q->where(function($sub) use ($bulan, $tahun) {
+                    $sub->whereNotNull('biaya.bulan_pajak')
+                        ->where('biaya.bulan_pajak', $bulan)
+                        ->where('biaya.tahun_pajak', $tahun);
+                })->orWhere(function($sub) use ($bulan, $tahun) {
+                    $sub->whereNull('biaya.bulan_pajak')
+                        ->whereMonth('biaya.tanggal', $bulan)
+                        ->whereYear('biaya.tanggal', $tahun);
+                });
+            });
+        } else {
+            $query->whereBetween('biaya.tanggal', [$request->dari, $request->sampai]);
+        }
 
         if (!empty($request->kode_supplier)) {
             $query->where('biaya.kode_supplier', $request->kode_supplier);
@@ -75,8 +105,11 @@ class LaporanbiayaController extends Controller
         $query->orderBy('biaya.no_bukti', 'asc');
         $data['biaya'] = $query->get();
 
+        $data['jenis_periode'] = $jenis_periode;
         $data['dari'] = $request->dari;
         $data['sampai'] = $request->sampai;
+        $data['bulan'] = $request->bulan ?? null;
+        $data['tahun'] = $request->tahun ?? null;
         $data['supplier'] = !empty($request->kode_supplier) ? Supplier::where('kode_supplier', $request->kode_supplier)->first() : null;
 
         if ($request->has('exportButton')) {
@@ -141,16 +174,43 @@ class LaporanbiayaController extends Controller
 
     public function cetakrekapakun(Request $request)
     {
-        $request->validate([
-            'dari' => 'required|date',
-            'sampai' => 'required|date',
-        ]);
+        $jenis_periode = $request->jenis_periode ?? 'tanggal';
+
+        if ($jenis_periode == 'bulan_pajak') {
+            $request->validate([
+                'bulan' => 'required',
+                'tahun' => 'required',
+            ]);
+            $bulan = str_pad($request->bulan, 2, '0', STR_PAD_LEFT);
+            $tahun = $request->tahun;
+        } else {
+            $request->validate([
+                'dari' => 'required|date',
+                'sampai' => 'required|date',
+            ]);
+        }
 
         $query = DB::table('biaya_detail')
             ->join('biaya', 'biaya_detail.no_bukti', '=', 'biaya.no_bukti')
-            ->join('coa', 'biaya_detail.kode_akun', '=', 'coa.kode_akun')
-            ->whereBetween('biaya.tanggal', [$request->dari, $request->sampai])
-            ->select(
+            ->join('coa', 'biaya_detail.kode_akun', '=', 'coa.kode_akun');
+
+        if ($jenis_periode == 'bulan_pajak') {
+            $query->where(function($q) use ($bulan, $tahun) {
+                $q->where(function($sub) use ($bulan, $tahun) {
+                    $sub->whereNotNull('biaya.bulan_pajak')
+                        ->where('biaya.bulan_pajak', $bulan)
+                        ->where('biaya.tahun_pajak', $tahun);
+                })->orWhere(function($sub) use ($bulan, $tahun) {
+                    $sub->whereNull('biaya.bulan_pajak')
+                        ->whereMonth('biaya.tanggal', $bulan)
+                        ->whereYear('biaya.tanggal', $tahun);
+                });
+            });
+        } else {
+            $query->whereBetween('biaya.tanggal', [$request->dari, $request->sampai]);
+        }
+
+        $query->select(
                 'biaya_detail.kode_akun',
                 'coa.nama_akun',
                 DB::raw('SUM((biaya_detail.jumlah * biaya_detail.harga) + biaya_detail.penyesuaian) as total_biaya'),
@@ -164,8 +224,11 @@ class LaporanbiayaController extends Controller
         }
 
         $data['rekap'] = $query->get();
+        $data['jenis_periode'] = $jenis_periode;
         $data['dari'] = $request->dari;
         $data['sampai'] = $request->sampai;
+        $data['bulan'] = $request->bulan ?? null;
+        $data['tahun'] = $request->tahun ?? null;
 
         if ($request->has('exportButton')) {
             $filename = 'Laporan_Rekap_Akun_Biaya_' . date('Ymd_His') . '.xls';
