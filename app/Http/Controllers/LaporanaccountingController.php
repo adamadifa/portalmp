@@ -155,6 +155,23 @@ class LaporanaccountingController extends Controller
                     DB::raw('0 as saldo_awal_val')
                 );
 
+            // 8b. Pelunasan Hutang Pembelian (Debet Hutang Usaha 2-11101)
+            $bayarHutangPembelianYearSub = DB::table('pembelian_historibayar')
+                ->join('pembelian', 'pembelian_historibayar.no_bukti', '=', 'pembelian.no_bukti')
+                ->whereYear('pembelian_historibayar.tanggal', $tahun)
+                ->where('pembelian.jenis_transaksi', 'K')
+                ->where('pembelian.kategori_pembelian', '!=', 'I')
+                ->select(
+                    DB::raw("'2-11101' as kode_akun"),
+                    DB::raw('MONTH(pembelian_historibayar.tanggal) as bulan'),
+                    'pembelian_historibayar.tanggal',
+                    'pembelian_historibayar.no_bukti',
+                    DB::raw("'BAYAR PEMBELIAN' as sumber"),
+                    'pembelian_historibayar.jumlah as jml_debet',
+                    DB::raw('0 as jml_kredit'),
+                    DB::raw('0 as saldo_awal_val')
+                );
+
             // 9. Bayar Biaya (Kas/Bank keluar)
             $bayarBiayaYearSub = DB::table('biaya_historibayar')
                 ->leftJoin('bank', 'biaya_historibayar.kode_bank', '=', 'bank.kode_bank')
@@ -246,6 +263,7 @@ class LaporanaccountingController extends Controller
                 ->unionAll($piutangPenjualanYearSub)
                 ->unionAll($bayarPiutangYearSub)
                 ->unionAll($bayarPembelianYearSub)
+                ->unionAll($bayarHutangPembelianYearSub)
                 ->unionAll($bayarBiayaYearSub)
                 ->unionAll($jurnalUmumYearSub)
                 ->unionAll($ppnMasukanYearSub)
@@ -532,10 +550,30 @@ class LaporanaccountingController extends Controller
                 DB::raw("COALESCE(bank.kode_akun, '1-11101') as kode_akun"),
                 'pembelian_historibayar.tanggal',
                 'pembelian_historibayar.no_bukti',
-                DB::raw("'BAYAR PEMBELIAN' as sumber"),
-                DB::raw("'Pembayaran Hutang Pembelian' as keterangan"),
+                DB::raw("CONCAT('KAS / BANK - ', COALESCE(bank.nama_bank, 'KAS')) as sumber"),
+                DB::raw("CONCAT('Pembayaran Hutang Pembelian ', pembelian_historibayar.no_bukti, ' via ', COALESCE(bank.nama_bank, 'Kas/Bank')) as keterangan"),
                 DB::raw('0 as jml_debet'),
                 'pembelian_historibayar.jumlah as jml_kredit',
+                DB::raw('0 as saldo_awal_val'),
+                DB::raw('3 as urutan')
+            );
+
+        // 8b. Pelunasan Hutang Pembelian (Debet Hutang Usaha 2-11101)
+        $bayarHutangPembelianSub = DB::table('pembelian_historibayar')
+            ->join('pembelian', 'pembelian_historibayar.no_bukti', '=', 'pembelian.no_bukti')
+            ->leftJoin('supplier', 'pembelian.kode_supplier', '=', 'supplier.kode_supplier')
+            ->leftJoin('bank', 'pembelian_historibayar.kode_bank', '=', 'bank.kode_bank')
+            ->whereBetween('pembelian_historibayar.tanggal', [sprintf('%04d-%02d-01', $tahun, $bulan), $sampai])
+            ->where('pembelian.jenis_transaksi', 'K')
+            ->where('pembelian.kategori_pembelian', '!=', 'I')
+            ->select(
+                DB::raw("'2-11101' as kode_akun"),
+                'pembelian_historibayar.tanggal',
+                'pembelian_historibayar.no_bukti',
+                DB::raw("CONCAT('KAS / BANK - ', COALESCE(bank.nama_bank, 'KAS')) as sumber"),
+                DB::raw("CONCAT('Pelunasan Hutang ', COALESCE(supplier.nama_supplier, ''), ' via ', COALESCE(bank.nama_bank, 'Kas/Bank')) as keterangan"),
+                'pembelian_historibayar.jumlah as jml_debet',
+                DB::raw('0 as jml_kredit'),
                 DB::raw('0 as saldo_awal_val'),
                 DB::raw('3 as urutan')
             );
@@ -644,6 +682,7 @@ class LaporanaccountingController extends Controller
             ->unionAll($piutangPenjualanSub)
             ->unionAll($bayarPiutangSub)
             ->unionAll($bayarPembelianSub)
+            ->unionAll($bayarHutangPembelianSub)
             ->unionAll($bayarBiayaSub)
             ->unionAll($jurnalUmumSub)
             ->unionAll($ppnMasukanSub)

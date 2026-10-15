@@ -1198,6 +1198,26 @@ class PembelianController extends Controller
         }
     }
 
+    public function resetPembayaran()
+    {
+        abort_if(!auth()->user()->can('pembelian.create'), 403);
+
+        try {
+            DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+
+            if (\Illuminate\Support\Facades\Schema::hasTable('pembelian_historibayar')) {
+                DB::table('pembelian_historibayar')->truncate();
+            }
+
+            DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+
+            return Redirect::route('pembelian.index')->with(messageSuccess('Seluruh Data Pembayaran Pembelian Berhasil Direset'));
+        } catch (\Exception $e) {
+            DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+            return Redirect::back()->with(messageError('Gagal mereset data pembayaran: ' . $e->getMessage()));
+        }
+    }
+
     public function importExcel(Request $request)
     {
         abort_if(!auth()->user()->can('pembelian.create'), 403);

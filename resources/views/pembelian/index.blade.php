@@ -191,6 +191,9 @@
                 <button type="button" onclick="toggleModalImportPembayaran()" class="inline-flex items-center px-3.5 py-2 text-xs font-semibold text-white bg-teal-600 rounded-xl hover:bg-teal-700 transition shadow-sm gap-1.5">
                     Import Pembayaran
                 </button>
+                <button type="button" onclick="resetPembayaran()" class="inline-flex items-center px-3.5 py-2 text-xs font-semibold text-white bg-amber-600 rounded-xl hover:bg-amber-700 transition shadow-sm gap-1.5">
+                    Reset Pembayaran
+                </button>
                 <button type="button" onclick="resetPembelian()" class="inline-flex items-center px-3.5 py-2 text-xs font-semibold text-white bg-red-600 rounded-xl hover:bg-red-700 transition shadow-sm gap-1.5">
                     Reset Pembelian
                 </button>
@@ -559,6 +562,34 @@
             }
         });
     });
+
+    // SweetAlert2 Reset Pembayaran Confirmation
+    window.resetPembayaran = function() {
+        Swal.fire({
+            title: 'Reset Pembayaran Pembelian?',
+            text: "Seluruh data histori pembayaran pembelian akan dihapus permanen! Data transaksi pembelian tetap aman.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d97706',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Ya, Reset Pembayaran!',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                var form = $('<form>', {
+                    'method': 'POST',
+                    'action': '{{ route("pembelian.resetpembayaran") }}'
+                });
+                form.append($('<input>', {
+                    'name': '_token',
+                    'value': $('meta[name="csrf-token"]').attr('content'),
+                    'type': 'hidden'
+                }));
+                $('body').append(form);
+                form.submit();
+            }
+        });
+    };
 
     // SweetAlert2 Reset Pembelian Confirmation
     window.resetPembelian = function() {
