@@ -22,7 +22,7 @@
             </div>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-4 gap-6 mt-6 pt-6 border-t border-slate-100 text-xs">
+        <div class="grid grid-cols-1 sm:grid-cols-5 gap-6 mt-6 pt-6 border-t border-slate-100 text-xs">
             <div>
                 <span class="block text-slate-400 font-semibold uppercase tracking-wider mb-1.5">Tanggal Transaksi</span>
                 <span class="font-bold text-slate-850 text-sm">{{ DateToIndo($pembelian->tanggal) }}</span>
@@ -49,6 +49,20 @@
                     @else
                         <span class="inline-flex items-center px-2.5 py-0.5 rounded text-xs font-bold uppercase bg-sky-50 text-sky-700 border border-sky-200">
                             Lokal
+                        </span>
+                    @endif
+                </div>
+            </div>
+            <div>
+                <span class="block text-slate-400 font-semibold uppercase tracking-wider mb-1.5">Uang Muka</span>
+                <div>
+                    @if($pembelian->status_uang_muka == 1)
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded text-xs font-bold uppercase bg-amber-50 text-amber-800 border border-amber-200">
+                            Ya (Uang Muka)
+                        </span>
+                    @else
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded text-xs font-bold uppercase bg-slate-50 text-slate-600 border border-slate-200">
+                            Tidak
                         </span>
                     @endif
                 </div>
@@ -430,8 +444,8 @@
                             @endforeach
                         @endif
 
-                        <!-- Akun Hutang Usaha / Kas (Kredit) - Dikecualikan jika kategori Import -->
-                        @if(!$is_import)
+                        <!-- Akun Hutang Usaha / Kas (Kredit) - Dikecualikan jika kategori Import atau Uang Muka -->
+                        @if(!$is_import && ($pembelian->status_uang_muka != 1))
                             <tr class="hover:bg-slate-50/40 transition">
                                 <td class="px-5 py-3 font-mono font-bold text-indigo-700">
                                     {{ $pembelian->jenis_transaksi == 'K' ? '2-11101' : '1-11101' }}
@@ -449,6 +463,15 @@
                                 </td>
                                 <td class="px-5 py-3 text-right text-slate-400">-</td>
                                 <td class="px-5 py-3 text-right font-bold text-indigo-900">{{ formatAngkaDesimal($total_kredit_pmb_base) }}</td>
+                            </tr>
+                        @elseif($pembelian->status_uang_muka == 1)
+                            <tr class="bg-amber-50/50">
+                                <td colspan="5" class="px-5 py-3 text-amber-800 text-[11px]">
+                                    <div class="flex items-center gap-2">
+                                        <svg class="w-4 h-4 shrink-0 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                        <span><strong>Transaksi Pembayaran Uang Muka:</strong> Akun Hutang Usaha (2-11101) dikecualikan dari transaksi ini.</span>
+                                    </div>
+                                </td>
                             </tr>
                         @else
                             <tr class="bg-violet-50/50">

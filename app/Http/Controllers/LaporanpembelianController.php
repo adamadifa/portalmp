@@ -351,6 +351,12 @@ class LaporanpembelianController extends Controller
         }
         // Jika $kategori_pembelian === 'ALL', tidak ditambahkan filter (menampilkan semua)
 
+        // Transaksi yang status uang muka (status_uang_muka = 1) dikecualikan dari hutang
+        $query->where(function($q) {
+            $q->where('pembelian.status_uang_muka', '!=', 1)
+              ->orWhereNull('pembelian.status_uang_muka');
+        });
+
         if ($request->ppn === "0") {
             $query->where('pembelian.ppn', 0);
         } else if ($request->ppn == "1") {
@@ -425,6 +431,7 @@ class LaporanpembelianController extends Controller
         ) jk ON jk.no_bukti = pembelian_detail.no_bukti
         WHERE pembelian.tanggal <='$request->tanggal'
         AND (pembelian.kategori_pembelian != 'I' OR pembelian.kategori_pembelian IS NULL)
+        AND (pembelian.status_uang_muka != 1 OR pembelian.status_uang_muka IS NULL)
         GROUP BY pembelian_detail.no_bukti,pembelian.kode_supplier,nama_supplier,hb.jmlbayar,jk.jmlpenyesuaian,pembelian.tanggal
         ORDER BY pembelian.kode_supplier ASC
         ) as kp WHERE sisahutang !=0");

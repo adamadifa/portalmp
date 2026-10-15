@@ -129,13 +129,27 @@
                     </div>
 
                     <div class="md:col-span-2">
+                        <div class="c-fl-group">
+                            <span class="c-fl-icon">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                            </span>
+                            <select name="status_uang_muka_search" id="status_uang_muka_search" class="fi">
+                                <option value="">Semua Status UM</option>
+                                <option value="1" {{ Request('status_uang_muka_search') === '1' ? 'selected' : '' }}>Uang Muka</option>
+                                <option value="0" {{ Request('status_uang_muka_search') === '0' ? 'selected' : '' }}>Biasa</option>
+                            </select>
+                            <label for="status_uang_muka_search" class="c-fl-label">Uang Muka</label>
+                        </div>
+                    </div>
+
+                    <div class="md:col-span-2">
                         <button type="submit" class="w-full inline-flex items-center justify-center px-4 py-2 text-xs font-semibold text-white bg-[#294C9A] hover:bg-[#1E3A70] rounded-xl transition shadow-sm gap-1.5 h-[38px]">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                             Cari
                         </button>
                     </div>
                 @else
-                    <div class="md:col-span-8">
+                    <div class="md:col-span-6">
                         <div class="c-fl-group">
                             <span class="c-fl-icon">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
@@ -162,6 +176,20 @@
                                 <option value="I" {{ Request('kategori_pembelian_search') == 'I' ? 'selected' : '' }}>Import</option>
                             </select>
                             <label for="kategori_pembelian_search" class="c-fl-label">Lokal / Import</label>
+                        </div>
+                    </div>
+
+                    <div class="md:col-span-2">
+                        <div class="c-fl-group">
+                            <span class="c-fl-icon">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                            </span>
+                            <select name="status_uang_muka_search" id="status_uang_muka_search" class="fi">
+                                <option value="">Semua Status UM</option>
+                                <option value="1" {{ Request('status_uang_muka_search') === '1' ? 'selected' : '' }}>Uang Muka</option>
+                                <option value="0" {{ Request('status_uang_muka_search') === '0' ? 'selected' : '' }}>Biasa</option>
+                            </select>
+                            <label for="status_uang_muka_search" class="c-fl-label">Uang Muka</label>
                         </div>
                     </div>
 
@@ -222,6 +250,16 @@
                             Import
                         </button>
                     </div>
+                    <span class="text-gray-300 mx-1">|</span>
+                    <div class="inline-flex items-center gap-1.5">
+                        <span class="text-gray-600 font-medium">Uang Muka:</span>
+                        <button type="button" onclick="bulkUpdateUangMuka(1)" class="px-2.5 py-1.5 bg-amber-100 text-amber-800 hover:bg-amber-200 border border-amber-300 rounded-lg font-medium transition shadow-xs">
+                            Ya (UM)
+                        </button>
+                        <button type="button" onclick="bulkUpdateUangMuka(0)" class="px-2.5 py-1.5 bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-300 rounded-lg font-medium transition shadow-xs">
+                            Tidak
+                        </button>
+                    </div>
                     @can('pembelian.delete')
                         <span class="text-gray-300 mx-1">|</span>
                         <button type="button" onclick="bulkDelete()" class="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium transition shadow-xs inline-flex items-center gap-1">
@@ -242,6 +280,7 @@
                         <th class="px-4 py-3 font-bold">TANGGAL</th>
                         <th class="px-4 py-3 font-bold">SUPPLIER</th>
                         <th class="px-4 py-3 font-bold text-center">KATEGORI</th>
+                        <th class="px-4 py-3 font-bold text-center">UM</th>
                         @can('pembelian.harga')
                             <th class="px-4 py-3 font-bold text-end">TOTAL</th>
                             <th class="px-4 py-3 font-bold text-end">BAYAR</th>
@@ -270,6 +309,13 @@
                                     <span class="px-2 py-0.5 text-[10px] font-semibold bg-purple-100 text-purple-800 border border-purple-200 rounded-md">Import</span>
                                 @else
                                     <span class="px-2 py-0.5 text-[10px] font-semibold bg-sky-50 text-sky-700 border border-sky-200 rounded-md">Lokal</span>
+                                @endif
+                            </td>
+                            <td class="px-4 py-3 text-center">
+                                @if ($d->status_uang_muka == 1)
+                                    <span class="px-2 py-0.5 text-[10px] font-semibold bg-amber-100 text-amber-800 border border-amber-200 rounded-md">UM</span>
+                                @else
+                                    <span class="text-gray-300 text-xs">-</span>
                                 @endif
                             </td>
                             @can('pembelian.harga')
@@ -738,6 +784,73 @@
                             _token: $('meta[name="csrf-token"]').attr('content'),
                             no_bukti: selected,
                             kategori_pembelian: kategori
+                        },
+                        success: function(response) {
+                            Swal.fire({
+                                title: 'Berhasil!',
+                                text: response.message,
+                                icon: 'success',
+                                confirmButtonColor: '#294C9A'
+                            }).then(() => {
+                                window.location.reload();
+                            });
+                        },
+                        error: function(xhr) {
+                            var errMsg = xhr.responseJSON && xhr.responseJSON.message ? xhr.responseJSON.message : 'Terjadi kesalahan saat memproses data.';
+                            Swal.fire({
+                                title: 'Gagal!',
+                                text: errMsg,
+                                icon: 'error',
+                                confirmButtonColor: '#d33'
+                            });
+                        }
+                    });
+                }
+            });
+        };
+
+        window.bulkUpdateUangMuka = function(status) {
+            var selected = $('.checkItem:checked').map(function() {
+                return $(this).val();
+            }).get();
+
+            if (selected.length === 0) {
+                Swal.fire({
+                    title: 'Peringatan',
+                    text: 'Pilih minimal satu data pembelian!',
+                    icon: 'warning',
+                    confirmButtonColor: '#294C9A'
+                });
+                return;
+            }
+
+            var label = status == 1 ? 'Uang Muka (Ya)' : 'Bukan Uang Muka (Tidak)';
+
+            Swal.fire({
+                title: 'Konfirmasi Ubah Status Uang Muka',
+                text: `Ubah ${selected.length} data pembelian terpilih menjadi status "${label}"?`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#294C9A',
+                cancelButtonColor: '#6B7280',
+                confirmButtonText: 'Ya, Ubah',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({
+                        title: 'Memproses...',
+                        text: 'Mohon tunggu sebentar',
+                        allowOutsideClick: false,
+                        didOpen: () => { Swal.showLoading(); }
+                    });
+
+                    $.ajax({
+                        url: "{{ route('pembelian.bulkupdateuangmuka') }}",
+                        type: 'POST',
+                        data: {
+                            _token: $('meta[name="csrf-token"]').attr('content'),
+                            no_bukti: selected,
+                            status_uang_muka: status
                         },
                         success: function(response) {
                             Swal.fire({

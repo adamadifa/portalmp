@@ -351,6 +351,7 @@ class PembelianController extends Controller
                 'ppn' => $request->ppn,
                 'kategori_transaksi' => $request->kategori_transaksi,
                 'kategori_pembelian' => $request->kategori_pembelian ?? 'L',
+                'status_uang_muka' => $request->status_uang_muka ?? 0,
                 'kode_akun' => $request->kode_asal_pengajuan == 'GDB' ? '2-1200' : '2-1300',
                 'no_po' => $no_po,
                 'id_user' => auth()->user()->id
@@ -469,6 +470,31 @@ class PembelianController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Gagal memperbarui kategori: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function bulkUpdateUangMuka(Request $request)
+    {
+        $request->validate([
+            'no_bukti' => 'required|array|min:1',
+            'status_uang_muka' => 'required|in:0,1',
+        ]);
+
+        try {
+            $status = (int) $request->status_uang_muka;
+            $updated = Pembelian::whereIn('no_bukti', $request->no_bukti)
+                ->update(['status_uang_muka' => $status]);
+
+            $label = $status == 1 ? 'Uang Muka (Ya)' : 'Bukan Uang Muka (Tidak)';
+            return response()->json([
+                'success' => true,
+                'message' => "Berhasil memperbarui {$updated} data pembelian menjadi status {$label}.",
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal memperbarui status uang muka: ' . $e->getMessage(),
             ], 500);
         }
     }
@@ -809,6 +835,7 @@ class PembelianController extends Controller
                 'ppn' => $request->ppn,
                 'kategori_transaksi' => $request->kategori_transaksi,
                 'kategori_pembelian' => $request->kategori_pembelian ?? 'L',
+                'status_uang_muka' => $request->status_uang_muka ?? 0,
                 'id_user' => auth()->user()->id
             ]);
 

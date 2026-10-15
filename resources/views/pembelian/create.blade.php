@@ -360,6 +360,20 @@
                             </label>
                         </div>
                     </div>
+
+                    <div>
+                        <span class="text-xs font-semibold text-gray-700 block mb-2">Status Uang Muka</span>
+                        <div class="grid grid-cols-2 gap-2">
+                            <label class="inline-flex items-center cursor-pointer">
+                                <input type="radio" name="status_uang_muka" id="status_uang_muka_0" value="0" checked class="rounded-full border-gray-300 text-[#294C9A] focus:ring-[#294C9A]" />
+                                <span class="ml-2 text-xs">Tidak (Biasa)</span>
+                            </label>
+                            <label class="inline-flex items-center cursor-pointer">
+                                <input type="radio" name="status_uang_muka" id="status_uang_muka_1" value="1" class="rounded-full border-gray-300 text-[#294C9A] focus:ring-[#294C9A]" />
+                                <span class="ml-2 text-xs">Ya (Uang Muka)</span>
+                            </label>
+                        </div>
+                    </div>
                 </div>
             </div>
 

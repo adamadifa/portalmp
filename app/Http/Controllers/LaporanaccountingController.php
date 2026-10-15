@@ -161,6 +161,7 @@ class LaporanaccountingController extends Controller
                 ->whereYear('pembelian_historibayar.tanggal', $tahun)
                 ->where('pembelian.jenis_transaksi', 'K')
                 ->where('pembelian.kategori_pembelian', '!=', 'I')
+                ->where('pembelian.status_uang_muka', '!=', 1)
                 ->select(
                     DB::raw("'2-11101' as kode_akun"),
                     DB::raw('MONTH(pembelian_historibayar.tanggal) as bulan'),
@@ -224,6 +225,7 @@ class LaporanaccountingController extends Controller
                 ->whereYear('pembelian.tanggal', $tahun)
                 ->where('pembelian.jenis_transaksi', 'K')
                 ->where('pembelian.kategori_pembelian', '!=', 'I')
+                ->where('pembelian.status_uang_muka', '!=', 1)
                 ->where('pembelian_detail.kode_transaksi', 'PMB')
                 ->select(
                     DB::raw("'2-11101' as kode_akun"),
@@ -566,6 +568,7 @@ class LaporanaccountingController extends Controller
             ->whereBetween('pembelian_historibayar.tanggal', [sprintf('%04d-%02d-01', $tahun, $bulan), $sampai])
             ->where('pembelian.jenis_transaksi', 'K')
             ->where('pembelian.kategori_pembelian', '!=', 'I')
+            ->where('pembelian.status_uang_muka', '!=', 1)
             ->select(
                 DB::raw("'2-11101' as kode_akun"),
                 'pembelian_historibayar.tanggal',
@@ -639,6 +642,7 @@ class LaporanaccountingController extends Controller
             ->whereBetween('pembelian.tanggal', [sprintf('%04d-%02d-01', $tahun, $bulan), $sampai])
             ->where('pembelian.jenis_transaksi', 'K')
             ->where('pembelian.kategori_pembelian', '!=', 'I')
+            ->where('pembelian.status_uang_muka', '!=', 1)
             ->where('pembelian_detail.kode_transaksi', 'PMB')
             ->select(
                 DB::raw("'2-11101' as kode_akun"),

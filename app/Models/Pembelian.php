@@ -135,6 +135,10 @@ class Pembelian extends Model
             if (!empty($request->kategori_pembelian_search)) {
                 $query->where('pembelian.kategori_pembelian', $request->kategori_pembelian_search);
             }
+
+            if ($request->has('status_uang_muka_search') && $request->status_uang_muka_search !== '' && $request->status_uang_muka_search !== null) {
+                $query->where('pembelian.status_uang_muka', $request->status_uang_muka_search);
+            }
         } else {
             $query->whereBetween('pembelian.tanggal', [$start_date, $end_date]);
         }
