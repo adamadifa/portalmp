@@ -69,7 +69,7 @@
             <span class="c-fl-icon">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
             </span>
-            <input type="text" name="dari" id="dari_pembelian" class="fi flatpickr-date" placeholder="Pilih Tanggal" required autocomplete="off" />
+            <input type="text" name="dari" id="dari_pembelian" class="fi flatpickr-date" placeholder="Pilih Tanggal" autocomplete="off" />
             <label for="dari_pembelian" class="c-fl-label">Dari Tanggal *</label>
         </div>
 
@@ -77,7 +77,7 @@
             <span class="c-fl-icon">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
             </span>
-            <input type="text" name="sampai" id="sampai_pembelian" class="fi flatpickr-date" placeholder="Pilih Tanggal" required autocomplete="off" />
+            <input type="text" name="sampai" id="sampai_pembelian" class="fi flatpickr-date" placeholder="Pilih Tanggal" autocomplete="off" />
             <label for="sampai_pembelian" class="c-fl-label">Sampai Tanggal *</label>
         </div>
     </div>

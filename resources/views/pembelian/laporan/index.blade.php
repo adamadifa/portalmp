@@ -473,6 +473,35 @@
             // Validation for each form
             function validatePeriode(formId, dariFieldId = "dari", sampaiFieldId = "sampai") {
                 $(`#${formId}`).submit(function() {
+                    const jenisPeriode = $(this).find('select[name="jenis_periode"]').val();
+                    if (jenisPeriode === 'bulan_pajak') {
+                        const bulan = $(this).find('select[name="bulan"]').val();
+                        const tahun = $(this).find('input[name="tahun"]').val();
+                        if (bulan == "" || !bulan) {
+                            Swal.fire({
+                                title: "Oops!",
+                                text: 'Bulan Pajak Harus Diisi !',
+                                icon: "warning",
+                                customClass: { confirmButton: 'inline-flex items-center px-4 py-2 text-sm font-semibold text-white bg-[#294C9A] rounded-md' },
+                                buttonsStyling: false,
+                                didClose: () => $(this).find('select[name="bulan"]').focus(),
+                            });
+                            return false;
+                        }
+                        if (tahun == "" || !tahun) {
+                            Swal.fire({
+                                title: "Oops!",
+                                text: 'Tahun Pajak Harus Diisi !',
+                                icon: "warning",
+                                customClass: { confirmButton: 'inline-flex items-center px-4 py-2 text-sm font-semibold text-white bg-[#294C9A] rounded-md' },
+                                buttonsStyling: false,
+                                didClose: () => $(this).find('input[name="tahun"]').focus(),
+                            });
+                            return false;
+                        }
+                        return true;
+                    }
+
                     const dari = $(this).find(`#${dariFieldId}`).val();
                     const sampai = $(this).find(`#${sampaiFieldId}`).val();
                     if (dari == "") {
