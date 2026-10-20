@@ -22,10 +22,16 @@
             </div>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-5 gap-6 mt-6 pt-6 border-t border-slate-100 text-xs">
+        <div class="grid grid-cols-1 sm:grid-cols-6 gap-6 mt-6 pt-6 border-t border-slate-100 text-xs">
             <div>
                 <span class="block text-slate-400 font-semibold uppercase tracking-wider mb-1.5">Tanggal Transaksi</span>
                 <span class="font-bold text-slate-850 text-sm">{{ DateToIndo($pembelian->tanggal) }}</span>
+            </div>
+            <div>
+                <span class="block text-slate-400 font-semibold uppercase tracking-wider mb-1.5">Bulan / Masa Pajak</span>
+                <span class="font-bold text-[#294C9A] text-sm">
+                    {{ $pembelian->bulan_pajak ? str_pad($pembelian->bulan_pajak, 2, '0', STR_PAD_LEFT) : date('m', strtotime($pembelian->tanggal)) }} / {{ $pembelian->tahun_pajak ?: date('Y', strtotime($pembelian->tanggal)) }}
+                </span>
             </div>
             <div>
                 <span class="block text-slate-400 font-semibold uppercase tracking-wider mb-1.5">Nama Supplier</span>

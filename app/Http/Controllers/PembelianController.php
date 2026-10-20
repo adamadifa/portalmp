@@ -341,9 +341,15 @@ class PembelianController extends Controller
 
 
             //Insert Data pembelian
+            $tgl = $request->tanggal;
+            $bulanPajak = $request->bulan_pajak ?: date('m', strtotime($tgl));
+            $tahunPajak = $request->tahun_pajak ?: date('Y', strtotime($tgl));
+
             Pembelian::create([
                 'no_bukti' => $request->no_bukti,
                 'tanggal' => $request->tanggal,
+                'bulan_pajak' => $bulanPajak,
+                'tahun_pajak' => $tahunPajak,
                 'kode_supplier' => $request->kode_supplier,
                 'kode_asal_pengajuan' => $request->kode_asal_pengajuan,
                 'jenis_transaksi' => $request->jenis_transaksi,
@@ -826,9 +832,15 @@ class PembelianController extends Controller
             }
 
             //Update Data pembelian
+            $tgl = $request->tanggal;
+            $bulanPajak = $request->bulan_pajak ?: date('m', strtotime($tgl));
+            $tahunPajak = $request->tahun_pajak ?: date('Y', strtotime($tgl));
+
             Pembelian::where('no_bukti', $no_bukti)->update([
                 'no_bukti' => $request->no_bukti,
                 'tanggal' => $request->tanggal,
+                'bulan_pajak' => $bulanPajak,
+                'tahun_pajak' => $tahunPajak,
                 'kode_supplier' => $request->kode_supplier,
                 'jenis_transaksi' => $request->jenis_transaksi,
                 'jatuh_tempo' => $request->jenis_transaksi == "K" ? $request->jatuh_tempo : $request->tanggal,
@@ -1328,16 +1340,18 @@ class PembelianController extends Controller
             }
 
             // Find mandatory columns
-            $colNoBukti = $colMap['nobukti'] ?? $colMap['nomorbukti'] ?? null;
-            $colTanggal = $colMap['tanggal'] ?? null;
-            $colSupplier = $colMap['codesupplier'] ?? $colMap['kodesupplier'] ?? null;
-            $colBarang = $colMap['codeproduk'] ?? $colMap['kodeproduk'] ?? $colMap['kodebarang'] ?? $colMap['codebarang'] ?? null;
-            $colQty = $colMap['qty'] ?? $colMap['jumlah'] ?? null;
-            $colHarga = $colMap['harga'] ?? null;
-            $colAkun = $colMap['kodeakun'] ?? null;
-            $colFakturPajak = $colMap['nofakturpajak'] ?? null;
+            $colNoBukti = $colMap['nobukti'] ?? $colMap['nomorbukti'] ?? $colMap['bpb'] ?? $colMap['no_bukti'] ?? null;
+            $colTanggal = $colMap['tanggal'] ?? $colMap['tgl'] ?? null;
+            $colBulanPajak = $colMap['bulan'] ?? $colMap['bulanpajak'] ?? $colMap['blnpajak'] ?? $colMap['bln'] ?? null;
+            $colTahunPajak = $colMap['tahun'] ?? $colMap['tahunpajak'] ?? $colMap['thnpajak'] ?? $colMap['thn'] ?? null;
+            $colSupplier = $colMap['codesupplier'] ?? $colMap['kodesupplier'] ?? $colMap['kode_supplier'] ?? $colMap['kodepelanggan'] ?? null;
+            $colBarang = $colMap['codeproduk'] ?? $colMap['kodeproduk'] ?? $colMap['kodebarang'] ?? $colMap['codebarang'] ?? $colMap['kodeproduct'] ?? null;
+            $colQty = $colMap['qty'] ?? $colMap['jumlah'] ?? $colMap['volume'] ?? null;
+            $colHarga = $colMap['harga'] ?? $colMap['hargasatuan'] ?? $colMap['harga_satuan'] ?? null;
+            $colAkun = $colMap['kodeakun'] ?? $colMap['kode_akun'] ?? $colMap['noakun'] ?? $colMap['coa'] ?? null;
+            $colFakturPajak = $colMap['nofakturpajak'] ?? $colMap['nofakpajak'] ?? null;
             $colJenis = $colMap['jenis'] ?? $colMap['kategoritransaksi'] ?? null;
-            $colKeterangan = $colMap['jenisproduct'] ?? $colMap['namaproduk'] ?? $colMap['namabarang'] ?? null;
+            $colKeterangan = $colMap['jenisproduct'] ?? $colMap['namaproduk'] ?? $colMap['namabarang'] ?? $colMap['jenisproduk'] ?? null;
             $colPpn = $colMap['ppn'] ?? null;
 
             if (!$colNoBukti || !$colTanggal || !$colSupplier || !$colBarang || !$colQty || !$colHarga || !$colAkun) {
@@ -1365,6 +1379,42 @@ class PembelianController extends Controller
                     $tanggal = date('Y-m-d', strtotime($tanggalVal));
                 }
 
+                // Parse Bulan & Tahun Pajak (dari kolom bulan dan tahun)
+                $bulanPajakVal = null;
+                if ($colBulanPajak) {
+                    $rawBulan = trim((string)($sheet->getCell([$colBulanPajak, $r])->getCalculatedValue() ?? ''));
+                    if (!empty($rawBulan)) {
+                        if (is_numeric($rawBulan)) {
+                            $bulanPajakVal = str_pad((int)$rawBulan, 2, '0', STR_PAD_LEFT);
+                        } else {
+                            $timeMonth = strtotime("1 $rawBulan " . date('Y'));
+                            if ($timeMonth !== false) {
+                                $bulanPajakVal = date('m', $timeMonth);
+                            } else {
+                                $bulanPajakVal = mb_substr($rawBulan, 0, 2);
+                            }
+                        }
+                    }
+                }
+                if (empty($bulanPajakVal) && !empty($tanggal)) {
+                    $bulanPajakVal = date('m', strtotime($tanggal));
+                }
+
+                $tahunPajakVal = null;
+                if ($colTahunPajak) {
+                    $rawTahun = trim((string)($sheet->getCell([$colTahunPajak, $r])->getCalculatedValue() ?? ''));
+                    if (!empty($rawTahun)) {
+                        if (is_numeric($rawTahun)) {
+                            $tahunPajakVal = (strlen($rawTahun) == 2) ? '20' . $rawTahun : substr($rawTahun, 0, 4);
+                        } else {
+                            $tahunPajakVal = mb_substr($rawTahun, 0, 4);
+                        }
+                    }
+                }
+                if (empty($tahunPajakVal) && !empty($tanggal)) {
+                    $tahunPajakVal = date('Y', strtotime($tanggal));
+                }
+
                 $kodeSupplier = trim($sheet->getCell([$colSupplier, $r])->getCalculatedValue() ?? '');
                 $kodeBarang = trim($sheet->getCell([$colBarang, $r])->getCalculatedValue() ?? '');
                 $qty = (float) toNumber(trim($sheet->getCell([$colQty, $r])->getCalculatedValue() ?? 0));
@@ -1387,6 +1437,8 @@ class PembelianController extends Controller
                 $rows[] = [
                     'no_bukti' => $noBuktiVal,
                     'tanggal' => $tanggal,
+                    'bulan_pajak' => $bulanPajakVal,
+                    'tahun_pajak' => $tahunPajakVal,
                     'kode_supplier' => $kodeSupplier,
                     'kode_barang' => $kodeBarang,
                     'qty' => $qty,
@@ -1423,7 +1475,17 @@ class PembelianController extends Controller
                 // Check if pembelian already exists
                 $existing = Pembelian::where('no_bukti', $noBukti)->first();
                 if ($existing) {
-                    throw new \Exception("Transaksi dengan No. Bukti '{$noBukti}' sudah ada di database.");
+                    $updateData = [];
+                    if (!empty($firstItem['bulan_pajak'])) {
+                        $updateData['bulan_pajak'] = $firstItem['bulan_pajak'];
+                    }
+                    if (!empty($firstItem['tahun_pajak'])) {
+                        $updateData['tahun_pajak'] = $firstItem['tahun_pajak'];
+                    }
+                    if (!empty($updateData)) {
+                        $existing->update($updateData);
+                    }
+                    continue;
                 }
 
                 // Determine PPN
@@ -1439,6 +1501,8 @@ class PembelianController extends Controller
                 Pembelian::create([
                     'no_bukti' => $noBukti,
                     'tanggal' => $firstItem['tanggal'],
+                    'bulan_pajak' => $firstItem['bulan_pajak'],
+                    'tahun_pajak' => $firstItem['tahun_pajak'],
                     'kode_supplier' => $firstItem['kode_supplier'],
                     'kode_asal_pengajuan' => 'GDL',
                     'kode_akun' => $firstItem['kode_akun'],

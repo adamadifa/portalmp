@@ -21,6 +21,8 @@ class LaporanpembelianController extends Controller
         $data['asal_ajuan'] = config('pembelian.list_asal_pengajuan');
         $data['list_jenis_barang'] = config('pembelian.list_jenis_barang');
         $data['barangbahankemasan'] = Barangpembelian::whereIn('kode_jenis_barang', ['BB', 'BT', 'KM'])->get();
+        $data['list_bulan'] = config('global.list_bulan');
+        $data['start_year'] = config('global.start_year', 2022);
         $data['akun'] = DB::table('pembelian_detail')
             ->join('coa', 'pembelian_detail.kode_akun', '=', 'coa.kode_akun')
             ->select('pembelian_detail.kode_akun', 'coa.nama_akun')
@@ -32,14 +34,27 @@ class LaporanpembelianController extends Controller
 
     public function cetakpembelian(Request $request)
     {
-        if (lockreport($request->dari) == "error") {
-            return Redirect::back()->with(messageError('Data Tidak Ditemukan'));
+        $jenis_periode = $request->jenis_periode ?? 'tanggal';
+
+        if ($jenis_periode == 'bulan_pajak') {
+            $request->validate([
+                'bulan' => 'required',
+                'tahun' => 'required',
+            ]);
+            $bulan = str_pad($request->bulan, 2, '0', STR_PAD_LEFT);
+            $tahun = $request->tahun;
+        } else {
+            if (lockreport($request->dari) == "error") {
+                return Redirect::back()->with(messageError('Data Tidak Ditemukan'));
+            }
         }
 
         $query = Detailpembelian::query();
         $query->select(
             'pembelian_detail.*',
-            'tanggal',
+            'pembelian.tanggal',
+            'pembelian.bulan_pajak',
+            'pembelian.tahun_pajak',
             'pembelian.kode_supplier',
             'nama_supplier',
             'nama_barang',
@@ -57,7 +72,23 @@ class LaporanpembelianController extends Controller
         $query->join('supplier', 'pembelian.kode_supplier', '=', 'supplier.kode_supplier');
         $query->join('coa', 'pembelian_detail.kode_akun', '=', 'coa.kode_akun');
         $query->leftJoin('pembelian_barang', 'pembelian_detail.kode_barang', '=', 'pembelian_barang.kode_barang');
-        $query->whereBetween('tanggal', [$request->dari, $request->sampai]);
+
+        if ($jenis_periode == 'bulan_pajak') {
+            $query->where(function ($q) use ($bulan, $tahun) {
+                $q->where(function ($sub) use ($bulan, $tahun) {
+                    $sub->whereNotNull('pembelian.bulan_pajak')
+                        ->where('pembelian.bulan_pajak', $bulan)
+                        ->where('pembelian.tahun_pajak', $tahun);
+                })->orWhere(function ($sub) use ($bulan, $tahun) {
+                    $sub->whereNull('pembelian.bulan_pajak')
+                        ->whereMonth('pembelian.tanggal', $bulan)
+                        ->whereYear('pembelian.tanggal', $tahun);
+                });
+            });
+        } else {
+            $query->whereBetween('pembelian.tanggal', [$request->dari, $request->sampai]);
+        }
+
         if (!empty($request->kode_supplier)) {
             $query->where('pembelian.kode_supplier', $request->kode_supplier);
         }
@@ -79,20 +110,24 @@ class LaporanpembelianController extends Controller
         // if (Auth::user()->level == "general affair") {
         //     $query->whereIn('detail_pembelian.kode_akun', $akun_ga);
         // }
-        $query->orderBy('tanggal');
+        $query->orderBy('pembelian.tanggal');
         $query->orderBy('pembelian_detail.no_bukti');
         $query->orderBy('pembelian_detail.kode_transaksi');
 
         $pmb = $query->get();
         $data['pembelian'] = $pmb;
 
+        $data['jenis_periode'] = $jenis_periode;
+        $data['bulan'] = $request->bulan ?? '';
+        $data['tahun'] = $request->tahun ?? '';
         $data['dari'] = $request->dari;
         $data['sampai'] = $request->sampai;
         $data['supplier'] = Supplier::where('kode_supplier', $request->kode_supplier)->first();
         if (isset($_POST['exportButton'])) {
             header("Content-type: application/vnd-ms-excel");
             // Mendefinisikan nama file ekspor "hasil-export.xls"
-            header("Content-Disposition: attachment; filename=Laporan Pembelian $request->dari-$request->sampai.xls");
+            $fileName = $jenis_periode == 'bulan_pajak' ? "Laporan Pembelian Masa {$bulan}-{$tahun}.xls" : "Laporan Pembelian {$request->dari}-{$request->sampai}.xls";
+            header("Content-Disposition: attachment; filename={$fileName}");
         }
         return view('pembelian.laporan.pembelian_cetak', $data);
     }
