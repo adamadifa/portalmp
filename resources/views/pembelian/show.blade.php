@@ -523,6 +523,7 @@
                 }
                 $unpaid_balance = max(0, $grand_total - $total_paid);
             @endphp
+            @can('pembelian.create')
             <div id="formInputPembayaran" class="hidden p-5 bg-slate-50/50 border-b border-slate-100">
                 <form id="formStorePembayaran" class="space-y-4">
                     @csrf
@@ -552,6 +553,49 @@
                 </form>
             </div>
             @endcan
+
+            @if(auth()->user()->can('pembelian.create') || auth()->user()->can('pembelian.edit'))
+            <div id="formEditPembayaran" class="hidden p-5 bg-amber-50/50 border-b border-amber-200">
+                <form id="formUpdatePembayaran" class="space-y-4">
+                    @csrf
+                    <input type="hidden" name="id" id="edit_pembayaran_id">
+                    <div class="flex items-center justify-between pb-2 border-b border-amber-200/70">
+                        <span class="text-xs font-bold text-amber-900 flex items-center gap-1.5">
+                            <svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                            Edit Pembayaran
+                        </span>
+                        <button type="button" onclick="cancelEditPembayaran()" class="text-xs text-slate-500 hover:text-slate-700">✕ Batal</button>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1.5">Tanggal Bayar</label>
+                            <input type="date" name="tanggal" id="edit_pembayaran_tanggal" required class="w-full text-xs border-slate-200 rounded-xl focus:border-amber-500 focus:ring-amber-500 p-2.5 bg-white shadow-sm" />
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1.5">Pilih Bank</label>
+                            <select name="kode_bank" id="edit_kode_bank_pembayaran" required class="w-full text-xs border-slate-200 rounded-xl focus:border-amber-500 focus:ring-amber-500 p-2.5 bg-white shadow-sm">
+                                <option value="">-- Pilih Bank --</option>
+                                @foreach($banks as $b)
+                                    <option value="{{ $b->kode_bank }}">{{ $b->kode_bank }} - {{ $b->nama_bank }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1.5">Jumlah Bayar</label>
+                            <input type="number" step="0.01" min="0.01" name="jumlah" id="edit_pembayaran_jumlah" required class="w-full text-xs border-slate-200 rounded-xl focus:border-amber-500 focus:ring-amber-500 p-2.5 bg-white shadow-sm font-bold text-slate-800" />
+                        </div>
+                    </div>
+                    <div class="flex justify-end gap-2 pt-2">
+                        <button type="button" onclick="cancelEditPembayaran()" class="px-4 py-2 text-xs font-semibold text-slate-700 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition shadow-sm">Batal</button>
+                        <button type="submit" class="px-4 py-2 text-xs font-semibold text-white bg-amber-600 rounded-xl hover:bg-amber-700 transition shadow-sm" style="background-color: #d97706 !important; color: #ffffff !important;">Simpan Perubahan</button>
+                    </div>
+                </form>
+            </div>
+            @endif
+
+            @php
+                $hasAksiPembayaran = auth()->user()->can('pembelian.create') || auth()->user()->can('pembelian.edit') || auth()->user()->can('pembelian.delete');
+            @endphp
             <div class="overflow-x-auto">
                 <table class="w-full text-xs text-left">
                     <thead>
@@ -561,9 +605,9 @@
                             <th class="px-5 py-3 font-semibold uppercase tracking-wider">Bank</th>
                             <th class="px-5 py-3 font-semibold uppercase tracking-wider w-36">Cabang</th>
                             <th class="px-5 py-3 font-semibold uppercase tracking-wider text-right w-44">Jumlah</th>
-                            @can('pembelian.delete')
-                            <th class="px-5 py-3 font-semibold uppercase tracking-wider text-center w-24">Aksi</th>
-                            @endcan
+                            @if($hasAksiPembayaran)
+                            <th class="px-5 py-3 font-semibold uppercase tracking-wider text-center w-28">Aksi</th>
+                            @endif
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100 text-slate-700 bg-white">
@@ -574,18 +618,27 @@
                                 <td class="px-5 py-3.5 text-slate-700">{{ $d->nama_bank }}</td>
                                 <td class="px-5 py-3.5 uppercase font-medium text-slate-500">{{ $d->kode_cabang }}</td>
                                 <td class="px-5 py-3.5 text-right font-bold text-emerald-700">{{ formatAngkaDesimal($d->jumlah) }}</td>
-                                @can('pembelian.delete')
+                                @if($hasAksiPembayaran)
                                 <td class="px-5 py-3.5 text-center">
-                                    <button type="button" onclick="deletePembayaran({{ $d->id }})" class="text-rose-600 hover:text-rose-800 transition" title="Hapus Pembayaran">
-                                        <svg class="w-4 h-4 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                                    </button>
+                                    <div class="flex items-center justify-center gap-1.5">
+                                        @if(auth()->user()->can('pembelian.create') || auth()->user()->can('pembelian.edit'))
+                                        <button type="button" onclick="editPembayaran({{ $d->id }}, '{{ $d->tanggal }}', '{{ $d->kode_bank }}', {{ $d->jumlah }})" class="p-1 text-amber-600 hover:text-amber-800 hover:bg-amber-50 rounded-lg transition" title="Edit Pembayaran">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                                        </button>
+                                        @endif
+                                        @can('pembelian.delete')
+                                        <button type="button" onclick="deletePembayaran({{ $d->id }})" class="p-1 text-rose-600 hover:text-rose-800 hover:bg-rose-50 rounded-lg transition" title="Hapus Pembayaran">
+                                            <svg class="w-4 h-4 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                        </button>
+                                        @endcan
+                                    </div>
                                 </td>
-                                @endcan
+                                @endif
                             </tr>
                         @endforeach
                         @if ($historibayar->isEmpty())
                             <tr>
-                                <td colspan="6" class="px-5 py-8 text-center text-slate-400">Belum ada catatan pembayaran.</td>
+                                <td colspan="{{ $hasAksiPembayaran ? 6 : 5 }}" class="px-5 py-8 text-center text-slate-400">Belum ada catatan pembayaran.</td>
                             </tr>
                         @endif
                     </tbody>
@@ -601,14 +654,14 @@
                     @endphp
                     <tfoot class="border-t border-slate-200 bg-slate-50/70">
                         <tr class="border-b border-slate-200/60">
-                            <td colspan="{{ auth()->user()->can('pembelian.delete') ? 4 : 3 }}" class="px-5 py-3 text-right font-semibold uppercase text-slate-500 text-xs">Total Pembayaran</td>
+                            <td colspan="4" class="px-5 py-3 text-right font-semibold uppercase text-slate-500 text-xs">Total Pembayaran</td>
                             <td class="px-5 py-3 text-right font-bold text-emerald-700">{{ formatAngkaDesimal($total_paid) }}</td>
-                            @can('pembelian.delete')<td></td>@endcan
+                            @if($hasAksiPembayaran)<td></td>@endif
                         </tr>
                         <tr class="{{ $remaining <= 0 ? 'bg-emerald-50/50 text-emerald-800' : 'bg-rose-50/50 text-rose-800' }}">
-                            <td colspan="{{ auth()->user()->can('pembelian.delete') ? 4 : 3 }}" class="px-5 py-3 text-right font-bold uppercase text-xs tracking-wider">Sisa Pembayaran</td>
+                            <td colspan="4" class="px-5 py-3 text-right font-bold uppercase text-xs tracking-wider">Sisa Pembayaran</td>
                             <td class="px-5 py-3 text-right font-black text-base {{ $remaining <= 0 ? 'text-emerald-700' : 'text-rose-700' }}">{{ formatAngkaDesimal($remaining) }}</td>
-                            @can('pembelian.delete')<td></td>@endcan
+                            @if($hasAksiPembayaran)<td></td>@endif
                         </tr>
                     </tfoot>
                 </table>
@@ -776,6 +829,7 @@
 
 <script>
     function toggleFormPembayaran() {
+        $('#formEditPembayaran').addClass('hidden');
         $('#formInputPembayaran').toggleClass('hidden');
         if (!$('#formInputPembayaran').hasClass('hidden')) {
             $('#kode_bank_pembayaran').select2({
@@ -784,6 +838,75 @@
             });
         }
     }
+
+    function editPembayaran(id, tanggal, kode_bank, jumlah) {
+        $('#formInputPembayaran').addClass('hidden');
+        $('#edit_pembayaran_id').val(id);
+        $('#edit_pembayaran_tanggal').val(tanggal);
+        $('#edit_pembayaran_jumlah').val(jumlah);
+        $('#formEditPembayaran').removeClass('hidden');
+
+        $('#edit_kode_bank_pembayaran').select2({
+            dropdownParent: $('#modalDialog'),
+            width: '100%'
+        });
+        $('#edit_kode_bank_pembayaran').val(kode_bank).trigger('change');
+
+        if ($('#formEditPembayaran').length) {
+            $('#formEditPembayaran')[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    }
+
+    function cancelEditPembayaran() {
+        $('#formEditPembayaran').addClass('hidden');
+    }
+
+    $('#formUpdatePembayaran').on('submit', function(e) {
+        e.preventDefault();
+        
+        var form = $(this);
+        var submitBtn = form.find('button[type="submit"]');
+        submitBtn.prop('disabled', true).text('Menyimpan...');
+
+        $.ajax({
+            url: '{{ route("pembelian.updatepembayaran", $crypted_no_bukti) }}',
+            type: 'POST',
+            data: form.serialize(),
+            success: function(response) {
+                if (response.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Berhasil',
+                        text: response.message,
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                    
+                    // Reload modal content dynamically
+                    $("#modalBody").load('/pembelian/{{ $crypted_no_bukti }}/show');
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Gagal',
+                        text: response.message
+                    });
+                    submitBtn.prop('disabled', false).text('Simpan Perubahan');
+                }
+            },
+            error: function(xhr) {
+                var msg = 'Terjadi kesalahan pada server.';
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    msg = xhr.responseJSON.message;
+                }
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Gagal',
+                    text: msg
+                });
+                submitBtn.prop('disabled', false).text('Simpan Perubahan');
+            }
+        });
+    });
 
     $('#formStorePembayaran').on('submit', function(e) {
         e.preventDefault();

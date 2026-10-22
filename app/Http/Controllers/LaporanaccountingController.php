@@ -145,7 +145,14 @@ class LaporanaccountingController extends Controller
                 ->leftJoin('bank', 'pembelian_historibayar.kode_bank', '=', 'bank.kode_bank')
                 ->whereYear('pembelian_historibayar.tanggal', $tahun)
                 ->select(
-                    DB::raw("COALESCE(bank.kode_akun, '1-11101') as kode_akun"),
+                    DB::raw("CASE 
+                        WHEN bank.kode_akun IN ('1-11101', '1-11102', '1-11103', '1-11104', '1-11105') THEN bank.kode_akun
+                        WHEN bank.nama_bank LIKE '%BCA%' THEN '1-11103'
+                        WHEN bank.nama_bank LIKE '%BNI%' THEN '1-11104'
+                        WHEN bank.nama_bank LIKE '%BSI%' THEN '1-11105'
+                        WHEN bank.nama_bank LIKE '%KAS KECIL%' THEN '1-11102'
+                        ELSE '1-11101'
+                    END as kode_akun"),
                     DB::raw('MONTH(pembelian_historibayar.tanggal) as bulan'),
                     'pembelian_historibayar.tanggal',
                     'pembelian_historibayar.no_bukti',
@@ -160,8 +167,14 @@ class LaporanaccountingController extends Controller
                 ->join('pembelian', 'pembelian_historibayar.no_bukti', '=', 'pembelian.no_bukti')
                 ->whereYear('pembelian_historibayar.tanggal', $tahun)
                 ->where('pembelian.jenis_transaksi', 'K')
-                ->where('pembelian.kategori_pembelian', '!=', 'I')
-                ->where('pembelian.status_uang_muka', '!=', 1)
+                ->where(function($q) {
+                    $q->whereNull('pembelian.kategori_pembelian')
+                      ->orWhere('pembelian.kategori_pembelian', '!=', 'I');
+                })
+                ->where(function($q) {
+                    $q->whereNull('pembelian.status_uang_muka')
+                      ->orWhere('pembelian.status_uang_muka', '!=', 1);
+                })
                 ->select(
                     DB::raw("'2-11101' as kode_akun"),
                     DB::raw('MONTH(pembelian_historibayar.tanggal) as bulan'),
@@ -178,7 +191,14 @@ class LaporanaccountingController extends Controller
                 ->leftJoin('bank', 'biaya_historibayar.kode_bank', '=', 'bank.kode_bank')
                 ->whereYear('biaya_historibayar.tanggal', $tahun)
                 ->select(
-                    DB::raw("COALESCE(bank.kode_akun, '1-11101') as kode_akun"),
+                    DB::raw("CASE 
+                        WHEN bank.kode_akun IN ('1-11101', '1-11102', '1-11103', '1-11104', '1-11105') THEN bank.kode_akun
+                        WHEN bank.nama_bank LIKE '%BCA%' THEN '1-11103'
+                        WHEN bank.nama_bank LIKE '%BNI%' THEN '1-11104'
+                        WHEN bank.nama_bank LIKE '%BSI%' THEN '1-11105'
+                        WHEN bank.nama_bank LIKE '%KAS KECIL%' THEN '1-11102'
+                        ELSE '1-11101'
+                    END as kode_akun"),
                     DB::raw('MONTH(biaya_historibayar.tanggal) as bulan'),
                     'biaya_historibayar.tanggal',
                     'biaya_historibayar.no_bukti',
@@ -224,8 +244,14 @@ class LaporanaccountingController extends Controller
                 ->join('pembelian', 'pembelian_detail.no_bukti', '=', 'pembelian.no_bukti')
                 ->whereYear('pembelian.tanggal', $tahun)
                 ->where('pembelian.jenis_transaksi', 'K')
-                ->where('pembelian.kategori_pembelian', '!=', 'I')
-                ->where('pembelian.status_uang_muka', '!=', 1)
+                ->where(function($q) {
+                    $q->whereNull('pembelian.kategori_pembelian')
+                      ->orWhere('pembelian.kategori_pembelian', '!=', 'I');
+                })
+                ->where(function($q) {
+                    $q->whereNull('pembelian.status_uang_muka')
+                      ->orWhere('pembelian.status_uang_muka', '!=', 1);
+                })
                 ->where('pembelian_detail.kode_transaksi', 'PMB')
                 ->select(
                     DB::raw("'2-11101' as kode_akun"),
@@ -549,7 +575,14 @@ class LaporanaccountingController extends Controller
             ->leftJoin('bank', 'pembelian_historibayar.kode_bank', '=', 'bank.kode_bank')
             ->whereBetween('pembelian_historibayar.tanggal', [sprintf('%04d-%02d-01', $tahun, $bulan), $sampai])
             ->select(
-                DB::raw("COALESCE(bank.kode_akun, '1-11101') as kode_akun"),
+                DB::raw("CASE 
+                    WHEN bank.kode_akun IN ('1-11101', '1-11102', '1-11103', '1-11104', '1-11105') THEN bank.kode_akun
+                    WHEN bank.nama_bank LIKE '%BCA%' THEN '1-11103'
+                    WHEN bank.nama_bank LIKE '%BNI%' THEN '1-11104'
+                    WHEN bank.nama_bank LIKE '%BSI%' THEN '1-11105'
+                    WHEN bank.nama_bank LIKE '%KAS KECIL%' THEN '1-11102'
+                    ELSE '1-11101'
+                END as kode_akun"),
                 'pembelian_historibayar.tanggal',
                 'pembelian_historibayar.no_bukti',
                 DB::raw("CONCAT('KAS / BANK - ', COALESCE(bank.nama_bank, 'KAS')) as sumber"),
@@ -567,8 +600,14 @@ class LaporanaccountingController extends Controller
             ->leftJoin('bank', 'pembelian_historibayar.kode_bank', '=', 'bank.kode_bank')
             ->whereBetween('pembelian_historibayar.tanggal', [sprintf('%04d-%02d-01', $tahun, $bulan), $sampai])
             ->where('pembelian.jenis_transaksi', 'K')
-            ->where('pembelian.kategori_pembelian', '!=', 'I')
-            ->where('pembelian.status_uang_muka', '!=', 1)
+            ->where(function($q) {
+                $q->whereNull('pembelian.kategori_pembelian')
+                  ->orWhere('pembelian.kategori_pembelian', '!=', 'I');
+            })
+            ->where(function($q) {
+                $q->whereNull('pembelian.status_uang_muka')
+                  ->orWhere('pembelian.status_uang_muka', '!=', 1);
+            })
             ->select(
                 DB::raw("'2-11101' as kode_akun"),
                 'pembelian_historibayar.tanggal',
@@ -586,7 +625,14 @@ class LaporanaccountingController extends Controller
             ->leftJoin('bank', 'biaya_historibayar.kode_bank', '=', 'bank.kode_bank')
             ->whereBetween('biaya_historibayar.tanggal', [sprintf('%04d-%02d-01', $tahun, $bulan), $sampai])
             ->select(
-                DB::raw("COALESCE(bank.kode_akun, '1-11101') as kode_akun"),
+                DB::raw("CASE 
+                    WHEN bank.kode_akun IN ('1-11101', '1-11102', '1-11103', '1-11104', '1-11105') THEN bank.kode_akun
+                    WHEN bank.nama_bank LIKE '%BCA%' THEN '1-11103'
+                    WHEN bank.nama_bank LIKE '%BNI%' THEN '1-11104'
+                    WHEN bank.nama_bank LIKE '%BSI%' THEN '1-11105'
+                    WHEN bank.nama_bank LIKE '%KAS KECIL%' THEN '1-11102'
+                    ELSE '1-11101'
+                END as kode_akun"),
                 'biaya_historibayar.tanggal',
                 'biaya_historibayar.no_bukti',
                 DB::raw("'BAYAR BIAYA' as sumber"),
@@ -641,8 +687,14 @@ class LaporanaccountingController extends Controller
             ->leftJoin('supplier', 'pembelian.kode_supplier', '=', 'supplier.kode_supplier')
             ->whereBetween('pembelian.tanggal', [sprintf('%04d-%02d-01', $tahun, $bulan), $sampai])
             ->where('pembelian.jenis_transaksi', 'K')
-            ->where('pembelian.kategori_pembelian', '!=', 'I')
-            ->where('pembelian.status_uang_muka', '!=', 1)
+            ->where(function($q) {
+                $q->whereNull('pembelian.kategori_pembelian')
+                  ->orWhere('pembelian.kategori_pembelian', '!=', 'I');
+            })
+            ->where(function($q) {
+                $q->whereNull('pembelian.status_uang_muka')
+                  ->orWhere('pembelian.status_uang_muka', '!=', 1);
+            })
             ->where('pembelian_detail.kode_transaksi', 'PMB')
             ->select(
                 DB::raw("'2-11101' as kode_akun"),

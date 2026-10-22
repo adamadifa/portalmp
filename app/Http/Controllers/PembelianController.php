@@ -196,6 +196,41 @@ class PembelianController extends Controller
         }
     }
 
+    public function updatePembayaran(Request $request, $no_bukti)
+    {
+        abort_if(!auth()->user()->can('pembelian.create') && !auth()->user()->can('pembelian.edit'), 403);
+
+        $no_bukti = Crypt::decrypt($no_bukti);
+        $request->validate([
+            'id' => 'required|exists:pembelian_historibayar,id',
+            'tanggal' => 'required|date',
+            'jumlah' => 'required|numeric|min:0.01',
+            'kode_bank' => 'required|exists:bank,kode_bank',
+        ]);
+
+        try {
+            DB::table('pembelian_historibayar')
+                ->where('id', $request->id)
+                ->where('no_bukti', $no_bukti)
+                ->update([
+                    'tanggal' => $request->tanggal,
+                    'jumlah' => $request->jumlah,
+                    'kode_bank' => $request->kode_bank,
+                    'updated_at' => now(),
+                ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Pembayaran berhasil diperbarui.',
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal memperbarui pembayaran: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
     public function destroyPembayaran(Request $request, $no_bukti)
     {
         abort_if(!auth()->user()->can('pembelian.delete'), 403);

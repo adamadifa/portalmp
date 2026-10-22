@@ -121,6 +121,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/pembelian/{no_bukti}/delete', [PembelianController::class, 'destroy'])->name('pembelian.delete');
     Route::get('/pembelian/{no_bukti}/show', [PembelianController::class, 'show'])->name('pembelian.show');
     Route::post('/pembelian/{no_bukti}/bayar', [PembelianController::class, 'storePembayaran'])->name('pembelian.storepembayaran');
+    Route::post('/pembelian/{no_bukti}/bayar/update', [PembelianController::class, 'updatePembayaran'])->name('pembelian.updatepembayaran');
     Route::post('/pembelian/{no_bukti}/bayar/delete', [PembelianController::class, 'destroyPembayaran'])->name('pembelian.destroypembayaran');
     Route::post('/pembelian/{no_bukti}/storejurnalumum', [PembelianController::class, 'storeJurnalUmum'])->name('pembelian.storejurnalumum');
     Route::post('/pembelian/{no_bukti}/destroyjurnalumum', [PembelianController::class, 'destroyJurnalUmum'])->name('pembelian.destroyjurnalumum');
