@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Bank;
 use App\Models\MarketingPenjualan;
 use App\Models\MarketingPenjualanDetail;
 use App\Models\MarketingPenjualanHistoribayar;
@@ -196,12 +197,16 @@ class PenjualanMarketingController extends Controller
         ->get();
 
         $historibayar = DB::table('marketing_penjualan_historibayar')
+            ->leftJoin('bank', 'marketing_penjualan_historibayar.kode_bank', '=', 'bank.kode_bank')
+            ->select('marketing_penjualan_historibayar.*', 'bank.nama_bank')
             ->where('no_bukti_penjualan', $no_bukti)
             ->orderBy('tanggal', 'asc')
             ->orderBy('created_at', 'asc')
             ->get();
 
-        return view('marketing.penjualan.show', compact('penjualan', 'detail', 'historibayar'));
+        $bank = Bank::orderBy('nama_bank')->get();
+
+        return view('marketing.penjualan.show', compact('penjualan', 'detail', 'historibayar', 'bank'));
     }
 
     public function edit($no_bukti)
@@ -668,6 +673,23 @@ class PenjualanMarketingController extends Controller
         }
     }
 
+    public function resetPembayaran()
+    {
+        abort_if(!auth()->user()->can('penjualanmarketing.create'), 403);
+
+        try {
+            DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+            DB::table('marketing_penjualan_historibayar')->truncate();
+            DB::table('marketing_penjualan')->where('jenis_transaksi', 'K')->update(['status' => '0']);
+            DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+
+            return Redirect::route('penjualanmarketing.index')->with(messageSuccess('Seluruh Data Pembayaran Piutang Penjualan Berhasil Direset'));
+        } catch (\Exception $e) {
+            DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+            return Redirect::back()->with(messageError('Gagal mereset data pembayaran: ' . $e->getMessage()));
+        }
+    }
+
     public function deleteSelected(Request $request)
     {
         abort_if(!auth()->user()->can('penjualanmarketing.delete'), 403);
@@ -704,16 +726,16 @@ class PenjualanMarketingController extends Controller
         $request->validate([
             'tanggal' => 'required|date',
             'jumlah_numeric' => 'required|numeric|min:0.01',
-            'jenis_bayar' => 'required|string|in:TN,TR', // TN: Cash, TR: Transfer
+            'kode_bank' => 'nullable|string|exists:bank,kode_bank',
+            'jenis_bayar' => 'nullable|string|in:TN,TR',
         ]);
 
         $penjualan = MarketingPenjualan::where('no_bukti', $no_bukti)->firstOrFail();
 
         // Calculate total invoice
-        $dpp = DB::table('marketing_penjualan_detail')
+        $total_invoice = (float) DB::table('marketing_penjualan_detail')
             ->where('no_bukti', $no_bukti)
-            ->sum('subtotal') ?? 0;
-        $total_invoice = $dpp + ($dpp * 0.11);
+            ->sum('subtotal');
 
         // Calculate already paid
         $total_bayar_sebelumnya = DB::table('marketing_penjualan_historibayar')
@@ -728,6 +750,10 @@ class PenjualanMarketingController extends Controller
 
         try {
             DB::beginTransaction();
+
+            $bank = !empty($request->kode_bank) ? Bank::where('kode_bank', $request->kode_bank)->first() : null;
+            $jenis_bayar = $request->jenis_bayar ?? ($bank && stripos($bank->nama_bank, 'KAS') !== false ? 'TN' : 'TR');
+            $kode_akun = $bank ? ($bank->kode_akun ?? ($jenis_bayar == 'TN' ? '1-11101' : '1-11103')) : ($jenis_bayar == 'TN' ? '1-11101' : '1-11103');
 
             $kode_cabang = auth()->user()->kode_cabang ?? 'PST';
             $tahun = date('y', strtotime($request->tanggal));
@@ -744,9 +770,10 @@ class PenjualanMarketingController extends Controller
                 'no_bukti' => $no_bukti_bayar,
                 'tanggal' => $request->tanggal,
                 'no_bukti_penjualan' => $no_bukti,
-                'jenis_bayar' => $request->jenis_bayar,
+                'jenis_bayar' => $jenis_bayar,
                 'jumlah' => $jumlah_bayar,
-                'kode_akun' => $request->jenis_bayar == 'TN' ? '1-1100' : '1-1200',
+                'kode_bank' => $request->kode_bank ?? ($bank ? $bank->kode_bank : null),
+                'kode_akun' => $kode_akun,
                 'id_user' => auth()->user()->id
             ]);
 
@@ -796,7 +823,8 @@ class PenjualanMarketingController extends Controller
         $request->validate([
             'tanggal' => 'required|date',
             'jumlah' => 'required',
-            'jenis_bayar' => 'required|string|in:TN,TR',
+            'kode_bank' => 'nullable|string|exists:bank,kode_bank',
+            'jenis_bayar' => 'nullable|string|in:TN,TR',
         ]);
 
         $jumlah_bayar = toNumber($request->jumlah);
@@ -807,10 +835,9 @@ class PenjualanMarketingController extends Controller
         $penjualan = MarketingPenjualan::where('no_bukti', $no_bukti_penjualan)->firstOrFail();
 
         // Calculate total invoice
-        $dpp = DB::table('marketing_penjualan_detail')
+        $total_invoice = (float) DB::table('marketing_penjualan_detail')
             ->where('no_bukti', $no_bukti_penjualan)
-            ->sum('subtotal') ?? 0;
-        $total_invoice = $dpp + ($dpp * 0.11);
+            ->sum('subtotal');
 
         // Calculate other payments (excluding this one)
         $total_bayar_lainnya = DB::table('marketing_penjualan_historibayar')
@@ -827,11 +854,16 @@ class PenjualanMarketingController extends Controller
         try {
             DB::beginTransaction();
 
+            $bank = !empty($request->kode_bank) ? Bank::where('kode_bank', $request->kode_bank)->first() : null;
+            $jenis_bayar = $request->jenis_bayar ?? ($bank && stripos($bank->nama_bank, 'KAS') !== false ? 'TN' : 'TR');
+            $kode_akun = $bank ? ($bank->kode_akun ?? ($jenis_bayar == 'TN' ? '1-11101' : '1-11103')) : ($jenis_bayar == 'TN' ? '1-11101' : '1-11103');
+
             $historibayar->update([
                 'tanggal' => $request->tanggal,
-                'jenis_bayar' => $request->jenis_bayar,
+                'jenis_bayar' => $jenis_bayar,
                 'jumlah' => $jumlah_bayar,
-                'kode_akun' => $request->jenis_bayar == 'TN' ? '1-1100' : '1-1200',
+                'kode_bank' => $request->kode_bank ?? ($bank ? $bank->kode_bank : null),
+                'kode_akun' => $kode_akun,
             ]);
 
             // If fully paid, update status to 1, else 0
@@ -847,6 +879,329 @@ class PenjualanMarketingController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             return Redirect::back()->with(messageError('Gagal memperbarui pembayaran: ' . $e->getMessage()));
+        }
+    }
+
+    public function importPembayaranExcel(Request $request)
+    {
+        abort_if(!auth()->user()->can('penjualanmarketing.create'), 403);
+
+        $request->validate([
+            'file_excel' => 'required|mimes:xlsx,xls,csv',
+        ]);
+
+        $file = $request->file('file_excel');
+
+        try {
+            $spreadsheet = IOFactory::load($file->getRealPath());
+
+            $sheet = null;
+            $inputSheet = $request->sheet_name;
+            if (!empty($inputSheet)) {
+                if (is_numeric($inputSheet)) {
+                    $sheetIndex = (int)$inputSheet - 1;
+                    if ($sheetIndex >= 0 && $sheetIndex < $spreadsheet->getSheetCount()) {
+                        $sheet = $spreadsheet->getSheet($sheetIndex);
+                    }
+                } else {
+                    $sheet = $spreadsheet->getSheetByName($inputSheet);
+                }
+            }
+            if (!$sheet) {
+                $sheet = $spreadsheet->getActiveSheet();
+            }
+
+            $highestRow = $sheet->getHighestRow();
+            $highestColumn = $sheet->getHighestColumn();
+            $highestColumnIndex = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::columnIndexFromString($highestColumn);
+
+            // 1. Deteksi baris header
+            $headerRowIndex = 1;
+            for ($r = 1; $r <= min(10, $highestRow); $r++) {
+                for ($c = 1; $c <= $highestColumnIndex; $c++) {
+                    $val = strtolower(trim((string)($sheet->getCell([$c, $r])->getValue() ?? '')));
+                    if (str_contains($val, 'nominal') || str_contains($val, 'pelanggan') || str_contains($val, 'bank')) {
+                        $headerRowIndex = $r;
+                        break 2;
+                    }
+                }
+            }
+
+            // 2. Pemetaan kolom
+            $colMap = [];
+            for ($c = 1; $c <= $highestColumnIndex; $c++) {
+                $val = strtolower(trim((string)($sheet->getCell([$c, $headerRowIndex])->getValue() ?? '')));
+                if (in_array($val, ['tgl', 'tanggal', 'tgl bayar', 'tglbayar', 'tgl. bayar'])) {
+                    $colMap['tanggal'] = $c;
+                } elseif (str_contains($val, 'nominal') || str_contains($val, 'jumlah') || str_contains($val, 'bayar')) {
+                    $colMap['nominal'] = $c;
+                } elseif (str_contains($val, 'kode pelanggan') || str_contains($val, 'kode_pelanggan')) {
+                    $colMap['kode_pelanggan'] = $c;
+                } elseif (str_contains($val, 'pelanggan') && !isset($colMap['kode_pelanggan'])) {
+                    $colMap['kode_pelanggan'] = $c;
+                } elseif (str_contains($val, 'inisial')) {
+                    $colMap['inisial'] = $c;
+                } elseif (str_contains($val, 'kode bank') || str_contains($val, 'kode_bank')) {
+                    $colMap['kode_bank'] = $c;
+                } elseif (str_contains($val, 'bank') && !isset($colMap['bank'])) {
+                    $colMap['bank'] = $c;
+                }
+            }
+
+            // Fallback jika tidak terdeteksi via nama header
+            if (!isset($colMap['tanggal'])) $colMap['tanggal'] = 2;
+            if (!isset($colMap['nominal'])) $colMap['nominal'] = 3;
+            if (!isset($colMap['inisial'])) $colMap['inisial'] = 4;
+            if (!isset($colMap['kode_pelanggan'])) $colMap['kode_pelanggan'] = 5;
+            if (!isset($colMap['bank'])) $colMap['bank'] = 6;
+            if (!isset($colMap['kode_bank'])) $colMap['kode_bank'] = 7;
+
+            $dataStartRow = $headerRowIndex + 1;
+
+            DB::beginTransaction();
+
+            $totalPembayaranBaris = 0;
+            $totalFakturTerbayar = 0;
+            $totalNominalSukses = 0;
+            $skippedMessages = [];
+            $kelebihanBayar = [];
+
+            // Cache data master pelanggan dan bank untuk efisiensi
+            $allPelanggan = DB::table('pelanggan')->select('kode_pelanggan', 'nama_pelanggan')->get();
+            $pelangganMap = [];
+            foreach ($allPelanggan as $p) {
+                $pelangganMap[strtoupper(trim($p->kode_pelanggan))] = $p;
+            }
+
+            $allBanks = DB::table('bank')->get();
+            $bankCodeMap = [];
+            foreach ($allBanks as $b) {
+                $bankCodeMap[strtoupper(trim($b->kode_bank))] = $b;
+            }
+
+            for ($row = $dataStartRow; $row <= $highestRow; $row++) {
+                // Nominal
+                $nomVal = $sheet->getCell([$colMap['nominal'], $row])->getValue();
+                if ($nomVal === null || $nomVal === '') {
+                    continue;
+                }
+
+                if (is_numeric($nomVal)) {
+                    $nominal = (float)$nomVal;
+                } else {
+                    $cleanStr = trim((string)$nomVal);
+                    if (in_array(strtolower($cleanStr), ['total', 'grand total', 'grandtotal', 'subtotal', 'nominal', 'nominal pembayaran'])) {
+                        continue;
+                    }
+                    if (strpos($cleanStr, ',') !== false && strpos($cleanStr, '.') !== false) {
+                        if (strrpos($cleanStr, ',') > strrpos($cleanStr, '.')) {
+                            $cleanStr = str_replace('.', '', $cleanStr);
+                            $cleanStr = str_replace(',', '.', $cleanStr);
+                        } else {
+                            $cleanStr = str_replace(',', '', $cleanStr);
+                        }
+                    } elseif (strpos($cleanStr, '.') !== false) {
+                        if (substr_count($cleanStr, '.') > 1) {
+                            $cleanStr = str_replace('.', '', $cleanStr);
+                        }
+                    } elseif (strpos($cleanStr, ',') !== false) {
+                        if (substr_count($cleanStr, ',') > 1) {
+                            $cleanStr = str_replace(',', '', $cleanStr);
+                        } else {
+                            $cleanStr = str_replace(',', '.', $cleanStr);
+                        }
+                    }
+                    $nominal = (float)$cleanStr;
+                }
+
+                if ($nominal <= 0) {
+                    continue;
+                }
+
+                // Tanggal
+                $cellTgl = $sheet->getCell([$colMap['tanggal'], $row]);
+                $tglVal = $cellTgl->getValue();
+                if (empty($tglVal)) {
+                    continue;
+                }
+
+                if (\PhpOffice\PhpSpreadsheet\Shared\Date::isDateTime($cellTgl)) {
+                    $tglFormatted = date('Y-m-d', \PhpOffice\PhpSpreadsheet\Shared\Date::excelToTimestamp($tglVal));
+                } else {
+                    $strTgl = trim((string)$tglVal);
+                    $parsed = false;
+                    foreach (['d/m/y', 'd/m/Y', 'd-m-Y', 'd-m-y', 'Y-m-d', 'Y/m/d'] as $fmt) {
+                        $dt = \DateTime::createFromFormat($fmt, $strTgl);
+                        if ($dt !== false) {
+                            $tglFormatted = $dt->format('Y-m-d');
+                            $parsed = true;
+                            break;
+                        }
+                    }
+                    if (!$parsed) {
+                        $tglFormatted = date('Y-m-d', strtotime(str_replace('/', '-', $strTgl)));
+                    }
+                }
+
+                // Kode Pelanggan
+                $rawKodePelanggan = strtoupper(trim((string)($sheet->getCell([$colMap['kode_pelanggan'], $row])->getValue() ?? '')));
+                if (empty($rawKodePelanggan) && isset($colMap['inisial'])) {
+                    $rawKodePelanggan = strtoupper(trim((string)($sheet->getCell([$colMap['inisial'], $row])->getValue() ?? '')));
+                }
+
+                if (empty($rawKodePelanggan)) {
+                    continue;
+                }
+
+                if (!isset($pelangganMap[$rawKodePelanggan])) {
+                    $found = null;
+                    foreach ($pelangganMap as $k => $p) {
+                        if (str_contains($k, $rawKodePelanggan) || str_contains(strtoupper($p->nama_pelanggan), $rawKodePelanggan)) {
+                            $found = $p;
+                            break;
+                        }
+                    }
+                    if (!$found) {
+                        $skippedMessages[] = "Baris $row: Pelanggan '$rawKodePelanggan' tidak ditemukan di database.";
+                        continue;
+                    }
+                    $pelangganObj = $found;
+                } else {
+                    $pelangganObj = $pelangganMap[$rawKodePelanggan];
+                }
+
+                $kodePelanggan = $pelangganObj->kode_pelanggan;
+
+                // Bank
+                $rawKodeBank = strtoupper(trim((string)($sheet->getCell([$colMap['kode_bank'], $row])->getValue() ?? '')));
+                $rawNamaBank = strtoupper(trim((string)($sheet->getCell([$colMap['bank'], $row])->getValue() ?? '')));
+
+                $bankObj = null;
+                if (!empty($rawKodeBank) && isset($bankCodeMap[$rawKodeBank])) {
+                    $bankObj = $bankCodeMap[$rawKodeBank];
+                } elseif (!empty($rawNamaBank)) {
+                    foreach ($allBanks as $b) {
+                        if (str_contains(strtoupper($b->nama_bank), $rawNamaBank)) {
+                            $bankObj = $b;
+                            break;
+                        }
+                    }
+                }
+                if (!$bankObj) {
+                    $bankObj = $bankCodeMap['BK047'] ?? $allBanks->first();
+                }
+
+                $kodeBank = $bankObj ? $bankObj->kode_bank : 'BK047';
+                $kodeAkun = $bankObj ? ($bankObj->kode_akun ?? '1-11103') : '1-11103';
+                $jenisBayar = (stripos($bankObj->nama_bank ?? '', 'KAS') !== false) ? 'TN' : 'TR';
+
+                // Ambil semua faktur kredit yang belum lunas milik pelanggan ini secara FIFO (terawal ke terbaru)
+                $sales = MarketingPenjualan::where('kode_pelanggan', $kodePelanggan)
+                    ->where('jenis_transaksi', 'K')
+                    ->where('status', '0')
+                    ->orderBy('tanggal', 'asc')
+                    ->orderBy('no_bukti', 'asc')
+                    ->get();
+
+                if ($sales->isEmpty()) {
+                    $anyCreditSales = MarketingPenjualan::where('kode_pelanggan', $kodePelanggan)
+                        ->where('jenis_transaksi', 'K')
+                        ->exists();
+
+                    if (!$anyCreditSales) {
+                        $skippedMessages[] = "Baris $row: Pelanggan $kodePelanggan tidak memiliki faktur penjualan kredit.";
+                    } else {
+                        $kelebihanBayar[] = "Baris $row: Pelanggan $kodePelanggan (" . $pelangganObj->nama_pelanggan . ") pembayaran Rp " . number_format($nominal, 0, ',', '.') . " tidak dialokasikan karena seluruh faktur sudah Lunas.";
+                    }
+                    continue;
+                }
+
+                $sisaNominal = $nominal;
+                $rowAllocated = false;
+
+                foreach ($sales as $sale) {
+                    if ($sisaNominal <= 0.01) {
+                        break;
+                    }
+
+                    $totalInvoice = (float) DB::table('marketing_penjualan_detail')
+                        ->where('no_bukti', $sale->no_bukti)
+                        ->sum('subtotal');
+
+                    $totalPaid = (float) DB::table('marketing_penjualan_historibayar')
+                        ->where('no_bukti_penjualan', $sale->no_bukti)
+                        ->sum('jumlah');
+
+                    $sisaTagihan = $totalInvoice - $totalPaid;
+                    if ($sisaTagihan <= 0.05) {
+                        $sale->update(['status' => '1']);
+                        continue;
+                    }
+
+                    $alokasi = min($sisaNominal, $sisaTagihan);
+
+                    $kode_cabang = $sale->kode_cabang ?? 'PST';
+                    $tahun = date('y', strtotime($tglFormatted));
+
+                    $lasthistoribayar = DB::table('marketing_penjualan_historibayar')
+                        ->whereRaw('LEFT(no_bukti,6) = ?', [$kode_cabang . $tahun . "-"])
+                        ->orderBy("no_bukti", "desc")
+                        ->lockForUpdate()
+                        ->value('no_bukti');
+
+                    $no_bukti_bayar = buatkode($lasthistoribayar, $kode_cabang . $tahun . "-", 6);
+
+                    DB::table('marketing_penjualan_historibayar')->insert([
+                        'no_bukti' => $no_bukti_bayar,
+                        'tanggal' => $tglFormatted,
+                        'no_bukti_penjualan' => $sale->no_bukti,
+                        'jenis_bayar' => $jenisBayar,
+                        'jumlah' => $alokasi,
+                        'kode_bank' => $kodeBank,
+                        'kode_akun' => $kodeAkun,
+                        'id_user' => auth()->id(),
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]);
+
+                    $totalPaidBaru = $totalPaid + $alokasi;
+                    if ($totalPaidBaru >= $totalInvoice - 0.05) {
+                        $sale->update(['status' => '1']);
+                    }
+
+                    $sisaNominal -= $alokasi;
+                    $totalFakturTerbayar++;
+                    $totalNominalSukses += $alokasi;
+                    $rowAllocated = true;
+                }
+
+                if ($rowAllocated) {
+                    $totalPembayaranBaris++;
+                }
+
+                if ($sisaNominal > 0.05) {
+                    $kelebihanBayar[] = "Baris $row: Pelanggan $kodePelanggan ada kelebihan pembayaran Rp " . number_format($sisaNominal, 0, ',', '.') . " karena seluruh tagihan faktur telah tertutup.";
+                }
+            }
+
+            DB::commit();
+
+            $msg = "Import berhasil: $totalPembayaranBaris transaksi pembayaran diproses, dialokasikan ke $totalFakturTerbayar faktur penjualan (Total: Rp " . number_format($totalNominalSukses, 0, ',', '.') . ").";
+            if (!empty($kelebihanBayar)) {
+                $msg .= "\nCatatan Sisa Lebih Bayar:\n" . implode("\n", array_slice($kelebihanBayar, 0, 5));
+                if (count($kelebihanBayar) > 5) {
+                    $msg .= "\n...dan " . (count($kelebihanBayar) - 5) . " lainnya.";
+                }
+            }
+            if (!empty($skippedMessages)) {
+                $msg .= "\nDilewati:\n" . implode("\n", array_slice($skippedMessages, 0, 5));
+            }
+
+            return Redirect::route('penjualanmarketing.index')->with(messageSuccess($msg));
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return Redirect::back()->with(messageError('Gagal melakukan import pembayaran: ' . $e->getMessage()));
         }
     }
 }

@@ -19,4 +19,9 @@ class MarketingPenjualanHistoribayar extends Model
     {
         return $this->belongsTo(MarketingPenjualan::class, 'no_bukti_penjualan', 'no_bukti');
     }
+
+    public function bank()
+    {
+        return $this->belongsTo(Bank::class, 'kode_bank', 'kode_bank');
+    }
 }

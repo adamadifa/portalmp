@@ -140,6 +140,29 @@ class LaporanaccountingController extends Controller
                     DB::raw('0 as saldo_awal_val')
                 );
 
+            // 7b. Penerimaan Kas/Bank dari Piutang Penjualan (Debet Kas/Bank)
+            $kasBankPiutangYearSub = DB::table('marketing_penjualan_historibayar')
+                ->leftJoin('bank', 'marketing_penjualan_historibayar.kode_bank', '=', 'bank.kode_bank')
+                ->whereYear('marketing_penjualan_historibayar.tanggal', $tahun)
+                ->select(
+                    DB::raw("CASE 
+                        WHEN bank.kode_akun IN ('1-11101', '1-11102', '1-11103', '1-11104', '1-11105') THEN bank.kode_akun
+                        WHEN bank.nama_bank LIKE '%BCA%' THEN '1-11103'
+                        WHEN bank.nama_bank LIKE '%BNI%' THEN '1-11104'
+                        WHEN bank.nama_bank LIKE '%BSI%' THEN '1-11105'
+                        WHEN bank.nama_bank LIKE '%KAS KECIL%' THEN '1-11102'
+                        WHEN marketing_penjualan_historibayar.jenis_bayar = 'TN' THEN '1-11101'
+                        ELSE '1-11103'
+                    END as kode_akun"),
+                    DB::raw('MONTH(marketing_penjualan_historibayar.tanggal) as bulan'),
+                    'marketing_penjualan_historibayar.tanggal',
+                    'marketing_penjualan_historibayar.no_bukti',
+                    DB::raw("'PELUNASAN PIUTANG' as sumber"),
+                    'marketing_penjualan_historibayar.jumlah as jml_debet',
+                    DB::raw('0 as jml_kredit'),
+                    DB::raw('0 as saldo_awal_val')
+                );
+
             // 8. Bayar Pembelian (Kas/Bank keluar)
             $bayarPembelianYearSub = DB::table('pembelian_historibayar')
                 ->leftJoin('bank', 'pembelian_historibayar.kode_bank', '=', 'bank.kode_bank')
@@ -290,6 +313,7 @@ class LaporanaccountingController extends Controller
                 ->unionAll($ppnKeluaranYearSub)
                 ->unionAll($piutangPenjualanYearSub)
                 ->unionAll($bayarPiutangYearSub)
+                ->unionAll($kasBankPiutangYearSub)
                 ->unionAll($bayarPembelianYearSub)
                 ->unionAll($bayarHutangPembelianYearSub)
                 ->unionAll($bayarBiayaYearSub)
@@ -570,6 +594,32 @@ class LaporanaccountingController extends Controller
                 DB::raw('3 as urutan')
             );
 
+        // 7b. Penerimaan Kas/Bank dari Piutang Penjualan (Debet Kas/Bank)
+        $kasBankPiutangSub = DB::table('marketing_penjualan_historibayar')
+            ->leftJoin('bank', 'marketing_penjualan_historibayar.kode_bank', '=', 'bank.kode_bank')
+            ->leftJoin('marketing_penjualan', 'marketing_penjualan_historibayar.no_bukti_penjualan', '=', 'marketing_penjualan.no_bukti')
+            ->leftJoin('pelanggan', 'marketing_penjualan.kode_pelanggan', '=', 'pelanggan.kode_pelanggan')
+            ->whereBetween('marketing_penjualan_historibayar.tanggal', [sprintf('%04d-%02d-01', $tahun, $bulan), $sampai])
+            ->select(
+                DB::raw("CASE 
+                    WHEN bank.kode_akun IN ('1-11101', '1-11102', '1-11103', '1-11104', '1-11105') THEN bank.kode_akun
+                    WHEN bank.nama_bank LIKE '%BCA%' THEN '1-11103'
+                    WHEN bank.nama_bank LIKE '%BNI%' THEN '1-11104'
+                    WHEN bank.nama_bank LIKE '%BSI%' THEN '1-11105'
+                    WHEN bank.nama_bank LIKE '%KAS KECIL%' THEN '1-11102'
+                    WHEN marketing_penjualan_historibayar.jenis_bayar = 'TN' THEN '1-11101'
+                    ELSE '1-11103'
+                END as kode_akun"),
+                'marketing_penjualan_historibayar.tanggal',
+                'marketing_penjualan_historibayar.no_bukti',
+                DB::raw("CONCAT('KAS / BANK - ', COALESCE(bank.nama_bank, 'KAS')) as sumber"),
+                DB::raw("CONCAT('Penerimaan Piutang ', COALESCE(pelanggan.nama_pelanggan, ''), ' via ', COALESCE(bank.nama_bank, 'Kas/Bank')) as keterangan"),
+                'marketing_penjualan_historibayar.jumlah as jml_debet',
+                DB::raw('0 as jml_kredit'),
+                DB::raw('0 as saldo_awal_val'),
+                DB::raw('3 as urutan')
+            );
+
         // 8. Pembayaran Hutang Pembelian (Kas/Bank keluar)
         $bayarPembelianSub = DB::table('pembelian_historibayar')
             ->leftJoin('bank', 'pembelian_historibayar.kode_bank', '=', 'bank.kode_bank')
@@ -737,6 +787,7 @@ class LaporanaccountingController extends Controller
             ->unionAll($ppnKeluaranSub)
             ->unionAll($piutangPenjualanSub)
             ->unionAll($bayarPiutangSub)
+            ->unionAll($kasBankPiutangSub)
             ->unionAll($bayarPembelianSub)
             ->unionAll($bayarHutangPembelianSub)
             ->unionAll($bayarBiayaSub)

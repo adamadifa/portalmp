@@ -340,6 +340,9 @@
                                         <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold {{ $h->jenis_bayar == 'TN' ? 'bg-amber-50 text-amber-700 border border-amber-200' : 'bg-blue-50 text-blue-700 border border-blue-200' }}">
                                             {{ $h->jenis_bayar == 'TN' ? 'TUNAI' : 'TRANSFER' }}
                                         </span>
+                                        @if(!empty($h->nama_bank))
+                                            <div class="text-[11px] font-semibold text-gray-700 mt-0.5">{{ $h->nama_bank }}</div>
+                                        @endif
                                     </td>
                                     <td class="py-2.5 px-6 text-right font-mono font-semibold text-gray-900">Rp {{ number_format($h->jumlah, 2, ',', '.') }}</td>
                                     <td class="py-2.5 px-6 text-center flex items-center justify-center gap-1.5">
@@ -349,6 +352,7 @@
                                                 data-tanggal="{{ $h->tanggal }}"
                                                 data-jumlah="{{ number_format($h->jumlah, 0, ',', '.') }}"
                                                 data-jenis-bayar="{{ $h->jenis_bayar }}"
+                                                data-kode-bank="{{ $h->kode_bank }}"
                                                 title="Edit Pembayaran">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v12a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
                                         </button>
@@ -412,11 +416,26 @@
 
                             <div class="c-fl-group">
                                 <span class="c-fl-icon">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+                                </span>
+                                <select name="kode_bank" id="kode_bank_input" class="fi" required>
+                                    <option value="">Pilih Bank / Kas</option>
+                                    @if(isset($bank))
+                                        @foreach($bank as $b)
+                                            <option value="{{ $b->kode_bank }}">{{ $b->nama_bank }}</option>
+                                        @endforeach
+                                    @endif
+                                </select>
+                                <label for="kode_bank_input" class="c-fl-label">Bank / Rekening *</label>
+                            </div>
+
+                            <div class="c-fl-group">
+                                <span class="c-fl-icon">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
                                 </span>
                                 <select name="jenis_bayar" id="jenis_bayar_input" class="fi" required>
-                                    <option value="TN">Cash / Tunai</option>
                                     <option value="TR">Transfer</option>
+                                    <option value="TN">Cash / Tunai</option>
                                 </select>
                                 <label for="jenis_bayar_input" class="c-fl-label">Metode Pembayaran *</label>
                             </div>
@@ -470,11 +489,26 @@
 
                     <div class="c-fl-group">
                         <span class="c-fl-icon">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+                        </span>
+                        <select name="kode_bank" id="edit_kode_bank" class="fi" required>
+                            <option value="">Pilih Bank / Kas</option>
+                            @if(isset($bank))
+                                @foreach($bank as $b)
+                                    <option value="{{ $b->kode_bank }}">{{ $b->nama_bank }}</option>
+                                @endforeach
+                            @endif
+                        </select>
+                        <label for="edit_kode_bank" class="c-fl-label">Bank / Rekening *</label>
+                    </div>
+
+                    <div class="c-fl-group">
+                        <span class="c-fl-icon">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
                         </span>
                         <select name="jenis_bayar" id="edit_jenis_bayar" class="fi" required>
-                            <option value="TN">Cash / Tunai</option>
                             <option value="TR">Transfer</option>
+                            <option value="TN">Cash / Tunai</option>
                         </select>
                         <label for="edit_jenis_bayar" class="c-fl-label">Metode Pembayaran *</label>
                     </div>
@@ -552,6 +586,7 @@
                 var tanggal = $(this).data('tanggal');
                 var jumlah = $(this).data('jumlah');
                 var jenisBayar = $(this).data('jenis-bayar');
+                var kodeBank = $(this).data('kode-bank');
 
                 // Set Form Action URL dynamically
                 var actionUrl = "{{ route('penjualanmarketing.updatebayar', ':no_bukti_bayar') }}".replace(':no_bukti_bayar', noBuktiBayar);
@@ -561,6 +596,7 @@
                 $('#edit_tanggal').val(tanggal);
                 $('#edit_jumlah').val(jumlah);
                 $('#edit_jenis_bayar').val(jenisBayar);
+                $('#edit_kode_bank').val(kodeBank);
 
                 // Open Modal
                 $('#modalEditBayar').removeClass('hidden');

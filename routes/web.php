@@ -66,8 +66,10 @@ Route::middleware('auth')->group(function () {
     // Marketing - Penjualan
     Route::get('/penjualanmarketing/produk/getproduk', [PenjualanMarketingController::class, 'getProduk'])->name('penjualanmarketing.getproduk');
     Route::post('/penjualanmarketing/import', [PenjualanMarketingController::class, 'importExcel'])->name('penjualanmarketing.import');
+    Route::post('/penjualanmarketing/importpembayaran', [PenjualanMarketingController::class, 'importPembayaranExcel'])->name('penjualanmarketing.importpembayaran');
     Route::post('/penjualanmarketing/get-sheets', [PenjualanMarketingController::class, 'getSheets'])->name('penjualanmarketing.getsheets');
     Route::post('/penjualanmarketing/reset', [PenjualanMarketingController::class, 'resetData'])->name('penjualanmarketing.reset');
+    Route::post('/penjualanmarketing/resetpembayaran', [PenjualanMarketingController::class, 'resetPembayaran'])->name('penjualanmarketing.resetpembayaran');
     Route::post('/penjualanmarketing/delete-selected', [PenjualanMarketingController::class, 'deleteSelected'])->name('penjualanmarketing.delete-selected');
     Route::post('/penjualanmarketing/{no_bukti}/bayar', [PenjualanMarketingController::class, 'storeBayar'])->name('penjualanmarketing.storebayar');
     Route::put('/penjualanmarketing/bayar/{no_bukti_bayar}', [PenjualanMarketingController::class, 'updateBayar'])->name('penjualanmarketing.updatebayar');

@@ -113,6 +113,14 @@
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
                     Import Excel
                 </button>
+                <button type="button" onclick="toggleModalImportPembayaran()" class="inline-flex items-center px-3.5 py-2 text-xs font-semibold text-white bg-teal-600 rounded-xl hover:bg-teal-700 transition shadow-sm gap-1.5">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                    Import Pembayaran
+                </button>
+                <button type="button" onclick="resetPembayaran()" class="inline-flex items-center px-3.5 py-2 text-xs font-semibold text-white bg-amber-600 rounded-xl hover:bg-amber-700 transition shadow-sm gap-1.5">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                    Reset Pembayaran
+                </button>
                 <a href="{{ route('penjualanmarketing.create') }}" class="inline-flex items-center px-3.5 py-2 text-xs font-semibold text-[#294C9A] bg-white rounded-xl hover:bg-gray-50 transition shadow-sm gap-1.5">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
                     Input Penjualan
@@ -255,11 +263,87 @@
         </div>
     </div>
 
+    <!-- Modal Import Pembayaran Excel (FIFO Pelunasan Piutang) -->
+    <div id="modalImportPembayaran" class="fixed inset-0 z-50 flex items-center justify-center hidden bg-black/40 backdrop-blur-sm overflow-y-auto">
+        <div class="bg-white rounded-2xl shadow-xl w-full max-w-md mx-4 overflow-hidden border border-gray-100">
+            <div class="p-5 border-b border-gray-100 flex justify-between items-center bg-gradient-to-r from-teal-600 to-teal-800 text-white">
+                <div class="flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                    <h3 class="font-bold text-base text-white">Import Pembayaran Piutang (FIFO)</h3>
+                </div>
+                <button type="button" class="btn-close-modal text-white hover:text-gray-200 transition" onclick="toggleModalImportPembayaran()">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            <form action="{{ route('penjualanmarketing.importpembayaran') }}" method="POST" enctype="multipart/form-data" class="p-6 space-y-4">
+                @csrf
+                <div class="p-3 bg-teal-50 border border-teal-100 rounded-xl text-teal-800 text-xs leading-relaxed">
+                    <div class="font-bold flex items-center gap-1.5 mb-1">
+                        <svg class="w-4 h-4 text-teal-600 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path></svg>
+                        Alokasi Otomatis (FIFO)
+                    </div>
+                    Pembayaran akan otomatis dialokasikan ke faktur pelanggan mulai dari tanggal yang paling awal hingga lunas berurutan.
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Pilih File Excel (.xlsx, .xls, .csv)</label>
+                    <input type="file" id="file_excel_pembayaran" name="file_excel" accept=".xlsx,.xls,.csv" required class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100 transition border border-gray-200 rounded-xl p-2" />
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Pilih Sheet</label>
+                    <select name="sheet_name" id="import_sheet_name_pembayaran" class="w-full text-sm border-gray-200 rounded-xl focus:border-teal-500 focus:ring-teal-500 p-2.5">
+                        <option value="">-- Pilih Sheet / Deteksi Otomatis --</option>
+                    </select>
+                </div>
+                <div class="flex justify-end gap-3 pt-4 border-t border-gray-100">
+                    <button type="button" class="px-4 py-2 text-xs font-semibold text-gray-700 bg-gray-100 rounded-xl hover:bg-gray-200 transition" onclick="toggleModalImportPembayaran()">Batal</button>
+                    <button type="submit" class="px-4 py-2 text-xs font-semibold text-white bg-teal-600 hover:bg-teal-700 rounded-xl transition shadow-sm">Proses Import</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     @push('myscript')
         <script>
             function toggleModalImport() {
                 $('#modalImport').toggleClass('hidden');
             }
+
+            function toggleModalImportPembayaran() {
+                $('#modalImportPembayaran').toggleClass('hidden');
+            }
+
+            $('#file_excel_pembayaran').change(function() {
+                var file = this.files[0];
+                if (!file) return;
+
+                var formData = new FormData();
+                formData.append('file_excel', file);
+                formData.append('_token', '{{ csrf_token() }}');
+
+                $('#import_sheet_name_pembayaran').html('<option value="">Sedang membaca sheet...</option>');
+
+                $.ajax({
+                    url: '{{ route("penjualanmarketing.getsheets") }}',
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function(response) {
+                        if (response.success) {
+                            var options = '<option value="">-- Pilih Sheet / Deteksi Otomatis --</option>';
+                            response.sheets.forEach(function(sheetName) {
+                                options += '<option value="' + sheetName + '">' + sheetName + '</option>';
+                            });
+                            $('#import_sheet_name_pembayaran').html(options);
+                        } else {
+                            $('#import_sheet_name_pembayaran').html('<option value="">Gagal membaca sheet: ' + response.message + '</option>');
+                        }
+                    },
+                    error: function() {
+                        $('#import_sheet_name_pembayaran').html('<option value="">Gagal menghubungi server</option>');
+                    }
+                });
+            });
 
             $('#file_excel').change(function() {
                 var file = this.files[0];
@@ -355,6 +439,34 @@
                         var form = $('<form>', {
                             'method': 'POST',
                             'action': '{{ route("penjualanmarketing.reset") }}'
+                        });
+                        form.append($('<input>', {
+                            'name': '_token',
+                            'value': $('meta[name="csrf-token"]').attr('content'),
+                            'type': 'hidden'
+                        }));
+                        $('body').append(form);
+                        form.submit();
+                    }
+                });
+            };
+
+            // SweetAlert2 Reset Pembayaran Confirmation
+            window.resetPembayaran = function() {
+                Swal.fire({
+                    title: 'Reset Pembayaran Piutang?',
+                    text: "Seluruh data histori pembayaran piutang penjualan akan dihapus permanen! Status faktur penjualan kredit akan dikembalikan ke Belum Lunas. Data transaksi penjualan tetap aman.",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d97706',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Ya, Reset Pembayaran!',
+                    cancelButtonText: 'Batal'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        var form = $('<form>', {
+                            'method': 'POST',
+                            'action': '{{ route("penjualanmarketing.resetpembayaran") }}'
                         });
                         form.append($('<input>', {
                             'name': '_token',
