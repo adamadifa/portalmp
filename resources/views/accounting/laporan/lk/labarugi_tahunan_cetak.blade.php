@@ -228,6 +228,7 @@
                         for ($m = 1; $m <= 12; $m++) {
                             echo '<td></td>';
                         }
+                        echo '<td></td>';
                         echo '</tr>';
 
                         // Render children recursively
@@ -236,17 +237,25 @@
                         // Render Subtotal/Jumlah row
                         echo '<tr class="subtotal-row">';
                         echo '<td style="padding-left: ' . $indent . 'px;">Jumlah ' . $node['nama_akun'] . '</td>';
+                        $subtotalYear = 0;
                         for ($m = 1; $m <= 12; $m++) {
-                            echo '<td class="text-right">' . formatLRTahunanValue($node['monthly_balances'][$m] ?? 0) . '</td>';
+                            $val = $node['monthly_balances'][$m] ?? 0;
+                            $subtotalYear += $val;
+                            echo '<td class="text-right">' . formatLRTahunanValue($val) . '</td>';
                         }
+                        echo '<td class="text-right">' . formatLRTahunanValue($subtotalYear) . '</td>';
                         echo '</tr>';
                     } else {
                         // Leaf account - show even if zero or only if non-zero
                         echo '<tr>';
                         echo '<td style="padding-left: ' . $indent . 'px;">' . $node['kode_akun'] . ' &nbsp; ' . $node['nama_akun'] . '</td>';
+                        $leafYear = 0;
                         for ($m = 1; $m <= 12; $m++) {
-                            echo '<td class="text-right">' . formatLRTahunanValue($node['monthly_balances'][$m] ?? 0) . '</td>';
+                            $val = $node['monthly_balances'][$m] ?? 0;
+                            $leafYear += $val;
+                            echo '<td class="text-right">' . formatLRTahunanValue($val) . '</td>';
                         }
+                        echo '<td class="text-right">' . formatLRTahunanValue($leafYear) . '</td>';
                         echo '</tr>';
                     }
                 }
@@ -259,18 +268,19 @@
             <thead>
                 <tr>
                     <th style="text-align: left; width: 16%;">Deskripsi Akun</th>
-                    <th style="width: 7%;">Jan</th>
-                    <th style="width: 7%;">Feb</th>
-                    <th style="width: 7%;">Mar</th>
-                    <th style="width: 7%;">Apr</th>
-                    <th style="width: 7%;">Mei</th>
-                    <th style="width: 7%;">Jun</th>
-                    <th style="width: 7%;">Jul</th>
-                    <th style="width: 7%;">Ags</th>
-                    <th style="width: 7%;">Sep</th>
-                    <th style="width: 7%;">Okt</th>
-                    <th style="width: 7%;">Nov</th>
-                    <th style="width: 7%;">Des</th>
+                    <th style="width: 6.5%;">Jan</th>
+                    <th style="width: 6.5%;">Feb</th>
+                    <th style="width: 6.5%;">Mar</th>
+                    <th style="width: 6.5%;">Apr</th>
+                    <th style="width: 6.5%;">Mei</th>
+                    <th style="width: 6.5%;">Jun</th>
+                    <th style="width: 6.5%;">Jul</th>
+                    <th style="width: 6.5%;">Ags</th>
+                    <th style="width: 6.5%;">Sep</th>
+                    <th style="width: 6.5%;">Okt</th>
+                    <th style="width: 6.5%;">Nov</th>
+                    <th style="width: 6.5%;">Des</th>
+                    <th style="width: 6%;">Total</th>
                 </tr>
             </thead>
             <tbody>
@@ -280,6 +290,7 @@
                     @for ($m = 1; $m <= 12; $m++)
                         <td></td>
                     @endfor
+                    <td></td>
                 </tr>
                 @if (!empty($pendapatanTree))
                     @php renderTreeLRTahunan($pendapatanTree, 1); @endphp
@@ -288,6 +299,7 @@
                 <!-- Total Pendapatan Operasional -->
                 <tr class="subtotal-row">
                     <td style="font-weight: bold;">TOTAL PENDAPATAN OPERASIONAL</td>
+                    @php $grandTotalPendapatanYear = 0; @endphp
                     @for ($m = 1; $m <= 12; $m++)
                         <td class="text-right" style="font-weight: bold;">
                             @php
@@ -295,14 +307,18 @@
                                 foreach ($pendapatanTree as $node) {
                                     $totalPendapatan += ($node['monthly_balances'][$m] ?? 0);
                                 }
+                                $grandTotalPendapatanYear += $totalPendapatan;
                                 echo formatLRTahunanValue($totalPendapatan);
                             @endphp
                         </td>
                     @endfor
+                    <td class="text-right" style="font-weight: bold;">
+                        {{ formatLRTahunanValue($grandTotalPendapatanYear) }}
+                    </td>
                 </tr>
 
                 <!-- Spacer -->
-                <tr><td colspan="13" style="height: 10px;"></td></tr>
+                <tr><td colspan="14" style="height: 10px;"></td></tr>
 
                 <!-- 2. HARGA POKOK PENJUALAN / PEMBELIAN (5) -->
                 <tr class="section-header">
@@ -310,6 +326,7 @@
                     @for ($m = 1; $m <= 12; $m++)
                         <td></td>
                     @endfor
+                    <td></td>
                 </tr>
                 @if (!empty($hppTree))
                     @php renderTreeLRTahunan($hppTree, 1); @endphp
@@ -318,6 +335,7 @@
                 <!-- Total HPP -->
                 <tr class="subtotal-row">
                     <td style="font-weight: bold;">TOTAL HARGA POKOK PENJUALAN</td>
+                    @php $grandTotalHppYear = 0; @endphp
                     @for ($m = 1; $m <= 12; $m++)
                         <td class="text-right" style="font-weight: bold;">
                             @php
@@ -325,18 +343,23 @@
                                 foreach ($hppTree as $node) {
                                     $totalHpp += ($node['monthly_balances'][$m] ?? 0);
                                 }
+                                $grandTotalHppYear += $totalHpp;
                                 echo formatLRTahunanValue($totalHpp);
                             @endphp
                         </td>
                     @endfor
+                    <td class="text-right" style="font-weight: bold;">
+                        {{ formatLRTahunanValue($grandTotalHppYear) }}
+                    </td>
                 </tr>
 
                 <!-- Spacer -->
-                <tr><td colspan="13" style="height: 10px;"></td></tr>
+                <tr><td colspan="14" style="height: 10px;"></td></tr>
 
                 <!-- 3. LABA KOTOR (Pendapatan - HPP) -->
                 <tr class="subtotal-row" style="background-color: #f1f5f9;">
                     <td style="font-weight: bold; text-transform: uppercase;">LABA KOTOR</td>
+                    @php $grandTotalLabaKotorYear = 0; @endphp
                     @for ($m = 1; $m <= 12; $m++)
                         <td class="text-right" style="font-weight: bold;">
                             @php
@@ -349,14 +372,18 @@
                                     $totH += ($node['monthly_balances'][$m] ?? 0);
                                 }
                                 $labaKotor = $totP - $totH;
+                                $grandTotalLabaKotorYear += $labaKotor;
                                 echo formatLRTahunanValue($labaKotor);
                             @endphp
                         </td>
                     @endfor
+                    <td class="text-right" style="font-weight: bold;">
+                        {{ formatLRTahunanValue($grandTotalLabaKotorYear) }}
+                    </td>
                 </tr>
 
                 <!-- Spacer -->
-                <tr><td colspan="13" style="height: 10px;"></td></tr>
+                <tr><td colspan="14" style="height: 10px;"></td></tr>
 
                 <!-- 4. BEBAN OPERASIONAL (6) -->
                 <tr class="section-header">
@@ -364,6 +391,7 @@
                     @for ($m = 1; $m <= 12; $m++)
                         <td></td>
                     @endfor
+                    <td></td>
                 </tr>
                 @if (!empty($bebanTree))
                     @php renderTreeLRTahunan($bebanTree, 1); @endphp
@@ -372,6 +400,7 @@
                 <!-- Total Beban Operasional -->
                 <tr class="subtotal-row">
                     <td style="font-weight: bold;">TOTAL BEBAN OPERASIONAL</td>
+                    @php $grandTotalBebanYear = 0; @endphp
                     @for ($m = 1; $m <= 12; $m++)
                         <td class="text-right" style="font-weight: bold;">
                             @php
@@ -379,18 +408,23 @@
                                 foreach ($bebanTree as $node) {
                                     $totalBeban += ($node['monthly_balances'][$m] ?? 0);
                                 }
+                                $grandTotalBebanYear += $totalBeban;
                                 echo formatLRTahunanValue($totalBeban);
                             @endphp
                         </td>
                     @endfor
+                    <td class="text-right" style="font-weight: bold;">
+                        {{ formatLRTahunanValue($grandTotalBebanYear) }}
+                    </td>
                 </tr>
 
                 <!-- Spacer -->
-                <tr><td colspan="13" style="height: 15px;"></td></tr>
+                <tr><td colspan="14" style="height: 15px;"></td></tr>
 
                 <!-- 5. LABA / RUGI BERSIH (Laba Kotor - Total Beban) -->
                 <tr class="subtotal-row-grand">
                     <td style="font-weight: bold; text-transform: uppercase;">LABA (RUGI) BERSIH</td>
+                    @php $grandTotalLabaBersihYear = 0; @endphp
                     @for ($m = 1; $m <= 12; $m++)
                         <td class="text-right" style="font-weight: bold;">
                             @php
@@ -407,10 +441,14 @@
                                     $totB += ($node['monthly_balances'][$m] ?? 0);
                                 }
                                 $labaBersih = ($totP - $totH) - $totB;
+                                $grandTotalLabaBersihYear += $labaBersih;
                                 echo formatLRTahunanValue($labaBersih);
                             @endphp
                         </td>
                     @endfor
+                    <td class="text-right" style="font-weight: bold;">
+                        {{ formatLRTahunanValue($grandTotalLabaBersihYear) }}
+                    </td>
                 </tr>
             </tbody>
         </table>

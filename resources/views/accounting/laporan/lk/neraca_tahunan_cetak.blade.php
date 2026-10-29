@@ -223,6 +223,7 @@
                         for ($m = 1; $m <= 12; $m++) {
                             echo '<td></td>';
                         }
+                        echo '<td></td>';
                         echo '</tr>';
 
                         // Render children recursively
@@ -231,17 +232,25 @@
                         // Render Subtotal/Jumlah row
                         echo '<tr class="subtotal-row">';
                         echo '<td style="padding-left: ' . $indent . 'px;">Jumlah ' . $node['nama_akun'] . '</td>';
+                        $subtotalYear = 0;
                         for ($m = 1; $m <= 12; $m++) {
-                            echo '<td class="text-right">' . formatNeracaTahunanValue($node['monthly_balances'][$m] ?? 0) . '</td>';
+                            $val = $node['monthly_balances'][$m] ?? 0;
+                            $subtotalYear += $val;
+                            echo '<td class="text-right">' . formatNeracaTahunanValue($val) . '</td>';
                         }
+                        echo '<td class="text-right">' . formatNeracaTahunanValue($subtotalYear) . '</td>';
                         echo '</tr>';
                     } else {
                         // Leaf account
                         echo '<tr>';
                         echo '<td style="padding-left: ' . $indent . 'px;">' . $node['kode_akun'] . ' &nbsp; ' . $node['nama_akun'] . '</td>';
+                        $leafYear = 0;
                         for ($m = 1; $m <= 12; $m++) {
-                            echo '<td class="text-right">' . formatNeracaTahunanValue($node['monthly_balances'][$m] ?? 0) . '</td>';
+                            $val = $node['monthly_balances'][$m] ?? 0;
+                            $leafYear += $val;
+                            echo '<td class="text-right">' . formatNeracaTahunanValue($val) . '</td>';
                         }
+                        echo '<td class="text-right">' . formatNeracaTahunanValue($leafYear) . '</td>';
                         echo '</tr>';
                     }
                 }
@@ -254,18 +263,19 @@
             <thead>
                 <tr>
                     <th style="text-align: left; width: 16%;">Deskripsi Akun</th>
-                    <th style="width: 7%;">Jan</th>
-                    <th style="width: 7%;">Feb</th>
-                    <th style="width: 7%;">Mar</th>
-                    <th style="width: 7%;">Apr</th>
-                    <th style="width: 7%;">Mei</th>
-                    <th style="width: 7%;">Jun</th>
-                    <th style="width: 7%;">Jul</th>
-                    <th style="width: 7%;">Ags</th>
-                    <th style="width: 7%;">Sep</th>
-                    <th style="width: 7%;">Okt</th>
-                    <th style="width: 7%;">Nov</th>
-                    <th style="width: 7%;">Des</th>
+                    <th style="width: 6.5%;">Jan</th>
+                    <th style="width: 6.5%;">Feb</th>
+                    <th style="width: 6.5%;">Mar</th>
+                    <th style="width: 6.5%;">Apr</th>
+                    <th style="width: 6.5%;">Mei</th>
+                    <th style="width: 6.5%;">Jun</th>
+                    <th style="width: 6.5%;">Jul</th>
+                    <th style="width: 6.5%;">Ags</th>
+                    <th style="width: 6.5%;">Sep</th>
+                    <th style="width: 6.5%;">Okt</th>
+                    <th style="width: 6.5%;">Nov</th>
+                    <th style="width: 6.5%;">Des</th>
+                    <th style="width: 6%;">Total</th>
                 </tr>
             </thead>
             <tbody>
@@ -275,6 +285,7 @@
                     @for ($m = 1; $m <= 12; $m++)
                         <td></td>
                     @endfor
+                    <td></td>
                 </tr>
                 @if (!empty($aktivaTree))
                     @php renderTreeNeracaTahunan($aktivaTree, 1); @endphp
@@ -283,6 +294,7 @@
                 <!-- Total Aktiva -->
                 <tr class="subtotal-row-grand">
                     <td style="font-weight: bold;">TOTAL AKTIVA</td>
+                    @php $grandTotalAktivaYear = 0; @endphp
                     @for ($m = 1; $m <= 12; $m++)
                         <td class="text-right" style="font-weight: bold;">
                             @php
@@ -290,15 +302,19 @@
                                 foreach ($aktivaTree as $node) {
                                     $totalAktiva += ($node['monthly_balances'][$m] ?? 0);
                                 }
+                                $grandTotalAktivaYear += $totalAktiva;
                                 echo formatNeracaTahunanValue($totalAktiva);
                             @endphp
                         </td>
                     @endfor
+                    <td class="text-right" style="font-weight: bold;">
+                        {{ formatNeracaTahunanValue($grandTotalAktivaYear) }}
+                    </td>
                 </tr>
 
                 <!-- Empty space separating Aktiva and Kewajiban & Ekuitas -->
                 <tr>
-                    <td colspan="13" style="height: 15px;"></td>
+                    <td colspan="14" style="height: 15px;"></td>
                 </tr>
 
                 <!-- 2. Section Heading: Kewajiban dan Ekuitas -->
@@ -307,6 +323,7 @@
                     @for ($m = 1; $m <= 12; $m++)
                         <td></td>
                     @endfor
+                    <td></td>
                 </tr>
 
                 <!-- Render Kewajiban -->
@@ -322,6 +339,7 @@
                 <!-- Grand Total Kewajiban dan Ekuitas -->
                 <tr class="subtotal-row-grand">
                     <td style="font-weight: bold;">JUMLAH KEWAJIBAN DAN EKUITAS</td>
+                    @php $grandTotalPasivaYear = 0; @endphp
                     @for ($m = 1; $m <= 12; $m++)
                         <td class="text-right" style="font-weight: bold;">
                             @php
@@ -334,10 +352,14 @@
                                     $totalEkuitas += ($node['monthly_balances'][$m] ?? 0);
                                 }
                                 $grandTotal = $totalKewajiban + $totalEkuitas;
+                                $grandTotalPasivaYear += $grandTotal;
                                 echo formatNeracaTahunanValue($grandTotal);
                             @endphp
                         </td>
                     @endfor
+                    <td class="text-right" style="font-weight: bold;">
+                        {{ formatNeracaTahunanValue($grandTotalPasivaYear) }}
+                    </td>
                 </tr>
             </tbody>
         </table>
