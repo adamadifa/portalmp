@@ -458,8 +458,73 @@ class LaporanaccountingController extends Controller
                     }
                 }
 
+                // Hitung Saldo Awal & Saldo Akhir Persediaan (1-11302 & 1-11303)
+                $calcPersediaanTahunan = function($kodeAkun) use ($monthlyMatrix) {
+                    $sa = [];
+                    $ak = [];
+                    for ($m = 1; $m <= 12; $m++) {
+                        $cumDebet = 0;
+                        $cumKredit = 0;
+                        $baseSa = 0;
+                        
+                        for ($subM = $m; $subM >= 1; $subM--) {
+                            if (isset($monthlyMatrix[$kodeAkun][$subM]['sa']) && $monthlyMatrix[$kodeAkun][$subM]['sa'] != 0) {
+                                $baseSa = $monthlyMatrix[$kodeAkun][$subM]['sa'];
+                                for ($mutM = $subM; $mutM <= $m; $mutM++) {
+                                    if (isset($monthlyMatrix[$kodeAkun][$mutM])) {
+                                        $cumDebet += $monthlyMatrix[$kodeAkun][$mutM]['debet'];
+                                        $cumKredit += $monthlyMatrix[$kodeAkun][$mutM]['kredit'];
+                                    }
+                                }
+                                break;
+                            }
+                        }
+
+                        if ($baseSa == 0) {
+                            for ($mutM = 1; $mutM <= $m; $mutM++) {
+                                if (isset($monthlyMatrix[$kodeAkun][$mutM])) {
+                                    $cumDebet += $monthlyMatrix[$kodeAkun][$mutM]['debet'];
+                                    $cumKredit += $monthlyMatrix[$kodeAkun][$mutM]['kredit'];
+                                }
+                            }
+                        }
+
+                        $ak[$m] = $baseSa + $cumDebet - $cumKredit;
+                        if ($m == 1) {
+                            $sa[$m] = $baseSa;
+                        } else {
+                            $sa[$m] = $ak[$m - 1];
+                        }
+                    }
+                    return ['sa' => $sa, 'ak' => $ak];
+                };
+
+                $ps_bb = $calcPersediaanTahunan('1-11302');
+                $ps_bk = $calcPersediaanTahunan('1-11303');
+
+                $hppBahanTahunan = [
+                    'bb' => [
+                        'sa' => $ps_bb['sa'],
+                        'pemb' => $balances_LR['5-11101'] ?? array_fill(1, 12, 0.0),
+                        'ak' => $ps_bb['ak'],
+                        'used' => [],
+                    ],
+                    'bk' => [
+                        'sa' => $ps_bk['sa'],
+                        'pemb' => $balances_LR['5-11102'] ?? array_fill(1, 12, 0.0),
+                        'ak' => $ps_bk['ak'],
+                        'used' => [],
+                    ],
+                ];
+
+                for ($m = 1; $m <= 12; $m++) {
+                    $hppBahanTahunan['bb']['used'][$m] = $hppBahanTahunan['bb']['sa'][$m] + $hppBahanTahunan['bb']['pemb'][$m] - $hppBahanTahunan['bb']['ak'][$m];
+                    $hppBahanTahunan['bk']['used'][$m] = $hppBahanTahunan['bk']['sa'][$m] + $hppBahanTahunan['bk']['pemb'][$m] - $hppBahanTahunan['bk']['ak'][$m];
+                }
+
                 $data['labarugi'] = $lrAccounts;
                 $data['balances'] = $balances_LR;
+                $data['hppBahanTahunan'] = $hppBahanTahunan;
 
                 if (isset($_POST['exportButton'])) {
                     header("Content-type: application/vnd-ms-excel");
@@ -940,6 +1005,55 @@ class LaporanaccountingController extends Controller
                     $acc->is_leaf = !isset($allParentsMap[$acc->kode_akun]);
                     return $acc;
                 });
+
+            // Perhitungan Persediaan Awal & Akhir Bahan Baku dan Kemasan (1-11302 & 1-11303)
+            $saldoAwalMap = DB::table('bukubesar_saldoawal_detail')
+                ->join('bukubesar_saldoawal', 'bukubesar_saldoawal_detail.kode_saldo_awal', '=', 'bukubesar_saldoawal.kode_saldo_awal')
+                ->where('bukubesar_saldoawal.kode_saldo_awal', $kode_sa)
+                ->whereIn('bukubesar_saldoawal_detail.kode_akun', ['1-11302', '1-11303'])
+                ->pluck('bukubesar_saldoawal_detail.jumlah', 'bukubesar_saldoawal_detail.kode_akun')
+                ->toArray();
+
+            $mutasiSebelumPersediaan = DB::query()->fromSub($unionQuery, 'u')
+                ->where('sumber', '!=', 'SALDO AWAL')
+                ->whereIn('kode_akun', ['1-11302', '1-11303'])
+                ->where('tanggal', '<', $dari)
+                ->selectRaw('kode_akun, SUM(jml_debet) as debet, SUM(jml_kredit) as kredit')
+                ->groupBy('kode_akun')
+                ->get()
+                ->keyBy('kode_akun');
+
+            $mutasiPeriodePersediaan = DB::query()->fromSub($unionQuery, 'u')
+                ->where('sumber', '!=', 'SALDO AWAL')
+                ->whereIn('kode_akun', ['1-11302', '1-11303'])
+                ->whereBetween('tanggal', [$dari, $sampai])
+                ->selectRaw('kode_akun, SUM(jml_debet) as debet, SUM(jml_kredit) as kredit')
+                ->groupBy('kode_akun')
+                ->get()
+                ->keyBy('kode_akun');
+
+            // 1-11302 (Bahan Baku)
+            $sa_bb = ($saldoAwalMap['1-11302'] ?? 0) + ($mutasiSebelumPersediaan['1-11302']->debet ?? 0) - ($mutasiSebelumPersediaan['1-11302']->kredit ?? 0);
+            $ak_bb = $sa_bb + ($mutasiPeriodePersediaan['1-11302']->debet ?? 0) - ($mutasiPeriodePersediaan['1-11302']->kredit ?? 0);
+            $pemb_bb = isset($mutasiLR['5-11101']) ? ((float)$mutasiLR['5-11101']->debet - (float)$mutasiLR['5-11101']->kredit) : 0;
+            $used_bb = $sa_bb + $pemb_bb - $ak_bb;
+
+            // 1-11303 (Bahan Kemasan)
+            $sa_bk = ($saldoAwalMap['1-11303'] ?? 0) + ($mutasiSebelumPersediaan['1-11303']->debet ?? 0) - ($mutasiSebelumPersediaan['1-11303']->kredit ?? 0);
+            $ak_bk = $sa_bk + ($mutasiPeriodePersediaan['1-11303']->debet ?? 0) - ($mutasiPeriodePersediaan['1-11303']->kredit ?? 0);
+            $pemb_bk = isset($mutasiLR['5-11102']) ? ((float)$mutasiLR['5-11102']->debet - (float)$mutasiLR['5-11102']->kredit) : 0;
+            $used_bk = $sa_bk + $pemb_bk - $ak_bk;
+
+            $data['hppBahan'] = [
+                'sa_bb' => $sa_bb,
+                'pemb_bb' => $pemb_bb,
+                'ak_bb' => $ak_bb,
+                'used_bb' => $used_bb,
+                'sa_bk' => $sa_bk,
+                'pemb_bk' => $pemb_bk,
+                'ak_bk' => $ak_bk,
+                'used_bk' => $used_bk,
+            ];
 
             $data['lrAccounts'] = $lrAccounts;
 

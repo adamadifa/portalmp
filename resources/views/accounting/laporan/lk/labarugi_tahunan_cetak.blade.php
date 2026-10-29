@@ -328,23 +328,140 @@
                     @endfor
                     <td></td>
                 </tr>
-                @if (!empty($hppTree))
-                    @php renderTreeLRTahunan($hppTree, 1); @endphp
+                @if (isset($hppBahanTahunan))
+                    <!-- Persediaaan Awal Bahan Baku -->
+                    <tr>
+                        <td style="padding-left: 12px;">Persediaaan Awal Bahan Baku</td>
+                        @for ($m = 1; $m <= 12; $m++)
+                            <td class="text-right">{{ formatLRTahunanValue($hppBahanTahunan['bb']['sa'][$m] ?? 0) }}</td>
+                        @endfor
+                        <td class="text-right">{{ formatLRTahunanValue($hppBahanTahunan['bb']['sa'][1] ?? 0) }}</td>
+                    </tr>
+
+                    <!-- Pembelian Bahan Baku -->
+                    <tr>
+                        <td style="padding-left: 12px;">Pembelian Bahan Baku</td>
+                        @php $totPembBB = 0; @endphp
+                        @for ($m = 1; $m <= 12; $m++)
+                            @php $totPembBB += ($hppBahanTahunan['bb']['pemb'][$m] ?? 0); @endphp
+                            <td class="text-right">{{ formatLRTahunanValue($hppBahanTahunan['bb']['pemb'][$m] ?? 0) }}</td>
+                        @endfor
+                        <td class="text-right">{{ formatLRTahunanValue($totPembBB) }}</td>
+                    </tr>
+
+                    <!-- Persediaaan Akhir Bahan Baku -->
+                    <tr>
+                        <td style="padding-left: 12px;">Persediaaan Akhir Bahan Baku</td>
+                        @for ($m = 1; $m <= 12; $m++)
+                            <td class="text-right">{{ formatLRTahunanValue(-($hppBahanTahunan['bb']['ak'][$m] ?? 0)) }}</td>
+                        @endfor
+                        <td class="text-right">{{ formatLRTahunanValue(-($hppBahanTahunan['bb']['ak'][12] ?? 0)) }}</td>
+                    </tr>
+
+                    <!-- Bahan Baku yang digunakan -->
+                    <tr class="subtotal-row">
+                        <td style="padding-left: 12px; font-weight: bold;">Bahan Baku yang digunakan</td>
+                        @php $totUsedBB = 0; @endphp
+                        @for ($m = 1; $m <= 12; $m++)
+                            @php $totUsedBB += ($hppBahanTahunan['bb']['used'][$m] ?? 0); @endphp
+                            <td class="text-right" style="font-weight: bold;">{{ formatLRTahunanValue($hppBahanTahunan['bb']['used'][$m] ?? 0) }}</td>
+                        @endfor
+                        <td class="text-right" style="font-weight: bold;">{{ formatLRTahunanValue($totUsedBB) }}</td>
+                    </tr>
+
+                    <!-- Persediaan Awal Bahan Kemasan -->
+                    <tr>
+                        <td style="padding-left: 12px;">Persediaan Awal Bahan Kemasan</td>
+                        @for ($m = 1; $m <= 12; $m++)
+                            <td class="text-right">{{ formatLRTahunanValue($hppBahanTahunan['bk']['sa'][$m] ?? 0) }}</td>
+                        @endfor
+                        <td class="text-right">{{ formatLRTahunanValue($hppBahanTahunan['bk']['sa'][1] ?? 0) }}</td>
+                    </tr>
+
+                    <!-- Pembelian Bahan Kemasan -->
+                    <tr>
+                        <td style="padding-left: 12px;">Pembelian Bahan Kemasan</td>
+                        @php $totPembBK = 0; @endphp
+                        @for ($m = 1; $m <= 12; $m++)
+                            @php $totPembBK += ($hppBahanTahunan['bk']['pemb'][$m] ?? 0); @endphp
+                            <td class="text-right">{{ formatLRTahunanValue($hppBahanTahunan['bk']['pemb'][$m] ?? 0) }}</td>
+                        @endfor
+                        <td class="text-right">{{ formatLRTahunanValue($totPembBK) }}</td>
+                    </tr>
+
+                    <!-- Persediaan Akhir Bahan Kemasan -->
+                    <tr>
+                        <td style="padding-left: 12px;">Persediaan Akhir Bahan Kemasan</td>
+                        @for ($m = 1; $m <= 12; $m++)
+                            <td class="text-right">{{ formatLRTahunanValue(-($hppBahanTahunan['bk']['ak'][$m] ?? 0)) }}</td>
+                        @endfor
+                        <td class="text-right">{{ formatLRTahunanValue(-($hppBahanTahunan['bk']['ak'][12] ?? 0)) }}</td>
+                    </tr>
+
+                    <!-- Bahan Kemasan yg digunakan -->
+                    <tr class="subtotal-row">
+                        <td style="padding-left: 12px; font-weight: bold;">Bahan Kemasan yg digunakan</td>
+                        @php $totUsedBK = 0; @endphp
+                        @for ($m = 1; $m <= 12; $m++)
+                            @php $totUsedBK += ($hppBahanTahunan['bk']['used'][$m] ?? 0); @endphp
+                            <td class="text-right" style="font-weight: bold;">{{ formatLRTahunanValue($hppBahanTahunan['bk']['used'][$m] ?? 0) }}</td>
+                        @endfor
+                        <td class="text-right" style="font-weight: bold;">{{ formatLRTahunanValue($totUsedBK) }}</td>
+                    </tr>
+                @else
+                    @if (!empty($hppTree))
+                        @php renderTreeLRTahunan($hppTree, 1); @endphp
+                    @endif
                 @endif
+
+                {{-- Other HPP accounts if any (like 5-11103) --}}
+                @php
+                    $otherHppAccounts = [];
+                    foreach ($labarugi as $acc) {
+                        if (substr($acc->kode_akun, 0, 1) === '5' && !in_array($acc->kode_akun, ['5-11000', '5-11100', '5-11101', '5-11102'])) {
+                            $otherHppAccounts[] = $acc;
+                        }
+                    }
+                @endphp
+                @foreach ($otherHppAccounts as $acc)
+                    @php $rowYear = 0; @endphp
+                    <tr>
+                        <td style="padding-left: 12px;">{{ $acc->kode_akun }} &nbsp; {{ $acc->nama_akun }}</td>
+                        @for ($m = 1; $m <= 12; $m++)
+                            @php
+                                $val = $balances[$acc->kode_akun][$m] ?? 0;
+                                $rowYear += $val;
+                            @endphp
+                            <td class="text-right">{{ formatLRTahunanValue($val) }}</td>
+                        @endfor
+                        <td class="text-right">{{ formatLRTahunanValue($rowYear) }}</td>
+                    </tr>
+                @endforeach
 
                 <!-- Total HPP -->
                 <tr class="subtotal-row">
                     <td style="font-weight: bold;">TOTAL HARGA POKOK PENJUALAN</td>
-                    @php $grandTotalHppYear = 0; @endphp
+                    @php 
+                        $grandTotalHppYear = 0; 
+                        $monthlyHppTotals = [];
+                    @endphp
                     @for ($m = 1; $m <= 12; $m++)
                         <td class="text-right" style="font-weight: bold;">
                             @php
-                                $totalHpp = 0;
-                                foreach ($hppTree as $node) {
-                                    $totalHpp += ($node['monthly_balances'][$m] ?? 0);
+                                if (isset($hppBahanTahunan)) {
+                                    $mHpp = ($hppBahanTahunan['bb']['used'][$m] ?? 0) + ($hppBahanTahunan['bk']['used'][$m] ?? 0);
+                                    foreach ($otherHppAccounts as $acc) {
+                                        $mHpp += ($balances[$acc->kode_akun][$m] ?? 0);
+                                    }
+                                } else {
+                                    $mHpp = 0;
+                                    foreach ($hppTree as $node) {
+                                        $mHpp += ($node['monthly_balances'][$m] ?? 0);
+                                    }
                                 }
-                                $grandTotalHppYear += $totalHpp;
-                                echo formatLRTahunanValue($totalHpp);
+                                $monthlyHppTotals[$m] = $mHpp;
+                                $grandTotalHppYear += $mHpp;
+                                echo formatLRTahunanValue($mHpp);
                             @endphp
                         </td>
                     @endfor
@@ -359,7 +476,10 @@
                 <!-- 3. LABA KOTOR (Pendapatan - HPP) -->
                 <tr class="subtotal-row" style="background-color: #f1f5f9;">
                     <td style="font-weight: bold; text-transform: uppercase;">LABA KOTOR</td>
-                    @php $grandTotalLabaKotorYear = 0; @endphp
+                    @php 
+                        $grandTotalLabaKotorYear = 0; 
+                        $monthlyLabaKotorTotals = [];
+                    @endphp
                     @for ($m = 1; $m <= 12; $m++)
                         <td class="text-right" style="font-weight: bold;">
                             @php
@@ -367,11 +487,9 @@
                                 foreach ($pendapatanTree as $node) {
                                     $totP += ($node['monthly_balances'][$m] ?? 0);
                                 }
-                                $totH = 0;
-                                foreach ($hppTree as $node) {
-                                    $totH += ($node['monthly_balances'][$m] ?? 0);
-                                }
+                                $totH = $monthlyHppTotals[$m] ?? 0;
                                 $labaKotor = $totP - $totH;
+                                $monthlyLabaKotorTotals[$m] = $labaKotor;
                                 $grandTotalLabaKotorYear += $labaKotor;
                                 echo formatLRTahunanValue($labaKotor);
                             @endphp
@@ -400,7 +518,10 @@
                 <!-- Total Beban Operasional -->
                 <tr class="subtotal-row">
                     <td style="font-weight: bold;">TOTAL BEBAN OPERASIONAL</td>
-                    @php $grandTotalBebanYear = 0; @endphp
+                    @php 
+                        $grandTotalBebanYear = 0; 
+                        $monthlyBebanTotals = [];
+                    @endphp
                     @for ($m = 1; $m <= 12; $m++)
                         <td class="text-right" style="font-weight: bold;">
                             @php
@@ -408,6 +529,7 @@
                                 foreach ($bebanTree as $node) {
                                     $totalBeban += ($node['monthly_balances'][$m] ?? 0);
                                 }
+                                $monthlyBebanTotals[$m] = $totalBeban;
                                 $grandTotalBebanYear += $totalBeban;
                                 echo formatLRTahunanValue($totalBeban);
                             @endphp
@@ -428,19 +550,9 @@
                     @for ($m = 1; $m <= 12; $m++)
                         <td class="text-right" style="font-weight: bold;">
                             @php
-                                $totP = 0;
-                                foreach ($pendapatanTree as $node) {
-                                    $totP += ($node['monthly_balances'][$m] ?? 0);
-                                }
-                                $totH = 0;
-                                foreach ($hppTree as $node) {
-                                    $totH += ($node['monthly_balances'][$m] ?? 0);
-                                }
-                                $totB = 0;
-                                foreach ($bebanTree as $node) {
-                                    $totB += ($node['monthly_balances'][$m] ?? 0);
-                                }
-                                $labaBersih = ($totP - $totH) - $totB;
+                                $totLK = $monthlyLabaKotorTotals[$m] ?? 0;
+                                $totB = $monthlyBebanTotals[$m] ?? 0;
+                                $labaBersih = $totLK - $totB;
                                 $grandTotalLabaBersihYear += $labaBersih;
                                 echo formatLRTahunanValue($labaBersih);
                             @endphp
