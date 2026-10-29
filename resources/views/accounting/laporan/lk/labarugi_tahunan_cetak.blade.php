@@ -332,10 +332,12 @@
                     <!-- Persediaaan Awal Bahan Baku -->
                     <tr>
                         <td style="padding-left: 12px;">Persediaaan Awal Bahan Baku</td>
+                        @php $totSaBB = 0; @endphp
                         @for ($m = 1; $m <= 12; $m++)
+                            @php $totSaBB += ($hppBahanTahunan['bb']['sa'][$m] ?? 0); @endphp
                             <td class="text-right">{{ formatLRTahunanValue($hppBahanTahunan['bb']['sa'][$m] ?? 0) }}</td>
                         @endfor
-                        <td class="text-right">{{ formatLRTahunanValue($hppBahanTahunan['bb']['sa'][1] ?? 0) }}</td>
+                        <td class="text-right">{{ formatLRTahunanValue($totSaBB) }}</td>
                     </tr>
 
                     <!-- Pembelian Bahan Baku -->
@@ -352,10 +354,12 @@
                     <!-- Persediaaan Akhir Bahan Baku -->
                     <tr>
                         <td style="padding-left: 12px;">Persediaaan Akhir Bahan Baku</td>
+                        @php $totAkBB = 0; @endphp
                         @for ($m = 1; $m <= 12; $m++)
+                            @php $totAkBB += ($hppBahanTahunan['bb']['ak'][$m] ?? 0); @endphp
                             <td class="text-right">{{ formatLRTahunanValue(-($hppBahanTahunan['bb']['ak'][$m] ?? 0)) }}</td>
                         @endfor
-                        <td class="text-right">{{ formatLRTahunanValue(-($hppBahanTahunan['bb']['ak'][12] ?? 0)) }}</td>
+                        <td class="text-right">{{ formatLRTahunanValue(-$totAkBB) }}</td>
                     </tr>
 
                     <!-- Bahan Baku yang digunakan -->
@@ -372,10 +376,12 @@
                     <!-- Persediaan Awal Bahan Kemasan -->
                     <tr>
                         <td style="padding-left: 12px;">Persediaan Awal Bahan Kemasan</td>
+                        @php $totSaBK = 0; @endphp
                         @for ($m = 1; $m <= 12; $m++)
+                            @php $totSaBK += ($hppBahanTahunan['bk']['sa'][$m] ?? 0); @endphp
                             <td class="text-right">{{ formatLRTahunanValue($hppBahanTahunan['bk']['sa'][$m] ?? 0) }}</td>
                         @endfor
-                        <td class="text-right">{{ formatLRTahunanValue($hppBahanTahunan['bk']['sa'][1] ?? 0) }}</td>
+                        <td class="text-right">{{ formatLRTahunanValue($totSaBK) }}</td>
                     </tr>
 
                     <!-- Pembelian Bahan Kemasan -->
@@ -392,10 +398,12 @@
                     <!-- Persediaan Akhir Bahan Kemasan -->
                     <tr>
                         <td style="padding-left: 12px;">Persediaan Akhir Bahan Kemasan</td>
+                        @php $totAkBK = 0; @endphp
                         @for ($m = 1; $m <= 12; $m++)
+                            @php $totAkBK += ($hppBahanTahunan['bk']['ak'][$m] ?? 0); @endphp
                             <td class="text-right">{{ formatLRTahunanValue(-($hppBahanTahunan['bk']['ak'][$m] ?? 0)) }}</td>
                         @endfor
-                        <td class="text-right">{{ formatLRTahunanValue(-($hppBahanTahunan['bk']['ak'][12] ?? 0)) }}</td>
+                        <td class="text-right">{{ formatLRTahunanValue(-$totAkBK) }}</td>
                     </tr>
 
                     <!-- Bahan Kemasan yg digunakan -->
@@ -418,7 +426,11 @@
                 @php
                     $otherHppAccounts = [];
                     foreach ($labarugi as $acc) {
-                        if (substr($acc->kode_akun, 0, 1) === '5' && !in_array($acc->kode_akun, ['5-11000', '5-11100', '5-11101', '5-11102'])) {
+                        if (substr($acc->kode_akun, 0, 1) === '5' && !in_array($acc->kode_akun, [
+                            '5-11000', '5-11100', '5-11101', '5-11102',
+                            '5-12000', '5-12100', '5-12101', '5-12102', '5-12103',
+                            '5-13000', '5-13100', '5-13101', '5-13102', '5-13103'
+                        ])) {
                             $otherHppAccounts[] = $acc;
                         }
                     }

@@ -89,6 +89,20 @@ class CoaSeeder extends Seeder
             ['kode_akun' => '5-11102', 'nama_akun' => 'Pembelian Bahan Kemasan', 'sub_akun' => '5-11100', 'level' => 3],
             ['kode_akun' => '5-11103', 'nama_akun' => 'Pembelian Bahan Bakar', 'sub_akun' => '5-11100', 'level' => 3],
 
+            // PERSEDIAAN AWAL
+            ['kode_akun' => '5-12000', 'nama_akun' => 'PERSEDIAAN AWAL', 'sub_akun' => null, 'level' => 1],
+            ['kode_akun' => '5-12100', 'nama_akun' => 'Persediaan Awal', 'sub_akun' => '5-12000', 'level' => 2],
+            ['kode_akun' => '5-12101', 'nama_akun' => 'P/L Persediaan Awal Bahan Baku', 'sub_akun' => '5-12100', 'level' => 3],
+            ['kode_akun' => '5-12102', 'nama_akun' => 'P/L Persediaan Awal Bahan Kemasan', 'sub_akun' => '5-12100', 'level' => 3],
+            ['kode_akun' => '5-12103', 'nama_akun' => 'P/L Persediaan Awal Bahan Bakar', 'sub_akun' => '5-12100', 'level' => 3],
+
+            // PERSEDIAAN AKHIR
+            ['kode_akun' => '5-13000', 'nama_akun' => 'PERSEDIAAN AKHIR', 'sub_akun' => null, 'level' => 1],
+            ['kode_akun' => '5-13100', 'nama_akun' => 'Persediaan Akhir', 'sub_akun' => '5-13000', 'level' => 2],
+            ['kode_akun' => '5-13101', 'nama_akun' => 'P/L Persediaan Akhir Bahan Baku', 'sub_akun' => '5-13100', 'level' => 3],
+            ['kode_akun' => '5-13102', 'nama_akun' => 'P/L Persediaan Akhir Bahan Kemasan', 'sub_akun' => '5-13100', 'level' => 3],
+            ['kode_akun' => '5-13103', 'nama_akun' => 'P/L Persediaan Akhir Bahan Bakar', 'sub_akun' => '5-13100', 'level' => 3],
+
             // BIAYA
             ['kode_akun' => '6-11000', 'nama_akun' => 'BIAYA OVERHEAD PABRIK', 'sub_akun' => null, 'level' => 1],
             ['kode_akun' => '6-11100', 'nama_akun' => 'Biaya Overhead Pabrik', 'sub_akun' => '6-11000', 'level' => 2],

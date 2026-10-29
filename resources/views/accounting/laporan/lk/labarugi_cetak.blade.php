@@ -162,42 +162,42 @@
                 @if (isset($hppBahan))
                     <tr>
                         <td style="padding-left: 20px;">Persediaaan Awal Bahan Baku</td>
-                        <td class="text-right">{{ formatAngka($hppBahan['sa_bb']) }}</td>
+                        <td class="text-right">{{ $hppBahan['sa_bb'] != 0 ? formatAngka($hppBahan['sa_bb']) : '-' }}</td>
                     </tr>
                     <tr>
                         <td style="padding-left: 20px;">Pembelian Bahan Baku</td>
-                        <td class="text-right">{{ formatAngka($hppBahan['pemb_bb']) }}</td>
+                        <td class="text-right">{{ $hppBahan['pemb_bb'] != 0 ? formatAngka($hppBahan['pemb_bb']) : '-' }}</td>
                     </tr>
                     <tr>
                         <td style="padding-left: 20px;">Persediaaan Akhir Bahan Baku</td>
-                        <td class="text-right">({{ formatAngka($hppBahan['ak_bb']) }})</td>
+                        <td class="text-right">{{ $hppBahan['ak_bb'] != 0 ? '(' . formatAngka($hppBahan['ak_bb']) . ')' : '-' }}</td>
                     </tr>
                     <tr style="font-weight: bold; background-color: #fafafa;">
                         <td style="padding-left: 20px;">Bahan Baku yang digunakan</td>
-                        <td class="text-right">{{ formatAngka($hppBahan['used_bb']) }}</td>
+                        <td class="text-right">{{ $hppBahan['used_bb'] != 0 ? formatAngka($hppBahan['used_bb']) : '-' }}</td>
                     </tr>
                     @php $totalHpp += $hppBahan['used_bb']; @endphp
 
                     <tr>
                         <td style="padding-left: 20px;">Persediaan Awal Bahan Kemasan</td>
-                        <td class="text-right">{{ formatAngka($hppBahan['sa_bk']) }}</td>
+                        <td class="text-right">{{ $hppBahan['sa_bk'] != 0 ? formatAngka($hppBahan['sa_bk']) : '-' }}</td>
                     </tr>
                     <tr>
                         <td style="padding-left: 20px;">Pembelian Bahan Kemasan</td>
-                        <td class="text-right">{{ formatAngka($hppBahan['pemb_bk']) }}</td>
+                        <td class="text-right">{{ $hppBahan['pemb_bk'] != 0 ? formatAngka($hppBahan['pemb_bk']) : '-' }}</td>
                     </tr>
                     <tr>
                         <td style="padding-left: 20px;">Persediaan Akhir Bahan Kemasan</td>
-                        <td class="text-right">({{ formatAngka($hppBahan['ak_bk']) }})</td>
+                        <td class="text-right">{{ $hppBahan['ak_bk'] != 0 ? '(' . formatAngka($hppBahan['ak_bk']) . ')' : '-' }}</td>
                     </tr>
                     <tr style="font-weight: bold; background-color: #fafafa;">
                         <td style="padding-left: 20px;">Bahan Kemasan yg digunakan</td>
-                        <td class="text-right">{{ formatAngka($hppBahan['used_bk']) }}</td>
+                        <td class="text-right">{{ $hppBahan['used_bk'] != 0 ? formatAngka($hppBahan['used_bk']) : '-' }}</td>
                     </tr>
                     @php $totalHpp += $hppBahan['used_bk']; @endphp
                 @endif
                 @foreach ($lrAccounts as $acc)
-                    @if (substr($acc->kode_akun, 0, 1) === '5' && (!isset($hppBahan) || !in_array($acc->kode_akun, ['5-11000', '5-11100', '5-11101', '5-11102'])))
+                    @if (substr($acc->kode_akun, 0, 1) === '5' && (!isset($hppBahan) || !in_array($acc->kode_akun, ['5-11000', '5-11100', '5-11101', '5-11102', '5-12000', '5-12100', '5-12101', '5-12102', '5-12103', '5-13000', '5-13100', '5-13101', '5-13102', '5-13103'])))
                         @php
                             $indent = ($acc->level ?? 0) * 16;
                             $isLeaf = $acc->is_leaf ?? ($acc->level >= 3);
