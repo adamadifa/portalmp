@@ -195,6 +195,8 @@ Route::middleware('auth')->group(function () {
     // Jurnal Umum
     Route::controller(JurnalumumController::class)->group(function () {
         Route::get('/jurnalumum', 'index')->name('jurnalumum.index');
+        Route::get('/jurnalumum/template', 'downloadTemplate')->name('jurnalumum.template');
+        Route::post('/jurnalumum/import', 'import')->name('jurnalumum.import');
         Route::get('/jurnalumum/create', 'create')->name('jurnalumum.create');
         Route::post('/jurnalumum/store', 'store')->name('jurnalumum.store');
         Route::get('/jurnalumum/{id}/edit', 'edit')->name('jurnalumum.edit');

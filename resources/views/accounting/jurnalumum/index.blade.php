@@ -205,8 +205,16 @@
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                 <h3 class="font-bold text-base">Data Transaksi Jurnal Umum</h3>
             </div>
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-2 flex-wrap">
                 @can('jurnalumum.create')
+                <a href="{{ route('jurnalumum.template') }}" class="inline-flex items-center px-3.5 py-2 text-xs font-semibold text-white bg-white/10 hover:bg-white/20 border border-white/20 rounded-xl transition shadow-sm gap-1.5" title="Download Template Excel">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                    Download Template
+                </a>
+                <button type="button" onclick="toggleModalImport()" class="inline-flex items-center px-3.5 py-2 text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl transition shadow-sm gap-1.5">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                    Import Excel
+                </button>
                 <button type="button" id="btnCreate" class="inline-flex items-center px-3.5 py-2 text-xs font-semibold text-[#294C9A] bg-white rounded-xl hover:bg-gray-50 transition shadow-sm gap-1.5">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
                     Input Jurnal Umum
@@ -324,6 +332,64 @@
         </div>
     </div>
 
+    <!-- Modal Import Jurnal Umum -->
+    <div id="modalImportJurnalUmum" class="fixed inset-0 z-50 flex items-center justify-center hidden bg-black/50 backdrop-blur-sm overflow-y-auto p-4">
+        <div class="bg-white rounded-2xl shadow-xl w-full max-w-lg mx-auto overflow-hidden border border-gray-100 transform transition-all">
+            <!-- Modal Header -->
+            <div class="p-5 border-b border-gray-100 flex justify-between items-center bg-gradient-to-r from-[#294C9A] to-[#1E3A70] text-white">
+                <div class="flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                    <h3 class="font-bold text-base text-white">Import Jurnal Umum dari Excel</h3>
+                </div>
+                <button type="button" class="text-white/80 hover:text-white transition" onclick="toggleModalImport()">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+
+            <!-- Form Import -->
+            <form action="{{ route('jurnalumum.import') }}" method="POST" enctype="multipart/form-data" id="formImportJurnalUmum" class="p-6 space-y-4">
+                @csrf
+                <div class="p-4 bg-blue-50/70 border border-blue-100 rounded-xl text-xs text-blue-900 space-y-2">
+                    <p class="font-bold flex items-center gap-1.5 text-[#294C9A]">
+                        <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        Petunjuk Format Import:
+                    </p>
+                    <ul class="list-disc list-inside space-y-1 text-gray-700 pl-1">
+                        <li>Gunakan file template resmi untuk memastikan susunan kolom sesuai.</li>
+                        <li>Format kolom: <b>Tanggal</b> (YYYY-MM-DD), <b>No Bukti</b>, <b>Kode Akun</b>, <b>Keterangan</b>, <b>Debet</b>, <b>Kredit</b>, dan <b>Departemen</b>.</li>
+                        <li>Daftar lengkap <b>Kode Akun (COA)</b> yang aktif dapat dilihat pada <b>Sheet 2</b> di dalam template Excel.</li>
+                    </ul>
+                    <div class="pt-1">
+                        <a href="{{ route('jurnalumum.template') }}" class="inline-flex items-center gap-1.5 text-xs font-semibold text-[#294C9A] hover:underline">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                            Download Template Excel (.xlsx)
+                        </a>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-2">Pilih File Excel (.xlsx, .xls, .csv) <span class="text-rose-500">*</span></label>
+                    <input type="file" id="file_excel_jurnal" name="file_excel" accept=".xlsx,.xls,.csv" required class="block w-full text-xs text-gray-900 bg-white border border-gray-200 rounded-xl cursor-pointer focus:outline-none file:mr-4 file:py-2.5 file:px-4 file:rounded-l-xl file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-[#294C9A] hover:file:bg-blue-100 p-1 border-dashed" />
+                </div>
+
+                <div class="pt-1">
+                    <label class="inline-flex items-center text-xs text-gray-700 cursor-pointer select-none">
+                        <input type="checkbox" name="validasi_balance" value="1" checked class="rounded border-gray-300 text-[#294C9A] focus:ring-[#294C9A] mr-2">
+                        <span>Validasi Keseimbangan (Wajib Total Debet = Total Kredit)</span>
+                    </label>
+                </div>
+
+                <div class="flex justify-end gap-3 pt-4 border-t border-gray-100">
+                    <button type="button" class="px-4 py-2 text-xs font-semibold text-gray-700 bg-gray-100 rounded-xl hover:bg-gray-200 transition" onclick="toggleModalImport()">Batal</button>
+                    <button type="submit" id="btnSubmitImport" class="inline-flex items-center gap-2 px-5 py-2 text-xs font-semibold text-white bg-[#294C9A] rounded-xl hover:bg-[#1E3A70] transition shadow-sm">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                        <span>Mulai Import</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     @push('myscript')
     <script>
         function openModal(title) {
@@ -342,7 +408,19 @@
             `);
         }
 
+        window.toggleModalImport = function() {
+            $('#modalImportJurnalUmum').toggleClass('hidden');
+        };
+
         $(function() {
+            $('#formImportJurnalUmum').on('submit', function() {
+                const btn = $('#btnSubmitImport');
+                btn.prop('disabled', true).html(`
+                    <svg class="w-4 h-4 animate-spin inline-block mr-1" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                    <span>Mengimport...</span>
+                `);
+            });
+
             const select2Akun = $('.select2Akun');
             if (select2Akun.length) {
                 select2Akun.each(function() {
