@@ -73,6 +73,8 @@ class BiayaController extends Controller
             $bulanPajak = $request->bulan_pajak ?: date('m', strtotime($tgl));
             $tahunPajak = $request->tahun_pajak ?: date('Y', strtotime($tgl));
 
+            $potonganPph23 = ! empty($request->potongan_pph23) ? (float) toNumber($request->potongan_pph23) : 0;
+
             Biaya::create([
                 'no_bukti' => $request->no_bukti,
                 'tanggal' => $tgl,
@@ -81,6 +83,7 @@ class BiayaController extends Controller
                 'kode_supplier' => $request->kode_supplier,
                 'kode_akun' => $request->kode_akun ?? ($kode_akun_item[0] ?? null),
                 'ppn' => '0',
+                'potongan_pph23' => $potonganPph23,
                 'tanggal_jatuh_tempo' => $request->jenis_transaksi == 'K' ? $request->tanggal_jatuh_tempo : null,
                 'jenis_transaksi' => $request->jenis_transaksi,
                 'keterangan' => $request->keterangan,
@@ -196,12 +199,15 @@ class BiayaController extends Controller
             $bulanPajak = $request->bulan_pajak ?: date('m', strtotime($tgl));
             $tahunPajak = $request->tahun_pajak ?: date('Y', strtotime($tgl));
 
+            $potonganPph23 = ! empty($request->potongan_pph23) ? (float) toNumber($request->potongan_pph23) : 0;
+
             $biaya->update([
                 'tanggal' => $tgl,
                 'bulan_pajak' => $bulanPajak,
                 'tahun_pajak' => $tahunPajak,
                 'kode_supplier' => $request->kode_supplier,
                 'kode_akun' => $request->kode_akun ?? ($kode_akun_item[0] ?? null),
+                'potongan_pph23' => $potonganPph23,
                 'tanggal_jatuh_tempo' => $request->jenis_transaksi == 'K' ? $request->tanggal_jatuh_tempo : null,
                 'jenis_transaksi' => $request->jenis_transaksi,
                 'keterangan' => $request->keterangan,
@@ -437,6 +443,7 @@ class BiayaController extends Controller
             $colDpp = $colMap['dpp'] ?? null;
             $colTotal = $colMap['jumlah'] ?? $colMap['total'] ?? $colMap['subtotal'] ?? $colMap['grandtotal'] ?? null;
             $colPeny = $colMap['peny'] ?? $colMap['penyesuaian'] ?? null;
+            $colPph23 = $colMap['potonganpph23'] ?? $colMap['potongan_pph23'] ?? $colMap['pph23'] ?? $colMap['pph_23'] ?? $colMap['potongapph23'] ?? $colMap['potpph23'] ?? $colMap['potonganpph'] ?? null;
 
             if (! $colNoBukti) {
                 // Fallback default column indices based on sheet layout:
@@ -678,6 +685,7 @@ class BiayaController extends Controller
                 }
 
                 $peny = $colPeny ? (float) toNumber(trim((string) ($sheet->getCell([$colPeny, $r])->getCalculatedValue() ?? 0))) : 0;
+                $pph23Val = $colPph23 ? (float) toNumber(trim((string) ($sheet->getCell([$colPph23, $r])->getCalculatedValue() ?? 0))) : 0;
 
                 // 6. Deteksi PPN / Non PPN dari kolom JENIS
                 $jenisPpnRaw = $colJenisPpn ? strtoupper(trim((string) ($sheet->getCell([$colJenisPpn, $r])->getCalculatedValue() ?? ''))) : '';
@@ -731,6 +739,7 @@ class BiayaController extends Controller
                     'qty' => $qty,
                     'harga' => $harga,
                     'penyesuaian' => $peny,
+                    'potongan_pph23' => $pph23Val,
                     'ppn' => $isPpn,
                 ];
             }
@@ -770,6 +779,12 @@ class BiayaController extends Controller
                     }
                 }
 
+                // Hitung total potongan PPh 23 untuk no_bukti ini
+                $totalPph23 = 0;
+                foreach ($items as $it) {
+                    $totalPph23 += (float) ($it['potongan_pph23'] ?? 0);
+                }
+
                 // Check or Create Biaya Header
                 $biaya = Biaya::where('no_bukti', $noBukti)->first();
                 if (! $biaya) {
@@ -781,6 +796,7 @@ class BiayaController extends Controller
                         'kode_supplier' => $firstItem['kode_supplier'],
                         'kode_akun' => $firstItem['kode_akun'],
                         'ppn' => $hasPpn,
+                        'potongan_pph23' => $totalPph23,
                         'jenis_transaksi' => $jenis_transaksi,
                         'id_user' => auth()->user()->id ?? 1,
                     ]);
@@ -798,6 +814,9 @@ class BiayaController extends Controller
                     }
                     if (! empty($firstItem['tahun_pajak'])) {
                         $updateData['tahun_pajak'] = $firstItem['tahun_pajak'];
+                    }
+                    if ($totalPph23 > 0 || $biaya->potongan_pph23 != $totalPph23) {
+                        $updateData['potongan_pph23'] = $totalPph23;
                     }
                     if (! empty($updateData)) {
                         $biaya->update($updateData);

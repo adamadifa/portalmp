@@ -28,6 +28,10 @@
             $total_ppn_detail += $ppn_val;
         }
 
+        $potongan_pph23 = (float) ($biaya->potongan_pph23 ?? 0);
+        $total_biaya_bruto = $total_biaya;
+        $total_biaya = max(0, $total_biaya_bruto - $potongan_pph23);
+
         $total_paid = $historibayar->sum('jumlah');
         $sisa_hutang = max(0, $total_biaya - $total_paid);
         $is_lunas = (round($total_biaya, 2) <= round($total_paid, 2));
@@ -201,8 +205,22 @@
                     </div>
 
                     <div class="space-y-3 text-xs">
+                        @if ($potongan_pph23 > 0)
+                            <div class="flex items-center justify-between">
+                                <span class="text-slate-500 dark:text-slate-400 font-medium">Subtotal Pos Biaya</span>
+                                <span class="font-mono font-semibold text-slate-700 dark:text-slate-300">
+                                    Rp {{ formatAngkaDesimal($total_biaya_bruto) }}
+                                </span>
+                            </div>
+                            <div class="flex items-center justify-between text-amber-600 dark:text-amber-400">
+                                <span class="font-medium">Potongan PPh 23 (-)</span>
+                                <span class="font-mono font-bold">
+                                    - Rp {{ formatAngkaDesimal($potongan_pph23) }}
+                                </span>
+                            </div>
+                        @endif
                         <div class="flex items-center justify-between">
-                            <span class="text-slate-500 dark:text-slate-400 font-medium">Total Nilai Biaya</span>
+                            <span class="text-slate-500 dark:text-slate-400 font-bold">Total Netto Biaya</span>
                             <span class="font-mono font-bold text-slate-900 dark:text-white text-sm">
                                 Rp {{ formatAngkaDesimal($total_biaya) }}
                             </span>
@@ -358,9 +376,9 @@
                 }
 
                 $total_dpp_biaya    = array_sum(array_column($biayaByAkun, 'jumlah'));
-                $ppn_masukan_biaya  = ($biaya->ppn == '1') ? max(0, $total_biaya - $total_dpp_biaya) : 0;
+                $ppn_masukan_biaya  = ($biaya->ppn == '1') ? max(0, $total_biaya_bruto - $total_dpp_biaya) : 0;
                 $total_debet_biaya  = $total_dpp_biaya + $ppn_masukan_biaya;
-                $total_kredit_biaya = $total_biaya;
+                $total_kredit_biaya = $total_biaya + $potongan_pph23;
             @endphp
 
             <!-- 2-Column Grid: Rincian Akun & Histori Pembayaran Sebelahan -->
@@ -476,14 +494,27 @@
                                 <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/40">
                                     <td class="py-2 px-3">
                                         <div class="font-mono font-bold text-indigo-700 dark:text-indigo-400">{{ $biaya->tanggal_jatuh_tempo ? '2-11101' : '1-11101' }}</div>
-                                        <div class="text-[10px] text-slate-500">{{ $biaya->tanggal_jatuh_tempo ? 'Hutang Usaha' : 'Kas / Bank' }}</div>
+                                        <div class="text-[10px] text-slate-500">{{ $biaya->tanggal_jatuh_tempo ? 'Hutang Usaha (Net)' : 'Kas / Bank (Net)' }}</div>
                                     </td>
                                     <td class="py-2 px-3 text-center">
                                         <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold uppercase bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 border border-amber-200/60">Kredit</span>
                                     </td>
                                     <td class="py-2 px-3 text-right text-slate-400">-</td>
-                                    <td class="py-2 px-3 text-right font-bold text-indigo-900 dark:text-indigo-300 whitespace-nowrap">{{ formatAngkaDesimal($total_kredit_biaya) }}</td>
+                                    <td class="py-2 px-3 text-right font-bold text-indigo-900 dark:text-indigo-300 whitespace-nowrap">{{ formatAngkaDesimal($total_biaya) }}</td>
                                 </tr>
+                                @if($potongan_pph23 > 0)
+                                    <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/40">
+                                        <td class="py-2 px-3">
+                                            <div class="font-mono font-bold text-indigo-700 dark:text-indigo-400">2-11203</div>
+                                            <div class="text-[10px] text-slate-500">Hutang PPh 23</div>
+                                        </td>
+                                        <td class="py-2 px-3 text-center">
+                                            <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold uppercase bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 border border-amber-200/60">Kredit</span>
+                                        </td>
+                                        <td class="py-2 px-3 text-right text-slate-400">-</td>
+                                        <td class="py-2 px-3 text-right font-bold text-amber-600 dark:text-amber-400 whitespace-nowrap">{{ formatAngkaDesimal($potongan_pph23) }}</td>
+                                    </tr>
+                                @endif
                             </tbody>
                             <tfoot class="border-t border-slate-200 dark:border-slate-700 bg-slate-50/80 dark:bg-slate-800/80 font-bold text-slate-800 dark:text-white text-xs">
                                 <tr>

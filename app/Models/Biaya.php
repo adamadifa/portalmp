@@ -12,9 +12,13 @@ class Biaya extends Model
     use HasFactory;
 
     protected $table = 'biaya';
+
     protected $primaryKey = 'no_bukti';
+
     protected $guarded = [];
+
     public $incrementing = false;
+
     protected $keyType = 'string';
 
     public function detail()
@@ -37,16 +41,17 @@ class Biaya extends Model
         return $this->belongsTo(User::class, 'id_user', 'id');
     }
 
-    public function getBiaya($no_bukti = "", Request $request = null, $kode_supplier = "")
+    public function getBiaya($no_bukti = '', ?Request $request = null, $kode_supplier = '')
     {
         $query = Biaya::query();
         $query->select(
             'biaya.*',
             'supplier.nama_supplier',
             'coa.nama_akun',
-            DB::raw('IFNULL(detailbiaya.total_biaya, 0) as total_biaya'),
+            DB::raw('GREATEST(0, IFNULL(detailbiaya.total_biaya, 0) - IFNULL(biaya.potongan_pph23, 0)) as total_biaya'),
+            DB::raw('IFNULL(detailbiaya.total_biaya, 0) as total_bruto'),
             DB::raw('IFNULL(historibayar.total_bayar, 0) as total_bayar'),
-            DB::raw('(IFNULL(detailbiaya.total_biaya, 0) - IFNULL(historibayar.total_bayar, 0)) as sisa_bayar')
+            DB::raw('(GREATEST(0, IFNULL(detailbiaya.total_biaya, 0) - IFNULL(biaya.potongan_pph23, 0)) - IFNULL(historibayar.total_bayar, 0)) as sisa_bayar')
         );
 
         $query->leftJoin('supplier', 'biaya.kode_supplier', '=', 'supplier.kode_supplier');
@@ -76,32 +81,32 @@ class Biaya extends Model
             }
         );
 
-        if (!empty($no_bukti)) {
+        if (! empty($no_bukti)) {
             $query->where('biaya.no_bukti', $no_bukti);
         }
 
-        if (!empty($kode_supplier)) {
+        if (! empty($kode_supplier)) {
             $query->where('biaya.kode_supplier', $kode_supplier);
         }
 
         if ($request != null) {
-            if (!empty($request->dari) && !empty($request->sampai)) {
+            if (! empty($request->dari) && ! empty($request->sampai)) {
                 $query->whereBetween('biaya.tanggal', [$request->dari, $request->sampai]);
             }
 
-            if (!empty($request->no_bukti_search)) {
-                $query->where('biaya.no_bukti', 'like', '%' . $request->no_bukti_search . '%');
+            if (! empty($request->no_bukti_search)) {
+                $query->where('biaya.no_bukti', 'like', '%'.$request->no_bukti_search.'%');
             }
 
-            if (!empty($request->kode_supplier_search)) {
+            if (! empty($request->kode_supplier_search)) {
                 $query->where('biaya.kode_supplier', $request->kode_supplier_search);
             }
 
-            if (!empty($request->jenis_transaksi_search)) {
+            if (! empty($request->jenis_transaksi_search)) {
                 $query->where('biaya.jenis_transaksi', $request->jenis_transaksi_search);
             }
 
-            if (!empty($request->kategori_transaksi_search)) {
+            if (! empty($request->kategori_transaksi_search)) {
                 $query->where('biaya.kategori_transaksi', $request->kategori_transaksi_search);
             }
 

@@ -365,6 +365,7 @@
                             <th class="py-2.5 px-4 w-28 whitespace-nowrap">Tanggal</th>
                             <th class="py-2.5 px-4 min-w-[180px]">Rekanan / Supplier</th>
                             <th class="py-2.5 px-4 w-24 text-center whitespace-nowrap">PPN</th>
+                            <th class="py-2.5 px-4 w-28 text-right whitespace-nowrap">PPh 23</th>
                             <th class="py-2.5 px-4 w-32 text-right whitespace-nowrap">Total</th>
                             <th class="py-2.5 px-4 w-32 text-right whitespace-nowrap">Bayar</th>
                             <th class="py-2.5 px-4 w-32 text-right whitespace-nowrap">Sisa</th>
@@ -409,6 +410,17 @@
                                         <span class="inline-flex items-center px-2 py-0.5 text-[10px] font-semibold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700 rounded-md">
                                             Non-PPN
                                         </span>
+                                    @endif
+                                </td>
+
+                                <!-- PPh 23 -->
+                                <td class="py-1 px-4 text-right whitespace-nowrap">
+                                    @if ($d->potongan_pph23 > 0)
+                                        <span class="font-mono text-xs font-bold text-amber-600 dark:text-amber-400">
+                                            -{{ formatAngkaDesimal($d->potongan_pph23) }}
+                                        </span>
+                                    @else
+                                        <span class="text-slate-400 font-mono text-xs">-</span>
                                     @endif
                                 </td>
 
@@ -580,6 +592,14 @@
                         <option value="K">Kredit (Tempo)</option>
                         <option value="T">Tunai (Cash)</option>
                     </select>
+                <div class="p-3 bg-blue-50/70 dark:bg-blue-900/20 rounded-xl border border-blue-200/60 dark:border-blue-800/40 text-[11px] text-slate-600 dark:text-slate-300 space-y-1">
+                    <div class="font-bold text-[#162a5b] dark:text-blue-300 flex items-center gap-1.5">
+                        <i data-lucide="info" class="w-3.5 h-3.5"></i>
+                        <span>Format Kolom Excel:</span>
+                    </div>
+                    <p class="text-[10px] leading-relaxed text-slate-500 dark:text-slate-400">
+                        Mendukung kolom: <b>BPB / No Bukti, Tanggal, Kode Akun, Supplier, Keterangan, Qty, Harga, DPP, PPN, Potongan PPh 23</b>.
+                    </p>
                 </div>
                 <div class="flex justify-end gap-2 pt-3 border-t border-slate-100 dark:border-slate-800">
                     <button type="button" class="px-4 py-2 text-xs font-semibold text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 rounded-xl hover:bg-slate-200 transition cursor-pointer" onclick="toggleModalImport()">Batal</button>

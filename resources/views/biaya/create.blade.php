@@ -281,6 +281,28 @@
                                 </div>
                             </div>
 
+                            <!-- Potongan PPh 23 (Opsional) -->
+                            <div>
+                                <label for="potongan_pph23" class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                                    Potongan PPh 23 (Opsional)
+                                </label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                                        <i data-lucide="percent" class="w-4 h-4"></i>
+                                    </div>
+                                    <input 
+                                        type="text" 
+                                        name="potongan_pph23" 
+                                        id="potongan_pph23" 
+                                        value="{{ old('potongan_pph23') ?? 0 }}" 
+                                        class="w-full h-[40px] pl-10 pr-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-semibold text-right text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-[#162a5b] transition shadow-2xs number-separator" 
+                                        placeholder="0" 
+                                        autocomplete="off" 
+                                    />
+                                </div>
+                                <p class="text-[10px] text-slate-400 mt-1">Nilai nominal pemotongan pajak PPh pasal 23 (mengurangi nilai tagihan/kas).</p>
+                            </div>
+
                             <!-- Catatan / Keterangan Transaksi -->
                             <div>
                                 <label for="keterangan_transaksi" class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
