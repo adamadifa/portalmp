@@ -3,8 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Coa;
-use App\Models\Detailsaldoawalbukubesar;
-use App\Models\Saldoawalbukubesar;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -23,9 +21,9 @@ class LaporanaccountingController extends Controller
     {
         $request->validate([
             'formatlaporan' => 'required',
-            'dari'          => 'required_if:formatlaporan,1,2,3|nullable|date',
-            'sampai'        => 'required_if:formatlaporan,1,2,3|nullable|date',
-            'tahun'         => 'required_if:formatlaporan,4,5',
+            'dari' => 'required_if:formatlaporan,1,2,3|nullable|date',
+            'sampai' => 'required_if:formatlaporan,1,2,3|nullable|date',
+            'tahun' => 'required_if:formatlaporan,4,5',
         ]);
 
         $format = $request->formatlaporan;
@@ -190,13 +188,13 @@ class LaporanaccountingController extends Controller
                 ->join('pembelian', 'pembelian_historibayar.no_bukti', '=', 'pembelian.no_bukti')
                 ->whereYear('pembelian_historibayar.tanggal', $tahun)
                 ->where('pembelian.jenis_transaksi', 'K')
-                ->where(function($q) {
+                ->where(function ($q) {
                     $q->whereNull('pembelian.kategori_pembelian')
-                      ->orWhere('pembelian.kategori_pembelian', '!=', 'I');
+                        ->orWhere('pembelian.kategori_pembelian', '!=', 'I');
                 })
-                ->where(function($q) {
+                ->where(function ($q) {
                     $q->whereNull('pembelian.status_uang_muka')
-                      ->orWhere('pembelian.status_uang_muka', '!=', 1);
+                        ->orWhere('pembelian.status_uang_muka', '!=', 1);
                 })
                 ->select(
                     DB::raw("'2-11101' as kode_akun"),
@@ -267,13 +265,13 @@ class LaporanaccountingController extends Controller
                 ->join('pembelian', 'pembelian_detail.no_bukti', '=', 'pembelian.no_bukti')
                 ->whereYear('pembelian.tanggal', $tahun)
                 ->where('pembelian.jenis_transaksi', 'K')
-                ->where(function($q) {
+                ->where(function ($q) {
                     $q->whereNull('pembelian.kategori_pembelian')
-                      ->orWhere('pembelian.kategori_pembelian', '!=', 'I');
+                        ->orWhere('pembelian.kategori_pembelian', '!=', 'I');
                 })
-                ->where(function($q) {
+                ->where(function ($q) {
                     $q->whereNull('pembelian.status_uang_muka')
-                      ->orWhere('pembelian.status_uang_muka', '!=', 1);
+                        ->orWhere('pembelian.status_uang_muka', '!=', 1);
                 })
                 ->where('pembelian_detail.kode_transaksi', 'PMB')
                 ->select(
@@ -385,12 +383,12 @@ class LaporanaccountingController extends Controller
                     for ($m = 1; $m <= 12; $m++) {
                         // Cek apakah ada saldo awal tersimpan di bulan m (misal SA012026)
                         $saVal = $monthlyMatrix[$acc->kode_akun][$m]['sa'] ?? null;
-                        
+
                         // Hitung akumulasi dari bulan 1 sampai bulan m
                         $cumDebet = 0;
                         $cumKredit = 0;
                         $baseSa = 0;
-                        
+
                         // Cari saldo awal paling mutakhir di bulan <= m jika ada
                         for ($subM = $m; $subM >= 1; $subM--) {
                             if (isset($monthlyMatrix[$acc->kode_akun][$subM]['sa']) && $monthlyMatrix[$acc->kode_akun][$subM]['sa'] != 0) {
@@ -430,9 +428,10 @@ class LaporanaccountingController extends Controller
                 $data['net_profit_loss'] = $net_profit_loss;
 
                 if (isset($_POST['exportButton'])) {
-                    header("Content-type: application/vnd-ms-excel");
+                    header('Content-type: application/vnd-ms-excel');
                     header("Content-Disposition: attachment; filename=Neraca_Tahunan_{$tahun}.xls");
                 }
+
                 return view('accounting.laporan.lk.neraca_tahunan_cetak', $data);
 
             } elseif ($format == '5') {
@@ -477,11 +476,11 @@ class LaporanaccountingController extends Controller
                 for ($m = 1; $m <= 12; $m++) {
                     // 5-12101 (P/L Persediaan Awal Bahan Baku): Debet - Kredit dari Jurnal
                     $bbSaRow = $monthlyMatrix['5-12101'][$m] ?? null;
-                    $sa_bb = $bbSaRow ? ((float)$bbSaRow['debet'] - (float)$bbSaRow['kredit']) : 0.0;
+                    $sa_bb = $bbSaRow ? ((float) $bbSaRow['debet'] - (float) $bbSaRow['kredit']) : 0.0;
 
                     // 5-13101 (P/L Persediaan Akhir Bahan Baku): Kredit - Debet dari Jurnal (atau abs mutasi)
                     $bbAkRow = $monthlyMatrix['5-13101'][$m] ?? null;
-                    $ak_bb = $bbAkRow ? abs((float)$bbAkRow['kredit'] - (float)$bbAkRow['debet']) : 0.0;
+                    $ak_bb = $bbAkRow ? abs((float) $bbAkRow['kredit'] - (float) $bbAkRow['debet']) : 0.0;
 
                     $pemb_bb = $hppBahanTahunan['bb']['pemb'][$m] ?? 0.0;
                     $used_bb = $sa_bb + $pemb_bb - $ak_bb;
@@ -492,11 +491,11 @@ class LaporanaccountingController extends Controller
 
                     // 5-12102 (P/L Persediaan Awal Bahan Kemasan): Debet - Kredit dari Jurnal
                     $bkSaRow = $monthlyMatrix['5-12102'][$m] ?? null;
-                    $sa_bk = $bkSaRow ? ((float)$bkSaRow['debet'] - (float)$bkSaRow['kredit']) : 0.0;
+                    $sa_bk = $bkSaRow ? ((float) $bkSaRow['debet'] - (float) $bkSaRow['kredit']) : 0.0;
 
                     // 5-13102 (P/L Persediaan Akhir Bahan Kemasan): Kredit - Debet dari Jurnal (atau abs mutasi)
                     $bkAkRow = $monthlyMatrix['5-13102'][$m] ?? null;
-                    $ak_bk = $bkAkRow ? abs((float)$bkAkRow['kredit'] - (float)$bkAkRow['debet']) : 0.0;
+                    $ak_bk = $bkAkRow ? abs((float) $bkAkRow['kredit'] - (float) $bkAkRow['debet']) : 0.0;
 
                     $pemb_bk = $hppBahanTahunan['bk']['pemb'][$m] ?? 0.0;
                     $used_bk = $sa_bk + $pemb_bk - $ak_bk;
@@ -511,9 +510,10 @@ class LaporanaccountingController extends Controller
                 $data['hppBahanTahunan'] = $hppBahanTahunan;
 
                 if (isset($_POST['exportButton'])) {
-                    header("Content-type: application/vnd-ms-excel");
+                    header('Content-type: application/vnd-ms-excel');
                     header("Content-Disposition: attachment; filename=Laba_Rugi_Tahunan_{$tahun}.xls");
                 }
+
                 return view('accounting.laporan.lk.labarugi_tahunan_cetak', $data);
             }
         }
@@ -699,13 +699,13 @@ class LaporanaccountingController extends Controller
             ->leftJoin('bank', 'pembelian_historibayar.kode_bank', '=', 'bank.kode_bank')
             ->whereBetween('pembelian_historibayar.tanggal', [sprintf('%04d-%02d-01', $tahun, $bulan), $sampai])
             ->where('pembelian.jenis_transaksi', 'K')
-            ->where(function($q) {
+            ->where(function ($q) {
                 $q->whereNull('pembelian.kategori_pembelian')
-                  ->orWhere('pembelian.kategori_pembelian', '!=', 'I');
+                    ->orWhere('pembelian.kategori_pembelian', '!=', 'I');
             })
-            ->where(function($q) {
+            ->where(function ($q) {
                 $q->whereNull('pembelian.status_uang_muka')
-                  ->orWhere('pembelian.status_uang_muka', '!=', 1);
+                    ->orWhere('pembelian.status_uang_muka', '!=', 1);
             })
             ->select(
                 DB::raw("'2-11101' as kode_akun"),
@@ -786,13 +786,13 @@ class LaporanaccountingController extends Controller
             ->leftJoin('supplier', 'pembelian.kode_supplier', '=', 'supplier.kode_supplier')
             ->whereBetween('pembelian.tanggal', [sprintf('%04d-%02d-01', $tahun, $bulan), $sampai])
             ->where('pembelian.jenis_transaksi', 'K')
-            ->where(function($q) {
+            ->where(function ($q) {
                 $q->whereNull('pembelian.kategori_pembelian')
-                  ->orWhere('pembelian.kategori_pembelian', '!=', 'I');
+                    ->orWhere('pembelian.kategori_pembelian', '!=', 'I');
             })
-            ->where(function($q) {
+            ->where(function ($q) {
                 $q->whereNull('pembelian.status_uang_muka')
-                  ->orWhere('pembelian.status_uang_muka', '!=', 1);
+                    ->orWhere('pembelian.status_uang_muka', '!=', 1);
             })
             ->where('pembelian_detail.kode_transaksi', 'PMB')
             ->select(
@@ -845,12 +845,11 @@ class LaporanaccountingController extends Controller
             ->unionAll($hutangPembelianSub)
             ->unionAll($ppnMasukanBiayaSub);
 
-
         // FORMAT 1: BUKU BESAR
         if ($format == '1') {
             $parents = DB::table('coa')->whereNotNull('sub_akun')->where('sub_akun', '!=', '')->pluck('sub_akun')->unique()->toArray();
             $coaQuery = Coa::whereNotIn('kode_akun', $parents)->orderBy('kode_akun', 'asc');
-            if (!empty($request->kode_akun_dari) && !empty($request->kode_akun_sampai)) {
+            if (! empty($request->kode_akun_dari) && ! empty($request->kode_akun_sampai)) {
                 $coaQuery->whereBetween('kode_akun', [$request->kode_akun_dari, $request->kode_akun_sampai]);
             }
             $coaList = $coaQuery->get();
@@ -888,9 +887,10 @@ class LaporanaccountingController extends Controller
             $data['mutasiPeriode'] = $mutasiPeriode;
 
             if (isset($_POST['exportButton'])) {
-                header("Content-type: application/vnd-ms-excel");
+                header('Content-type: application/vnd-ms-excel');
                 header("Content-Disposition: attachment; filename=Buku_Besar_{$dari}_{$sampai}.xls");
             }
+
             return view('accounting.laporan.lk.bukubesar_cetak', $data);
         }
 
@@ -913,11 +913,11 @@ class LaporanaccountingController extends Controller
                 $prefix = substr($k, 0, 1);
                 $net = ((float) $row->sa) + ((float) $row->debet) - ((float) $row->kredit);
                 if ($prefix === '4') {
-                    $pendapatanTotal += ((float)$row->kredit - (float)$row->debet);
+                    $pendapatanTotal += ((float) $row->kredit - (float) $row->debet);
                 } elseif ($prefix === '5') {
-                    $hppTotal += ((float)$row->debet - (float)$row->kredit);
+                    $hppTotal += ((float) $row->debet - (float) $row->kredit);
                 } elseif ($prefix === '6') {
-                    $biayaTotal += ((float)$row->debet - (float)$row->kredit);
+                    $biayaTotal += ((float) $row->debet - (float) $row->kredit);
                 }
             }
 
@@ -935,10 +935,10 @@ class LaporanaccountingController extends Controller
                     $prefix = substr($acc->kode_akun, 0, 1);
                     if ($prefix === '1') {
                         // Saldo normal Aktiva: Debet
-                        $saldo = $row ? ((float)$row->sa + (float)$row->debet - (float)$row->kredit) : 0;
+                        $saldo = $row ? ((float) $row->sa + (float) $row->debet - (float) $row->kredit) : 0;
                     } else {
                         // Saldo normal Kewajiban & Ekuitas: Kredit
-                        $saldo = $row ? ((float)$row->sa + (float)$row->kredit - (float)$row->debet) : 0;
+                        $saldo = $row ? ((float) $row->sa + (float) $row->kredit - (float) $row->debet) : 0;
                     }
 
                     // Akun Laba Tahun Berjalan (3-11300)
@@ -947,7 +947,8 @@ class LaporanaccountingController extends Controller
                     }
 
                     $acc->saldo_akhir = $saldo;
-                    $acc->is_leaf = !isset($allParentsMap[$acc->kode_akun]);
+                    $acc->is_leaf = ! isset($allParentsMap[$acc->kode_akun]);
+
                     return $acc;
                 });
 
@@ -955,9 +956,10 @@ class LaporanaccountingController extends Controller
             $data['labaBerjalan'] = $labaBerjalan;
 
             if (isset($_POST['exportButton'])) {
-                header("Content-type: application/vnd-ms-excel");
+                header('Content-type: application/vnd-ms-excel');
                 header("Content-Disposition: attachment; filename=Neraca_{$sampai}.xls");
             }
+
             return view('accounting.laporan.lk.neraca_cetak', $data);
         }
 
@@ -981,27 +983,32 @@ class LaporanaccountingController extends Controller
                     $prefix = substr($acc->kode_akun, 0, 1);
                     if ($prefix === '4') {
                         // Pendapatan (Kredit - Debet)
-                        $acc->total = $row ? ((float)$row->kredit - (float)$row->debet) : 0;
+                        $acc->total = $row ? ((float) $row->kredit - (float) $row->debet) : 0;
                     } else {
                         // Beban / HPP (Debet - Kredit)
-                        $acc->total = $row ? ((float)$row->debet - (float)$row->kredit) : 0;
+                        $acc->total = $row ? ((float) $row->debet - (float) $row->kredit) : 0;
                     }
-                    $acc->is_leaf = !isset($allParentsMap[$acc->kode_akun]);
+                    $acc->is_leaf = ! isset($allParentsMap[$acc->kode_akun]);
+
                     return $acc;
                 });
 
-            // Persediaan Awal & Akhir Bahan Baku dan Kemasan dari Jurnal Umum (5-12101 s/d 5-13102)
+            // Persediaan Awal & Akhir Bahan Baku, Kemasan, dan Barang Jadi dari Jurnal Umum
             // 1. Bahan Baku
-            $sa_bb = isset($mutasiLR['5-12101']) ? ((float)$mutasiLR['5-12101']->debet - (float)$mutasiLR['5-12101']->kredit) : 0;
-            $pemb_bb = isset($mutasiLR['5-11101']) ? ((float)$mutasiLR['5-11101']->debet - (float)$mutasiLR['5-11101']->kredit) : 0;
-            $ak_bb = isset($mutasiLR['5-13101']) ? abs((float)$mutasiLR['5-13101']->kredit - (float)$mutasiLR['5-13101']->debet) : 0;
+            $sa_bb = isset($mutasiLR['5-12101']) ? ((float) $mutasiLR['5-12101']->debet - (float) $mutasiLR['5-12101']->kredit) : 0;
+            $pemb_bb = isset($mutasiLR['5-11101']) ? ((float) $mutasiLR['5-11101']->debet - (float) $mutasiLR['5-11101']->kredit) : 0;
+            $ak_bb = isset($mutasiLR['5-13101']) ? abs((float) $mutasiLR['5-13101']->kredit - (float) $mutasiLR['5-13101']->debet) : 0;
             $used_bb = $sa_bb + $pemb_bb - $ak_bb;
 
             // 2. Bahan Kemasan
-            $sa_bk = isset($mutasiLR['5-12102']) ? ((float)$mutasiLR['5-12102']->debet - (float)$mutasiLR['5-12102']->kredit) : 0;
-            $pemb_bk = isset($mutasiLR['5-11102']) ? ((float)$mutasiLR['5-11102']->debet - (float)$mutasiLR['5-11102']->kredit) : 0;
-            $ak_bk = isset($mutasiLR['5-13102']) ? abs((float)$mutasiLR['5-13102']->kredit - (float)$mutasiLR['5-13102']->debet) : 0;
+            $sa_bk = isset($mutasiLR['5-12102']) ? ((float) $mutasiLR['5-12102']->debet - (float) $mutasiLR['5-12102']->kredit) : 0;
+            $pemb_bk = isset($mutasiLR['5-11102']) ? ((float) $mutasiLR['5-11102']->debet - (float) $mutasiLR['5-11102']->kredit) : 0;
+            $ak_bk = isset($mutasiLR['5-13102']) ? abs((float) $mutasiLR['5-13102']->kredit - (float) $mutasiLR['5-13102']->debet) : 0;
             $used_bk = $sa_bk + $pemb_bk - $ak_bk;
+
+            // 3. Persediaan Barang Jadi (5-12103 & 5-13103)
+            $sa_bj = isset($mutasiLR['5-12103']) ? ((float) $mutasiLR['5-12103']->debet - (float) $mutasiLR['5-12103']->kredit) : 0;
+            $ak_bj = isset($mutasiLR['5-13103']) ? abs((float) $mutasiLR['5-13103']->kredit - (float) $mutasiLR['5-13103']->debet) : 0;
 
             $data['hppBahan'] = [
                 'sa_bb' => $sa_bb,
@@ -1012,14 +1019,18 @@ class LaporanaccountingController extends Controller
                 'pemb_bk' => $pemb_bk,
                 'ak_bk' => $ak_bk,
                 'used_bk' => $used_bk,
+                'sa_bj' => $sa_bj,
+                'ak_bj' => $ak_bj,
             ];
 
             $data['lrAccounts'] = $lrAccounts;
+            $data['lrMap'] = $lrAccounts->keyBy('kode_akun');
 
             if (isset($_POST['exportButton'])) {
-                header("Content-type: application/vnd-ms-excel");
+                header('Content-type: application/vnd-ms-excel');
                 header("Content-Disposition: attachment; filename=Laba_Rugi_{$dari}_{$sampai}.xls");
             }
+
             return view('accounting.laporan.lk.labarugi_cetak', $data);
         }
 
@@ -1037,7 +1048,7 @@ class LaporanaccountingController extends Controller
             ->join('coa', 'accounting_jurnalumum.kode_akun', '=', 'coa.kode_akun')
             ->whereBetween('accounting_jurnalumum.tanggal', [$request->dari, $request->sampai]);
 
-        if (!empty($request->kode_akun)) {
+        if (! empty($request->kode_akun)) {
             $query->where('accounting_jurnalumum.kode_akun', $request->kode_akun);
         }
 
@@ -1050,7 +1061,7 @@ class LaporanaccountingController extends Controller
         $data['sampai'] = $request->sampai;
 
         if (isset($_POST['exportButton'])) {
-            header("Content-type: application/vnd-ms-excel");
+            header('Content-type: application/vnd-ms-excel');
             header("Content-Disposition: attachment; filename=Jurnal_Umum_{$request->dari}_{$request->sampai}.xls");
         }
 
