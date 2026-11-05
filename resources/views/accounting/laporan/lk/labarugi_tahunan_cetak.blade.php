@@ -359,6 +359,26 @@
         $mSaBJ = $hppBahanTahunan['bj']['sa'] ?? array_fill(1, 12, 0.0);
         $mAkBJ = $hppBahanTahunan['bj']['ak'] ?? array_fill(1, 12, 0.0);
 
+        // Helper: Total persediaan AWAL = nilai bulan Januari
+        // Helper: Total persediaan AKHIR = nilai bulan terakhir yang ada datanya
+        $lastNonZero = function(array $arr) {
+            $last = 0.0;
+            for ($m = 1; $m <= 12; $m++) {
+                if (abs($arr[$m] ?? 0.0) > 0.001) {
+                    $last = $arr[$m];
+                }
+            }
+            return $last;
+        };
+
+        // Total kolom untuk persediaan (bukan sum, tapi saldo)
+        $yTotalSaBB = $mSaBB[1] ?? 0.0;           // Awal → ambil Januari
+        $yTotalAkBB = $lastNonZero($mAkBB);        // Akhir → bulan terakhir ada data
+        $yTotalSaBK = $mSaBK[1] ?? 0.0;
+        $yTotalAkBK = $lastNonZero($mAkBK);
+        $yTotalSaBJ = $mSaBJ[1] ?? 0.0;
+        $yTotalAkBJ = $lastNonZero($mAkBJ);
+
         // Total HPP & Laba Kotor
         $mTotalHPP = array_fill(1, 12, 0.0);
         $mLabaKotor = array_fill(1, 12, 0.0);
@@ -511,7 +531,7 @@
                     @for ($m = 1; $m <= 12; $m++)
                         <td class="text-right">{{ $fmt($mSaBB[$m]) }}</td>
                     @endfor
-                    <td class="text-right">{{ $fmt(array_sum($mSaBB)) }}</td>
+                    <td class="text-right">{{ $fmt($yTotalSaBB) }}</td>
                 </tr>
                 <tr>
                     <td class="col-keterangan">5-11101 &nbsp; {{ $nameOf('5-11101', 'Pembelian Bahan Baku') }}</td>
@@ -525,7 +545,7 @@
                     @for ($m = 1; $m <= 12; $m++)
                         <td class="text-right">{{ $mAkBB[$m] != 0 ? '(' . number_format($mAkBB[$m], 0, ',', '.') . ')' : '-' }}</td>
                     @endfor
-                    <td class="text-right">{{ array_sum($mAkBB) != 0 ? '(' . number_format(array_sum($mAkBB), 0, ',', '.') . ')' : '-' }}</td>
+                    <td class="text-right">{{ $yTotalAkBB != 0 ? '(' . number_format($yTotalAkBB, 0, ',', '.') . ')' : '-' }}</td>
                 </tr>
                 <tr class="row-subtotal">
                     <td class="pl-sub">Bahan Baku yang digunakan</td>
@@ -546,7 +566,7 @@
                     @for ($m = 1; $m <= 12; $m++)
                         <td class="text-right">{{ $fmt($mSaBK[$m]) }}</td>
                     @endfor
-                    <td class="text-right">{{ $fmt(array_sum($mSaBK)) }}</td>
+                    <td class="text-right">{{ $fmt($yTotalSaBK) }}</td>
                 </tr>
                 <tr>
                     <td class="col-keterangan">5-11102 &nbsp; {{ $nameOf('5-11102', 'Pembelian Bahan Kemasan') }}</td>
@@ -560,7 +580,7 @@
                     @for ($m = 1; $m <= 12; $m++)
                         <td class="text-right">{{ $mAkBK[$m] != 0 ? '(' . number_format($mAkBK[$m], 0, ',', '.') . ')' : '-' }}</td>
                     @endfor
-                    <td class="text-right">{{ array_sum($mAkBK) != 0 ? '(' . number_format(array_sum($mAkBK), 0, ',', '.') . ')' : '-' }}</td>
+                    <td class="text-right">{{ $yTotalAkBK != 0 ? '(' . number_format($yTotalAkBK, 0, ',', '.') . ')' : '-' }}</td>
                 </tr>
                 <tr class="row-subtotal">
                     <td class="pl-sub">Bahan Kemasan yang digunakan</td>
@@ -665,14 +685,14 @@
                     @for ($m = 1; $m <= 12; $m++)
                         <td class="text-right">{{ $fmt($mSaBJ[$m]) }}</td>
                     @endfor
-                    <td class="text-right">{{ $fmt(array_sum($mSaBJ)) }}</td>
+                    <td class="text-right">{{ $fmt($yTotalSaBJ) }}</td>
                 </tr>
                 <tr>
                     <td class="col-keterangan">5-13104 &nbsp; {{ $nameOf('5-13104', 'P/L Persediaan Barang Jadi') }}</td>
                     @for ($m = 1; $m <= 12; $m++)
                         <td class="text-right">{{ $mAkBJ[$m] != 0 ? '(' . number_format($mAkBJ[$m], 0, ',', '.') . ')' : '-' }}</td>
                     @endfor
-                    <td class="text-right">{{ array_sum($mAkBJ) != 0 ? '(' . number_format(array_sum($mAkBJ), 0, ',', '.') . ')' : '-' }}</td>
+                    <td class="text-right">{{ $yTotalAkBJ != 0 ? '(' . number_format($yTotalAkBJ, 0, ',', '.') . ')' : '-' }}</td>
                 </tr>
 
                 <!-- TOTAL HARGA POKOK PENJUALAN (HPP) -->
