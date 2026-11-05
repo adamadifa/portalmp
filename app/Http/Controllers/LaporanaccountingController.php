@@ -304,6 +304,21 @@ class LaporanaccountingController extends Controller
                     DB::raw('0 as saldo_awal_val')
                 );
 
+            // 14. Hutang PPh 23 Biaya (Kredit)
+            $hutangPph23BiayaYearSub = DB::table('biaya')
+                ->whereYear('biaya.tanggal', $tahun)
+                ->where('biaya.potongan_pph23', '>', 0)
+                ->select(
+                    DB::raw("'2-11203' as kode_akun"),
+                    DB::raw('MONTH(biaya.tanggal) as bulan'),
+                    'biaya.tanggal',
+                    'biaya.no_bukti',
+                    DB::raw("'BIAYA' as sumber"),
+                    DB::raw('0 as jml_debet'),
+                    'biaya.potongan_pph23 as jml_kredit',
+                    DB::raw('0 as saldo_awal_val')
+                );
+
             $unionYear = $saldoAwalYearSub
                 ->unionAll($biayaYearSub)
                 ->unionAll($pembelianYearSub)
@@ -318,7 +333,8 @@ class LaporanaccountingController extends Controller
                 ->unionAll($jurnalUmumYearSub)
                 ->unionAll($ppnMasukanYearSub)
                 ->unionAll($hutangPembelianYearSub)
-                ->unionAll($ppnMasukanBiayaYearSub);
+                ->unionAll($ppnMasukanBiayaYearSub)
+                ->unionAll($hutangPph23BiayaYearSub);
 
             // Group by kode_akun and bulan
             $monthlySums = DB::query()->fromSub($unionYear, 'uy')
@@ -843,6 +859,22 @@ class LaporanaccountingController extends Controller
                 DB::raw('2 as urutan')
             );
 
+        // 14. Hutang PPh 23 (2-11203) dari Potongan PPh 23 Biaya (Kredit)
+        $hutangPph23BiayaSub = DB::table('biaya')
+            ->whereBetween('biaya.tanggal', [sprintf('%04d-%02d-01', $tahun, $bulan), $sampai])
+            ->where('biaya.potongan_pph23', '>', 0)
+            ->select(
+                DB::raw("'2-11203' as kode_akun"),
+                'biaya.tanggal',
+                'biaya.no_bukti',
+                DB::raw("'BIAYA' as sumber"),
+                DB::raw("CONCAT('Potongan PPh 23 Biaya - ', COALESCE(biaya.keterangan, '')) as keterangan"),
+                DB::raw('0 as jml_debet'),
+                'biaya.potongan_pph23 as jml_kredit',
+                DB::raw('0 as saldo_awal_val'),
+                DB::raw('2 as urutan')
+            );
+
         // Satukan semua aliran data
         $unionQuery = $saldoAwalSub
             ->unionAll($biayaSub)
@@ -858,7 +890,8 @@ class LaporanaccountingController extends Controller
             ->unionAll($jurnalUmumSub)
             ->unionAll($ppnMasukanSub)
             ->unionAll($hutangPembelianSub)
-            ->unionAll($ppnMasukanBiayaSub);
+            ->unionAll($ppnMasukanBiayaSub)
+            ->unionAll($hutangPph23BiayaSub);
 
         // FORMAT 1: BUKU BESAR
         if ($format == '1') {

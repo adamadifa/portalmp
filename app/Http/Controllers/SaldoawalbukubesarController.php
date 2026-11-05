@@ -156,6 +156,15 @@ class SaldoawalbukubesarController extends Controller
             if ($mutasiPiutang != 0) {
                 $saldo_map['1-11201'] = ($saldo_map['1-11201'] ?? 0) + $mutasiPiutang;
             }
+
+            // Mutasi Hutang PPh 23 (ke akun Kewajiban 2-11203) dari Potongan PPh 23 Biaya
+            $pph23BiayaTotal = DB::table('biaya')
+                ->whereBetween('tanggal', [$start_date, $end_date])
+                ->where('potongan_pph23', '>', 0)
+                ->sum('potongan_pph23');
+            if ($pph23BiayaTotal > 0) {
+                $saldo_map['2-11203'] = ($saldo_map['2-11203'] ?? 0) + (float) $pph23BiayaTotal;
+            }
         }
 
         // Ambil struktur akun Neraca (1-Aktiva, 2-Kewajiban, 3-Ekuitas) untuk saldo awal
