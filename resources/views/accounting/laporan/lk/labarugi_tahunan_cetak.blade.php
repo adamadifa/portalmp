@@ -76,18 +76,22 @@
         /* =====================
            FREEZE COLUMN PERTAMA
            ===================== */
+        /* Freeze semua td pertama (termasuk subtotal, total, dll) */
+        .table-lr-tahunan tbody td:first-child,
+        .table-lr-tahunan tfoot td:first-child {
+            position: sticky;
+            left: 0;
+            z-index: 2;
+            background-color: #fff;
+            border-right: 2px solid #cbd5e1 !important;
+        }
+
         .col-keterangan {
             text-align: left;
             min-width: 320px;
             max-width: 420px;
             white-space: normal;
             word-break: break-word;
-            /* Sticky freeze */
-            position: sticky;
-            left: 0;
-            z-index: 2;
-            background-color: #fff;
-            border-right: 2px solid #cbd5e1 !important;
         }
 
         /* Freeze header kolom keterangan */
@@ -100,25 +104,25 @@
         }
 
         /* Pastikan background row tertentu tetap terlihat saat freeze */
-        .row-laba-kotor .col-keterangan {
+        .row-laba-kotor td:first-child {
             background-color: #ffff00 !important;
         }
-        .row-subtotal .col-keterangan {
+        .row-subtotal td:first-child {
             background-color: #fafafa;
         }
-        .row-total-prod .col-keterangan {
+        .row-total-prod td:first-child {
             background-color: #f8fafc;
         }
-        .row-hpp .col-keterangan {
+        .row-hpp td:first-child {
             background-color: #f8fafc;
         }
-        .row-grand-total .col-keterangan {
+        .row-grand-total td:first-child {
             background-color: #f1f5f9;
         }
-        .header-main .col-keterangan,
-        .header-sub .col-keterangan,
-        .header-underline .col-keterangan,
-        .account-group .col-keterangan {
+        .header-main td:first-child,
+        .header-sub td:first-child,
+        .header-underline td:first-child,
+        .account-group td:first-child {
             background-color: #fff;
         }
 
@@ -212,6 +216,8 @@
             }
 
             /* Non-aktifkan sticky saat print agar halaman tercetak normal */
+            .table-lr-tahunan tbody td:first-child,
+            .table-lr-tahunan tfoot td:first-child,
             .col-keterangan,
             .table-lr-tahunan thead th:first-child {
                 position: static !important;
@@ -220,7 +226,7 @@
 
             /* Paksa warna tercetak */
             .row-laba-kotor td,
-            .row-laba-kotor .col-keterangan {
+            .row-laba-kotor td:first-child {
                 background-color: #ffff00 !important;
                 -webkit-print-color-adjust: exact;
                 print-color-adjust: exact;
