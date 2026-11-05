@@ -62,7 +62,7 @@
         });
 
         $('.select2ModalBank').select2({
-            dropdownParent: $('#modalProsesPembayaran'),
+            dropdownParent: $('#modalDialog'),
             width: '100%'
         });
     });

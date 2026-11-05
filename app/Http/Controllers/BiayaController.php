@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Bank;
-use App\Models\Barangpembelian;
 use App\Models\Biaya;
 use App\Models\Cabang;
 use App\Models\Coa;
@@ -14,7 +13,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Schema;
+use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Shared\Date;
 
 class BiayaController extends Controller
 {
@@ -22,8 +24,8 @@ class BiayaController extends Controller
     {
         $data['supplier'] = Supplier::orderBy('nama_supplier')->get();
 
-        $biayaModel = new Biaya();
-        $data['biaya'] = $biayaModel->getBiaya("", $request)->paginate(15);
+        $biayaModel = new Biaya;
+        $data['biaya'] = $biayaModel->getBiaya('', $request)->paginate(15);
         $data['biaya']->appends(request()->all());
 
         return view('biaya.index', $data);
@@ -87,9 +89,9 @@ class BiayaController extends Controller
 
             $total_biaya = 0;
             for ($i = 0; $i < count($kode_akun_item); $i++) {
-                $jml = !empty($jumlah_item[$i]) ? toNumber($jumlah_item[$i]) : 1;
-                $hrg = !empty($harga_item[$i]) ? toNumber($harga_item[$i]) : 0;
-                $peny = !empty($penyesuaian_item[$i]) ? toNumber($penyesuaian_item[$i]) : 0;
+                $jml = ! empty($jumlah_item[$i]) ? toNumber($jumlah_item[$i]) : 1;
+                $hrg = ! empty($harga_item[$i]) ? toNumber($harga_item[$i]) : 0;
+                $peny = ! empty($penyesuaian_item[$i]) ? toNumber($penyesuaian_item[$i]) : 0;
 
                 $subtotal = ($jml * $hrg) + $peny;
                 $total_biaya += $subtotal;
@@ -107,10 +109,12 @@ class BiayaController extends Controller
             }
 
             DB::commit();
+
             return Redirect::route('biaya.index')->with(['success' => 'Transaksi Biaya Berhasil Disimpan.']);
         } catch (\Exception $e) {
             DB::rollBack();
-            return Redirect::back()->withInput()->with(['error' => 'Gagal menyimpan transaksi biaya: ' . $e->getMessage()]);
+
+            return Redirect::back()->withInput()->with(['error' => 'Gagal menyimpan transaksi biaya: '.$e->getMessage()]);
         }
     }
 
@@ -122,8 +126,8 @@ class BiayaController extends Controller
             $no_bukti_decrypted = $no_bukti;
         }
 
-        $data['biaya'] = (new Biaya())->getBiaya($no_bukti_decrypted)->first();
-        if (!$data['biaya']) {
+        $data['biaya'] = (new Biaya)->getBiaya($no_bukti_decrypted)->first();
+        if (! $data['biaya']) {
             abort(404);
         }
 
@@ -137,6 +141,8 @@ class BiayaController extends Controller
             ->join('users', 'biaya_historibayar.id_user', '=', 'users.id')
             ->select('biaya_historibayar.*', 'bank.nama_bank', 'users.name as nama_user')
             ->get();
+
+        $data['bank'] = Bank::orderBy('nama_bank')->get();
 
         return view('biaya.show', $data);
     }
@@ -204,9 +210,9 @@ class BiayaController extends Controller
             Detailbiaya::where('no_bukti', $no_bukti_decrypted)->delete();
 
             for ($i = 0; $i < count($kode_akun_item); $i++) {
-                $jml = !empty($jumlah_item[$i]) ? toNumber($jumlah_item[$i]) : 1;
-                $hrg = !empty($harga_item[$i]) ? toNumber($harga_item[$i]) : 0;
-                $peny = !empty($penyesuaian_item[$i]) ? toNumber($penyesuaian_item[$i]) : 0;
+                $jml = ! empty($jumlah_item[$i]) ? toNumber($jumlah_item[$i]) : 1;
+                $hrg = ! empty($harga_item[$i]) ? toNumber($harga_item[$i]) : 0;
+                $peny = ! empty($penyesuaian_item[$i]) ? toNumber($penyesuaian_item[$i]) : 0;
 
                 Detailbiaya::create([
                     'no_bukti' => $no_bukti_decrypted,
@@ -221,10 +227,12 @@ class BiayaController extends Controller
             }
 
             DB::commit();
+
             return Redirect::route('biaya.index')->with(['success' => 'Data Biaya Berhasil Diperbarui.']);
         } catch (\Exception $e) {
             DB::rollBack();
-            return Redirect::back()->withInput()->with(['error' => 'Gagal memperbarui data biaya: ' . $e->getMessage()]);
+
+            return Redirect::back()->withInput()->with(['error' => 'Gagal memperbarui data biaya: '.$e->getMessage()]);
         }
     }
 
@@ -239,9 +247,10 @@ class BiayaController extends Controller
         try {
             $biaya = Biaya::findOrFail($no_bukti_decrypted);
             $biaya->delete(); // Cascades detail and payment history
+
             return Redirect::back()->with(['success' => 'Data Biaya Berhasil Dihapus.']);
         } catch (\Exception $e) {
-            return Redirect::back()->with(['error' => 'Gagal menghapus biaya: ' . $e->getMessage()]);
+            return Redirect::back()->with(['error' => 'Gagal menghapus biaya: '.$e->getMessage()]);
         }
     }
 
@@ -253,12 +262,13 @@ class BiayaController extends Controller
             $no_bukti_decrypted = $no_bukti;
         }
 
-        $data['biaya'] = (new Biaya())->getBiaya($no_bukti_decrypted)->first();
-        if (!$data['biaya']) {
+        $data['biaya'] = (new Biaya)->getBiaya($no_bukti_decrypted)->first();
+        if (! $data['biaya']) {
             abort(404);
         }
 
         $data['bank'] = Bank::orderBy('nama_bank')->get();
+
         return view('biaya.prosespembayaran', $data);
     }
 
@@ -276,8 +286,8 @@ class BiayaController extends Controller
             'kode_bank' => 'required',
         ]);
 
-        $biaya = (new Biaya())->getBiaya($no_bukti_decrypted)->first();
-        if (!$biaya) {
+        $biaya = (new Biaya)->getBiaya($no_bukti_decrypted)->first();
+        if (! $biaya) {
             return Redirect::back()->with(['error' => 'Data Biaya Tidak Ditemukan.']);
         }
 
@@ -287,7 +297,7 @@ class BiayaController extends Controller
         }
 
         if ($jumlahBayar > $biaya->sisa_bayar) {
-            return Redirect::back()->with(['error' => 'Jumlah Pembayaran Melebihi Sisa Tagihan Biaya (Sisa: ' . formatAngkaDesimal($biaya->sisa_bayar) . ').']);
+            return Redirect::back()->with(['error' => 'Jumlah Pembayaran Melebihi Sisa Tagihan Biaya (Sisa: '.formatAngkaDesimal($biaya->sisa_bayar).').']);
         }
 
         try {
@@ -297,13 +307,13 @@ class BiayaController extends Controller
                 'jumlah' => $jumlahBayar,
                 'kode_bank' => $request->kode_bank,
                 'kode_cabang' => $request->kode_cabang ?? null,
-                'keterangan' => $request->keterangan ?? 'Pembayaran Biaya ' . $no_bukti_decrypted,
+                'keterangan' => $request->keterangan ?? 'Pembayaran Biaya '.$no_bukti_decrypted,
                 'id_user' => auth()->user()->id ?? 1,
             ]);
 
             return Redirect::back()->with(['success' => 'Pembayaran Biaya Berhasil Disimpan.']);
         } catch (\Exception $e) {
-            return Redirect::back()->with(['error' => 'Gagal memproses pembayaran: ' . $e->getMessage()]);
+            return Redirect::back()->with(['error' => 'Gagal memproses pembayaran: '.$e->getMessage()]);
         }
     }
 
@@ -315,8 +325,8 @@ class BiayaController extends Controller
             $no_bukti_decrypted = $no_bukti;
         }
 
-        $data['biaya'] = (new Biaya())->getBiaya($no_bukti_decrypted)->first();
-        if (!$data['biaya']) {
+        $data['biaya'] = (new Biaya)->getBiaya($no_bukti_decrypted)->first();
+        if (! $data['biaya']) {
             abort(404);
         }
 
@@ -341,9 +351,10 @@ class BiayaController extends Controller
         try {
             $bayar = Historibayarbiaya::findOrFail($id_decrypted);
             $bayar->delete();
+
             return Redirect::back()->with(['success' => 'Histori Pembayaran Berhasil Dibatalkan / Dihapus.']);
         } catch (\Exception $e) {
-            return Redirect::back()->with(['error' => 'Gagal membatalkan pembayaran: ' . $e->getMessage()]);
+            return Redirect::back()->with(['error' => 'Gagal membatalkan pembayaran: '.$e->getMessage()]);
         }
     }
 
@@ -360,9 +371,9 @@ class BiayaController extends Controller
             $spreadsheet = IOFactory::load($file->getRealPath());
             $sheet = null;
             $inputSheet = $request->sheet_name;
-            if (!empty($inputSheet)) {
+            if (! empty($inputSheet)) {
                 if (is_numeric($inputSheet)) {
-                    $sheetIndex = (int)$inputSheet - 1;
+                    $sheetIndex = (int) $inputSheet - 1;
                     if ($sheetIndex >= 0 && $sheetIndex < $spreadsheet->getSheetCount()) {
                         $sheet = $spreadsheet->getSheet($sheetIndex);
                     }
@@ -370,16 +381,16 @@ class BiayaController extends Controller
                     $sheet = $spreadsheet->getSheetByName($inputSheet);
                 }
             }
-            if (!$sheet) {
+            if (! $sheet) {
                 $sheet = $spreadsheet->getActiveSheet();
             }
 
             $highestRow = $sheet->getHighestRow();
             $highestColumn = $sheet->getHighestColumn();
-            $highestColumnIndex = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::columnIndexFromString($highestColumn);
+            $highestColumnIndex = Coordinate::columnIndexFromString($highestColumn);
 
             $sanitize = function ($str) {
-                return strtolower(preg_replace('/[^a-zA-Z0-9]/', '', (string)$str));
+                return strtolower(preg_replace('/[^a-zA-Z0-9]/', '', (string) $str));
             };
 
             // Search for header row
@@ -427,7 +438,7 @@ class BiayaController extends Controller
             $colTotal = $colMap['jumlah'] ?? $colMap['total'] ?? $colMap['subtotal'] ?? $colMap['grandtotal'] ?? null;
             $colPeny = $colMap['peny'] ?? $colMap['penyesuaian'] ?? null;
 
-            if (!$colNoBukti) {
+            if (! $colNoBukti) {
                 // Fallback default column indices based on sheet layout:
                 // 1:NO | 2:KATEGORI JURNAL | 3:KODE AKUN | 4:TANGGAL | 5:BULAN | 6:TAHUN | 7:BPB | 8:JENIS | 9:NAMA AKUN
                 // 10:TGL FP | 11:NO FAKTUR PAJAK | 12:NAMA CUSTOMER | 13:KODE PELANGGAN | 14:JENIS PRODUCT (FP) | 15:JENIS PRODUCT | 16:KODE PRODUCT | 17:QTY | 18:HARGA | 19:DPP | 20:DPP LAIN | 21:PPN | 22:JUMLAH
@@ -468,7 +479,7 @@ class BiayaController extends Controller
                 // Periksa apakah seluruh baris ini benar-benar kosong
                 $isEmptyRow = true;
                 for ($checkCol = 1; $checkCol <= min(15, $highestColumnIndex); $checkCol++) {
-                    $valCheck = trim((string)($sheet->getCell([$checkCol, $r])->getCalculatedValue() ?? ''));
+                    $valCheck = trim((string) ($sheet->getCell([$checkCol, $r])->getCalculatedValue() ?? ''));
                     if ($valCheck !== '') {
                         $isEmptyRow = false;
                         break;
@@ -480,17 +491,19 @@ class BiayaController extends Controller
                     if ($consecutiveEmpty >= 20) {
                         break;
                     }
+
                     continue;
                 }
                 $consecutiveEmpty = 0;
 
-                $noBuktiVal = trim((string)($sheet->getCell([$colNoBukti, $r])->getCalculatedValue() ?? ''));
+                $noBuktiVal = trim((string) ($sheet->getCell([$colNoBukti, $r])->getCalculatedValue() ?? ''));
                 if (empty($noBuktiVal)) {
                     $skippedRows[] = [
                         'baris' => $r,
                         'no_bukti' => '-',
-                        'alasan' => 'Kolom No. Bukti kosong pada baris ini.'
+                        'alasan' => 'Kolom No. Bukti kosong pada baris ini.',
                     ];
+
                     continue;
                 }
 
@@ -498,8 +511,9 @@ class BiayaController extends Controller
                     $skippedRows[] = [
                         'baris' => $r,
                         'no_bukti' => $noBuktiVal,
-                        'alasan' => 'Terdeteksi sebagai baris Total/Footer (' . $noBuktiVal . ').'
+                        'alasan' => 'Terdeteksi sebagai baris Total/Footer ('.$noBuktiVal.').',
                     ];
+
                     continue;
                 }
 
@@ -507,13 +521,14 @@ class BiayaController extends Controller
                 $tanggalCell = $colTanggal ? $sheet->getCell([$colTanggal, $r]) : null;
                 $tanggalFormatted = date('Y-m-d');
                 if ($tanggalCell) {
-                    if (\PhpOffice\PhpSpreadsheet\Shared\Date::isDateTime($tanggalCell)) {
+                    if (Date::isDateTime($tanggalCell)) {
                         try {
-                            $tanggalFormatted = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($tanggalCell->getValue())->format('Y-m-d');
-                        } catch (\Exception $e) {}
+                            $tanggalFormatted = Date::excelToDateTimeObject($tanggalCell->getValue())->format('Y-m-d');
+                        } catch (\Exception $e) {
+                        }
                     } else {
-                        $rawTgl = trim((string)($tanggalCell->getCalculatedValue() ?? $tanggalCell->getValue() ?? ''));
-                        if (!empty($rawTgl)) {
+                        $rawTgl = trim((string) ($tanggalCell->getCalculatedValue() ?? $tanggalCell->getValue() ?? ''));
+                        if (! empty($rawTgl)) {
                             if (preg_match('/^(\d{1,2})[-\/ ]([a-zA-Z]{3,})$/', $rawTgl, $m)) {
                                 $day = str_pad($m[1], 2, '0', STR_PAD_LEFT);
                                 $monthStr = $m[2];
@@ -534,24 +549,25 @@ class BiayaController extends Controller
                 }
 
                 // 2. Kode Akun (Auto create di tabel COA jika belum terdaftar)
-                $kodeAkunVal = $colAkun ? trim((string)($sheet->getCell([$colAkun, $r])->getCalculatedValue() ?? '')) : '';
+                $kodeAkunVal = $colAkun ? trim((string) ($sheet->getCell([$colAkun, $r])->getCalculatedValue() ?? '')) : '';
                 if (empty($kodeAkunVal)) {
                     $skippedRows[] = [
                         'baris' => $r,
                         'no_bukti' => $noBuktiVal,
-                        'alasan' => 'Kolom Kode Akun kosong.'
+                        'alasan' => 'Kolom Kode Akun kosong.',
                     ];
+
                     continue;
                 }
 
                 $cleanKodeAkun = trim($kodeAkunVal);
-                if (!isset($coaMap[$cleanKodeAkun])) {
-                    $namaAkunRaw = $colNamaAkun ? trim((string)($sheet->getCell([$colNamaAkun, $r])->getCalculatedValue() ?? '')) : '';
+                if (! isset($coaMap[$cleanKodeAkun])) {
+                    $namaAkunRaw = $colNamaAkun ? trim((string) ($sheet->getCell([$colNamaAkun, $r])->getCalculatedValue() ?? '')) : '';
                     if (empty($namaAkunRaw)) {
-                        $namaAkunRaw = $colProduk ? trim((string)($sheet->getCell([$colProduk, $r])->getCalculatedValue() ?? '')) : '';
+                        $namaAkunRaw = $colProduk ? trim((string) ($sheet->getCell([$colProduk, $r])->getCalculatedValue() ?? '')) : '';
                     }
                     if (empty($namaAkunRaw)) {
-                        $namaAkunRaw = 'BIAYA ' . $cleanKodeAkun;
+                        $namaAkunRaw = 'BIAYA '.$cleanKodeAkun;
                     }
 
                     Coa::create([
@@ -568,18 +584,18 @@ class BiayaController extends Controller
                 $kodeAkunVal = $cleanKodeAkun;
 
                 // 3. Supplier handling
-                $namaSupplierRaw = $colNamaSupplier ? trim((string)($sheet->getCell([$colNamaSupplier, $r])->getCalculatedValue() ?? '')) : '';
-                $kodeSupplierRaw = $colKodeSupplier ? trim((string)($sheet->getCell([$colKodeSupplier, $r])->getCalculatedValue() ?? '')) : '';
+                $namaSupplierRaw = $colNamaSupplier ? trim((string) ($sheet->getCell([$colNamaSupplier, $r])->getCalculatedValue() ?? '')) : '';
+                $kodeSupplierRaw = $colKodeSupplier ? trim((string) ($sheet->getCell([$colKodeSupplier, $r])->getCalculatedValue() ?? '')) : '';
 
                 // Jika kolom kode supplier tertukar atau berisi teks panjang (nama PT), tukar kembali
-                if (strlen($kodeSupplierRaw) > 6 && strlen($namaSupplierRaw) <= 6 && !empty($namaSupplierRaw)) {
+                if (strlen($kodeSupplierRaw) > 6 && strlen($namaSupplierRaw) <= 6 && ! empty($namaSupplierRaw)) {
                     $tmpSwap = $kodeSupplierRaw;
                     $kodeSupplierRaw = $namaSupplierRaw;
                     $namaSupplierRaw = $tmpSwap;
                 }
 
                 $cleanKodeSup = trim($kodeSupplierRaw);
-                $isCodeSupValid = !empty($cleanKodeSup) && $cleanKodeSup !== '0' && strtolower($cleanKodeSup) !== 'null' && $cleanKodeSup !== '-' && strlen($cleanKodeSup) <= 6;
+                $isCodeSupValid = ! empty($cleanKodeSup) && $cleanKodeSup !== '0' && strtolower($cleanKodeSup) !== 'null' && $cleanKodeSup !== '-' && strlen($cleanKodeSup) <= 6;
 
                 $cleanNamaSup = trim($namaSupplierRaw);
                 // Jika cleanNamaSup kosong tetapi cleanKodeSup panjang (misal nama supplier terbaca di kolom kode)
@@ -588,7 +604,7 @@ class BiayaController extends Controller
                     $isCodeSupValid = false;
                 }
 
-                $isNameSupValid = !empty($cleanNamaSup) && $cleanNamaSup !== '0' && strtolower($cleanNamaSup) !== 'null' && $cleanNamaSup !== '-';
+                $isNameSupValid = ! empty($cleanNamaSup) && $cleanNamaSup !== '0' && strtolower($cleanNamaSup) !== 'null' && $cleanNamaSup !== '-';
 
                 $finalKodeSupplier = null;
 
@@ -604,7 +620,7 @@ class BiayaController extends Controller
                             $supCodeToUse = strtoupper(substr($cleanKodeSup, 0, 6));
                             Supplier::create([
                                 'kode_supplier' => $supCodeToUse,
-                                'nama_supplier' => strtoupper($isNameSupValid ? $cleanNamaSup : $cleanKodeSup)
+                                'nama_supplier' => strtoupper($isNameSupValid ? $cleanNamaSup : $cleanKodeSup),
                             ]);
                             if ($isNameSupValid) {
                                 $supplierNameMap[$namaKey] = $supCodeToUse;
@@ -622,7 +638,7 @@ class BiayaController extends Controller
 
                         Supplier::create([
                             'kode_supplier' => $newKodeSupplier,
-                            'nama_supplier' => mb_substr(strtoupper($cleanNamaSup), 0, 255)
+                            'nama_supplier' => mb_substr(strtoupper($cleanNamaSup), 0, 255),
                         ]);
                         $supplierNameMap[$namaKey] = $newKodeSupplier;
                         $finalKodeSupplier = $newKodeSupplier;
@@ -630,12 +646,12 @@ class BiayaController extends Controller
                 }
 
                 // 4. Deskripsi / Keterangan Biaya
-                $namaProdukRaw = $colProduk ? trim((string)($sheet->getCell([$colProduk, $r])->getCalculatedValue() ?? '')) : '';
+                $namaProdukRaw = $colProduk ? trim((string) ($sheet->getCell([$colProduk, $r])->getCalculatedValue() ?? '')) : '';
                 if (empty($namaProdukRaw) && $colJenisProduk) {
-                    $namaProdukRaw = trim((string)($sheet->getCell([$colJenisProduk, $r])->getCalculatedValue() ?? ''));
+                    $namaProdukRaw = trim((string) ($sheet->getCell([$colJenisProduk, $r])->getCalculatedValue() ?? ''));
                 }
                 if (empty($namaProdukRaw) && $colNamaAkun) {
-                    $namaProdukRaw = trim((string)($sheet->getCell([$colNamaAkun, $r])->getCalculatedValue() ?? ''));
+                    $namaProdukRaw = trim((string) ($sheet->getCell([$colNamaAkun, $r])->getCalculatedValue() ?? ''));
                 }
                 if (empty($namaProdukRaw)) {
                     $namaProdukRaw = 'BIAYA OPERASIONAL';
@@ -644,12 +660,14 @@ class BiayaController extends Controller
                 $keteranganItem = $namaProdukRaw;
 
                 // 5. Quantity & Price
-                $qty = $colQty ? (float) toNumber(trim((string)($sheet->getCell([$colQty, $r])->getCalculatedValue() ?? 1))) : 1;
-                if ($qty <= 0) $qty = 1;
+                $qty = $colQty ? (float) toNumber(trim((string) ($sheet->getCell([$colQty, $r])->getCalculatedValue() ?? 1))) : 1;
+                if ($qty <= 0) {
+                    $qty = 1;
+                }
 
-                $harga = $colHarga ? (float) toNumber(trim((string)($sheet->getCell([$colHarga, $r])->getCalculatedValue() ?? 0))) : 0;
-                $dpp = $colDpp ? (float) toNumber(trim((string)($sheet->getCell([$colDpp, $r])->getCalculatedValue() ?? 0))) : 0;
-                $totalVal = $colTotal ? (float) toNumber(trim((string)($sheet->getCell([$colTotal, $r])->getCalculatedValue() ?? 0))) : 0;
+                $harga = $colHarga ? (float) toNumber(trim((string) ($sheet->getCell([$colHarga, $r])->getCalculatedValue() ?? 0))) : 0;
+                $dpp = $colDpp ? (float) toNumber(trim((string) ($sheet->getCell([$colDpp, $r])->getCalculatedValue() ?? 0))) : 0;
+                $totalVal = $colTotal ? (float) toNumber(trim((string) ($sheet->getCell([$colTotal, $r])->getCalculatedValue() ?? 0))) : 0;
 
                 if ($harga <= 0) {
                     if ($dpp > 0) {
@@ -659,21 +677,21 @@ class BiayaController extends Controller
                     }
                 }
 
-                $peny = $colPeny ? (float) toNumber(trim((string)($sheet->getCell([$colPeny, $r])->getCalculatedValue() ?? 0))) : 0;
+                $peny = $colPeny ? (float) toNumber(trim((string) ($sheet->getCell([$colPeny, $r])->getCalculatedValue() ?? 0))) : 0;
 
                 // 6. Deteksi PPN / Non PPN dari kolom JENIS
-                $jenisPpnRaw = $colJenisPpn ? strtoupper(trim((string)($sheet->getCell([$colJenisPpn, $r])->getCalculatedValue() ?? ''))) : '';
-                $isPpn = (str_contains($jenisPpnRaw, 'PPN') && !str_contains($jenisPpnRaw, 'NON') && !str_contains($jenisPpnRaw, 'TIDAK')) ? '1' : '0';
+                $jenisPpnRaw = $colJenisPpn ? strtoupper(trim((string) ($sheet->getCell([$colJenisPpn, $r])->getCalculatedValue() ?? ''))) : '';
+                $isPpn = (str_contains($jenisPpnRaw, 'PPN') && ! str_contains($jenisPpnRaw, 'NON') && ! str_contains($jenisPpnRaw, 'TIDAK')) ? '1' : '0';
 
                 // Parse Bulan & Tahun Pajak (dari kolom bulan dan tahun sebelum bpb)
                 $bulanPajakVal = null;
                 if ($colBulanPajak) {
-                    $rawBulan = trim((string)($sheet->getCell([$colBulanPajak, $r])->getCalculatedValue() ?? ''));
-                    if (!empty($rawBulan)) {
+                    $rawBulan = trim((string) ($sheet->getCell([$colBulanPajak, $r])->getCalculatedValue() ?? ''));
+                    if (! empty($rawBulan)) {
                         if (is_numeric($rawBulan)) {
-                            $bulanPajakVal = str_pad((int)$rawBulan, 2, '0', STR_PAD_LEFT);
+                            $bulanPajakVal = str_pad((int) $rawBulan, 2, '0', STR_PAD_LEFT);
                         } else {
-                            $timeMonth = strtotime("1 $rawBulan " . date('Y'));
+                            $timeMonth = strtotime("1 $rawBulan ".date('Y'));
                             if ($timeMonth !== false) {
                                 $bulanPajakVal = date('m', $timeMonth);
                             } else {
@@ -682,22 +700,22 @@ class BiayaController extends Controller
                         }
                     }
                 }
-                if (empty($bulanPajakVal) && !empty($tanggalFormatted)) {
+                if (empty($bulanPajakVal) && ! empty($tanggalFormatted)) {
                     $bulanPajakVal = date('m', strtotime($tanggalFormatted));
                 }
 
                 $tahunPajakVal = null;
                 if ($colTahunPajak) {
-                    $rawTahun = trim((string)($sheet->getCell([$colTahunPajak, $r])->getCalculatedValue() ?? ''));
-                    if (!empty($rawTahun)) {
+                    $rawTahun = trim((string) ($sheet->getCell([$colTahunPajak, $r])->getCalculatedValue() ?? ''));
+                    if (! empty($rawTahun)) {
                         if (is_numeric($rawTahun)) {
-                            $tahunPajakVal = (strlen($rawTahun) == 2) ? '20' . $rawTahun : substr($rawTahun, 0, 4);
+                            $tahunPajakVal = (strlen($rawTahun) == 2) ? '20'.$rawTahun : substr($rawTahun, 0, 4);
                         } else {
                             $tahunPajakVal = mb_substr($rawTahun, 0, 4);
                         }
                     }
                 }
-                if (empty($tahunPajakVal) && !empty($tanggalFormatted)) {
+                if (empty($tahunPajakVal) && ! empty($tanggalFormatted)) {
                     $tahunPajakVal = date('Y', strtotime($tanggalFormatted));
                 }
 
@@ -718,13 +736,14 @@ class BiayaController extends Controller
             }
 
             if (empty($rows)) {
-                $errPesan = "Tidak ada data baris yang valid ditemukan pada file Excel.";
-                if (!empty($skippedRows)) {
-                    $errPesan .= " Ada " . count($skippedRows) . " baris yang dilewati.";
+                $errPesan = 'Tidak ada data baris yang valid ditemukan pada file Excel.';
+                if (! empty($skippedRows)) {
+                    $errPesan .= ' Ada '.count($skippedRows).' baris yang dilewati.';
                 }
+
                 return Redirect::back()->with([
                     'error' => $errPesan,
-                    'import_skipped' => $skippedRows
+                    'import_skipped' => $skippedRows,
                 ]);
             }
 
@@ -753,7 +772,7 @@ class BiayaController extends Controller
 
                 // Check or Create Biaya Header
                 $biaya = Biaya::where('no_bukti', $noBukti)->first();
-                if (!$biaya) {
+                if (! $biaya) {
                     $biaya = Biaya::create([
                         'no_bukti' => $noBukti,
                         'tanggal' => $firstItem['tanggal'],
@@ -763,24 +782,24 @@ class BiayaController extends Controller
                         'kode_akun' => $firstItem['kode_akun'],
                         'ppn' => $hasPpn,
                         'jenis_transaksi' => $jenis_transaksi,
-                        'id_user' => auth()->user()->id ?? 1
+                        'id_user' => auth()->user()->id ?? 1,
                     ]);
                 } else {
                     // Update header info if supplier is now available or ppn status updated
                     $updateData = [];
-                    if (empty($biaya->kode_supplier) && !empty($firstItem['kode_supplier'])) {
+                    if (empty($biaya->kode_supplier) && ! empty($firstItem['kode_supplier'])) {
                         $updateData['kode_supplier'] = $firstItem['kode_supplier'];
                     }
                     if ($biaya->ppn !== $hasPpn) {
                         $updateData['ppn'] = $hasPpn;
                     }
-                    if (!empty($firstItem['bulan_pajak'])) {
+                    if (! empty($firstItem['bulan_pajak'])) {
                         $updateData['bulan_pajak'] = $firstItem['bulan_pajak'];
                     }
-                    if (!empty($firstItem['tahun_pajak'])) {
+                    if (! empty($firstItem['tahun_pajak'])) {
                         $updateData['tahun_pajak'] = $firstItem['tahun_pajak'];
                     }
-                    if (!empty($updateData)) {
+                    if (! empty($updateData)) {
                         $biaya->update($updateData);
                     }
                     // Remove previous details to overwrite cleanly
@@ -804,18 +823,19 @@ class BiayaController extends Controller
 
             DB::commit();
 
-            $pesanSuccess = "$insertedCount data rincian biaya dari " . count($grouped) . " transaksi berhasil diimport.";
+            $pesanSuccess = "$insertedCount data rincian biaya dari ".count($grouped).' transaksi berhasil diimport.';
             if (count($skippedRows) > 0) {
-                $pesanSuccess .= " (" . count($skippedRows) . " baris Excel dilewati/gagal).";
+                $pesanSuccess .= ' ('.count($skippedRows).' baris Excel dilewati/gagal).';
             }
 
             return Redirect::back()->with([
                 'success' => $pesanSuccess,
-                'import_skipped' => $skippedRows
+                'import_skipped' => $skippedRows,
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
-            return Redirect::back()->with(['error' => 'Gagal melakukan import biaya: ' . $e->getMessage()]);
+
+            return Redirect::back()->with(['error' => 'Gagal melakukan import biaya: '.$e->getMessage()]);
         }
     }
 
@@ -831,9 +851,9 @@ class BiayaController extends Controller
             $spreadsheet = IOFactory::load($file->getRealPath());
             $sheet = null;
             $inputSheet = $request->sheet_name;
-            if (!empty($inputSheet)) {
+            if (! empty($inputSheet)) {
                 if (is_numeric($inputSheet)) {
-                    $sheetIndex = (int)$inputSheet - 1;
+                    $sheetIndex = (int) $inputSheet - 1;
                     if ($sheetIndex >= 0 && $sheetIndex < $spreadsheet->getSheetCount()) {
                         $sheet = $spreadsheet->getSheet($sheetIndex);
                     }
@@ -841,13 +861,13 @@ class BiayaController extends Controller
                     $sheet = $spreadsheet->getSheetByName($inputSheet);
                 }
             }
-            if (!$sheet) {
+            if (! $sheet) {
                 $sheet = $spreadsheet->getActiveSheet();
             }
 
             $highestRow = $sheet->getHighestRow();
             $highestColumn = $sheet->getHighestColumn();
-            $highestColumnIndex = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::columnIndexFromString($highestColumn);
+            $highestColumnIndex = Coordinate::columnIndexFromString($highestColumn);
 
             // Find header rows
             $headerRowIndex = 1;
@@ -873,8 +893,11 @@ class BiayaController extends Controller
                 $val2 = strtolower(trim($sheet->getCell([$c, $headerRowIndex + 1])->getValue() ?? ''));
                 $val3 = strtolower(trim($sheet->getCell([$c, $headerRowIndex + 2])->getValue() ?? ''));
 
-                if (in_array($val1, ['no bukti', 'no_bukti', 'nomor bukti'])) $colMap['no_bukti'] = $c;
-                elseif (in_array($val1, ['tgl', 'tanggal', 'tgl bayar'])) $colMap['tanggal'] = $c;
+                if (in_array($val1, ['no bukti', 'no_bukti', 'nomor bukti'])) {
+                    $colMap['no_bukti'] = $c;
+                } elseif (in_array($val1, ['tgl', 'tanggal', 'tgl bayar'])) {
+                    $colMap['tanggal'] = $c;
+                }
 
                 if (isset($bankCodeMap[$val1])) {
                     $bankCols[$c] = $bankCodeMap[$val1];
@@ -887,13 +910,17 @@ class BiayaController extends Controller
                 }
             }
 
-            if (!isset($colMap['no_bukti'])) $colMap['no_bukti'] = 3;
-            if (!isset($colMap['tanggal'])) $colMap['tanggal'] = 2;
+            if (! isset($colMap['no_bukti'])) {
+                $colMap['no_bukti'] = 3;
+            }
+            if (! isset($colMap['tanggal'])) {
+                $colMap['tanggal'] = 2;
+            }
 
             $dataStartRow = $headerRowIndex + $maxHeaderRowOffset;
             $checkSampleVal = trim($sheet->getCell([$colMap['no_bukti'], $dataStartRow])->getValue() ?? '');
             $checkNoCol = trim($sheet->getCell([1, $dataStartRow])->getValue() ?? '');
-            if (empty($checkSampleVal) || !is_numeric($checkNoCol) || strtolower($checkSampleVal) === 'no bukti') {
+            if (empty($checkSampleVal) || ! is_numeric($checkNoCol) || strtolower($checkSampleVal) === 'no bukti') {
                 $dataStartRow++;
             }
 
@@ -909,14 +936,14 @@ class BiayaController extends Controller
                 }
 
                 $tglVal = $sheet->getCell([$colMap['tanggal'], $row])->getValue();
-                if (\PhpOffice\PhpSpreadsheet\Shared\Date::isDateTime($sheet->getCell([$colMap['tanggal'], $row]))) {
-                    $tglFormatted = date('Y-m-d', \PhpOffice\PhpSpreadsheet\Shared\Date::excelToTimestamp($tglVal));
+                if (Date::isDateTime($sheet->getCell([$colMap['tanggal'], $row]))) {
+                    $tglFormatted = date('Y-m-d', Date::excelToTimestamp($tglVal));
                 } else {
-                    $tglFormatted = !empty($tglVal) ? date('Y-m-d', strtotime(str_replace('/', '-', $tglVal))) : date('Y-m-d');
+                    $tglFormatted = ! empty($tglVal) ? date('Y-m-d', strtotime(str_replace('/', '-', $tglVal))) : date('Y-m-d');
                 }
 
                 $biayaExists = DB::table('biaya')->where('no_bukti', $noBukti)->exists();
-                if (!$biayaExists) {
+                if (! $biayaExists) {
                     throw new \Exception("No Bukti '$noBukti' pada baris $row tidak ditemukan di data biaya.");
                 }
 
@@ -925,7 +952,7 @@ class BiayaController extends Controller
                     if ($amountVal !== null && $amountVal !== '') {
                         $amountClean = str_replace('.', '', $amountVal);
                         $amountClean = str_replace(',', '.', $amountClean);
-                        $amountClean = (float)$amountClean;
+                        $amountClean = (float) $amountClean;
 
                         if ($amountClean > 0) {
                             $kodeCabang = $bankBranches[$bankCode] ?? 'PST';
@@ -947,17 +974,19 @@ class BiayaController extends Controller
             }
 
             DB::commit();
+
             return Redirect::back()->with(['success' => "$insertedCount data pembayaran biaya berhasil diimport."]);
         } catch (\Exception $e) {
             DB::rollBack();
-            return Redirect::back()->with(['error' => 'Gagal melakukan import pembayaran biaya: ' . $e->getMessage()]);
+
+            return Redirect::back()->with(['error' => 'Gagal melakukan import pembayaran biaya: '.$e->getMessage()]);
         }
     }
 
     public function getSheets(Request $request)
     {
         $request->validate([
-            'file_excel' => 'required|mimes:xlsx,xls,csv'
+            'file_excel' => 'required|mimes:xlsx,xls,csv',
         ]);
 
         try {
@@ -967,23 +996,23 @@ class BiayaController extends Controller
 
             return response()->json([
                 'success' => true,
-                'sheets' => $sheetNames
+                'sheets' => $sheetNames,
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
             ]);
         }
     }
 
     public function resetData()
     {
-        abort_if(!auth()->user()->can('pembelian.create'), 403);
+        abort_if(! auth()->user()->can('pembelian.create'), 403);
 
         try {
             DB::statement('SET FOREIGN_KEY_CHECKS=0;');
-            
+
             $tables = [
                 'biaya_historibayar',
                 'biaya_detail',
@@ -991,7 +1020,7 @@ class BiayaController extends Controller
             ];
 
             foreach ($tables as $table) {
-                if (\Illuminate\Support\Facades\Schema::hasTable($table)) {
+                if (Schema::hasTable($table)) {
                     DB::table($table)->truncate();
                 }
             }
@@ -1001,7 +1030,8 @@ class BiayaController extends Controller
             return Redirect::route('biaya.index')->with(['success' => 'Seluruh Data Biaya Operasional Berhasil Direset.']);
         } catch (\Exception $e) {
             DB::statement('SET FOREIGN_KEY_CHECKS=1;');
-            return Redirect::back()->with(['error' => 'Gagal mereset data biaya: ' . $e->getMessage()]);
+
+            return Redirect::back()->with(['error' => 'Gagal mereset data biaya: '.$e->getMessage()]);
         }
     }
 }

@@ -452,14 +452,13 @@
                                 <td class="py-1 px-4 text-center">
                                     <div class="flex items-center justify-center gap-1.5">
                                         <!-- Show Detail -->
-                                        <button 
-                                            type="button" 
-                                            class="btnShow w-7 h-7 rounded-lg flex items-center justify-center bg-sky-50 dark:bg-sky-500/10 hover:bg-sky-100 dark:hover:bg-sky-500/20 text-sky-600 dark:text-sky-400 border border-sky-200/60 dark:border-sky-500/20 transition cursor-pointer shadow-2xs" 
-                                            no_bukti="{{ Crypt::encrypt($d->no_bukti) }}" 
+                                        <a 
+                                            href="{{ route('biaya.show', Crypt::encrypt($d->no_bukti)) }}" 
+                                            class="w-7 h-7 rounded-lg flex items-center justify-center bg-sky-50 dark:bg-sky-500/10 hover:bg-sky-100 dark:hover:bg-sky-500/20 text-sky-600 dark:text-sky-400 border border-sky-200/60 dark:border-sky-500/20 transition cursor-pointer shadow-2xs" 
                                             title="Lihat Detail Biaya"
                                         >
                                             <i data-lucide="eye" class="w-3.5 h-3.5"></i>
-                                        </button>
+                                        </a>
 
                                         <!-- Edit -->
                                         <a 
@@ -470,17 +469,6 @@
                                             <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
                                         </a>
 
-                                        <!-- Input Pembayaran -->
-                                        @if($d->sisa_bayar > 0)
-                                            <button 
-                                                type="button" 
-                                                class="btnBayar w-7 h-7 rounded-lg flex items-center justify-center bg-teal-50 dark:bg-teal-500/10 hover:bg-teal-100 dark:hover:bg-teal-500/20 text-teal-600 dark:text-teal-400 border border-teal-200/60 dark:border-teal-500/20 transition cursor-pointer shadow-2xs" 
-                                                no_bukti="{{ Crypt::encrypt($d->no_bukti) }}" 
-                                                title="Input Pembayaran Tagihan"
-                                            >
-                                                <i data-lucide="wallet" class="w-3.5 h-3.5"></i>
-                                            </button>
-                                        @endif
 
                                         <!-- Histori Pembayaran -->
                                         @if($d->total_bayar > 0)
@@ -775,17 +763,7 @@
             });
         }
 
-        $(".btnShow").click(function(e) {
-            e.preventDefault();
-            var no_bukti = $(this).attr("no_bukti");
-            openModal("Detail Biaya Operasional", `/biaya/${no_bukti}`);
-        });
 
-        $(".btnBayar").click(function(e) {
-            e.preventDefault();
-            var no_bukti = $(this).attr("no_bukti");
-            openModal("Input Pembayaran Biaya", `/biaya/${no_bukti}/createprosespembayaran`);
-        });
 
         $(".btnHistoriBayar").click(function(e) {
             e.preventDefault();
