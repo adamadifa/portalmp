@@ -64,6 +64,11 @@
             background-color: #f1f5f9;
             text-align: center;
             white-space: nowrap;
+            /* Freeze header saat scroll vertikal */
+            position: sticky;
+            top: 0;
+            z-index: 4;
+            box-shadow: 0 2px 3px rgba(0,0,0,0.12);
         }
 
         .table-lr-tahunan td {
@@ -94,11 +99,12 @@
             word-break: break-word;
         }
 
-        /* Freeze header kolom keterangan */
+        /* Freeze header kolom keterangan — sticky dua arah (top + left) */
         .table-lr-tahunan thead th:first-child {
             position: sticky;
             left: 0;
-            z-index: 3;
+            top: 0;
+            z-index: 5;
             background-color: #f1f5f9;
             border-right: 2px solid #94a3b8 !important;
         }
@@ -219,6 +225,7 @@
             /* Non-aktifkan sticky saat print agar halaman tercetak normal */
             .table-lr-tahunan tbody td:first-child,
             .table-lr-tahunan tfoot td:first-child,
+            .table-lr-tahunan thead th,
             .col-keterangan,
             .table-lr-tahunan thead th:first-child {
                 position: static !important;
