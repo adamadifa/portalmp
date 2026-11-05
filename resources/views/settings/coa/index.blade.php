@@ -77,31 +77,31 @@
                 <table class="w-full text-left border-collapse">
                     <thead>
                         <tr class="text-xs font-semibold uppercase tracking-wider bg-[#294C9A] text-white">
-                            <th class="py-3 px-6" style="width: 22%;">Kode Akun</th>
-                            <th class="py-3 px-6">Nama Akun</th>
-                            <th class="py-3 px-6 text-center" style="width: 12%;">Level</th>
-                            <th class="py-3 px-6 text-center" style="width: 14%;">Aksi</th>
+                            <th class="py-2.5 px-4" style="width: 22%;">Kode Akun</th>
+                            <th class="py-2.5 px-4">Nama Akun</th>
+                            <th class="py-2.5 px-4 text-center" style="width: 12%;">Level</th>
+                            <th class="py-2.5 px-4 text-center" style="width: 14%;">Aksi</th>
                         </tr>
                     </thead>
                     <tbody class="text-sm divide-y divide-gray-100">
                         @forelse ($coa as $d)
                             @php
-                                $paddingLeft = 'ps-6';
+                                $paddingLeft = 'ps-4';
                                 if ($d->level == 2) {
-                                    $paddingLeft = 'ps-10';
+                                    $paddingLeft = 'ps-8';
                                 } elseif ($d->level == 3) {
-                                    $paddingLeft = 'ps-16';
+                                    $paddingLeft = 'ps-12';
                                 } elseif ($d->level == 4) {
-                                    $paddingLeft = 'ps-20';
+                                    $paddingLeft = 'ps-16';
                                 } elseif ($d->level >= 5) {
-                                    $paddingLeft = 'ps-24';
+                                    $paddingLeft = 'ps-20';
                                 }
                             @endphp
                             <tr class="odd:bg-white even:bg-gray-50 hover:bg-gray-100/50 transition-colors">
-                                <td class="py-2.5 px-6 font-mono text-xs font-bold text-[#294C9A]">
+                                <td class="py-1 px-4 font-mono text-xs font-bold text-[#294C9A]">
                                     {{ $d->kode_akun }}
                                 </td>
-                                <td class="py-2.5 px-6 {{ $paddingLeft }} font-medium text-gray-900">
+                                <td class="py-1 px-4 {{ $paddingLeft }} font-medium text-gray-900">
                                     @if($d->level == 1)
                                         <span class="font-bold text-gray-900 uppercase">{{ $d->nama_akun }}</span>
                                     @elseif($d->level == 2)
@@ -110,7 +110,7 @@
                                         <span class="text-gray-600">{{ $d->nama_akun }}</span>
                                     @endif
                                 </td>
-                                <td class="py-2.5 px-6 text-center">
+                                <td class="py-1 px-4 text-center">
                                     <span class="px-2 py-0.5 text-[10px] font-semibold rounded-md border
                                         @if($d->level == 1)
                                             bg-blue-50 text-blue-700 border-blue-200
@@ -122,10 +122,10 @@
                                         Lvl {{ $d->level }}
                                     </span>
                                 </td>
-                                <td class="py-2.5 px-6 text-center">
+                                <td class="py-1 px-4 text-center">
                                     <div class="flex items-center justify-center gap-1">
                                         @can('coa.edit')
-                                        <button type="button" class="btnEditCoa p-1.5 text-amber-600 hover:bg-amber-50 rounded-lg transition cursor-pointer" data-kode="{{ $d->kode_akun }}" title="Edit Akun">
+                                        <button type="button" class="btnEditCoa p-1 text-amber-600 hover:bg-amber-50 rounded-lg transition cursor-pointer" data-kode="{{ $d->kode_akun }}" title="Edit Akun">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
                                         </button>
                                         @endcan

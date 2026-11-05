@@ -1,68 +1,74 @@
-<header class="sticky top-0 z-30 flex items-center justify-between px-8 py-4 bg-white border-b border-gray-100 shadow-sm">
-    <!-- Page Title -->
-    <div>
-        <h1 class="text-xl font-bold text-gray-900">
-            {{ $header ?? 'Dashboard' }}
-        </h1>
+<!-- TOP NAVBAR -->
+<header class="px-6 lg:px-10 py-3.5 flex items-center justify-between gap-4 border-b border-slate-200/80 dark:border-slate-800 shrink-0 bg-white dark:bg-slate-900 sticky top-0 z-30 transition-colors duration-200">
+    <div class="flex items-center gap-3.5">
+        <!-- Mobile Hamburger Menu Button -->
+        <button id="openMobileSidebarBtn" class="lg:hidden p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700 cursor-pointer">
+            <i data-lucide="menu" class="w-5 h-5"></i>
+        </button>
+        <span class="text-sm font-bold text-slate-800 dark:text-white tracking-tight sm:hidden">{{ $header ?? ($headerTitle ?? 'Dashboard') }}</span>
     </div>
 
-    <!-- Right Side -->
-    <div class="flex items-center space-x-6">
-        <!-- Avatars -->
-        <div class="flex items-center">
-            <div class="flex -space-x-2">
-                <img class="w-8 h-8 rounded-full border-2 border-white" src="https://ui-avatars.com/api/?name=User+One&background=random" alt="Avatar">
-                <img class="w-8 h-8 rounded-full border-2 border-white" src="https://ui-avatars.com/api/?name=User+Two&background=random" alt="Avatar">
-            </div>
-            <div class="flex items-center justify-center w-8 h-8 ml-2 text-xs font-medium text-indigo-600 bg-indigo-50 rounded-full border border-indigo-100">
-                +2
-            </div>
-            <button class="flex items-center justify-center w-8 h-8 ml-2 text-gray-400 border border-gray-200 border-dashed rounded-full hover:text-gray-600 hover:border-gray-400">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
-            </button>
-        </div>
-
-        <!-- Notification -->
-        <button class="relative text-gray-400 hover:text-gray-600">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
-            <span class="absolute top-0 right-0 flex items-center justify-center w-4 h-4 text-[10px] font-bold text-white bg-red-500 border-2 border-white rounded-full -mt-1 -mr-1">
-                24
-            </span>
+    <div class="flex items-center gap-3 ml-auto">
+        <!-- Mobile Search Trigger Button -->
+        <button type="button" id="navSearchMobileTrigger" title="Cari Menu (Ctrl + K)" class="sm:hidden p-2 text-slate-500 dark:text-slate-300 hover:text-slate-700 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800 border border-slate-200/70 dark:border-slate-700 rounded-xl transition flex items-center justify-center cursor-pointer">
+            <i data-lucide="search" class="w-4 h-4"></i>
         </button>
 
-        <!-- Search -->
-        <div class="relative">
-            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+        <!-- Desktop Search Trigger Bar (Mac Spotlight / Command Palette) -->
+        <button type="button" id="navSearchTrigger" title="Cari Menu & Navigasi Cepat (Ctrl + K)" class="relative hidden sm:flex items-center text-left pl-10 pr-16 py-2 bg-slate-50 dark:bg-slate-800/90 hover:bg-slate-100/90 dark:hover:bg-slate-800 border border-slate-200/80 dark:border-slate-700 rounded-xl text-xs font-medium text-slate-500 dark:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition w-64 lg:w-72 shadow-2xs group cursor-pointer">
+            <i data-lucide="search" class="w-4 h-4 text-slate-400 group-hover:text-blue-500 transition-colors absolute left-3.5 pointer-events-none"></i>
+            <span class="truncate">Cari menu & navigasi cepat...</span>
+            <div class="absolute right-2.5 flex items-center gap-0.5 text-[10px] font-bold text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-200 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 px-1.5 py-0.5 rounded-md shadow-2xs transition-colors">
+                <span class="text-[9px]">⌘</span> K
             </div>
-            <input type="text" class="block w-64 py-2.5 pl-10 pr-12 text-sm text-gray-900 bg-gray-50 border-none rounded-xl focus:ring-2 focus:ring-indigo-500 placeholder-gray-400" placeholder="Search anything">
-            <div class="absolute inset-y-0 right-0 flex items-center pr-3">
-                <kbd class="inline-flex items-center px-2 py-0.5 text-xs font-sans font-medium text-gray-400 bg-white border border-gray-200 rounded">
-                    ⌘ K
-                </kbd>
-            </div>
-        </div>
+        </button>
 
-        <!-- Profile Dropdown -->
+        <!-- Dark / Light Theme Toggle Button -->
+        <button id="themeToggleBtn" type="button" title="Toggle Tema Gelap / Terang" class="p-2 text-slate-500 dark:text-slate-300 hover:text-slate-700 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800 border border-slate-200/70 dark:border-slate-700 rounded-xl transition flex items-center justify-center cursor-pointer">
+            <i data-lucide="moon" class="w-4 h-4 block dark:hidden text-slate-500 hover:text-slate-700"></i>
+            <i data-lucide="sun" class="w-4 h-4 hidden dark:block text-amber-400"></i>
+        </button>
+
+        <!-- User Profile Dropdown -->
         <div class="relative" x-data="{ open: false }">
-            <button @click="open = !open" @click.outside="open = false" class="flex items-center space-x-2 focus:outline-none">
-                <img class="w-8 h-8 rounded-full" src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->name ?? 'User') }}&background=294C9A&color=fff" alt="Profile">
-                <svg class="w-4 h-4 text-gray-400 transition-transform duration-200" :class="{ 'rotate-180': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-            </button>
-            
-            <!-- Dropdown Menu -->
-            <div x-show="open" x-transition class="absolute right-0 mt-2 w-48 bg-white rounded-xl border border-gray-100 shadow-lg py-1 z-50 text-sm">
-                <div class="px-4 py-2 border-b border-gray-50">
-                    <p class="font-bold text-gray-900 truncate">{{ Auth::user()->name ?? 'User' }}</p>
-                    <p class="text-xs text-gray-500 truncate mt-0.5">{{ Auth::user()->email ?? 'user@example.com' }}</p>
+            <button @click="open = !open" @click.outside="open = false" type="button" class="flex items-center gap-2 p-1.5 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 border border-transparent hover:border-slate-200/70 dark:hover:border-slate-700 transition cursor-pointer">
+                <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white font-bold text-xs flex items-center justify-center shadow-xs">
+                    {{ strtoupper(substr(Auth::user()->name ?? 'U', 0, 1)) }}
                 </div>
-                <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-50 transition">My Profile</a>
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-                    <button type="submit" class="block w-full text-left px-4 py-2 text-red-600 hover:bg-red-50 transition font-medium">
-                        Logout
-                    </button>
-                </form>
+                <div class="hidden md:flex flex-col text-left">
+                    <span class="text-xs font-bold text-slate-800 dark:text-slate-200 leading-tight truncate max-w-[120px]">{{ Auth::user()->name ?? 'User' }}</span>
+                    <span class="text-[10px] text-slate-400 dark:text-slate-500 truncate max-w-[120px]">{{ Auth::user()->roles->first()->name ?? 'User' }}</span>
+                </div>
+                <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-400 transition-transform duration-200 hidden md:block" :class="{ 'rotate-180': open }"></i>
+            </button>
+
+            <!-- Dropdown Menu -->
+            <div x-show="open" x-transition class="absolute right-0 mt-2 w-56 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xl py-1.5 z-50 text-xs">
+                <div class="px-4 py-2.5 border-b border-slate-100 dark:border-slate-800">
+                    <p class="font-bold text-slate-900 dark:text-white truncate">{{ Auth::user()->name ?? 'User' }}</p>
+                    <p class="text-[11px] text-slate-400 dark:text-slate-500 truncate mt-0.5">{{ Auth::user()->email ?? 'user@pacific.id' }}</p>
+                </div>
+                <div class="p-1 space-y-0.5">
+                    <a href="{{ route('profile.edit') }}" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/80 transition">
+                        <i data-lucide="user" class="w-4 h-4 text-slate-400"></i>
+                        <span>Profil Pengguna</span>
+                    </a>
+                    @can('users.view')
+                    <a href="{{ route('users.index') }}" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/80 transition">
+                        <i data-lucide="users" class="w-4 h-4 text-slate-400"></i>
+                        <span>Kelola Pengguna</span>
+                    </a>
+                    @endcan
+                </div>
+                <div class="p-1 border-t border-slate-100 dark:border-slate-800">
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <button type="submit" class="flex items-center gap-2.5 w-full text-left px-3 py-2 rounded-xl text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-500/10 font-medium transition cursor-pointer">
+                            <i data-lucide="log-out" class="w-4 h-4"></i>
+                            <span>Keluar (Logout)</span>
+                        </button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>

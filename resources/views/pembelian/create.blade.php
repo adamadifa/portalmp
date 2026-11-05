@@ -1,158 +1,113 @@
 <x-app-layout>
-    <x-slot name="header">
-        Input Pembelian
-    </x-slot>
+    <x-slot name="header">Input Pembelian</x-slot>
+    <x-slot name="headerTitle">Input Pembelian</x-slot>
+    <x-slot name="headerDescription">Pencatatan faktur transaksi pembelian barang baru dan alokasi akun akuntansi</x-slot>
 
     <style>
-    /* ── Isolated Floating Label & Icon Group ──────────── */
-    .c-fl-group {
-        position: relative !important;
-        width: 100% !important;
-        margin-top: 22px !important;
+    /* ── Select2 Custom Theming (Corporate Navy #162a5b) ──────────── */
+    .select2-container { 
+        width: 100% !important; 
     }
-    .c-fl-group:first-child {
-        margin-top: 6px !important;
-    }
-
-    .c-fl-icon {
-        position: absolute !important;
-        left: 10px !important;
-        top: 50% !important;
-        transform: translateY(-50%) !important;
-        color: #6B7280 !important;
-        pointer-events: none !important;
-        z-index: 25 !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-    }
-
-    .c-fl-group:focus-within .c-fl-icon {
-        color: #294C9A !important;
-    }
-
-    .c-fl-label {
-        position: absolute !important;
-        left: 10px !important;
-        top: 0px !important;
-        bottom: auto !important;
-        transform: translateY(-50%) !important;
-        background-color: #ffffff !important;
-        padding: 0 4px !important;
-        font-size: 11px !important;
-        font-weight: 600 !important;
-        color: #374151 !important;
-        z-index: 30 !important;
-        pointer-events: none !important;
-        line-height: 1 !important;
-        white-space: nowrap !important;
-        border-radius: 2px !important;
-    }
-
-    .c-fl-group:focus-within .c-fl-label {
-        color: #294C9A !important;
-    }
-
-    .fi {
-        display: block !important;
-        width: 100% !important;
-        height: 38px !important;
-        padding: 0 12px 0 34px !important;
-        font-size: 12px !important;
-        color: #111827 !important;
-        background-color: #ffffff !important;
-        border: 1px solid #D1D5DB !important;
-        border-radius: 8px !important;
-        outline: none !important;
-        transition: border-color .15s, box-shadow .15s !important;
-    }
-    .fi:focus {
-        border-color: #294C9A !important;
-        box-shadow: 0 0 0 3px rgba(41, 76, 154, 0.10) !important;
-    }
-    .fi::placeholder { color: #9CA3AF !important; font-size: 11.5px !important; }
-
-    /* Select2 Alignment */
-    .select2-container { width: 100% !important; }
     .select2-container--default .select2-selection--single {
-        height: 38px !important;
-        border: 1px solid #D1D5DB !important;
-        border-radius: 8px !important;
+        height: 40px !important;
+        border: 1px solid #e2e8f0 !important;
+        border-radius: 12px !important;
         background-color: #ffffff !important;
-        position: relative !important;
         display: flex !important;
         align-items: center !important;
         padding-top: 0 !important;
+        transition: all 0.15s ease-in-out !important;
+    }
+    .dark .select2-container--default .select2-selection--single {
+        background-color: #0f172a !important;
+        border-color: #334155 !important;
+        color: #f8fafc !important;
     }
     .select2-container--default.select2-container--focus .select2-selection--single,
     .select2-container--default.select2-container--open .select2-selection--single {
-        border-color: #294C9A !important;
-        box-shadow: 0 0 0 3px rgba(41, 76, 154, 0.10) !important;
+        border-color: #162a5b !important;
+        box-shadow: 0 0 0 3px rgba(22, 42, 91, 0.12) !important;
     }
     .select2-container--default .select2-selection--single .select2-selection__rendered {
         display: flex !important;
         align-items: center !important;
         height: 100% !important;
         line-height: normal !important;
-        padding-left: 34px !important;
-        padding-right: 32px !important;
+        padding-left: 12px !important;
+        padding-right: 30px !important;
         font-size: 12px !important;
-        color: #111827 !important;
+        font-weight: 600 !important;
+        color: #1e293b !important;
+    }
+    .dark .select2-container--default .select2-selection--single .select2-selection__rendered {
+        color: #f1f5f9 !important;
     }
     .select2-container--default .select2-selection--single .select2-selection__arrow {
         position: absolute !important;
         top: 50% !important;
-        right: 10px !important;
+        right: 12px !important;
         transform: translateY(-50%) !important;
         height: 16px !important;
         width: 16px !important;
     }
     .select2-container--default .select2-selection--single .select2-selection__arrow b {
-        position: absolute !important;
-        top: 50% !important;
-        left: 50% !important;
-        transform: translate(-50%, -50%) !important;
-        border-color: #6B7280 transparent transparent transparent !important;
+        border-color: #64748b transparent transparent transparent !important;
         border-style: solid !important;
         border-width: 5px 4px 0 4px !important;
     }
+    .select2-dropdown {
+        border: 1px solid #e2e8f0 !important;
+        border-radius: 12px !important;
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1) !important;
+        overflow: hidden !important;
+        z-index: 1050 !important;
+    }
+    .select2-results__option {
+        padding: 8px 12px !important;
+        font-size: 12px !important;
+        font-weight: 500 !important;
+    }
+    .select2-container--default .select2-results__option--highlighted[aria-selected] {
+        background-color: #162a5b !important;
+        color: #ffffff !important;
+    }
 
-    /* ── Polished DataTable Styles ──────────── */
+    /* ── Polished DataTable Styles (Modal Barang) ──────────── */
     .dataTables_wrapper {
         font-size: 12px !important;
     }
     .dataTables_wrapper .dataTables_length {
-        margin-bottom: 14px !important;
+        margin-bottom: 12px !important;
     }
     .dataTables_wrapper .dataTables_length select {
-        border: 1px solid #D1D5DB !important;
-        border-radius: 8px !important;
-        padding: 5px 28px 5px 10px !important;
+        border: 1px solid #e2e8f0 !important;
+        border-radius: 10px !important;
+        padding: 5px 28px 5px 12px !important;
         font-size: 12px !important;
-        font-weight: 500 !important;
-        color: #374151 !important;
+        font-weight: 600 !important;
+        color: #334155 !important;
         outline: none !important;
-        background-color: #F9FAFB !important;
+        background-color: #f8fafc !important;
         cursor: pointer !important;
     }
     .dataTables_wrapper .dataTables_filter {
-        margin-bottom: 14px !important;
+        margin-bottom: 12px !important;
     }
     .dataTables_wrapper .dataTables_filter input {
-        border: 1px solid #D1D5DB !important;
-        border-radius: 8px !important;
+        border: 1px solid #e2e8f0 !important;
+        border-radius: 10px !important;
         padding: 6px 14px !important;
         outline: none !important;
         font-size: 12px !important;
-        color: #111827 !important;
+        color: #1e293b !important;
         margin-left: 8px !important;
         min-width: 220px !important;
         transition: all 0.15s ease !important;
     }
     .dataTables_wrapper .dataTables_filter input:focus {
-        border-color: #294C9A !important;
-        background-color: #FFFFFF !important;
-        box-shadow: 0 0 0 3px rgba(41, 76, 154, 0.12) !important;
+        border-color: #162a5b !important;
+        background-color: #ffffff !important;
+        box-shadow: 0 0 0 3px rgba(22, 42, 91, 0.12) !important;
     }
     #tabelbarang {
         border-collapse: separate !important;
@@ -160,418 +115,621 @@
         width: 100% !important;
     }
     #tabelbarang thead th {
-        background-color: #F8FAFC !important;
-        color: #475569 !important;
+        background-color: #162a5b !important;
+        color: #ffffff !important;
         font-weight: 700 !important;
         font-size: 11px !important;
         text-transform: uppercase !important;
         letter-spacing: 0.05em !important;
-        border-top: 1px solid #E2E8F0 !important;
-        border-bottom: 2px solid #CBD5E1 !important;
-        padding: 11px 14px !important;
+        padding: 10px 14px !important;
+        border: none !important;
     }
     #tabelbarang tbody td {
         padding: 10px 14px !important;
         vertical-align: middle !important;
-        border-bottom: 1px solid #F1F5F9 !important;
+        border-bottom: 1px solid #f1f5f9 !important;
         color: #334155 !important;
     }
     #tabelbarang tbody tr:hover {
-        background-color: #F8FAFC !important;
+        background-color: #f8fafc !important;
     }
     .dataTables_wrapper .dataTables_info {
         padding-top: 14px !important;
         font-size: 12px !important;
-        color: #64748B !important;
-        font-weight: 500 !important;
+        color: #64748b !important;
+        font-weight: 600 !important;
     }
     .dataTables_wrapper .dataTables_paginate {
         margin-top: 12px !important;
     }
     .dataTables_wrapper .dataTables_paginate .paginate_button {
-        padding: 5px 11px !important;
+        padding: 5px 12px !important;
         margin: 0 2px !important;
-        border-radius: 7px !important;
+        border-radius: 8px !important;
         font-size: 12px !important;
-        font-weight: 500 !important;
-        border: 1px solid #E2E8F0 !important;
-        background: #FFFFFF !important;
+        font-weight: 600 !important;
+        border: 1px solid #e2e8f0 !important;
+        background: #ffffff !important;
         color: #475569 !important;
         cursor: pointer !important;
         transition: all 0.15s ease !important;
     }
     .dataTables_wrapper .dataTables_paginate .paginate_button.current {
-        background: #294C9A !important;
-        color: #FFFFFF !important;
-        border: 1px solid #294C9A !important;
-        font-weight: 600 !important;
-        box-shadow: 0 1px 2px rgba(41, 76, 154, 0.25) !important;
+        background: #162a5b !important;
+        color: #ffffff !important;
+        border: 1px solid #162a5b !important;
+        box-shadow: 0 2px 4px rgba(22, 42, 91, 0.2) !important;
     }
     .dataTables_wrapper .dataTables_paginate .paginate_button:hover:not(.current) {
-        background: #EEF2FF !important;
-        color: #294C9A !important;
-        border-color: #C7D2FE !important;
+        background: #eef2ff !important;
+        color: #162a5b !important;
+        border-color: #c7d2fe !important;
     }
     .dataTables_wrapper .dataTables_paginate .paginate_button.disabled,
     .dataTables_wrapper .dataTables_paginate .paginate_button.disabled:hover {
-        color: #94A3B8 !important;
-        border-color: #F1F5F9 !important;
-        background: #F8FAFC !important;
+        color: #94a3b8 !important;
+        border-color: #f1f5f9 !important;
+        background: #f8fafc !important;
         cursor: not-allowed !important;
     }
     </style>
 
-    <!-- Header & Navigation -->
-    <div class="mb-6 flex justify-between items-center">
-        <div>
-            <h2 class="text-2xl font-semibold text-gray-900 tracking-tight">Input Pembelian</h2>
-            <p class="text-sm text-gray-500 mt-1">Registrasi transaksi pembelian barang baru.</p>
+    <div class="space-y-6">
+
+        <!-- Top Navigation Bar -->
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 w-full">
+            <div class="flex items-center gap-3">
+                <a 
+                    href="{{ route('pembelian.index') }}" 
+                    class="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold text-xs shadow-2xs transition cursor-pointer"
+                >
+                    <i data-lucide="arrow-left" class="w-4 h-4 text-slate-500"></i>
+                    <span>Kembali ke Daftar Pembelian</span>
+                </a>
+
+                <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold text-xs bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 border border-blue-200/60 dark:border-blue-500/20">
+                    <span class="w-2 h-2 rounded-full bg-blue-600 animate-pulse"></span>
+                    <span>Draft Faktur Pembelian Baru</span>
+                </span>
+            </div>
+
+            <div class="text-xs text-slate-500 dark:text-slate-400 font-medium">
+                Kolom dengan tanda bintang (<span class="text-rose-500 font-bold">*</span>) wajib diisi
+            </div>
         </div>
-        <a href="{{ route('pembelian.index') }}" class="inline-flex items-center px-3.5 py-2 text-xs font-semibold text-gray-700 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition shadow-sm gap-1.5">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-            Kembali
-        </a>
-    </div>
 
-    <form action="{{ route('pembelian.store') }}" method="POST" id="formPembelian">
-        @csrf
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            <!-- Left Panel: General Info Form -->
-            <div class="lg:col-span-3 space-y-4">
-                <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 space-y-4">
-                    <div class="c-fl-group">
-                        <span class="c-fl-icon">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"></path></svg>
-                        </span>
-                        <input type="text" name="no_bukti" id="no_bukti" class="fi" placeholder="No. Bukti" autocomplete="off" />
-                        <label for="no_bukti" class="c-fl-label">No. Bukti *</label>
-                    </div>
+        <!-- Alert Notifications -->
+        @if(session('error'))
+            <div class="p-4 rounded-xl bg-rose-50 dark:bg-rose-900/20 border border-rose-200 dark:border-rose-800/40 text-rose-800 dark:text-rose-300 flex items-center gap-3 shadow-2xs">
+                <i data-lucide="alert-triangle" class="w-5 h-5 text-rose-600 shrink-0"></i>
+                <div class="text-xs font-semibold">{{ session('error') }}</div>
+            </div>
+        @endif
 
-                    <div class="c-fl-group">
-                        <span class="c-fl-icon">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                        </span>
-                        <input type="text" name="tanggal" id="tanggal" class="fi flatpickr-date" placeholder="Tanggal" autocomplete="off" />
-                        <label for="tanggal" class="c-fl-label">Tanggal *</label>
-                    </div>
+        @if ($errors->any())
+            <div class="p-4 rounded-xl bg-rose-50 dark:bg-rose-900/20 border border-rose-200 dark:border-rose-800/40 text-rose-800 dark:text-rose-300 shadow-2xs">
+                <div class="flex items-center gap-2 font-bold text-xs mb-1.5">
+                    <i data-lucide="alert-circle" class="w-4 h-4 text-rose-600"></i>
+                    <span>Terdapat beberapa kesalahan pengisian form:</span>
+                </div>
+                <ul class="list-disc list-inside text-xs space-y-0.5 text-rose-700 dark:text-rose-400">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
 
-                    <div class="grid grid-cols-2 gap-2">
-                        <div class="c-fl-group" style="margin-top: 10px !important;">
-                            <span class="c-fl-icon">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                            </span>
-                            <select name="bulan_pajak" id="bulan_pajak" class="fi">
-                                @for ($m = 1; $m <= 12; $m++)
-                                    @php $blnVal = str_pad($m, 2, '0', STR_PAD_LEFT); @endphp
-                                    <option value="{{ $blnVal }}" {{ (old('bulan_pajak') ?? date('m')) == $blnVal ? 'selected' : '' }}>
-                                        {{ $blnVal }} - {{ date('F', mktime(0, 0, 0, $m, 10)) }}
-                                    </option>
-                                @endfor
-                            </select>
-                            <label for="bulan_pajak" class="c-fl-label">Bulan Pajak</label>
+        <!-- Main Form Container -->
+        <form action="{{ route('pembelian.store') }}" method="POST" id="formPembelian" class="w-full" novalidate>
+            @csrf
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                
+                <!-- Left Column (4 cols): Faktur & Parameter Informasi -->
+                <div class="lg:col-span-4 space-y-5">
+                    
+                    <!-- Card 1: Informasi Dasar Faktur -->
+                    <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/90 dark:border-slate-800 shadow-2xs overflow-hidden">
+                        <div class="px-5 py-4 bg-[#162a5b] text-white flex items-center gap-2.5">
+                            <div class="w-8 h-8 rounded-lg bg-white/15 flex items-center justify-center shrink-0">
+                                <i data-lucide="file-text" class="w-4 h-4 text-white"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-xs uppercase tracking-wider text-white">Informasi Faktur</h3>
+                                <p class="text-[11px] text-blue-200/80">Identitas transaksi & data supplier</p>
+                            </div>
                         </div>
-                        <div class="c-fl-group" style="margin-top: 10px !important;">
-                            <span class="c-fl-icon">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                            </span>
-                            <input type="number" name="tahun_pajak" id="tahun_pajak" class="fi" value="{{ old('tahun_pajak') ?? date('Y') }}" placeholder="Tahun" autocomplete="off" />
-                            <label for="tahun_pajak" class="c-fl-label">Tahun Pajak</label>
+
+                        <div class="p-5 space-y-3.5">
+                            <!-- No. Bukti -->
+                            <div>
+                                <label for="no_bukti" class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                                    No. Bukti Pembelian <span class="text-rose-500">*</span>
+                                </label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                                        <i data-lucide="receipt" class="w-4 h-4"></i>
+                                    </div>
+                                    <input 
+                                        type="text" 
+                                        name="no_bukti" 
+                                        id="no_bukti" 
+                                        value="{{ old('no_bukti') }}" 
+                                        class="w-full h-[40px] pl-10 pr-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-bold text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-[#162a5b] transition shadow-2xs uppercase" 
+                                        placeholder="Contoh: PMB-26-0001" 
+                                        autocomplete="off" 
+                                        required 
+                                    />
+                                </div>
+                            </div>
+
+                            <!-- Tanggal Transaksi -->
+                            <div>
+                                <label for="tanggal" class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                                    Tanggal Faktur <span class="text-rose-500">*</span>
+                                </label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                                        <i data-lucide="calendar" class="w-4 h-4"></i>
+                                    </div>
+                                    <input 
+                                        type="text" 
+                                        name="tanggal" 
+                                        id="tanggal" 
+                                        value="{{ old('tanggal') ?? date('Y-m-d') }}" 
+                                        class="w-full h-[40px] pl-10 pr-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-semibold text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-[#162a5b] transition shadow-2xs flatpickr-date" 
+                                        placeholder="Pilih Tanggal..." 
+                                        autocomplete="off" 
+                                        required 
+                                    />
+                                </div>
+                            </div>
+
+                            <!-- Bulan & Tahun Pajak -->
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label for="bulan_pajak" class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                                        Bulan Pajak
+                                    </label>
+                                    <select 
+                                        name="bulan_pajak" 
+                                        id="bulan_pajak" 
+                                        class="w-full h-[40px] px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-semibold text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-[#162a5b] transition shadow-2xs cursor-pointer"
+                                    >
+                                        @for ($m = 1; $m <= 12; $m++)
+                                            @php $blnVal = str_pad($m, 2, '0', STR_PAD_LEFT); @endphp
+                                            <option value="{{ $blnVal }}" {{ (old('bulan_pajak') ?? date('m')) == $blnVal ? 'selected' : '' }}>
+                                                {{ $blnVal }} - {{ date('F', mktime(0, 0, 0, $m, 10)) }}
+                                            </option>
+                                        @endfor
+                                    </select>
+                                </div>
+                                <div>
+                                    <label for="tahun_pajak" class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                                        Tahun Pajak
+                                    </label>
+                                    <input 
+                                        type="number" 
+                                        name="tahun_pajak" 
+                                        id="tahun_pajak" 
+                                        value="{{ old('tahun_pajak') ?? date('Y') }}" 
+                                        class="w-full h-[40px] px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-semibold text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-[#162a5b] transition shadow-2xs" 
+                                        placeholder="YYYY" 
+                                        autocomplete="off" 
+                                    />
+                                </div>
+                            </div>
+
+                            <!-- Supplier -->
+                            <div>
+                                <label for="kode_supplier" class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                                    Supplier Rekanan <span class="text-rose-500">*</span>
+                                </label>
+                                <select name="kode_supplier" id="kode_supplier" class="select2Kodesupplier w-full">
+                                    <option value="">Pilih Supplier</option>
+                                    @foreach ($supplier as $d)
+                                        <option value="{{ $d->kode_supplier }}" {{ old('kode_supplier') == $d->kode_supplier ? 'selected' : '' }}>
+                                            {{ strtoupper($d->nama_supplier) }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <!-- Asal Ajuan -->
+                            <div>
+                                <label for="kode_asal_pengajuan" class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                                    Asal Ajuan <span class="text-rose-500">*</span>
+                                </label>
+                                <select 
+                                    name="kode_asal_pengajuan" 
+                                    id="kode_asal_pengajuan" 
+                                    class="w-full h-[40px] px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-semibold text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-[#162a5b] transition shadow-2xs cursor-pointer"
+                                    required
+                                >
+                                    <option value="">-- Pilih Asal Ajuan --</option>
+                                    @foreach ($asal_ajuan as $d)
+                                        <option value="{{ $d['kode_group'] }}" {{ old('kode_asal_pengajuan') == $d['kode_group'] ? 'selected' : '' }}>
+                                            {{ $d['nama_group'] }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <!-- Jenis Transaksi & Jatuh Tempo -->
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label for="jenis_transaksi" class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                                        Jenis Pembayaran <span class="text-rose-500">*</span>
+                                    </label>
+                                    <select 
+                                        name="jenis_transaksi" 
+                                        id="jenis_transaksi" 
+                                        class="w-full h-[40px] px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-semibold text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-[#162a5b] transition shadow-2xs cursor-pointer"
+                                        required
+                                    >
+                                        <option value="">-- Jenis --</option>
+                                        <option value="T" {{ old('jenis_transaksi') == 'T' ? 'selected' : '' }}>Tunai (Cash)</option>
+                                        <option value="K" {{ old('jenis_transaksi', 'K') == 'K' ? 'selected' : '' }}>Kredit (Tempo)</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label for="jatuh_tempo" class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                                        Jatuh Tempo
+                                    </label>
+                                    <div class="relative">
+                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                                            <i data-lucide="clock" class="w-3.5 h-3.5"></i>
+                                        </div>
+                                        <input 
+                                            type="text" 
+                                            name="jatuh_tempo" 
+                                            id="jatuh_tempo" 
+                                            value="{{ old('jatuh_tempo') }}" 
+                                            class="w-full h-[40px] pl-9 pr-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-semibold text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-[#162a5b] transition shadow-2xs flatpickr-date" 
+                                            placeholder="Tgl Tempo..." 
+                                            autocomplete="off" 
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- No. PO -->
+                            <div>
+                                <label for="no_po" class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                                    Nomor Purchase Order (PO)
+                                </label>
+                                <select name="no_po" id="no_po" class="select2PO w-full">
+                                    <option value="">Pilih No. PO (Opsional)</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="c-fl-group">
-                        <span class="c-fl-icon">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
-                        </span>
-                        <select name="kode_supplier" id="kode_supplier" class="fi select2Kodesupplier">
-                            <option value="">Supplier</option>
-                            @foreach ($supplier as $d)
-                                <option value="{{ $d->kode_supplier }}">{{ strtoupper($d->nama_supplier) }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-
-                    <div class="c-fl-group">
-                        <span class="c-fl-icon">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
-                        </span>
-                        <select name="kode_asal_pengajuan" id="kode_asal_pengajuan" class="fi">
-                            <option value="">Asal Ajuan</option>
-                            @foreach ($asal_ajuan as $d)
-                                <option value="{{ $d['kode_group'] }}">
-                                    {{ $d['nama_group'] }}
-                                </option>
-                            @endforeach
-                        </select>
-                        <label for="kode_asal_pengajuan" class="c-fl-label">Asal Ajuan</label>
-                    </div>
-
-                    <div class="c-fl-group">
-                        <span class="c-fl-icon">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
-                        </span>
-                        <select name="jenis_transaksi" id="jenis_transaksi" class="fi">
-                            <option value="">Tunai / Kredit</option>
-                            <option value="T">Tunai</option>
-                            <option value="K">Kredit</option>
-                        </select>
-                        <label for="jenis_transaksi" class="c-fl-label">Tunai / Kredit</label>
-                    </div>
-
-                    <div class="c-fl-group">
-                        <span class="c-fl-icon">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                        </span>
-                        <input type="text" name="jatuh_tempo" id="jatuh_tempo" class="fi flatpickr-date" placeholder="Jatuh Tempo" autocomplete="off" />
-                        <label for="jatuh_tempo" class="c-fl-label">Jatuh Tempo</label>
-                    </div>
-
-                    <div class="c-fl-group">
-                        <span class="c-fl-icon">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                        </span>
-                        <select name="no_po" id="no_po" class="fi select2PO">
-                            <option value="">No PO</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <span class="text-xs font-semibold text-gray-700 block mb-2">PPN</span>
-                        <div class="flex items-center gap-4">
-                            <label class="inline-flex items-center cursor-pointer">
-                                <input type="radio" name="ppn" id="ppn1" value="1" class="rounded-full border-gray-300 text-[#294C9A] focus:ring-[#294C9A]" />
-                                <span class="ml-2 text-xs">Ya</span>
-                            </label>
-                            <label class="inline-flex items-center cursor-pointer">
-                                <input type="radio" name="ppn" id="ppn2" value="0" checked class="rounded-full border-gray-300 text-[#294C9A] focus:ring-[#294C9A]" />
-                                <span class="ml-2 text-xs">Tidak</span>
-                            </label>
+                    <!-- Card 2: Pengaturan Atribut & Pajak Transaksi -->
+                    <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/90 dark:border-slate-800 shadow-2xs overflow-hidden">
+                        <div class="px-5 py-3.5 bg-slate-800 text-white flex items-center gap-2.5">
+                            <div class="w-7 h-7 rounded-lg bg-white/15 flex items-center justify-center shrink-0">
+                                <i data-lucide="sliders" class="w-3.5 h-3.5 text-white"></i>
+                            </div>
+                            <h3 class="font-bold text-xs uppercase tracking-wider text-white">Atribut & Klasifikasi Pajak</h3>
                         </div>
-                    </div>
 
-                    <div>
-                        <span class="text-xs font-semibold text-gray-700 block mb-2">Kategori Transaksi</span>
-                        <div class="grid grid-cols-2 gap-2">
-                            <label class="inline-flex items-center cursor-pointer">
-                                <input type="radio" name="kategori_transaksi" id="inlineRadio1" value="MP" class="rounded-full border-gray-300 text-[#294C9A] focus:ring-[#294C9A]" />
-                                <span class="ml-2 text-xs">MP</span>
-                            </label>
-                            <label class="inline-flex items-center cursor-pointer">
-                                <input type="radio" name="kategori_transaksi" id="inlineRadio2" value="PC" class="rounded-full border-gray-300 text-[#294C9A] focus:ring-[#294C9A]" />
-                                <span class="ml-2 text-xs">Pacific</span>
-                            </label>
-                            <label class="inline-flex items-center cursor-pointer">
-                                <input type="radio" name="kategori_transaksi" id="inlineRadio3" value="PB" class="rounded-full border-gray-300 text-[#294C9A] focus:ring-[#294C9A]" />
-                                <span class="ml-2 text-xs">Pribadi</span>
-                            </label>
-                            <label class="inline-flex items-center cursor-pointer">
-                                <input type="radio" name="kategori_transaksi" id="inlineRadio4" value="IP" class="rounded-full border-gray-300 text-[#294C9A] focus:ring-[#294C9A]" />
-                                <span class="ml-2 text-xs">IP</span>
-                            </label>
-                        </div>
-                    </div>
+                        <div class="p-5 space-y-4">
+                            <!-- PPN Switcher -->
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-2">
+                                    Kena Pajak Pertambahan Nilai (PPN)
+                                </label>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <label for="ppn1" class="flex items-center gap-2 px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer transition shadow-2xs radio-card">
+                                        <input type="radio" name="ppn" id="ppn1" value="1" {{ old('ppn') === '1' ? 'checked' : '' }} class="w-4 h-4 text-[#162a5b] border-slate-300 focus:ring-[#162a5b] cursor-pointer shrink-0" />
+                                        <span class="text-xs font-bold text-slate-800 dark:text-white">PPN (11/12%)</span>
+                                    </label>
+                                    <label for="ppn2" class="flex items-center gap-2 px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer transition shadow-2xs radio-card">
+                                        <input type="radio" name="ppn" id="ppn2" value="0" {{ old('ppn', '0') === '0' ? 'checked' : '' }} class="w-4 h-4 text-[#162a5b] border-slate-300 focus:ring-[#162a5b] cursor-pointer shrink-0" />
+                                        <span class="text-xs font-bold text-slate-800 dark:text-white">Non-PPN</span>
+                                    </label>
+                                </div>
+                            </div>
 
-                    <div>
-                        <span class="text-xs font-semibold text-gray-700 block mb-2">Kategori Pembelian</span>
-                        <div class="grid grid-cols-2 gap-2">
-                            <label class="inline-flex items-center cursor-pointer">
-                                <input type="radio" name="kategori_pembelian" id="kategori_pembelian_l" value="L" checked class="rounded-full border-gray-300 text-[#294C9A] focus:ring-[#294C9A]" />
-                                <span class="ml-2 text-xs">Lokal</span>
-                            </label>
-                            <label class="inline-flex items-center cursor-pointer">
-                                <input type="radio" name="kategori_pembelian" id="kategori_pembelian_i" value="I" class="rounded-full border-gray-300 text-[#294C9A] focus:ring-[#294C9A]" />
-                                <span class="ml-2 text-xs">Import</span>
-                            </label>
-                        </div>
-                    </div>
+                            <!-- Kategori Transaksi (Hidden, Default: MP) -->
+                            <input type="hidden" name="kategori_transaksi" id="kategori_transaksi" value="MP" />
 
-                    <div>
-                        <span class="text-xs font-semibold text-gray-700 block mb-2">Status Uang Muka</span>
-                        <div class="grid grid-cols-2 gap-2">
-                            <label class="inline-flex items-center cursor-pointer">
-                                <input type="radio" name="status_uang_muka" id="status_uang_muka_0" value="0" checked class="rounded-full border-gray-300 text-[#294C9A] focus:ring-[#294C9A]" />
-                                <span class="ml-2 text-xs">Tidak (Biasa)</span>
-                            </label>
-                            <label class="inline-flex items-center cursor-pointer">
-                                <input type="radio" name="status_uang_muka" id="status_uang_muka_1" value="1" class="rounded-full border-gray-300 text-[#294C9A] focus:ring-[#294C9A]" />
-                                <span class="ml-2 text-xs">Ya (Uang Muka)</span>
-                            </label>
+                            <!-- Kategori Pembelian (Lokal / Import) -->
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-2">
+                                    Asal Barang (Kategori Pembelian)
+                                </label>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <label for="kategori_pembelian_l" class="flex items-center gap-2 px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer transition shadow-2xs radio-card">
+                                        <input type="radio" name="kategori_pembelian" id="kategori_pembelian_l" value="L" {{ old('kategori_pembelian', 'L') == 'L' ? 'checked' : '' }} class="w-4 h-4 text-[#162a5b] border-slate-300 focus:ring-[#162a5b] cursor-pointer shrink-0" />
+                                        <span class="text-xs font-bold text-slate-800 dark:text-white">Lokal</span>
+                                    </label>
+                                    <label for="kategori_pembelian_i" class="flex items-center gap-2 px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer transition shadow-2xs radio-card">
+                                        <input type="radio" name="kategori_pembelian" id="kategori_pembelian_i" value="I" {{ old('kategori_pembelian') == 'I' ? 'checked' : '' }} class="w-4 h-4 text-[#162a5b] border-slate-300 focus:ring-[#162a5b] cursor-pointer shrink-0" />
+                                        <span class="text-xs font-bold text-slate-800 dark:text-white">Import</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Status Uang Muka -->
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-2">
+                                    Jenis Transaksi Uang Muka
+                                </label>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <label for="status_uang_muka_0" class="flex items-center gap-2 px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer transition shadow-2xs radio-card">
+                                        <input type="radio" name="status_uang_muka" id="status_uang_muka_0" value="0" {{ old('status_uang_muka', '0') === '0' ? 'checked' : '' }} class="w-4 h-4 text-[#162a5b] border-slate-300 focus:ring-[#162a5b] cursor-pointer shrink-0" />
+                                        <span class="text-xs font-bold text-slate-800 dark:text-white">Biasa (Standar)</span>
+                                    </label>
+                                    <label for="status_uang_muka_1" class="flex items-center gap-2 px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer transition shadow-2xs radio-card">
+                                        <input type="radio" name="status_uang_muka" id="status_uang_muka_1" value="1" {{ old('status_uang_muka') === '1' ? 'checked' : '' }} class="w-4 h-4 text-[#162a5b] border-slate-300 focus:ring-[#162a5b] cursor-pointer shrink-0" />
+                                        <span class="text-xs font-bold text-slate-800 dark:text-white">Uang Muka (UM)</span>
+                                    </label>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Right Panel: Input items & Data details -->
-            <div class="lg:col-span-9 space-y-4">
-                <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 space-y-4">
-                    <div class="flex justify-between items-center border-b border-gray-100 pb-3">
-                        <h3 class="font-bold text-base text-gray-900">Detail Barang Pembelian</h3>
-                        <div class="flex items-center gap-2">
-                            <svg class="w-5 h-5 text-[#294C9A]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
-                            <span class="text-xs text-gray-500 font-medium">Grand Total:</span>
-                            <span id="grandtotal_text" class="text-base font-bold text-[#294C9A]">0</span>
+                <!-- Right Column (8 cols): Input Barang & Detail Tabel -->
+                <div class="lg:col-span-8 space-y-5">
+                    
+                    <!-- Card 3: Form Input Barang ke Keranjang -->
+                    <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/90 dark:border-slate-800 shadow-2xs overflow-hidden">
+                        <div class="px-6 py-4 bg-[#162a5b] text-white flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                            <div class="flex items-center gap-3">
+                                <div class="w-9 h-9 rounded-xl bg-white/15 flex items-center justify-center shrink-0">
+                                    <i data-lucide="package-plus" class="w-5 h-5 text-white"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-sm text-white">Input Barang Pembelian</h3>
+                                    <p class="text-[11px] text-blue-200/80">Pilih barang master, masukkan kuantiti, harga, penyesuaian, dan akun</p>
+                                </div>
+                            </div>
+
+                            <!-- Live Grand Total Badge -->
+                            <div class="flex items-center gap-2 bg-white/10 px-3.5 py-1.5 rounded-xl border border-white/15 shrink-0">
+                                <span class="text-[11px] font-semibold text-blue-100 uppercase tracking-wider">Grand Total:</span>
+                                <span class="font-mono font-black text-sm sm:text-base text-white">Rp <span id="grandtotal_text">0</span></span>
+                            </div>
+                        </div>
+
+                        <div class="p-5 space-y-4">
+                            <!-- Baris 1: Item Barang, Qty, Harga, Penyesuaian -->
+                            <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 items-end">
+                                <!-- Pilih Barang Trigger -->
+                                <div class="sm:col-span-5">
+                                    <label for="nama_barang" class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                                        Nama Barang <span class="text-rose-500">*</span>
+                                    </label>
+                                    <div class="relative">
+                                        <input 
+                                            type="text" 
+                                            name="nama_barang" 
+                                            id="nama_barang" 
+                                            class="block w-full pl-3.5 pr-10 h-[40px] text-xs font-semibold text-slate-800 dark:text-white bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-[#162a5b] transition cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 shadow-2xs placeholder-slate-400" 
+                                            placeholder="Klik untuk cari barang..." 
+                                            readonly 
+                                        />
+                                        <button 
+                                            type="button" 
+                                            class="absolute inset-y-0 right-0 px-3.5 flex items-center text-slate-400 hover:text-blue-600 transition cursor-pointer"
+                                            onclick="$('#nama_barang').click()"
+                                        >
+                                            <i data-lucide="search" class="w-4 h-4"></i>
+                                        </button>
+                                    </div>
+                                    <input type="hidden" id="kode_barang" name="kode_barang">
+                                </div>
+
+                                <!-- Qty -->
+                                <div class="sm:col-span-2">
+                                    <label for="jumlah" class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                                        Qty <span class="text-rose-500">*</span>
+                                    </label>
+                                    <input 
+                                        type="text" 
+                                        name="jumlah" 
+                                        id="jumlah" 
+                                        class="w-full h-[40px] px-3 text-xs font-bold text-right text-slate-800 dark:text-white bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-[#162a5b] transition shadow-2xs number-separator" 
+                                        placeholder="0" 
+                                        autocomplete="off" 
+                                    />
+                                </div>
+
+                                <!-- Harga Satuan -->
+                                <div class="sm:col-span-3">
+                                    <label for="harga" class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                                        Harga Satuan (Rp) <span class="text-rose-500">*</span>
+                                    </label>
+                                    <input 
+                                        type="text" 
+                                        name="harga" 
+                                        id="harga" 
+                                        class="w-full h-[40px] px-3 text-xs font-bold text-right text-slate-800 dark:text-white bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-[#162a5b] transition shadow-2xs number-separator" 
+                                        placeholder="0" 
+                                        autocomplete="off" 
+                                    />
+                                </div>
+
+                                <!-- Penyesuaian -->
+                                <div class="sm:col-span-2">
+                                    <label for="penyesuaian" class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                                        Penyesuaian
+                                    </label>
+                                    <input 
+                                        type="text" 
+                                        name="penyesuaian" 
+                                        id="penyesuaian" 
+                                        class="w-full h-[40px] px-3 text-xs font-bold text-right text-slate-800 dark:text-white bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-[#162a5b] transition shadow-2xs number-separator" 
+                                        placeholder="0" 
+                                        autocomplete="off" 
+                                    />
+                                </div>
+                            </div>
+
+                            <!-- Baris 2: Akun Akuntansi, Cabang, Keterangan -->
+                            <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 items-end">
+                                <!-- Akun Pembelian -->
+                                <div class="sm:col-span-5">
+                                    <label for="kode_akun" class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                                        Akun Akuntansi <span class="text-rose-500">*</span>
+                                    </label>
+                                    <select name="kode_akun" id="kode_akun" class="select2Kodeakun w-full">
+                                        <option value="">Pilih Akun</option>
+                                        @foreach ($coa as $d)
+                                            <option value="{{ $d->kode_akun }}">{{ $d->kode_akun }} - {{ $d->nama_akun }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+
+                                <!-- Cabang -->
+                                <div class="sm:col-span-3">
+                                    <label for="kode_cabang" class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                                        Alokasi Cabang
+                                    </label>
+                                    <select name="kode_cabang" id="kode_cabang" class="select2Kodecabang w-full">
+                                        <option value="">Semua Cabang</option>
+                                        @foreach ($cabang as $d)
+                                            <option value="{{ $d->kode_cabang }}">{{ strtoupper($d->nama_cabang) }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+
+                                <!-- Keterangan -->
+                                <div class="sm:col-span-4">
+                                    <label for="keterangan" class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                                        Catatan / Keterangan Item
+                                    </label>
+                                    <input 
+                                        type="text" 
+                                        name="keterangan" 
+                                        id="keterangan" 
+                                        class="w-full h-[40px] px-3.5 py-2 text-xs font-semibold text-slate-800 dark:text-white bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-[#162a5b] transition shadow-2xs placeholder-slate-400" 
+                                        placeholder="Catatan item (opsional)..." 
+                                        autocomplete="off" 
+                                    />
+                                </div>
+                            </div>
+
+                            <!-- Tombol Tambah Barang -->
+                            <div class="pt-1">
+                                <button 
+                                    type="button" 
+                                    id="btnTambahbarang" 
+                                    class="w-full h-[42px] inline-flex items-center justify-center gap-2 px-4 rounded-xl bg-blue-50 dark:bg-blue-500/10 hover:bg-blue-100 dark:hover:bg-blue-500/20 text-[#162a5b] dark:text-blue-400 border border-blue-200 dark:border-blue-500/30 font-bold text-xs shadow-2xs transition cursor-pointer"
+                                >
+                                    <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                                    <span>Tambahkan Barang ke Daftar Faktur</span>
+                                </button>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- Input Grid -->
-                    <div class="grid grid-cols-1 md:grid-cols-12 gap-3 items-end">
-                        <div class="md:col-span-3">
-                            <div class="c-fl-group">
-                                <span class="c-fl-icon">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
-                                </span>
-                                <input type="text" name="nama_barang" id="nama_barang" class="fi cursor-pointer" placeholder="Klik Pilih Barang" readonly />
-                                <input type="hidden" id="kode_barang" name="kode_barang">
-                                <label for="nama_barang" class="c-fl-label">Pilih Barang</label>
+                    <!-- Card 4: Tabel Rincian Barang Pembelian -->
+                    <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/90 dark:border-slate-800 shadow-2xs overflow-hidden">
+                        <div class="px-5 py-3.5 bg-slate-100/80 dark:bg-slate-800/80 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between">
+                            <div class="flex items-center gap-2">
+                                <i data-lucide="shopping-bag" class="w-4 h-4 text-slate-600 dark:text-slate-400"></i>
+                                <h4 class="font-bold text-xs uppercase tracking-wider text-slate-800 dark:text-slate-200">Daftar Barang Faktur</h4>
                             </div>
+                            <span class="text-[11px] text-slate-500 font-semibold">Tabel Transaksi Sementara</span>
                         </div>
 
-                        <div class="md:col-span-2">
-                            <div class="c-fl-group">
-                                <span class="c-fl-icon">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"></path></svg>
-                                </span>
-                                <input type="text" name="jumlah" id="jumlah" class="fi number-separator text-right" placeholder="0" autocomplete="off" />
-                                <label for="jumlah" class="c-fl-label">Qty</label>
-                            </div>
-                        </div>
-
-                        <div class="md:col-span-2">
-                            <div class="c-fl-group">
-                                <span class="c-fl-icon">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M12 16v1M10 5h4a2 2 0 012 2v10a2 2 0 01-2 2h-4a2 2 0 01-2-2V7a2 2 0 012-2z"></path></svg>
-                                </span>
-                                <input type="text" name="harga" id="harga" class="fi number-separator text-right" placeholder="0" autocomplete="off" />
-                                <label for="harga" class="c-fl-label">Harga</label>
-                            </div>
-                        </div>
-
-                        <div class="md:col-span-2">
-                            <div class="c-fl-group">
-                                <span class="c-fl-icon">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M12 16v1M10 5h4a2 2 0 012 2v10a2 2 0 01-2 2h-4a2 2 0 01-2-2V7a2 2 0 012-2z"></path></svg>
-                                </span>
-                                <input type="text" name="penyesuaian" id="penyesuaian" class="fi number-separator text-right" placeholder="0" autocomplete="off" />
-                                <label for="penyesuaian" class="c-fl-label">Penyesuaian</label>
-                            </div>
-                        </div>
-
-                        <div class="md:col-span-3">
-                            <div class="c-fl-group">
-                                <span class="c-fl-icon">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
-                                </span>
-                                <select name="kode_akun" id="kode_akun" class="fi select2Kodeakun">
-                                    <option value="">Akun</option>
-                                    @foreach ($coa as $d)
-                                        <option value="{{ $d->kode_akun }}">{{ $d->kode_akun }} - {{ $d->nama_akun }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-xs text-left border-collapse min-w-[700px]">
+                                <thead class="bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-b border-slate-200 dark:border-slate-700 uppercase tracking-wider text-[11px] font-bold">
+                                    <tr>
+                                        <th class="py-2.5 px-3 w-24">Kode</th>
+                                        <th class="py-2.5 px-3">Nama Barang</th>
+                                        <th class="py-2.5 px-3 text-center w-16">Qty</th>
+                                        <th class="py-2.5 px-3 text-right w-24">Harga</th>
+                                        <th class="py-2.5 px-3 text-right w-24">Subtotal</th>
+                                        <th class="py-2.5 px-3 text-right w-20">Peny</th>
+                                        <th class="py-2.5 px-3 text-right w-28">Total</th>
+                                        <th class="py-2.5 px-3">Akun</th>
+                                        <th class="py-2.5 px-3 text-center w-20">Cabang</th>
+                                        <th class="py-2.5 px-3 text-center w-16">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="loadbarang" class="divide-y divide-slate-100 dark:divide-slate-800 text-slate-700 dark:text-slate-300">
+                                    <!-- Dynamic rows inserted by JS -->
+                                </tbody>
+                                <tfoot class="border-t-2 border-slate-300 dark:border-slate-700 bg-slate-50/90 dark:bg-slate-800/90 font-bold text-slate-900 dark:text-white text-xs">
+                                    <tr>
+                                        <td colspan="6" class="py-3 px-3 text-right uppercase tracking-wider text-slate-600 dark:text-slate-400">TOTAL PEMBELIAN (RP)</td>
+                                        <td id="grandtotal" class="py-3 px-3 text-right font-black text-sm text-[#162a5b] dark:text-blue-400 whitespace-nowrap">0</td>
+                                        <td colspan="3"></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-12 gap-3 items-end">
-                        <div class="md:col-span-8">
-                            <div class="c-fl-group">
-                                <span class="c-fl-icon">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                                </span>
-                                <input type="text" name="keterangan" id="keterangan" class="fi" placeholder="Keterangan" autocomplete="off" />
-                                <label for="keterangan" class="c-fl-label">Keterangan</label>
-                            </div>
+                    <!-- Card 5: Pernyataan & Tombol Submit Final -->
+                    <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/90 dark:border-slate-800 p-5 shadow-2xs space-y-4">
+                        <div class="p-4 rounded-xl bg-amber-50/60 dark:bg-amber-950/20 border border-amber-200/80 dark:border-amber-900/40 flex items-start gap-3">
+                            <input 
+                                type="checkbox" 
+                                name="aggrement" 
+                                id="defaultCheck3" 
+                                class="agreement w-4 h-4 mt-0.5 rounded border-slate-300 text-[#162a5b] focus:ring-[#162a5b] cursor-pointer" 
+                                value="aggrement" 
+                            />
+                            <label for="defaultCheck3" class="text-xs font-semibold text-slate-700 dark:text-slate-300 cursor-pointer">
+                                <span class="font-bold text-slate-900 dark:text-white block mb-0.5">Konfirmasi & Verifikasi Data Pembelian</span>
+                                Saya menyatakan bahwa seluruh rincian barang, supplier, kuantiti, harga, dan alokasi akun akuntansi di atas sudah sesuai dan siap diproses ke sistem.
+                            </label>
                         </div>
-
-                        <div class="md:col-span-4">
-                            <div class="c-fl-group">
-                                <span class="c-fl-icon">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
-                                </span>
-                                <select name="kode_cabang" id="kode_cabang" class="fi select2Kodecabang">
-                                    <option value="">Cabang</option>
-                                    @foreach ($cabang as $d)
-                                        <option value="{{ $d->kode_cabang }}">{{ strtoupper($d->nama_cabang) }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-
-                    <button type="button" id="btnTambahbarang" class="w-full inline-flex items-center justify-center px-4 py-2 text-xs font-semibold text-[#294C9A] bg-blue-50 border border-blue-200 hover:bg-blue-100 rounded-xl transition shadow-sm gap-1.5">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-                        Tambah Barang
-                    </button>
-
-                    <!-- Items Detail Table -->
-                    <div class="overflow-x-auto rounded-xl border border-gray-200 shadow-sm mt-3">
-                        <table class="w-full text-xs text-left">
-                            <thead class="text-xs uppercase bg-gray-50 text-gray-700 border-b border-gray-200">
-                                <tr>
-                                    <th class="px-3 py-2.5">Kode</th>
-                                    <th class="px-3 py-2.5">Nama Barang</th>
-                                    <th class="px-3 py-2.5 text-center">Qty</th>
-                                    <th class="px-3 py-2.5 text-right">Harga</th>
-                                    <th class="px-3 py-2.5 text-right">Subtotal</th>
-                                    <th class="px-3 py-2.5 text-right">Peny</th>
-                                    <th class="px-3 py-2.5 text-right">Total</th>
-                                    <th class="px-3 py-2.5">Akun</th>
-                                    <th class="px-3 py-2.5">Cabang</th>
-                                    <th class="px-3 py-2.5 text-center">#</th>
-                                </tr>
-                            </thead>
-                            <tbody id="loadbarang" class="divide-y divide-gray-100 bg-white"></tbody>
-                            <tfoot class="bg-gray-50 text-gray-900 border-t border-gray-200 font-bold">
-                                <tr>
-                                    <td colspan="6" class="px-3 py-2.5">TOTAL</td>
-                                    <td id="grandtotal" class="px-3 py-2.5 text-right">0</td>
-                                    <td colspan="3"></td>
-                                </tr>
-                            </tfoot>
-                        </table>
-                    </div>
-
-                    <!-- Agreement & Submit Button -->
-                    <div class="pt-4 border-t border-gray-100 flex flex-col gap-3">
-                        <label class="inline-flex items-center text-xs text-gray-700 font-medium cursor-pointer">
-                            <input type="checkbox" name="aggrement" id="defaultCheck3" class="agreement rounded border-gray-300 text-[#294C9A] focus:ring-[#294C9A]" value="aggrement" />
-                            <span class="ml-2">Yakin Akan Disimpan ?</span>
-                        </label>
 
                         <div id="saveButton" class="hidden">
-                            <button type="submit" id="btnSimpan" class="w-full inline-flex items-center justify-center px-4 py-2.5 text-xs font-semibold text-white bg-[#294C9A] hover:bg-[#1E3A70] rounded-xl transition shadow-sm gap-1.5">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
-                                Submit Pembelian
+                            <button 
+                                type="submit" 
+                                id="btnSimpan" 
+                                class="w-full h-[46px] inline-flex items-center justify-center gap-2 px-6 rounded-xl bg-[#162a5b] hover:bg-[#1c3574] text-white font-bold text-xs uppercase tracking-wider shadow-sm transition cursor-pointer"
+                            >
+                                <i data-lucide="check-circle" class="w-4 h-4"></i>
+                                <span>Simpan & Terbitkan Faktur Pembelian</span>
                             </button>
                         </div>
                     </div>
+
                 </div>
+
             </div>
-        </div>
-    </form>
+        </form>
+
+    </div>
 
     <!-- Modal Data Barang -->
-    <div id="modalBarang" class="fixed inset-0 z-50 hidden overflow-y-auto bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-        <div class="relative w-full max-w-5xl bg-white rounded-2xl shadow-2xl overflow-hidden transform transition-all border border-gray-100">
+    <div id="modalBarang" class="fixed inset-0 z-50 hidden overflow-y-auto bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="relative w-full max-w-5xl bg-white dark:bg-slate-900 rounded-2xl shadow-2xl overflow-hidden transform transition-all border border-slate-200 dark:border-slate-800">
             <!-- Modal Header -->
-            <div class="px-6 py-4 bg-gradient-to-r from-[#1E3A8A] via-[#294C9A] to-[#1E3A8A] text-white flex justify-between items-center shadow-sm">
+            <div class="px-6 py-4 bg-[#162a5b] text-white flex justify-between items-center">
                 <div class="flex items-center gap-3">
-                    <div class="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center border border-white/20 shadow-inner">
-                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
+                    <div class="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center border border-white/15 shadow-inner">
+                        <i data-lucide="boxes" class="w-5 h-5 text-white"></i>
                     </div>
                     <div>
-                        <h3 class="text-base font-bold tracking-tight text-white">Data Master Barang</h3>
-                        <p class="text-xs text-blue-100 font-normal">Pilih barang untuk dimasukkan ke dalam daftar transaksi</p>
+                        <h3 class="text-sm font-bold tracking-tight text-white">Data Master Barang Pembelian</h3>
+                        <p class="text-[11px] text-blue-200/80">Pilih salah satu item barang untuk ditambahkan ke daftar faktur</p>
                     </div>
                 </div>
-                <button type="button" onclick="$('#modalBarang').addClass('hidden')" class="text-white/80 hover:text-white p-1.5 rounded-lg hover:bg-white/10 transition">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                <button 
+                    type="button" 
+                    onclick="$('#modalBarang').addClass('hidden')" 
+                    class="w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition cursor-pointer"
+                >
+                    <i data-lucide="x" class="w-4 h-4"></i>
                 </button>
             </div>
             <!-- Modal Body -->
-            <div class="p-6 max-h-[80vh] overflow-y-auto bg-gray-50/40">
-                <div class="bg-white rounded-xl border border-gray-200/80 shadow-xs p-4">
+            <div class="p-6 max-h-[80vh] overflow-y-auto bg-slate-50/50 dark:bg-slate-800/40">
+                <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 shadow-2xs p-4">
                     <div class="overflow-x-auto">
-                        <table class="w-full text-xs text-left text-gray-600" id="tabelbarang" style="width:100% !important;">
+                        <table class="w-full text-xs text-left" id="tabelbarang" style="width:100% !important;">
                             <thead>
                                 <tr>
                                     <th style="width: 12%;">Kode</th>
@@ -597,11 +755,27 @@
         console.log("Pembelian create document ready fired.");
         const form = $("#formPembelian");
         let baris = 0;
+        
         easyNumberSeparator({
             selector: '.number-separator',
             separator: '.',
             decimalSeparator: ',',
         });
+
+        function syncRadioCardStyles() {
+            $('.radio-card input[type="radio"]').each(function() {
+                const label = $(this).closest('label');
+                if ($(this).is(':checked')) {
+                    label.addClass('border-[#162a5b] bg-blue-50/50 dark:bg-blue-950/20 text-[#162a5b] dark:text-blue-400')
+                         .removeClass('border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300');
+                } else {
+                    label.removeClass('border-[#162a5b] bg-blue-50/50 dark:bg-blue-950/20 text-[#162a5b] dark:text-blue-400')
+                         .addClass('border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300');
+                }
+            });
+        }
+        $(document).on('change', '.radio-card input[type="radio"]', syncRadioCardStyles);
+        syncRadioCardStyles();
 
         form.find("#no_bukti").on('keydown keyup', function(e) {
             if (e.key === ' ') {
@@ -613,8 +787,8 @@
         function buttonDisable() {
             $("#btnSimpan").prop('disabled', true);
             $("#btnSimpan").html(`
-                <svg class="w-4 h-4 text-white animate-spin me-2" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                Loading..
+                <div class="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin me-2"></div>
+                <span>Menyimpan Transaksi...</span>
             `);
         }
 
@@ -634,7 +808,7 @@
             select2Kodesupplier.each(function() {
                 var $this = $(this);
                 $this.wrap('<div class="position-relative"></div>').select2({
-                    placeholder: 'Supplier',
+                    placeholder: 'Pilih Supplier',
                     allowClear: true,
                     dropdownParent: $this.parent()
                 });
@@ -646,7 +820,7 @@
             select2PO.each(function() {
                 var $this = $(this);
                 $this.wrap('<div class="position-relative"></div>').select2({
-                    placeholder: 'No PO',
+                    placeholder: 'Pilih No PO (Opsional)',
                     allowClear: true,
                     dropdownParent: $this.parent()
                 });
@@ -658,7 +832,7 @@
             select2Kodeakun.each(function() {
                 var $this = $(this);
                 $this.wrap('<div class="position-relative"></div>').select2({
-                    placeholder: 'Akun',
+                    placeholder: 'Pilih Akun',
                     allowClear: true,
                     dropdownParent: $this.parent()
                 });
@@ -670,7 +844,7 @@
             select2Kodecabang.each(function() {
                 var $this = $(this);
                 $this.wrap('<div class="position-relative"></div>').select2({
-                    placeholder: 'Cabang',
+                    placeholder: 'Pilih Cabang (Opsional)',
                     allowClear: true,
                     dropdownParent: $this.parent()
                 });
@@ -694,27 +868,41 @@
                     { data: 'jenisbarang', name: 'jenisbarang', orderable: true, searchable: false },
                     { data: 'kategori_badge', name: 'nama_kategori', orderable: true, searchable: false },
                     { data: 'action', name: 'action', orderable: false, searchable: false, className: 'text-center' }
-                ]
+                ],
+                drawCallback: function() {
+                    if (typeof lucide !== 'undefined') {
+                        lucide.createIcons();
+                    }
+                }
             });
         }
 
         $(document).on('click', "#nama_barang", function(e) {
-            console.log("Pilih barang input clicked.");
             let kode_group = form.find("#kode_asal_pengajuan").val();
             if (kode_group == "") {
                 Swal.fire({
-                    title: "Oops!",
-                    text: "Asal Pengajuan Harus Diisi Dahulu !",
+                    title: "Perhatian",
+                    text: "Silakan pilih Asal Ajuan terlebih dahulu!",
                     icon: "warning",
-                    showConfirmButton: true,
+                    confirmButtonColor: "#162a5b",
+                    confirmButtonText: "Mengerti",
                     didClose: (e) => {
                         form.find("#kode_asal_pengajuan").focus();
                     },
                 });
             } else {
-                console.log("Loading barang for group:", kode_group);
                 loadTablebarang(kode_group);
                 $("#modalBarang").removeClass("hidden");
+                if (typeof lucide !== 'undefined') {
+                    lucide.createIcons();
+                }
+            }
+        });
+
+        // Close modal when clicking outside box
+        $(document).on('click', '#modalBarang', function(e) {
+            if (e.target === this) {
+                $(this).addClass('hidden');
             }
         });
 
@@ -781,7 +969,7 @@
             const nama_barang = form.find("#nama_barang").val();
             const jumlah = form.find("#jumlah").val();
             const harga = form.find("#harga").val();
-            const penyesuaian = form.find("#penyesuaian").val();
+            const penyesuaian = form.find("#penyesuaian").val() || '0';
             const dataAkun = form.find("#kode_akun :selected").select2(this.data);
             const kode_akun = $(dataAkun).val();
             const nama_akun = $(dataAkun).text();
@@ -791,29 +979,29 @@
             if (kode_barang == "") {
                 Swal.fire({
                     title: "Oops!",
-                    text: "Barang Harus Diisi!",
+                    text: "Barang harus dipilih terlebih dahulu!",
                     icon: "warning",
-                    showConfirmButton: true,
+                    confirmButtonColor: "#162a5b",
                     didClose: (e) => {
                         form.find("#nama_barang").focus();
                     },
                 });
-            } else if (jumlah == "" || jumlah === 0) {
+            } else if (jumlah == "" || jumlah === "0") {
                 Swal.fire({
                     title: "Oops!",
-                    text: "Qty Harus Diisi!",
+                    text: "Qty barang harus diisi!",
                     icon: "warning",
-                    showConfirmButton: true,
+                    confirmButtonColor: "#162a5b",
                     didClose: (e) => {
                         form.find("#jumlah").focus();
                     },
                 });
-            } else if (harga == "" || harga === 0) {
+            } else if (harga == "" || harga === "0") {
                 Swal.fire({
                     title: "Oops!",
-                    text: "Harga Harus Diisi!",
+                    text: "Harga barang harus diisi!",
                     icon: "warning",
-                    showConfirmButton: true,
+                    confirmButtonColor: "#162a5b",
                     didClose: (e) => {
                         form.find("#harga").focus();
                     },
@@ -821,9 +1009,9 @@
             } else if (kode_akun == "") {
                 Swal.fire({
                     title: "Oops!",
-                    text: "Akun Harus Diisi!",
+                    text: "Akun Akuntansi harus dipilih!",
                     icon: "warning",
-                    showConfirmButton: true,
+                    confirmButtonColor: "#162a5b",
                     didClose: (e) => {
                         form.find("#kode_akun").focus();
                     },
@@ -838,14 +1026,14 @@
                 subtotal = numberFormat(subtotal, '2', ',', '.');
                 total = numberFormat(total, '2', ',', '.');
                 let bg;
-                if (kode_akun.substring(0, 3) == '6-1' && kode_cabang != '' || kode_akun.substring(0, 3) == '6-2' && kode_cabang != '') {
-                    bg = "bg-blue-50 text-blue-900";
+                if ((kode_akun.substring(0, 3) == '6-1' && kode_cabang != '') || (kode_akun.substring(0, 3) == '6-2' && kode_cabang != '')) {
+                    bg = "bg-blue-50/60 dark:bg-blue-950/20";
                 } else {
                     bg = "";
                 }
                 let barang = `
-                <tr id="index_${baris}" class="${bg} hover:bg-gray-50/80 transition">
-                    <td class="px-3 py-2 font-medium text-gray-900">
+                <tr id="index_${baris}" class="${bg} hover:bg-slate-50 dark:hover:bg-slate-800/40 transition">
+                    <td class="py-2.5 px-3 font-mono font-bold text-slate-800 dark:text-white">
                         <input type="hidden" name="kode_barang_item[]" value="${kode_barang}" />
                         <input type="hidden" name="jumlah_item[]" value="${jumlah}" />
                         <input type="hidden" name="harga_item[]" value="${harga}" />
@@ -853,32 +1041,32 @@
                         <input type="hidden" name="kode_akun_item[]" value="${kode_akun}" />
                         <input type="hidden" name="keterangan_item[]" value="${keterangan}" />
                         <input type="hidden" name="kode_cabang_item[]" value="${kode_cabang}" />
-                        ${kode_barang}
+                        <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-mono bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700">${kode_barang}</span>
                     </td>
-                    <td class="px-3 py-2 text-gray-700">${nama_barang}</td>
-                    <td class="px-3 py-2 text-center text-gray-700">${jumlah}</td>
-                    <td class="px-3 py-2 text-right text-gray-700">${harga}</td>
-                    <td class="px-3 py-2 text-right text-gray-700">${subtotal}</td>
-                    <td class="px-3 py-2 text-right text-gray-700">${penyesuaian}</td>
-                    <td class="px-3 py-2 text-right font-bold text-gray-950 totalharga">${total}</td>
-                    <td class="px-3 py-2 text-gray-600">${nama_akun}</td>
-                    <td class="px-3 py-2 text-center text-gray-600">${kode_cabang}</td>
-                    <td class="px-3 py-2 text-center">
-                        <div class="flex items-center justify-center gap-2">
-                            <a href="#" class="me-1" data-bs-toggle="popover"
-                                data-bs-placement="left" data-bs-html="true"
-                                data-bs-content="${keterangan}" title="Keterangan"
-                                data-bs-custom-class="popover-info">
-                                <svg class="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                            </a>
-                            <a href="#" id="index_${baris}" class="delete">
-                                <svg class="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                            </a>
-                        </div>
+                    <td class="py-2.5 px-3 font-bold text-slate-900 dark:text-white">
+                        <div>${nama_barang}</div>
+                        ${keterangan ? `<div class="text-[10px] text-slate-400 font-normal mt-0.5">${keterangan}</div>` : ''}
+                    </td>
+                    <td class="py-2.5 px-3 text-center font-bold text-slate-800 dark:text-white">${jumlah}</td>
+                    <td class="py-2.5 px-3 text-right font-medium text-slate-800 dark:text-slate-200 whitespace-nowrap">${harga}</td>
+                    <td class="py-2.5 px-3 text-right font-medium text-slate-800 dark:text-slate-200 whitespace-nowrap">${subtotal}</td>
+                    <td class="py-2.5 px-3 text-right font-medium text-slate-500 whitespace-nowrap">${penyesuaian}</td>
+                    <td class="py-2.5 px-3 text-right font-mono font-bold text-emerald-600 dark:text-emerald-400 whitespace-nowrap totalharga">${total}</td>
+                    <td class="py-2.5 px-3 text-slate-700 dark:text-slate-300">
+                        <div class="text-[11px] font-bold text-slate-900 dark:text-white">${nama_akun}</div>
+                        <span class="text-[10px] font-mono text-slate-400">${kode_akun}</span>
+                    </td>
+                    <td class="py-2.5 px-3 text-center uppercase font-semibold text-slate-600 dark:text-slate-400">${kode_cabang || '-'}</td>
+                    <td class="py-2.5 px-3 text-center whitespace-nowrap">
+                        <button type="button" id="index_${baris}" class="delete w-7 h-7 rounded-lg inline-flex items-center justify-center bg-rose-50 dark:bg-rose-500/10 hover:bg-rose-100 text-rose-600 border border-rose-200/60 transition cursor-pointer shadow-2xs" title="Hapus Item">
+                            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                        </button>
                     </td>
                 </tr>`;
                 $('#loadbarang').append(barang);
-                $('[data-bs-toggle="popover"]').popover();
+                if (typeof lucide !== 'undefined') {
+                    lucide.createIcons();
+                }
                 calculateTotal();
                 resetForm();
             }
@@ -899,15 +1087,14 @@
             e.preventDefault();
             let id = $(this).attr("id");
             Swal.fire({
-                title: `Apakah Anda Yakin Ingin Menghapus Data Ini ?`,
-                text: "Jika dihapus maka data akan hilang permanent.",
+                title: "Hapus Item Barang?",
+                text: "Barang ini akan dihapus dari daftar faktur sementara.",
                 icon: "warning",
-                buttons: true,
-                dangerMode: true,
                 showCancelButton: true,
-                confirmButtonColor: "#294C9A",
+                confirmButtonColor: "#162a5b",
                 cancelButtonColor: "#d33",
-                confirmButtonText: "Yes, Hapus Saja!"
+                confirmButtonText: "Ya, Hapus!",
+                cancelButtonText: "Batal"
             }).then((result) => {
                 if (result.isConfirmed) {
                     $(`#loadbarang`).find(`#${id}`).remove();
@@ -919,6 +1106,9 @@
         form.find('.agreement').change(function() {
             if (this.checked) {
                 form.find("#saveButton").removeClass("hidden");
+                if (typeof lucide !== 'undefined') {
+                    lucide.createIcons();
+                }
             } else {
                 form.find("#saveButton").addClass("hidden");
             }
@@ -934,10 +1124,10 @@
 
             if (no_bukti == "") {
                 Swal.fire({
-                    title: "Oops!",
-                    text: "No. Bukti Pembelian harus diisi!",
+                    title: "Perhatian",
+                    text: "No. Bukti Pembelian wajib diisi!",
                     icon: "warning",
-                    showConfirmButton: true,
+                    confirmButtonColor: "#162a5b",
                     didClose: () => {
                         form.find("#no_bukti").focus();
                     },
@@ -945,10 +1135,10 @@
                 return false;
             } else if (tanggal == "") {
                 Swal.fire({
-                    title: "Oops!",
-                    text: "Tanggal harus diisi!",
+                    title: "Perhatian",
+                    text: "Tanggal Faktur wajib diisi!",
                     icon: "warning",
-                    showConfirmButton: true,
+                    confirmButtonColor: "#162a5b",
                     didClose: () => {
                         form.find("#tanggal").focus();
                     },
@@ -956,10 +1146,10 @@
                 return false;
             } else if (kode_supplier == "") {
                 Swal.fire({
-                    title: "Oops!",
-                    text: "Supplier harus diisi!",
+                    title: "Perhatian",
+                    text: "Supplier rekanan wajib dipilih!",
                     icon: "warning",
-                    showConfirmButton: true,
+                    confirmButtonColor: "#162a5b",
                     didClose: () => {
                         form.find("#kode_supplier").focus();
                     },
@@ -967,10 +1157,10 @@
                 return false;
             } else if (kode_asal_pengajuan == "") {
                 Swal.fire({
-                    title: "Oops!",
-                    text: "Asal Ajuan harus diisi!",
+                    title: "Perhatian",
+                    text: "Asal Ajuan pembelian wajib dipilih!",
                     icon: "warning",
-                    showConfirmButton: true,
+                    confirmButtonColor: "#162a5b",
                     didClose: () => {
                         form.find("#kode_asal_pengajuan").focus();
                     },
@@ -978,10 +1168,10 @@
                 return false;
             } else if (jenis_transaksi == "") {
                 Swal.fire({
-                    title: "Oops!",
-                    text: "Jenis Transaksi harus diisi!",
+                    title: "Perhatian",
+                    text: "Jenis Pembayaran (Tunai/Kredit) wajib dipilih!",
                     icon: "warning",
-                    showConfirmButton: true,
+                    confirmButtonColor: "#162a5b",
                     didClose: () => {
                         form.find("#jenis_transaksi").focus();
                     },
@@ -989,10 +1179,10 @@
                 return false;
             } else if (jatuh_tempo == "" && jenis_transaksi == 'K') {
                 Swal.fire({
-                    title: "Oops!",
-                    text: "Jatuh Tempo harus diisi!",
+                    title: "Perhatian",
+                    text: "Jatuh Tempo wajib diisi untuk transaksi Kredit!",
                     icon: "warning",
-                    showConfirmButton: true,
+                    confirmButtonColor: "#162a5b",
                     didClose: () => {
                         form.find("#jatuh_tempo").focus();
                     },
@@ -1000,10 +1190,10 @@
                 return false;
             } else if ($('#loadbarang tr').length == 0) {
                 Swal.fire({
-                    title: "Oops!",
-                    text: "Detail Pembelian Tidak Boleh Kosong!",
+                    title: "Perhatian",
+                    text: "Detail barang pembelian tidak boleh kosong! Tambahkan minimal 1 item barang.",
                     icon: "warning",
-                    showConfirmButton: true,
+                    confirmButtonColor: "#162a5b",
                     didClose: () => {
                         form.find("#nama_barang").focus();
                     },
@@ -1021,7 +1211,7 @@
                 return;
             }
             $('#no_po').select2({
-                placeholder: 'Pilih No PO',
+                placeholder: 'Pilih No PO (Opsional)',
                 allowClear: true,
                 ajax: {
                     url: `/po/by-supplier/${kode_supplier}`,
@@ -1035,6 +1225,10 @@
                 }
             });
         });
+
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+        }
     });
 </script>
 @endpush

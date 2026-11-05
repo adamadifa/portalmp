@@ -145,11 +145,11 @@
                 <table class="w-full text-left border-collapse">
                     <thead>
                         <tr class="text-xs font-semibold uppercase tracking-wider bg-[#294C9A] text-white">
-                            <th class="py-3 px-4" style="width: 8%;">No</th>
-                            <th class="py-3 px-4" style="width: 15%;">Kode Tujuan</th>
-                            <th class="py-3 px-4" style="width: 40%;">Tujuan</th>
-                            <th class="py-3 px-4 text-right" style="width: 20%;">Tarif</th>
-                            <th class="py-3 px-4 text-center" style="width: 17%;">Actions</th>
+                            <th class="py-2.5 px-4" style="width: 8%;">No</th>
+                            <th class="py-2.5 px-4" style="width: 15%;">Kode Tujuan</th>
+                            <th class="py-2.5 px-4" style="width: 40%;">Tujuan</th>
+                            <th class="py-2.5 px-4 text-right" style="width: 20%;">Tarif</th>
+                            <th class="py-2.5 px-4 text-center" style="width: 17%;">Actions</th>
                         </tr>
                     </thead>
                     <tbody class="text-sm divide-y divide-gray-100">

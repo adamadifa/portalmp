@@ -1,349 +1,378 @@
-<aside class="flex flex-col w-64 h-full bg-[#294C9A] text-white border-r border-[#294C9A] shrink-0">
-    <!-- Logo -->
-    <div class="flex items-center justify-between px-6 py-4 h-16 border-b border-white/10">
-        <a href="{{ route('dashboard') }}" class="flex items-center">
-            <img src="{{ asset('assets/img/logo/logoputih.png') }}" alt="Logo" class="h-8 object-contain" />
-        </a>
-        <button class="text-blue-200 hover:text-white">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"></path></svg>
-        </button>
-    </div>
-
-    <!-- Workspace Switcher -->
-    <div class="px-6 py-4">
-        <button class="flex items-center justify-between w-full px-4 py-2 text-sm font-medium text-white bg-white/5 border border-white/10 rounded-lg hover:bg-white/10">
-            <div class="flex items-center gap-2">
-                <div class="flex items-center justify-center w-6 h-6 bg-white rounded-full text-[#294C9A] text-xs font-bold">W</div>
-                <span>Uxerflow</span>
-            </div>
-            <svg class="w-4 h-4 text-blue-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l4-4 4 4m0 6l-4 4-4-4"></path></svg>
-        </button>
-    </div>
-
-    <!-- Navigation -->
-    <nav class="flex-1 px-4 py-2 space-y-6 overflow-y-auto">
-        <!-- Main Section -->
-        <div>
-            <h3 class="px-2 text-[10px] font-bold text-blue-200/50 uppercase tracking-wider mb-2">Main</h3>
-            <div class="space-y-1">
-                <a href="{{ route('dashboard') }}" class="flex items-center px-2 py-2 text-sm font-medium text-white bg-white/10 rounded-lg group">
-                    <svg class="w-5 h-5 mr-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
-                    Dashboard
-                </a>
-                <!-- Data Master Dropdown -->
-        @canany(['produk.view', 'produkharga.view', 'pelanggan.view', 'supplier.view', 'angkutan.view', 'tujuanangkutan.view', 'barangpembelian.view', 'barangproduksi.view'])
-        <div x-data="{ open: {{ (Request::is('produk*') || Request::is('produkharga*') || Request::is('pelanggan*') || Request::is('supplier*') || Request::is('angkutan*') || Request::is('tujuanangkutan*') || Request::is('barangpembelian*') || Request::is('barangproduksi*')) ? 'true' : 'false' }} }">
-            <button @click="open = !open" class="flex items-center justify-between w-full px-2 py-2 text-sm font-medium text-blue-100/70 hover:bg-white/5 hover:text-white rounded-lg group transition">
-                <div class="flex items-center">
-                    <svg class="w-5 h-5 mr-3 text-blue-200/70 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"></path></svg>
-                    <span>Data Master</span>
+<!-- SIDEBAR -->
+<aside id="sidebar" class="fixed inset-y-0 left-0 z-50 lg:static w-64 bg-[#162a5b] dark:bg-[#0f1d40] text-white border-r border-blue-900/40 flex flex-col justify-between shrink-0 p-5 select-none -translate-x-full lg:translate-x-0 h-full overflow-y-auto overflow-x-hidden transition-colors duration-200">
+    <div>
+        <!-- Brand Header -->
+        <div class="brand-header flex items-center justify-between px-1 h-12 mb-5">
+            <a href="{{ route('dashboard') }}" class="flex items-center gap-2.5 min-w-0">
+                <div class="w-9 h-9 rounded-xl bg-white/15 border border-white/20 flex items-center justify-center text-white font-black text-lg shadow-sm shrink-0 p-1">
+                    <img src="{{ asset('assets/img/logo/mp.png') }}" alt="Portal MP" class="w-full h-full object-contain filter brightness-0 invert" onerror="this.onerror=null; this.parentElement.innerHTML='<i data-lucide=&quot;layers&quot; class=&quot;w-5 h-5 text-white&quot;></i>';">
                 </div>
-                <svg class="w-4 h-4 text-blue-200 transition-transform duration-200" :class="{ 'rotate-180': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-            </button>
-            <div x-show="open" x-transition class="mt-1 ml-4 pl-4 space-y-0.5 border-l-2 border-white/20">
-                @can('produk.view')
-                <a href="{{ route('produk.index') }}" class="relative flex items-center px-2 py-1.5 text-xs font-semibold {{ Request::is('produk*') ? 'text-white bg-white/10' : 'text-blue-100/60 hover:text-white hover:bg-white/5' }} rounded-lg transition">
-                    <span class="absolute -left-[21px] w-2 h-2 rounded-full {{ Request::is('produk*') ? 'bg-white' : 'bg-white/30' }}"></span>
-                    Produk
-                </a>
-                @endcan
-                @can('produkharga.view')
-                <a href="{{ route('produkharga.index') }}" class="relative flex items-center px-2 py-1.5 text-xs font-semibold {{ Request::is('produkharga*') ? 'text-white bg-white/10' : 'text-blue-100/60 hover:text-white hover:bg-white/5' }} rounded-lg transition">
-                    <span class="absolute -left-[21px] w-2 h-2 rounded-full {{ Request::is('produkharga*') ? 'bg-white' : 'bg-white/30' }}"></span>
-                    Harga
-                </a>
-                @endcan
-                @can('pelanggan.view')
-                <a href="{{ route('pelanggan.index') }}" class="relative flex items-center px-2 py-1.5 text-xs font-semibold {{ Request::is('pelanggan*') ? 'text-white bg-white/10' : 'text-blue-100/60 hover:text-white hover:bg-white/5' }} rounded-lg transition">
-                    <span class="absolute -left-[21px] w-2 h-2 rounded-full {{ Request::is('pelanggan*') ? 'bg-white' : 'bg-white/30' }}"></span>
-                    Pelanggan
-                </a>
-                @endcan
-                @can('supplier.view')
-                <a href="{{ route('supplier.index') }}" class="relative flex items-center px-2 py-1.5 text-xs font-semibold {{ Request::is('supplier*') ? 'text-white bg-white/10' : 'text-blue-100/60 hover:text-white hover:bg-white/5' }} rounded-lg transition">
-                    <span class="absolute -left-[21px] w-2 h-2 rounded-full {{ Request::is('supplier*') ? 'bg-white' : 'bg-white/30' }}"></span>
-                    Supplier
-                </a>
-                @endcan
-                @can('angkutan.view')
-                <a href="{{ route('angkutan.index') }}" class="relative flex items-center px-2 py-1.5 text-xs font-semibold {{ Request::is('angkutan*') ? 'text-white bg-white/10' : 'text-blue-100/60 hover:text-white hover:bg-white/5' }} rounded-lg transition">
-                    <span class="absolute -left-[21px] w-2 h-2 rounded-full {{ Request::is('angkutan*') ? 'bg-white' : 'bg-white/30' }}"></span>
-                    Angkutan
-                </a>
-                @endcan
-                @can('tujuanangkutan.view')
-                <a href="{{ route('tujuanangkutan.index') }}" class="relative flex items-center px-2 py-1.5 text-xs font-semibold {{ Request::is('tujuanangkutan*') ? 'text-white bg-white/10' : 'text-blue-100/60 hover:text-white hover:bg-white/5' }} rounded-lg transition">
-                    <span class="absolute -left-[21px] w-2 h-2 rounded-full {{ Request::is('tujuanangkutan*') ? 'bg-white' : 'bg-white/30' }}"></span>
-                    Tujuan Angkutan
-                </a>
-                @endcan
-                @can('barangpembelian.view')
-                <a href="{{ route('barangpembelian.index') }}" class="relative flex items-center px-2 py-1.5 text-xs font-semibold {{ Request::is('barangpembelian*') ? 'text-white bg-white/10' : 'text-blue-100/60 hover:text-white hover:bg-white/5' }} rounded-lg transition">
-                    <span class="absolute -left-[21px] w-2 h-2 rounded-full {{ Request::is('barangpembelian*') ? 'bg-white' : 'bg-white/30' }}"></span>
-                    Barang
-                </a>
-                @endcan
-                @can('barangproduksi.view')
-                <a href="{{ route('barangproduksi.index') }}" class="relative flex items-center px-2 py-1.5 text-xs font-semibold {{ Request::is('barangproduksi*') ? 'text-white bg-white/10' : 'text-blue-100/60 hover:text-white hover:bg-white/5' }} rounded-lg transition">
-                    <span class="absolute -left-[21px] w-2 h-2 rounded-full {{ Request::is('barangproduksi*') ? 'bg-white' : 'bg-white/30' }}"></span>
-                    Barang Produksi
-                </a>
-                @endcan
-            </div>
-        </div>
-        @endcanany
-
-        <!-- Produksi Dropdown -->
-        @canany(['samutasiproduksi.view'])
-        <div x-data="{ open: {{ Request::is('samutasiproduksi*', 'bpbj*', 'fsthp*', 'fsthpgudang*', 'laporanproduksi*') ? 'true' : 'false' }} }">
-            <button @click="open = !open" class="flex items-center justify-between w-full px-2 py-2 text-sm font-medium text-blue-100/70 hover:bg-white/5 hover:text-white rounded-lg group transition">
-                <div class="flex items-center">
-                    <svg class="w-5 h-5 mr-3 text-blue-200/70 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
-                    <span>Produksi</span>
+                <div class="brand-text flex flex-col min-w-0">
+                    <span class="font-black text-base tracking-tight text-white truncate">Portal MP</span>
+                    <span class="text-[10px] font-semibold text-blue-200/70 -mt-1 truncate">Manajemen Pacific</span>
                 </div>
-                <svg class="w-4 h-4 text-blue-200 transition-transform duration-200" :class="{ 'rotate-180': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+            </a>
+            
+            <!-- Desktop Minimize Toggle Button -->
+            <button id="toggleSidebarBtn" title="Toggle Sidebar" class="hidden lg:flex text-blue-200 hover:text-white transition p-1.5 rounded-lg hover:bg-white/10 items-center justify-center cursor-pointer">
+                <i data-lucide="panel-left-close" class="w-4 h-4"></i>
             </button>
-            <div x-show="open" x-transition class="mt-1 ml-4 pl-4 space-y-0.5 border-l-2 border-white/20">
-                @can('samutasiproduksi.view')
-                <a href="{{ route('samutasiproduksi.index') }}" class="relative flex items-center px-2 py-1.5 text-xs font-semibold {{ Request::is('samutasiproduksi*', 'bpbj*', 'fsthp*', 'fsthpgudang*') ? 'text-white bg-white/10' : 'text-blue-100/60 hover:text-white hover:bg-white/5' }} rounded-lg transition">
-                    <span class="absolute -left-[21px] w-2 h-2 rounded-full {{ Request::is('samutasiproduksi*', 'bpbj*', 'fsthp*', 'fsthpgudang*') ? 'bg-white' : 'bg-white/30' }}"></span>
-                    Mutasi Produk
-                </a>
-                <a href="{{ route('laporanproduksi.index') }}" class="relative flex items-center px-2 py-1.5 text-xs font-semibold {{ Request::is('laporanproduksi*') ? 'text-white bg-white/10' : 'text-blue-100/60 hover:text-white hover:bg-white/5' }} rounded-lg transition">
-                    <span class="absolute -left-[21px] w-2 h-2 rounded-full {{ Request::is('laporanproduksi*') ? 'bg-white' : 'bg-white/30' }}"></span>
-                    Laporan
-                </a>
-                @endcan
-            </div>
-        </div>
-        @endcanany
 
-        <!-- Gudang Jadi Dropdown -->
-        @canany(['sagudangjadi.view'])
-        <div x-data="{ open: {{ Request::is('sagudangjadi*', 'fsthpgudang*', 'repackgudangjadi*', 'rejectgudangjadi*', 'lainnyagudangjadi*', 'laporangudangjadi*') ? 'true' : 'false' }} }">
-            <button @click="open = !open" class="flex items-center justify-between w-full px-2 py-2 text-sm font-medium text-blue-100/70 hover:bg-white/5 hover:text-white rounded-lg group transition">
-                <div class="flex items-center">
-                    <svg class="w-5 h-5 mr-3 text-blue-200/70 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
-                    <span>Gudang Jadi</span>
-                </div>
-                <svg class="w-4 h-4 text-blue-200 transition-transform duration-200" :class="{ 'rotate-180': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+            <!-- Mobile Close Button -->
+            <button id="closeMobileSidebarBtn" class="lg:hidden text-blue-200 hover:text-white p-1.5 rounded-lg hover:bg-white/10">
+                <i data-lucide="x" class="w-5 h-5"></i>
             </button>
-            <div x-show="open" x-transition class="mt-1 ml-4 pl-4 space-y-0.5 border-l-2 border-white/20">
-                @can('sagudangjadi.view')
-                <a href="{{ route('sagudangjadi.index') }}" class="relative flex items-center px-2 py-1.5 text-xs font-semibold {{ Request::is('sagudangjadi*', 'fsthpgudang*', 'repackgudangjadi*', 'rejectgudangjadi*', 'lainnyagudangjadi*') ? 'text-white bg-white/10' : 'text-blue-100/60 hover:text-white hover:bg-white/5' }} rounded-lg transition">
-                    <span class="absolute -left-[21px] w-2 h-2 rounded-full {{ Request::is('sagudangjadi*', 'fsthpgudang*', 'repackgudangjadi*', 'rejectgudangjadi*', 'lainnyagudangjadi*') ? 'bg-white' : 'bg-white/30' }}"></span>
-                    Mutasi Produk
-                </a>
-                @endcan
-                <a href="{{ route('laporangudangjadi.index') }}" class="relative flex items-center px-2 py-1.5 text-xs font-semibold {{ Request::is('laporangudangjadi*') ? 'text-white bg-white/10' : 'text-blue-100/60 hover:text-white hover:bg-white/5' }} rounded-lg transition">
-                    <span class="absolute -left-[21px] w-2 h-2 rounded-full {{ Request::is('laporangudangjadi*') ? 'bg-white' : 'bg-white/30' }}"></span>
-                    Laporan
-                </a>
-            </div>
-        </div>
-        @endcanany
-
-        <!-- Pembelian Dropdown -->
-        @canany(['pembelian.index'])
-        <div x-data="{ open: {{ (Request::is('pembelian*') || Request::is('laporanpembelian*')) ? 'true' : 'false' }} }">
-            <button @click="open = !open" class="flex items-center justify-between w-full px-2 py-2 text-sm font-medium text-blue-100/70 hover:bg-white/5 hover:text-white rounded-lg group transition">
-                <div class="flex items-center">
-                    <svg class="w-5 h-5 mr-3 text-blue-200/70 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
-                    <span>Pembelian</span>
-                </div>
-                <svg class="w-4 h-4 text-blue-200 transition-transform duration-200" :class="{ 'rotate-180': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-            </button>
-            <div x-show="open" x-transition class="mt-1 ml-4 pl-4 space-y-0.5 border-l-2 border-white/20">
-                @can('pembelian.index')
-                <a href="{{ route('pembelian.index') }}" class="relative flex items-center px-2 py-1.5 text-xs font-semibold {{ (Request::is('pembelian') || Request::is('pembelian/create') || (Request::is('pembelian/*') && !Request::is('pembelian/laporan*'))) ? 'text-white bg-white/10' : 'text-blue-100/60 hover:text-white hover:bg-white/5' }} rounded-lg transition">
-                    <span class="absolute -left-[21px] w-2 h-2 rounded-full {{ (Request::is('pembelian') || Request::is('pembelian/create') || (Request::is('pembelian/*') && !Request::is('pembelian/laporan*'))) ? 'bg-white' : 'bg-white/30' }}"></span>
-                    Pembelian
-                </a>
-                @endcan
-                
-                <a href="{{ route('laporanpembelian.index') }}" class="relative flex items-center px-2 py-1.5 text-xs font-semibold {{ Request::is('laporanpembelian*') ? 'text-white bg-white/10' : 'text-blue-100/60 hover:text-white hover:bg-white/5' }} rounded-lg transition">
-                    <span class="absolute -left-[21px] w-2 h-2 rounded-full {{ Request::is('laporanpembelian*') ? 'bg-white' : 'bg-white/30' }}"></span>
-                    Laporan Pembelian
-                </a>
-            </div>
-        </div>
-        @endcanany
-
-        <!-- Biaya Dropdown -->
-        <div x-data="{ open: {{ (Request::is('biaya*') || Request::is('laporanbiaya*')) ? 'true' : 'false' }} }">
-            <button @click="open = !open" class="flex items-center justify-between w-full px-2 py-2 text-sm font-medium text-blue-100/70 hover:bg-white/5 hover:text-white rounded-lg group transition">
-                <div class="flex items-center">
-                    <svg class="w-5 h-5 mr-3 text-blue-200/70 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
-                    </svg>
-                    <span>Biaya</span>
-                </div>
-                <svg class="w-4 h-4 text-blue-200 transition-transform duration-200" :class="{ 'rotate-180': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-            </button>
-            <div x-show="open" x-transition class="mt-1 ml-4 pl-4 space-y-0.5 border-l-2 border-white/20">
-                <a href="{{ route('biaya.index') }}" class="relative flex items-center px-2 py-1.5 text-xs font-semibold {{ (Request::is('biaya*') && !Request::is('laporanbiaya*')) ? 'text-white bg-white/10' : 'text-blue-100/60 hover:text-white hover:bg-white/5' }} rounded-lg transition">
-                    <span class="absolute -left-[21px] w-2 h-2 rounded-full {{ (Request::is('biaya*') && !Request::is('laporanbiaya*')) ? 'bg-white' : 'bg-white/30' }}"></span>
-                    Biaya
-                </a>
-                <a href="{{ route('laporanbiaya.index') }}" class="relative flex items-center px-2 py-1.5 text-xs font-semibold {{ Request::is('laporanbiaya*') ? 'text-white bg-white/10' : 'text-blue-100/60 hover:text-white hover:bg-white/5' }} rounded-lg transition">
-                    <span class="absolute -left-[21px] w-2 h-2 rounded-full {{ Request::is('laporanbiaya*') ? 'bg-white' : 'bg-white/30' }}"></span>
-                    Laporan Biaya
-                </a>
-            </div>
         </div>
 
-        <!-- Marketing Dropdown -->
-        @canany(['penjualanmarketing.view', 'laporanmarketing.index'])
-        <div x-data="{ open: {{ (Request::is('penjualanmarketing*') || Request::is('laporanmarketing*')) ? 'true' : 'false' }} }">
-            <button @click="open = !open" class="flex items-center justify-between w-full px-2 py-2 text-sm font-medium text-blue-100/70 hover:bg-white/5 hover:text-white rounded-lg group transition">
-                <div class="flex items-center">
-                    <svg class="w-5 h-5 mr-3 text-blue-200/70 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
-                    <span>Marketing</span>
-                </div>
-                <svg class="w-4 h-4 text-blue-200 transition-transform duration-200" :class="{ 'rotate-180': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-            </button>
-            <div x-show="open" x-transition class="mt-1 ml-4 pl-4 space-y-0.5 border-l-2 border-white/20">
-                @can('penjualanmarketing.view')
-                <a href="{{ route('penjualanmarketing.index') }}" class="relative flex items-center px-2 py-1.5 text-xs font-semibold {{ Request::is('penjualanmarketing*') ? 'text-white bg-white/10' : 'text-blue-100/60 hover:text-white hover:bg-white/5' }} rounded-lg transition">
-                    <span class="absolute -left-[21px] w-2 h-2 rounded-full {{ Request::is('penjualanmarketing*') ? 'bg-white' : 'bg-white/30' }}"></span>
-                    Penjualan
-                </a>
-                @endcan
-                @can('laporanmarketing.index')
-                <a href="{{ route('laporanmarketing.index') }}" class="relative flex items-center px-2 py-1.5 text-xs font-semibold {{ Request::is('laporanmarketing*') ? 'text-white bg-white/10' : 'text-blue-100/60 hover:text-white hover:bg-white/5' }} rounded-lg transition">
-                    <span class="absolute -left-[21px] w-2 h-2 rounded-full {{ Request::is('laporanmarketing*') ? 'bg-white' : 'bg-white/30' }}"></span>
-                    Laporan
-                </a>
-                @endcan
-            </div>
-        </div>
-        @endcanany
+        <!-- Main Nav Items -->
+        <div class="space-y-1">
+            <!-- Dashboard -->
+            <a href="{{ route('dashboard') }}" title="Dashboard" class="nav-item flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl font-semibold text-xs transition {{ request()->routeIs('dashboard') ? 'bg-white/20 text-white border border-white/25 shadow-xs font-bold' : 'text-blue-100/75 hover:text-white hover:bg-white/10' }}">
+                <i data-lucide="layout-grid" class="w-4 h-4 shrink-0 {{ request()->routeIs('dashboard') ? 'text-white' : 'text-blue-200' }}"></i>
+                <span class="nav-text truncate font-bold">Dashboard</span>
+            </a>
 
-        <!-- Accounting Dropdown -->
-        @canany(['coa.index', 'saldoawalbukubesar.index', 'jurnalumum.index', 'laporanaccounting.index'])
-        <div x-data="{ open: {{ (Request::is('coa*', 'saldoawalbukubesar*', 'jurnalumum*', 'laporanaccounting*')) ? 'true' : 'false' }} }">
-            <button @click="open = !open" class="flex items-center justify-between w-full px-2 py-2 text-sm font-medium text-blue-100/70 hover:bg-white/5 hover:text-white rounded-lg group transition">
-                <div class="flex items-center">
-                    <svg class="w-5 h-5 mr-3 text-blue-200/70 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
-                    <span>Accounting</span>
-                </div>
-                <svg class="w-4 h-4 text-blue-200 transition-transform duration-200" :class="{ 'rotate-180': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-            </button>
-            <div x-show="open" x-transition class="mt-1 ml-4 pl-4 space-y-0.5 border-l-2 border-white/20">
-                @can('coa.index')
-                <a href="{{ route('coa.index') }}" class="relative flex items-center px-2 py-1.5 text-xs font-semibold {{ Request::is('coa*') ? 'text-white bg-white/10' : 'text-blue-100/60 hover:text-white hover:bg-white/5' }} rounded-lg transition">
-                    <span class="absolute -left-[21px] w-2 h-2 rounded-full {{ Request::is('coa*') ? 'bg-white' : 'bg-white/30' }}"></span>
-                    COA
-                </a>
-                @endcan
-                @can('saldoawalbukubesar.index')
-                <a href="{{ route('saldoawalbukubesar.index') }}" class="relative flex items-center px-2 py-1.5 text-xs font-semibold {{ Request::is('saldoawalbukubesar*') ? 'text-white bg-white/10' : 'text-blue-100/60 hover:text-white hover:bg-white/5' }} rounded-lg transition">
-                    <span class="absolute -left-[21px] w-2 h-2 rounded-full {{ Request::is('saldoawalbukubesar*') ? 'bg-white' : 'bg-white/30' }}"></span>
-                    Saldo Awal Buku Besar
-                </a>
-                @endcan
-                @can('jurnalumum.index')
-                <a href="{{ route('jurnalumum.index') }}" class="relative flex items-center px-2 py-1.5 text-xs font-semibold {{ Request::is('jurnalumum*') ? 'text-white bg-white/10' : 'text-blue-100/60 hover:text-white hover:bg-white/5' }} rounded-lg transition">
-                    <span class="absolute -left-[21px] w-2 h-2 rounded-full {{ Request::is('jurnalumum*') ? 'bg-white' : 'bg-white/30' }}"></span>
-                    Jurnal Umum
-                </a>
-                @endcan
-                @can('laporanaccounting.index')
-                <a href="{{ route('laporanaccounting.index') }}" class="relative flex items-center px-2 py-1.5 text-xs font-semibold {{ Request::is('laporanaccounting*') ? 'text-white bg-white/10' : 'text-blue-100/60 hover:text-white hover:bg-white/5' }} rounded-lg transition">
-                    <span class="absolute -left-[21px] w-2 h-2 rounded-full {{ Request::is('laporanaccounting*') ? 'bg-white' : 'bg-white/30' }}"></span>
-                    Laporan Accounting
-                </a>
-                @endcan
-            </div>
-        </div>
-        @endcanany
+            <!-- SECTION: OPERASIONAL & TRANSAKSI -->
+            <div class="pt-3">
+                <p class="section-header px-3 text-[10px] font-extrabold tracking-wider text-blue-300/60 uppercase mb-1.5">Operasional</p>
 
-        <!-- Gudang Bahan Dropdown -->
-        @canany(['sagudangbahan.index', 'sahargagb.index', 'opgudangbahan.index', 'barangmasukgb.index', 'barangkeluargb.index', 'laporangudangbahan.index'])
-        <div>
-            <div x-data="{ open: {{ Request::is('sagudangbahan*', 'sahargagb*', 'opgudangbahan*', 'barangmasukgudangbahan*', 'barangkeluargudangbahan*', 'laporangudangbahan*') ? 'true' : 'false' }} }">
-                <button @click="open = !open" class="flex items-center justify-between w-full px-2 py-2 text-sm font-medium text-blue-100/70 hover:bg-white/5 hover:text-white rounded-lg group transition">
-                    <div class="flex items-center">
-                        <svg class="w-5 h-5 mr-3 text-blue-200/70 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
-                        <span>Gudang Bahan</span>
+                <!-- Marketing & Penjualan -->
+                @canany(['penjualanmarketing.view', 'laporanmarketing.index'])
+                <div x-data="{ open: {{ (Request::is('penjualanmarketing*') || Request::is('laporanmarketing*')) ? 'true' : 'false' }} }">
+                    <button @click="open = !open" type="button" class="nav-item flex items-center justify-between w-full px-3.5 py-2 rounded-xl font-medium text-xs transition hover:text-white hover:bg-white/10 cursor-pointer {{ (Request::is('penjualanmarketing*') || Request::is('laporanmarketing*')) ? 'bg-white/15 text-white font-bold border border-white/15' : 'text-blue-100/75' }}">
+                        <div class="flex items-center gap-3.5 min-w-0">
+                            <i data-lucide="shopping-bag" class="w-4 h-4 shrink-0 {{ (Request::is('penjualanmarketing*') || Request::is('laporanmarketing*')) ? 'text-white' : 'text-blue-200' }}"></i>
+                            <span class="nav-text truncate">Marketing</span>
+                        </div>
+                        <i data-lucide="chevron-down" class="chevron-icon w-3.5 h-3.5 text-blue-200/70 transition-transform duration-200 shrink-0" :class="{ 'rotate-180': open }"></i>
+                    </button>
+                    <div x-show="open" x-transition class="submenu-wrapper mt-1 ml-4 pl-3.5 space-y-1 border-l-2 border-white/20">
+                        @can('penjualanmarketing.view')
+                        <a href="{{ route('penjualanmarketing.index') }}" class="nav-item flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs {{ Request::is('penjualanmarketing*') ? 'bg-white/20 text-white font-bold border border-white/25 shadow-2xs' : 'text-blue-200/75 hover:text-white hover:bg-white/10 font-medium' }}">
+                            <span class="w-1.5 h-1.5 rounded-full {{ Request::is('penjualanmarketing*') ? 'bg-blue-300 ring-2 ring-blue-300/30' : 'bg-blue-300/40' }}"></span>
+                            <span class="truncate">Penjualan</span>
+                        </a>
+                        @endcan
+                        @can('laporanmarketing.index')
+                        <a href="{{ route('laporanmarketing.index') }}" class="nav-item flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs {{ Request::is('laporanmarketing*') ? 'bg-white/20 text-white font-bold border border-white/25 shadow-2xs' : 'text-blue-200/75 hover:text-white hover:bg-white/10 font-medium' }}">
+                            <span class="w-1.5 h-1.5 rounded-full {{ Request::is('laporanmarketing*') ? 'bg-blue-300 ring-2 ring-blue-300/30' : 'bg-blue-300/40' }}"></span>
+                            <span class="truncate">Laporan Marketing</span>
+                        </a>
+                        @endcan
                     </div>
-                    <svg class="w-4 h-4 text-blue-200 transition-transform duration-200" :class="{ 'rotate-180': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                </button>
-                <div x-show="open" x-transition class="mt-1 ml-4 pl-4 space-y-0.5 border-l-2 border-white/20">
-                    <a href="{{ route('sagudangbahan.index') }}" class="relative flex items-center px-2 py-1.5 text-xs font-semibold {{ Request::is('sagudangbahan*', 'sahargagb*', 'opgudangbahan*', 'barangmasukgudangbahan*', 'barangkeluargudangbahan*') ? 'text-white bg-white/10' : 'text-blue-100/60 hover:text-white hover:bg-white/5' }} rounded-lg transition">
-                        <span class="absolute -left-[21px] w-2 h-2 rounded-full {{ Request::is('sagudangbahan*', 'sahargagb*', 'opgudangbahan*', 'barangmasukgudangbahan*', 'barangkeluargudangbahan*') ? 'bg-white' : 'bg-white/30' }}"></span>
-                        Mutasi Barang
-                    </a>
-                    @canany(['laporangudangbahan.index', 'gb.barangmasuk', 'gb.barangkeluar', 'gb.persediaan', 'gb.rekappersediaan', 'gb.kartugudang'])
-                    <a href="{{ route('laporangudangbahan.index') }}" class="relative flex items-center px-2 py-1.5 text-xs font-semibold {{ Request::is('laporangudangbahan*') ? 'text-white bg-white/10' : 'text-blue-100/60 hover:text-white hover:bg-white/5' }} rounded-lg transition">
-                        <span class="absolute -left-[21px] w-2 h-2 rounded-full {{ Request::is('laporangudangbahan*') ? 'bg-white' : 'bg-white/30' }}"></span>
-                        Laporan
-                    </a>
-                    @endcanany
                 </div>
-        </div>
-        @endcanany
+                @endcanany
 
-        <!-- Gudang Logistik Dropdown -->
-        @canany(['sagudanglogistik.index', 'opgudanglogistik.index', 'barangmasukgl.index', 'barangkeluargl.index', 'laporangudanglogistik.index'])
-        <div>
-            <div x-data="{ open: {{ Request::is('sagudanglogistik*', 'opgudanglogistik*', 'barangmasukgudanglogistik*', 'barangkeluargudanglogistik*', 'laporangudanglogistik*') ? 'true' : 'false' }} }">
-                <button @click="open = !open" class="flex items-center justify-between w-full px-2 py-2 text-sm font-medium text-blue-100/70 hover:bg-white/5 hover:text-white rounded-lg group transition">
-                    <div class="flex items-center">
-                        <svg class="w-5 h-5 mr-3 text-blue-200/70 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
-                        <span>Gudang Logistik</span>
+                <!-- Pembelian -->
+                @canany(['pembelian.index'])
+                <div x-data="{ open: {{ (Request::is('pembelian*') || Request::is('laporanpembelian*')) ? 'true' : 'false' }} }">
+                    <button @click="open = !open" type="button" class="nav-item flex items-center justify-between w-full px-3.5 py-2 rounded-xl font-medium text-xs transition hover:text-white hover:bg-white/10 cursor-pointer {{ (Request::is('pembelian*') || Request::is('laporanpembelian*')) ? 'bg-white/15 text-white font-bold border border-white/15' : 'text-blue-100/75' }}">
+                        <div class="flex items-center gap-3.5 min-w-0">
+                            <i data-lucide="shopping-cart" class="w-4 h-4 shrink-0 {{ (Request::is('pembelian*') || Request::is('laporanpembelian*')) ? 'text-white' : 'text-blue-200' }}"></i>
+                            <span class="nav-text truncate">Pembelian</span>
+                        </div>
+                        <i data-lucide="chevron-down" class="chevron-icon w-3.5 h-3.5 text-blue-200/70 transition-transform duration-200 shrink-0" :class="{ 'rotate-180': open }"></i>
+                    </button>
+                    <div x-show="open" x-transition class="submenu-wrapper mt-1 ml-4 pl-3.5 space-y-1 border-l-2 border-white/20">
+                        @can('pembelian.index')
+                        <a href="{{ route('pembelian.index') }}" class="nav-item flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs {{ (Request::is('pembelian') || Request::is('pembelian/create') || (Request::is('pembelian/*') && !Request::is('pembelian/laporan*'))) ? 'bg-white/20 text-white font-bold border border-white/25 shadow-2xs' : 'text-blue-200/75 hover:text-white hover:bg-white/10 font-medium' }}">
+                            <span class="w-1.5 h-1.5 rounded-full {{ (Request::is('pembelian') || Request::is('pembelian/create') || (Request::is('pembelian/*') && !Request::is('pembelian/laporan*'))) ? 'bg-blue-300 ring-2 ring-blue-300/30' : 'bg-blue-300/40' }}"></span>
+                            <span class="truncate">Transaksi Pembelian</span>
+                        </a>
+                        @endcan
+                        <a href="{{ route('laporanpembelian.index') }}" class="nav-item flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs {{ Request::is('laporanpembelian*') ? 'bg-white/20 text-white font-bold border border-white/25 shadow-2xs' : 'text-blue-200/75 hover:text-white hover:bg-white/10 font-medium' }}">
+                            <span class="w-1.5 h-1.5 rounded-full {{ Request::is('laporanpembelian*') ? 'bg-blue-300 ring-2 ring-blue-300/30' : 'bg-blue-300/40' }}"></span>
+                            <span class="truncate">Laporan Pembelian</span>
+                        </a>
                     </div>
-                    <svg class="w-4 h-4 text-blue-200 transition-transform duration-200" :class="{ 'rotate-180': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                </button>
-                <div x-show="open" x-transition class="mt-1 ml-4 pl-4 space-y-0.5 border-l-2 border-white/20">
-                    <a href="{{ route('barangmasukgudanglogistik.index') }}" class="relative flex items-center px-2 py-1.5 text-xs font-semibold {{ Request::is('sagudanglogistik*', 'opgudanglogistik*', 'barangmasukgudanglogistik*', 'barangkeluargudanglogistik*') ? 'text-white bg-white/10' : 'text-blue-100/60 hover:text-white hover:bg-white/5' }} rounded-lg transition">
-                        <span class="absolute -left-[21px] w-2 h-2 rounded-full {{ Request::is('sagudanglogistik*', 'opgudanglogistik*', 'barangmasukgudanglogistik*', 'barangkeluargudanglogistik*') ? 'bg-white' : 'bg-white/30' }}"></span>
-                        Mutasi Barang
-                    </a>
-                    @canany(['laporangudanglogistik.index', 'gl.barangmasuk', 'gl.barangkeluar', 'gl.persediaan', 'gl.rekappersediaan', 'gl.kartugudang'])
-                    <a href="{{ route('laporangudanglogistik.index') }}" class="relative flex items-center px-2 py-1.5 text-xs font-semibold {{ Request::is('laporangudanglogistik*') ? 'text-white bg-white/10' : 'text-blue-100/60 hover:text-white hover:bg-white/5' }} rounded-lg transition">
-                        <span class="absolute -left-[21px] w-2 h-2 rounded-full {{ Request::is('laporangudanglogistik*') ? 'bg-white' : 'bg-white/30' }}"></span>
-                        Laporan
-                    </a>
-                    @endcanany
+                </div>
+                @endcanany
+
+                <!-- Produksi -->
+                @canany(['samutasiproduksi.view'])
+                <div x-data="{ open: {{ Request::is('samutasiproduksi*', 'bpbj*', 'fsthp*', 'fsthpgudang*', 'laporanproduksi*') ? 'true' : 'false' }} }">
+                    <button @click="open = !open" type="button" class="nav-item flex items-center justify-between w-full px-3.5 py-2 rounded-xl font-medium text-xs transition hover:text-white hover:bg-white/10 cursor-pointer {{ Request::is('samutasiproduksi*', 'bpbj*', 'fsthp*', 'fsthpgudang*', 'laporanproduksi*') ? 'bg-white/15 text-white font-bold border border-white/15' : 'text-blue-100/75' }}">
+                        <div class="flex items-center gap-3.5 min-w-0">
+                            <i data-lucide="factory" class="w-4 h-4 shrink-0 {{ Request::is('samutasiproduksi*', 'bpbj*', 'fsthp*', 'fsthpgudang*', 'laporanproduksi*') ? 'text-white' : 'text-blue-200' }}"></i>
+                            <span class="nav-text truncate">Produksi</span>
+                        </div>
+                        <i data-lucide="chevron-down" class="chevron-icon w-3.5 h-3.5 text-blue-200/70 transition-transform duration-200 shrink-0" :class="{ 'rotate-180': open }"></i>
+                    </button>
+                    <div x-show="open" x-transition class="submenu-wrapper mt-1 ml-4 pl-3.5 space-y-1 border-l-2 border-white/20">
+                        @can('samutasiproduksi.view')
+                        <a href="{{ route('samutasiproduksi.index') }}" class="nav-item flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs {{ Request::is('samutasiproduksi*', 'bpbj*', 'fsthp*', 'fsthpgudang*') ? 'bg-white/20 text-white font-bold border border-white/25 shadow-2xs' : 'text-blue-200/75 hover:text-white hover:bg-white/10 font-medium' }}">
+                            <span class="w-1.5 h-1.5 rounded-full {{ Request::is('samutasiproduksi*', 'bpbj*', 'fsthp*', 'fsthpgudang*') ? 'bg-blue-300 ring-2 ring-blue-300/30' : 'bg-blue-300/40' }}"></span>
+                            <span class="truncate">Mutasi Produksi</span>
+                        </a>
+                        <a href="{{ route('laporanproduksi.index') }}" class="nav-item flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs {{ Request::is('laporanproduksi*') ? 'bg-white/20 text-white font-bold border border-white/25 shadow-2xs' : 'text-blue-200/75 hover:text-white hover:bg-white/10 font-medium' }}">
+                            <span class="w-1.5 h-1.5 rounded-full {{ Request::is('laporanproduksi*') ? 'bg-blue-300 ring-2 ring-blue-300/30' : 'bg-blue-300/40' }}"></span>
+                            <span class="truncate">Laporan Produksi</span>
+                        </a>
+                        @endcan
+                    </div>
+                </div>
+                @endcanany
+
+                <!-- Gudang Jadi -->
+                @canany(['sagudangjadi.view'])
+                <div x-data="{ open: {{ Request::is('sagudangjadi*', 'fsthpgudang*', 'repackgudangjadi*', 'rejectgudangjadi*', 'lainnyagudangjadi*', 'laporangudangjadi*') ? 'true' : 'false' }} }">
+                    <button @click="open = !open" type="button" class="nav-item flex items-center justify-between w-full px-3.5 py-2 rounded-xl font-medium text-xs transition hover:text-white hover:bg-white/10 cursor-pointer {{ Request::is('sagudangjadi*', 'fsthpgudang*', 'repackgudangjadi*', 'rejectgudangjadi*', 'lainnyagudangjadi*', 'laporangudangjadi*') ? 'bg-white/15 text-white font-bold border border-white/15' : 'text-blue-100/75' }}">
+                        <div class="flex items-center gap-3.5 min-w-0">
+                            <i data-lucide="warehouse" class="w-4 h-4 shrink-0 {{ Request::is('sagudangjadi*', 'fsthpgudang*', 'repackgudangjadi*', 'rejectgudangjadi*', 'lainnyagudangjadi*', 'laporangudangjadi*') ? 'text-white' : 'text-blue-200' }}"></i>
+                            <span class="nav-text truncate">Gudang Jadi</span>
+                        </div>
+                        <i data-lucide="chevron-down" class="chevron-icon w-3.5 h-3.5 text-blue-200/70 transition-transform duration-200 shrink-0" :class="{ 'rotate-180': open }"></i>
+                    </button>
+                    <div x-show="open" x-transition class="submenu-wrapper mt-1 ml-4 pl-3.5 space-y-1 border-l-2 border-white/20">
+                        @can('sagudangjadi.view')
+                        <a href="{{ route('sagudangjadi.index') }}" class="nav-item flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs {{ Request::is('sagudangjadi*', 'fsthpgudang*', 'repackgudangjadi*', 'rejectgudangjadi*', 'lainnyagudangjadi*') ? 'bg-white/20 text-white font-bold border border-white/25 shadow-2xs' : 'text-blue-200/75 hover:text-white hover:bg-white/10 font-medium' }}">
+                            <span class="w-1.5 h-1.5 rounded-full {{ Request::is('sagudangjadi*', 'fsthpgudang*', 'repackgudangjadi*', 'rejectgudangjadi*', 'lainnyagudangjadi*') ? 'bg-blue-300 ring-2 ring-blue-300/30' : 'bg-blue-300/40' }}"></span>
+                            <span class="truncate">Mutasi Produk Jadi</span>
+                        </a>
+                        @endcan
+                        <a href="{{ route('laporangudangjadi.index') }}" class="nav-item flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs {{ Request::is('laporangudangjadi*') ? 'bg-white/20 text-white font-bold border border-white/25 shadow-2xs' : 'text-blue-200/75 hover:text-white hover:bg-white/10 font-medium' }}">
+                            <span class="w-1.5 h-1.5 rounded-full {{ Request::is('laporangudangjadi*') ? 'bg-blue-300 ring-2 ring-blue-300/30' : 'bg-blue-300/40' }}"></span>
+                            <span class="truncate">Laporan Gudang Jadi</span>
+                        </a>
+                    </div>
+                </div>
+                @endcanany
+
+                <!-- Gudang Bahan -->
+                @canany(['sagudangbahan.index', 'sahargagb.index', 'opgudangbahan.index', 'barangmasukgb.index', 'barangkeluargb.index', 'laporangudangbahan.index'])
+                <div x-data="{ open: {{ Request::is('sagudangbahan*', 'sahargagb*', 'opgudangbahan*', 'barangmasukgudangbahan*', 'barangkeluargudangbahan*', 'laporangudangbahan*') ? 'true' : 'false' }} }">
+                    <button @click="open = !open" type="button" class="nav-item flex items-center justify-between w-full px-3.5 py-2 rounded-xl font-medium text-xs transition hover:text-white hover:bg-white/10 cursor-pointer {{ Request::is('sagudangbahan*', 'sahargagb*', 'opgudangbahan*', 'barangmasukgudangbahan*', 'barangkeluargudangbahan*', 'laporangudangbahan*') ? 'bg-white/15 text-white font-bold border border-white/15' : 'text-blue-100/75' }}">
+                        <div class="flex items-center gap-3.5 min-w-0">
+                            <i data-lucide="boxes" class="w-4 h-4 shrink-0 {{ Request::is('sagudangbahan*', 'sahargagb*', 'opgudangbahan*', 'barangmasukgudangbahan*', 'barangkeluargudangbahan*', 'laporangudangbahan*') ? 'text-white' : 'text-blue-200' }}"></i>
+                            <span class="nav-text truncate">Gudang Bahan</span>
+                        </div>
+                        <i data-lucide="chevron-down" class="chevron-icon w-3.5 h-3.5 text-blue-200/70 transition-transform duration-200 shrink-0" :class="{ 'rotate-180': open }"></i>
+                    </button>
+                    <div x-show="open" x-transition class="submenu-wrapper mt-1 ml-4 pl-3.5 space-y-1 border-l-2 border-white/20">
+                        <a href="{{ route('sagudangbahan.index') }}" class="nav-item flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs {{ Request::is('sagudangbahan*', 'sahargagb*', 'opgudangbahan*', 'barangmasukgudangbahan*', 'barangkeluargudangbahan*') ? 'bg-white/20 text-white font-bold border border-white/25 shadow-2xs' : 'text-blue-200/75 hover:text-white hover:bg-white/10 font-medium' }}">
+                            <span class="w-1.5 h-1.5 rounded-full {{ Request::is('sagudangbahan*', 'sahargagb*', 'opgudangbahan*', 'barangmasukgudangbahan*', 'barangkeluargudangbahan*') ? 'bg-blue-300 ring-2 ring-blue-300/30' : 'bg-blue-300/40' }}"></span>
+                            <span class="truncate">Mutasi Bahan Baku</span>
+                        </a>
+                        @canany(['laporangudangbahan.index', 'gb.barangmasuk', 'gb.barangkeluar', 'gb.persediaan', 'gb.rekappersediaan', 'gb.kartugudang'])
+                        <a href="{{ route('laporangudangbahan.index') }}" class="nav-item flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs {{ Request::is('laporangudangbahan*') ? 'bg-white/20 text-white font-bold border border-white/25 shadow-2xs' : 'text-blue-200/75 hover:text-white hover:bg-white/10 font-medium' }}">
+                            <span class="w-1.5 h-1.5 rounded-full {{ Request::is('laporangudangbahan*') ? 'bg-blue-300 ring-2 ring-blue-300/30' : 'bg-blue-300/40' }}"></span>
+                            <span class="truncate">Laporan Gudang Bahan</span>
+                        </a>
+                        @endcanany
+                    </div>
+                </div>
+                @endcanany
+
+                <!-- Gudang Logistik -->
+                @canany(['sagudanglogistik.index', 'opgudanglogistik.index', 'barangmasukgl.index', 'barangkeluargl.index', 'laporangudanglogistik.index'])
+                <div x-data="{ open: {{ Request::is('sagudanglogistik*', 'opgudanglogistik*', 'barangmasukgudanglogistik*', 'barangkeluargudanglogistik*', 'laporangudanglogistik*') ? 'true' : 'false' }} }">
+                    <button @click="open = !open" type="button" class="nav-item flex items-center justify-between w-full px-3.5 py-2 rounded-xl font-medium text-xs transition hover:text-white hover:bg-white/10 cursor-pointer {{ Request::is('sagudanglogistik*', 'opgudanglogistik*', 'barangmasukgudanglogistik*', 'barangkeluargudanglogistik*', 'laporangudanglogistik*') ? 'bg-white/15 text-white font-bold border border-white/15' : 'text-blue-100/75' }}">
+                        <div class="flex items-center gap-3.5 min-w-0">
+                            <i data-lucide="truck" class="w-4 h-4 shrink-0 {{ Request::is('sagudanglogistik*', 'opgudanglogistik*', 'barangmasukgudanglogistik*', 'barangkeluargudanglogistik*', 'laporangudanglogistik*') ? 'text-white' : 'text-blue-200' }}"></i>
+                            <span class="nav-text truncate">Gudang Logistik</span>
+                        </div>
+                        <i data-lucide="chevron-down" class="chevron-icon w-3.5 h-3.5 text-blue-200/70 transition-transform duration-200 shrink-0" :class="{ 'rotate-180': open }"></i>
+                    </button>
+                    <div x-show="open" x-transition class="submenu-wrapper mt-1 ml-4 pl-3.5 space-y-1 border-l-2 border-white/20">
+                        <a href="{{ route('barangmasukgudanglogistik.index') }}" class="nav-item flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs {{ Request::is('sagudanglogistik*', 'opgudanglogistik*', 'barangmasukgudanglogistik*', 'barangkeluargudanglogistik*') ? 'bg-white/20 text-white font-bold border border-white/25 shadow-2xs' : 'text-blue-200/75 hover:text-white hover:bg-white/10 font-medium' }}">
+                            <span class="w-1.5 h-1.5 rounded-full {{ Request::is('sagudanglogistik*', 'opgudanglogistik*', 'barangmasukgudanglogistik*', 'barangkeluargudanglogistik*') ? 'bg-blue-300 ring-2 ring-blue-300/30' : 'bg-blue-300/40' }}"></span>
+                            <span class="truncate">Mutasi Logistik</span>
+                        </a>
+                        @canany(['laporangudanglogistik.index', 'gl.barangmasuk', 'gl.barangkeluar', 'gl.persediaan', 'gl.rekappersediaan', 'gl.kartugudang'])
+                        <a href="{{ route('laporangudanglogistik.index') }}" class="nav-item flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs {{ Request::is('laporangudanglogistik*') ? 'bg-white/20 text-white font-bold border border-white/25 shadow-2xs' : 'text-blue-200/75 hover:text-white hover:bg-white/10 font-medium' }}">
+                            <span class="w-1.5 h-1.5 rounded-full {{ Request::is('laporangudanglogistik*') ? 'bg-blue-300 ring-2 ring-blue-300/30' : 'bg-blue-300/40' }}"></span>
+                            <span class="truncate">Laporan Logistik</span>
+                        </a>
+                        @endcanany
+                    </div>
+                </div>
+                @endcanany
+            </div>
+
+            <!-- SECTION: KEUANGAN & ACCOUNTING -->
+            <div class="pt-3">
+                <p class="section-header px-3 text-[10px] font-extrabold tracking-wider text-blue-300/60 uppercase mb-1.5">Keuangan</p>
+
+                <!-- Biaya -->
+                <div x-data="{ open: {{ (Request::is('biaya*') || Request::is('laporanbiaya*')) ? 'true' : 'false' }} }">
+                    <button @click="open = !open" type="button" class="nav-item flex items-center justify-between w-full px-3.5 py-2 rounded-xl font-medium text-xs transition hover:text-white hover:bg-white/10 cursor-pointer {{ (Request::is('biaya*') || Request::is('laporanbiaya*')) ? 'bg-white/15 text-white font-bold border border-white/15' : 'text-blue-100/75' }}">
+                        <div class="flex items-center gap-3.5 min-w-0">
+                            <i data-lucide="receipt" class="w-4 h-4 shrink-0 {{ (Request::is('biaya*') || Request::is('laporanbiaya*')) ? 'text-white' : 'text-blue-200' }}"></i>
+                            <span class="nav-text truncate">Biaya Operasional</span>
+                        </div>
+                        <i data-lucide="chevron-down" class="chevron-icon w-3.5 h-3.5 text-blue-200/70 transition-transform duration-200 shrink-0" :class="{ 'rotate-180': open }"></i>
+                    </button>
+                    <div x-show="open" x-transition class="submenu-wrapper mt-1 ml-4 pl-3.5 space-y-1 border-l-2 border-white/20">
+                        <a href="{{ route('biaya.index') }}" class="nav-item flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs {{ (Request::is('biaya*') && !Request::is('laporanbiaya*')) ? 'bg-white/20 text-white font-bold border border-white/25 shadow-2xs' : 'text-blue-200/75 hover:text-white hover:bg-white/10 font-medium' }}">
+                            <span class="w-1.5 h-1.5 rounded-full {{ (Request::is('biaya*') && !Request::is('laporanbiaya*')) ? 'bg-blue-300 ring-2 ring-blue-300/30' : 'bg-blue-300/40' }}"></span>
+                            <span class="truncate">Daftar Biaya</span>
+                        </a>
+                        <a href="{{ route('laporanbiaya.index') }}" class="nav-item flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs {{ Request::is('laporanbiaya*') ? 'bg-white/20 text-white font-bold border border-white/25 shadow-2xs' : 'text-blue-200/75 hover:text-white hover:bg-white/10 font-medium' }}">
+                            <span class="w-1.5 h-1.5 rounded-full {{ Request::is('laporanbiaya*') ? 'bg-blue-300 ring-2 ring-blue-300/30' : 'bg-blue-300/40' }}"></span>
+                            <span class="truncate">Laporan Biaya</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Accounting -->
+                @canany(['coa.index', 'saldoawalbukubesar.index', 'jurnalumum.index', 'laporanaccounting.index'])
+                <div x-data="{ open: {{ (Request::is('coa*', 'saldoawalbukubesar*', 'jurnalumum*', 'laporanaccounting*')) ? 'true' : 'false' }} }">
+                    <button @click="open = !open" type="button" class="nav-item flex items-center justify-between w-full px-3.5 py-2 rounded-xl font-medium text-xs transition hover:text-white hover:bg-white/10 cursor-pointer {{ (Request::is('coa*', 'saldoawalbukubesar*', 'jurnalumum*', 'laporanaccounting*')) ? 'bg-white/15 text-white font-bold border border-white/15' : 'text-blue-100/75' }}">
+                        <div class="flex items-center gap-3.5 min-w-0">
+                            <i data-lucide="book-open" class="w-4 h-4 shrink-0 {{ (Request::is('coa*', 'saldoawalbukubesar*', 'jurnalumum*', 'laporanaccounting*')) ? 'text-white' : 'text-blue-200' }}"></i>
+                            <span class="nav-text truncate">Accounting</span>
+                        </div>
+                        <i data-lucide="chevron-down" class="chevron-icon w-3.5 h-3.5 text-blue-200/70 transition-transform duration-200 shrink-0" :class="{ 'rotate-180': open }"></i>
+                    </button>
+                    <div x-show="open" x-transition class="submenu-wrapper mt-1 ml-4 pl-3.5 space-y-1 border-l-2 border-white/20">
+                        @can('coa.index')
+                        <a href="{{ route('coa.index') }}" class="nav-item flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs {{ Request::is('coa*') ? 'bg-white/20 text-white font-bold border border-white/25 shadow-2xs' : 'text-blue-200/75 hover:text-white hover:bg-white/10 font-medium' }}">
+                            <span class="w-1.5 h-1.5 rounded-full {{ Request::is('coa*') ? 'bg-blue-300 ring-2 ring-blue-300/30' : 'bg-blue-300/40' }}"></span>
+                            <span class="truncate">COA (Bagan Akun)</span>
+                        </a>
+                        @endcan
+                        @can('saldoawalbukubesar.index')
+                        <a href="{{ route('saldoawalbukubesar.index') }}" class="nav-item flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs {{ Request::is('saldoawalbukubesar*') ? 'bg-white/20 text-white font-bold border border-white/25 shadow-2xs' : 'text-blue-200/75 hover:text-white hover:bg-white/10 font-medium' }}">
+                            <span class="w-1.5 h-1.5 rounded-full {{ Request::is('saldoawalbukubesar*') ? 'bg-blue-300 ring-2 ring-blue-300/30' : 'bg-blue-300/40' }}"></span>
+                            <span class="truncate">Saldo Awal GL</span>
+                        </a>
+                        @endcan
+                        @can('jurnalumum.index')
+                        <a href="{{ route('jurnalumum.index') }}" class="nav-item flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs {{ Request::is('jurnalumum*') ? 'bg-white/20 text-white font-bold border border-white/25 shadow-2xs' : 'text-blue-200/75 hover:text-white hover:bg-white/10 font-medium' }}">
+                            <span class="w-1.5 h-1.5 rounded-full {{ Request::is('jurnalumum*') ? 'bg-blue-300 ring-2 ring-blue-300/30' : 'bg-blue-300/40' }}"></span>
+                            <span class="truncate">Jurnal Umum</span>
+                        </a>
+                        @endcan
+                        @can('laporanaccounting.index')
+                        <a href="{{ route('laporanaccounting.index') }}" class="nav-item flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs {{ Request::is('laporanaccounting*') ? 'bg-white/20 text-white font-bold border border-white/25 shadow-2xs' : 'text-blue-200/75 hover:text-white hover:bg-white/10 font-medium' }}">
+                            <span class="w-1.5 h-1.5 rounded-full {{ Request::is('laporanaccounting*') ? 'bg-blue-300 ring-2 ring-blue-300/30' : 'bg-blue-300/40' }}"></span>
+                            <span class="truncate">Laporan Accounting</span>
+                        </a>
+                        @endcan
+                    </div>
+                </div>
+                @endcanany
+            </div>
+
+            <!-- SECTION: MASTER DATA -->
+            @canany(['produk.view', 'produkharga.view', 'pelanggan.view', 'supplier.view', 'angkutan.view', 'tujuanangkutan.view', 'barangpembelian.view', 'barangproduksi.view'])
+            <div class="pt-3">
+                <p class="section-header px-3 text-[10px] font-extrabold tracking-wider text-blue-300/60 uppercase mb-1.5">Master Data</p>
+
+                <div x-data="{ open: {{ (Request::is('produk*', 'produkharga*', 'pelanggan*', 'supplier*', 'angkutan*', 'tujuanangkutan*', 'barangpembelian*', 'barangproduksi*')) ? 'true' : 'false' }} }">
+                    <button @click="open = !open" type="button" class="nav-item flex items-center justify-between w-full px-3.5 py-2 rounded-xl font-medium text-xs transition hover:text-white hover:bg-white/10 cursor-pointer {{ (Request::is('produk*', 'produkharga*', 'pelanggan*', 'supplier*', 'angkutan*', 'tujuanangkutan*', 'barangpembelian*', 'barangproduksi*')) ? 'bg-white/15 text-white font-bold border border-white/15' : 'text-blue-100/75' }}">
+                        <div class="flex items-center gap-3.5 min-w-0">
+                            <i data-lucide="layers" class="w-4 h-4 shrink-0 {{ (Request::is('produk*', 'produkharga*', 'pelanggan*', 'supplier*', 'angkutan*', 'tujuanangkutan*', 'barangpembelian*', 'barangproduksi*')) ? 'text-white' : 'text-blue-200' }}"></i>
+                            <span class="nav-text truncate">Data Master</span>
+                        </div>
+                        <i data-lucide="chevron-down" class="chevron-icon w-3.5 h-3.5 text-blue-200/70 transition-transform duration-200 shrink-0" :class="{ 'rotate-180': open }"></i>
+                    </button>
+                    <div x-show="open" x-transition class="submenu-wrapper mt-1 ml-4 pl-3.5 space-y-1 border-l-2 border-white/20">
+                        @can('produk.view')
+                        <a href="{{ route('produk.index') }}" class="nav-item flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs {{ (Request::is('produk*') && !Request::is('produkharga*')) ? 'bg-white/20 text-white font-bold border border-white/25 shadow-2xs' : 'text-blue-200/75 hover:text-white hover:bg-white/10 font-medium' }}">
+                            <span class="w-1.5 h-1.5 rounded-full {{ (Request::is('produk*') && !Request::is('produkharga*')) ? 'bg-blue-300 ring-2 ring-blue-300/30' : 'bg-blue-300/40' }}"></span>
+                            <span class="truncate">Master Produk</span>
+                        </a>
+                        @endcan
+                        @can('produkharga.view')
+                        <a href="{{ route('produkharga.index') }}" class="nav-item flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs {{ Request::is('produkharga*') ? 'bg-white/20 text-white font-bold border border-white/25 shadow-2xs' : 'text-blue-200/75 hover:text-white hover:bg-white/10 font-medium' }}">
+                            <span class="w-1.5 h-1.5 rounded-full {{ Request::is('produkharga*') ? 'bg-blue-300 ring-2 ring-blue-300/30' : 'bg-blue-300/40' }}"></span>
+                            <span class="truncate">Harga Produk</span>
+                        </a>
+                        @endcan
+                        @can('pelanggan.view')
+                        <a href="{{ route('pelanggan.index') }}" class="nav-item flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs {{ Request::is('pelanggan*') ? 'bg-white/20 text-white font-bold border border-white/25 shadow-2xs' : 'text-blue-200/75 hover:text-white hover:bg-white/10 font-medium' }}">
+                            <span class="w-1.5 h-1.5 rounded-full {{ Request::is('pelanggan*') ? 'bg-blue-300 ring-2 ring-blue-300/30' : 'bg-blue-300/40' }}"></span>
+                            <span class="truncate">Pelanggan</span>
+                        </a>
+                        @endcan
+                        @can('supplier.view')
+                        <a href="{{ route('supplier.index') }}" class="nav-item flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs {{ Request::is('supplier*') ? 'bg-white/20 text-white font-bold border border-white/25 shadow-2xs' : 'text-blue-200/75 hover:text-white hover:bg-white/10 font-medium' }}">
+                            <span class="w-1.5 h-1.5 rounded-full {{ Request::is('supplier*') ? 'bg-blue-300 ring-2 ring-blue-300/30' : 'bg-blue-300/40' }}"></span>
+                            <span class="truncate">Supplier</span>
+                        </a>
+                        @endcan
+                        @can('barangpembelian.view')
+                        <a href="{{ route('barangpembelian.index') }}" class="nav-item flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs {{ Request::is('barangpembelian*') ? 'bg-white/20 text-white font-bold border border-white/25 shadow-2xs' : 'text-blue-200/75 hover:text-white hover:bg-white/10 font-medium' }}">
+                            <span class="w-1.5 h-1.5 rounded-full {{ Request::is('barangpembelian*') ? 'bg-blue-300 ring-2 ring-blue-300/30' : 'bg-blue-300/40' }}"></span>
+                            <span class="truncate">Barang Pembelian</span>
+                        </a>
+                        @endcan
+                        @can('barangproduksi.view')
+                        <a href="{{ route('barangproduksi.index') }}" class="nav-item flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs {{ Request::is('barangproduksi*') ? 'bg-white/20 text-white font-bold border border-white/25 shadow-2xs' : 'text-blue-200/75 hover:text-white hover:bg-white/10 font-medium' }}">
+                            <span class="w-1.5 h-1.5 rounded-full {{ Request::is('barangproduksi*') ? 'bg-blue-300 ring-2 ring-blue-300/30' : 'bg-blue-300/40' }}"></span>
+                            <span class="truncate">Barang Produksi</span>
+                        </a>
+                        @endcan
+                        @can('angkutan.view')
+                        <a href="{{ route('angkutan.index') }}" class="nav-item flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs {{ Request::is('angkutan*') ? 'bg-white/20 text-white font-bold border border-white/25 shadow-2xs' : 'text-blue-200/75 hover:text-white hover:bg-white/10 font-medium' }}">
+                            <span class="w-1.5 h-1.5 rounded-full {{ Request::is('angkutan*') ? 'bg-blue-300 ring-2 ring-blue-300/30' : 'bg-blue-300/40' }}"></span>
+                            <span class="truncate">Angkutan</span>
+                        </a>
+                        @endcan
+                        @can('tujuanangkutan.view')
+                        <a href="{{ route('tujuanangkutan.index') }}" class="nav-item flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs {{ Request::is('tujuanangkutan*') ? 'bg-white/20 text-white font-bold border border-white/25 shadow-2xs' : 'text-blue-200/75 hover:text-white hover:bg-white/10 font-medium' }}">
+                            <span class="w-1.5 h-1.5 rounded-full {{ Request::is('tujuanangkutan*') ? 'bg-blue-300 ring-2 ring-blue-300/30' : 'bg-blue-300/40' }}"></span>
+                            <span class="truncate">Tujuan Angkutan</span>
+                        </a>
+                        @endcan
+                    </div>
                 </div>
             </div>
-        </div>
-        @endcanany
-            </div>
-        </div>
+            @endcanany
 
-        <!-- Settings Section -->
-        <div>
-            <h3 class="px-2 text-[10px] font-bold text-blue-200/50 uppercase tracking-wider mb-2">Settings</h3>
-            <div class="space-y-1">
-                @can('roles.view')
-                <a href="{{ route('roles.index') }}" class="flex items-center px-2 py-2 text-sm font-medium text-blue-100/70 hover:bg-white/5 hover:text-white rounded-lg group">
-                    <svg class="w-5 h-5 mr-3 text-blue-200/70 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
-                    Roles
-                </a>
-                @endcan
+            <!-- SECTION: PENGATURAN & USERS -->
+            @canany(['users.view', 'roles.view'])
+            <div class="pt-3">
+                <p class="section-header px-3 text-[10px] font-extrabold tracking-wider text-blue-300/60 uppercase mb-1.5">Pengaturan</p>
+
                 @can('users.view')
-                <a href="{{ route('users.index') }}" class="flex items-center px-2 py-2 text-sm font-medium text-blue-100/70 hover:bg-white/5 hover:text-white rounded-lg group">
-                    <svg class="w-5 h-5 mr-3 text-blue-200/70 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                    Users
+                <a href="{{ route('users.index') }}" title="Pengguna" class="nav-item flex items-center gap-3.5 px-3.5 py-2 rounded-xl font-medium text-xs transition {{ Request::is('users*') ? 'bg-white/20 text-white font-bold border border-white/25 shadow-2xs' : 'text-blue-100/75 hover:text-white hover:bg-white/10' }}">
+                    <i data-lucide="users" class="w-4 h-4 shrink-0 {{ Request::is('users*') ? 'text-white' : 'text-blue-200' }}"></i>
+                    <span class="nav-text truncate">Staf & Pengguna</span>
+                </a>
+                @endcan
+
+                @can('roles.view')
+                <a href="{{ route('roles.index') }}" title="Hak Akses" class="nav-item flex items-center gap-3.5 px-3.5 py-2 rounded-xl font-medium text-xs transition {{ Request::is('roles*') ? 'bg-white/20 text-white font-bold border border-white/25 shadow-2xs' : 'text-blue-100/75 hover:text-white hover:bg-white/10' }}">
+                    <i data-lucide="shield-check" class="w-4 h-4 shrink-0 {{ Request::is('roles*') ? 'text-white' : 'text-blue-200' }}"></i>
+                    <span class="nav-text truncate">Hak Akses & Peran</span>
                 </a>
                 @endcan
             </div>
+            @endcanany
         </div>
-    </nav>
+    </div>
 
-    <!-- Bottom Actions -->
-    <div class="p-4 border-t border-white/10">
-        <!-- Dark Mode Toggle -->
-        <div class="flex items-center justify-between px-2">
-            <div class="flex items-center text-sm font-medium text-blue-100/70">
-                <svg class="w-5 h-5 mr-3 text-blue-200/70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
-                Dark Mode
+    <!-- Profile & Account Footer (Corporate Navy Theme) -->
+    <div class="pt-4 border-t border-white/15">
+        <div class="user-profile-box p-2.5 rounded-2xl bg-white/10 border border-white/15 hover:bg-white/15 transition-all flex items-center justify-between gap-2.5">
+            <div class="flex items-center gap-2.5 min-w-0">
+                <div class="relative shrink-0">
+                    <div class="w-8 h-8 rounded-xl bg-white/20 border border-white/25 text-white font-bold text-xs flex items-center justify-center shadow-xs">
+                        {{ strtoupper(substr(Auth::user()->name ?? 'User', 0, 1)) }}
+                    </div>
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 ring-2 ring-[#162a5b] absolute -bottom-0.5 -right-0.5"></span>
+                </div>
+                <div class="sidebar-profile-text min-w-0">
+                    <div class="font-bold text-xs text-white truncate leading-tight">
+                        {{ Auth::user()->name ?? 'User' }}
+                    </div>
+                    <div class="flex items-center gap-1.5 mt-0.5">
+                        <span class="inline-block px-1.5 py-0.2 rounded-md text-[9px] font-extrabold uppercase tracking-wider bg-white/15 text-blue-100 border border-white/20 truncate max-w-[100px]">
+                            {{ ucfirst(str_replace('_', ' ', Auth::user()->roles->first()->name ?? 'User')) }}
+                        </span>
+                    </div>
+                </div>
             </div>
-            <button class="relative inline-flex items-center h-6 rounded-full w-11 bg-white/20 focus:outline-none">
-                <span class="inline-block w-4 h-4 transform bg-white rounded-full translate-x-1 transition shadow-sm"></span>
-            </button>
+            
+            <!-- Logout Button -->
+            <form method="POST" action="{{ route('logout') }}" class="inline shrink-0">
+                @csrf
+                <button type="submit" title="Keluar / Logout" class="sidebar-profile-text w-7 h-7 rounded-lg flex items-center justify-center text-blue-200 hover:text-white hover:bg-rose-500/30 border border-transparent hover:border-rose-400/40 transition cursor-pointer">
+                    <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
+                </button>
+            </form>
         </div>
     </div>
 </aside>

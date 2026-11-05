@@ -8,6 +8,9 @@
 		},
 		{
 			"path": "../../../Portax"
+		},
+		{
+			"path": "../../../../Project/poslaravel"
 		}
 	],
 	"settings": {}

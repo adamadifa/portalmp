@@ -1,492 +1,607 @@
 <x-app-layout>
-    <x-slot name="header">
-        Edit Biaya Operasional
-    </x-slot>
+    <x-slot name="header">Edit Biaya Operasional</x-slot>
+    <x-slot name="headerTitle">Edit Biaya Operasional</x-slot>
+    <x-slot name="headerDescription">Perbarui transaksi biaya operasional, alokasi akun beban, dan perubahan rincian pos biaya</x-slot>
 
     <style>
-    /* ── Isolated Floating Label & Icon Group ──────────── */
-    .c-fl-group {
-        position: relative !important;
-        width: 100% !important;
-        margin-top: 22px !important;
+    /* ── Select2 Custom Theming (Corporate Navy #162a5b) ──────────── */
+    .select2-container { 
+        width: 100% !important; 
     }
-    .c-fl-group:first-child {
-        margin-top: 6px !important;
-    }
-
-    .c-fl-icon {
-        position: absolute !important;
-        left: 10px !important;
-        top: 50% !important;
-        transform: translateY(-50%) !important;
-        color: #6B7280 !important;
-        pointer-events: none !important;
-        z-index: 25 !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-    }
-
-    .c-fl-group:focus-within .c-fl-icon {
-        color: #294C9A !important;
-    }
-
-    .c-fl-label {
-        position: absolute !important;
-        left: 10px !important;
-        top: 0px !important;
-        bottom: auto !important;
-        transform: translateY(-50%) !important;
-        background-color: #ffffff !important;
-        padding: 0 4px !important;
-        font-size: 11px !important;
-        font-weight: 600 !important;
-        color: #374151 !important;
-        z-index: 30 !important;
-        pointer-events: none !important;
-        line-height: 1 !important;
-        white-space: nowrap !important;
-        border-radius: 2px !important;
-    }
-
-    .c-fl-group:focus-within .c-fl-label {
-        color: #294C9A !important;
-    }
-
-    .fi {
-        display: block !important;
-        width: 100% !important;
-        height: 38px !important;
-        padding: 0 12px 0 34px !important;
-        font-size: 12px !important;
-        color: #111827 !important;
-        background-color: #ffffff !important;
-        border: 1px solid #D1D5DB !important;
-        border-radius: 8px !important;
-        outline: none !important;
-        transition: border-color .15s, box-shadow .15s !important;
-    }
-    .fi:focus {
-        border-color: #294C9A !important;
-        box-shadow: 0 0 0 3px rgba(41, 76, 154, 0.10) !important;
-    }
-    .fi::placeholder { color: #9CA3AF !important; font-size: 11.5px !important; }
-
-    /* Select2 Alignment */
-    .select2-container { width: 100% !important; }
     .select2-container--default .select2-selection--single {
-        height: 38px !important;
-        border: 1px solid #D1D5DB !important;
-        border-radius: 8px !important;
+        height: 40px !important;
+        border: 1px solid #e2e8f0 !important;
+        border-radius: 12px !important;
         background-color: #ffffff !important;
-        position: relative !important;
         display: flex !important;
         align-items: center !important;
         padding-top: 0 !important;
+        transition: all 0.15s ease-in-out !important;
+    }
+    .dark .select2-container--default .select2-selection--single {
+        background-color: #0f172a !important;
+        border-color: #334155 !important;
+        color: #f8fafc !important;
     }
     .select2-container--default.select2-container--focus .select2-selection--single,
     .select2-container--default.select2-container--open .select2-selection--single {
-        border-color: #294C9A !important;
-        box-shadow: 0 0 0 3px rgba(41, 76, 154, 0.10) !important;
+        border-color: #162a5b !important;
+        box-shadow: 0 0 0 3px rgba(22, 42, 91, 0.12) !important;
     }
     .select2-container--default .select2-selection--single .select2-selection__rendered {
         display: flex !important;
         align-items: center !important;
         height: 100% !important;
         line-height: normal !important;
-        padding-left: 34px !important;
-        padding-right: 32px !important;
+        padding-left: 12px !important;
+        padding-right: 30px !important;
         font-size: 12px !important;
-        color: #111827 !important;
+        font-weight: 600 !important;
+        color: #1e293b !important;
+    }
+    .dark .select2-container--default .select2-selection--single .select2-selection__rendered {
+        color: #f1f5f9 !important;
     }
     .select2-container--default .select2-selection--single .select2-selection__arrow {
         position: absolute !important;
         top: 50% !important;
-        right: 10px !important;
+        right: 12px !important;
         transform: translateY(-50%) !important;
         height: 16px !important;
         width: 16px !important;
     }
-
-    /* DataTable Customization */
-    .dataTables_wrapper .dataTables_filter {
-        margin-bottom: 16px !important;
+    .select2-container--default .select2-selection--single .select2-selection__arrow b {
+        border-color: #64748b transparent transparent transparent !important;
+        border-style: solid !important;
+        border-width: 5px 4px 0 4px !important;
     }
-    /* ── Polished DataTable Styles ──────────── */
-    .dataTables_wrapper {
-        font-size: 12px !important;
+    .select2-dropdown {
+        border: 1px solid #e2e8f0 !important;
+        border-radius: 12px !important;
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1) !important;
+        overflow: hidden !important;
+        z-index: 1050 !important;
     }
-    .dataTables_wrapper .dataTables_length {
-        margin-bottom: 14px !important;
+    .dark .select2-dropdown {
+        background-color: #0f172a !important;
+        border-color: #334155 !important;
     }
-    .dataTables_wrapper .dataTables_length select {
-        border: 1px solid #D1D5DB !important;
-        border-radius: 8px !important;
-        padding: 5px 28px 5px 10px !important;
-        font-size: 12px !important;
-        font-weight: 500 !important;
-        color: #374151 !important;
-        outline: none !important;
-        background-color: #F9FAFB !important;
-        cursor: pointer !important;
-    }
-    .dataTables_wrapper .dataTables_filter {
-        margin-bottom: 14px !important;
-    }
-    .dataTables_wrapper .dataTables_filter input {
-        border: 1px solid #D1D5DB !important;
-        border-radius: 8px !important;
-        padding: 6px 14px !important;
-        outline: none !important;
-        font-size: 12px !important;
-        color: #111827 !important;
-        margin-left: 8px !important;
-        min-width: 220px !important;
-        transition: all 0.15s ease !important;
-    }
-    .dataTables_wrapper .dataTables_filter input:focus {
-        border-color: #294C9A !important;
-        background-color: #FFFFFF !important;
-        box-shadow: 0 0 0 3px rgba(41, 76, 154, 0.12) !important;
-    }
-    #tabelbarang {
-        border-collapse: separate !important;
-        border-spacing: 0 !important;
-        width: 100% !important;
-    }
-    #tabelbarang thead th {
-        background-color: #F8FAFC !important;
-        color: #475569 !important;
-        font-weight: 700 !important;
-        font-size: 11px !important;
-        text-transform: uppercase !important;
-        letter-spacing: 0.05em !important;
-        border-top: 1px solid #E2E8F0 !important;
-        border-bottom: 2px solid #CBD5E1 !important;
-        padding: 11px 14px !important;
-    }
-    #tabelbarang tbody td {
-        padding: 10px 14px !important;
-        vertical-align: middle !important;
-        border-bottom: 1px solid #F1F5F9 !important;
-        color: #334155 !important;
-    }
-    #tabelbarang tbody tr:hover {
-        background-color: #F8FAFC !important;
-    }
-    .dataTables_wrapper .dataTables_info {
-        padding-top: 14px !important;
-        font-size: 12px !important;
-        color: #64748B !important;
-        font-weight: 500 !important;
-    }
-    .dataTables_wrapper .dataTables_paginate {
-        margin-top: 12px !important;
-    }
-    .dataTables_wrapper .dataTables_paginate .paginate_button {
-        padding: 5px 11px !important;
-        margin: 0 2px !important;
-        border-radius: 7px !important;
+    .select2-results__option {
+        padding: 8px 12px !important;
         font-size: 12px !important;
         font-weight: 500 !important;
-        border: 1px solid #E2E8F0 !important;
-        background: #FFFFFF !important;
-        color: #475569 !important;
-        cursor: pointer !important;
-        transition: all 0.15s ease !important;
     }
-    .dataTables_wrapper .dataTables_paginate .paginate_button.current {
-        background: #294C9A !important;
-        color: #FFFFFF !important;
-        border: 1px solid #294C9A !important;
-        font-weight: 600 !important;
-        box-shadow: 0 1px 2px rgba(41, 76, 154, 0.25) !important;
-    }
-    .dataTables_wrapper .dataTables_paginate .paginate_button:hover:not(.current) {
-        background: #EEF2FF !important;
-        color: #294C9A !important;
-        border-color: #C7D2FE !important;
-    }
-    .dataTables_wrapper .dataTables_paginate .paginate_button.disabled,
-    .dataTables_wrapper .dataTables_paginate .paginate_button.disabled:hover {
-        color: #94A3B8 !important;
-        border-color: #F1F5F9 !important;
-        background: #F8FAFC !important;
-        cursor: not-allowed !important;
+    .select2-container--default .select2-results__option--highlighted[aria-selected] {
+        background-color: #162a5b !important;
+        color: #ffffff !important;
     }
     </style>
 
-    <!-- Header & Navigation -->
-    <div class="mb-6 flex justify-between items-center">
-        <div>
-            <h2 class="text-2xl font-semibold text-gray-900 tracking-tight">Edit Transaksi Biaya</h2>
-            <p class="text-sm text-gray-500 mt-1">Perbarui data transaksi biaya nomor <span class="font-mono font-bold text-gray-800">{{ $biaya->no_bukti }}</span>.</p>
-        </div>
-        <a href="{{ route('biaya.index') }}" class="inline-flex items-center px-3.5 py-2 text-xs font-semibold text-gray-700 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition shadow-sm gap-1.5">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-            Kembali
-        </a>
-    </div>
+    <div class="space-y-6">
 
-    <form action="{{ route('biaya.update', Crypt::encrypt($biaya->no_bukti)) }}" method="POST" id="formBiaya">
-        @csrf
-        @method('PUT')
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            <!-- Left Panel: General Info Form -->
-            <div class="lg:col-span-3 space-y-5">
-                <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-6">
-                    <div class="c-fl-group">
-                        <span class="c-fl-icon">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"></path></svg>
-                        </span>
-                        <input type="text" name="no_bukti" id="no_bukti" value="{{ $biaya->no_bukti }}" readonly class="fi bg-gray-50 font-mono font-bold text-gray-700" />
-                        <label for="no_bukti" class="c-fl-label">No. Bukti Biaya</label>
-                    </div>
+        <!-- Top Navigation Bar -->
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 w-full">
+            <div class="flex items-center gap-3">
+                <a 
+                    href="{{ route('biaya.index') }}" 
+                    class="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold text-xs shadow-2xs transition cursor-pointer"
+                >
+                    <i data-lucide="arrow-left" class="w-4 h-4 text-slate-500"></i>
+                    <span>Kembali ke Daftar Biaya</span>
+                </a>
 
-                    <div class="c-fl-group">
-                        <span class="c-fl-icon">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                        </span>
-                        <input type="text" name="tanggal" id="tanggal" class="fi flatpickr-date" value="{{ $biaya->tanggal }}" placeholder="Tanggal" autocomplete="off" required />
-                        <label for="tanggal" class="c-fl-label">Tanggal Transaksi *</label>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-2">
-                        <div class="c-fl-group" style="margin-top: 10px !important;">
-                            <span class="c-fl-icon">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                            </span>
-                            @php
-                                $selectedBulan = $biaya->bulan_pajak ?: date('m', strtotime($biaya->tanggal));
-                            @endphp
-                            <select name="bulan_pajak" id="bulan_pajak" class="fi">
-                                @for ($m = 1; $m <= 12; $m++)
-                                    @php $blnVal = str_pad($m, 2, '0', STR_PAD_LEFT); @endphp
-                                    <option value="{{ $blnVal }}" {{ $selectedBulan == $blnVal ? 'selected' : '' }}>
-                                        {{ $blnVal }} - {{ date('F', mktime(0, 0, 0, $m, 10)) }}
-                                    </option>
-                                @endfor
-                            </select>
-                            <label for="bulan_pajak" class="c-fl-label">Bulan Pajak</label>
-                        </div>
-                        <div class="c-fl-group" style="margin-top: 10px !important;">
-                            <span class="c-fl-icon">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                            </span>
-                            @php
-                                $selectedTahun = $biaya->tahun_pajak ?: date('Y', strtotime($biaya->tanggal));
-                            @endphp
-                            <input type="number" name="tahun_pajak" id="tahun_pajak" class="fi" value="{{ $selectedTahun }}" placeholder="Tahun" autocomplete="off" />
-                            <label for="tahun_pajak" class="c-fl-label">Tahun Pajak</label>
-                        </div>
-                    </div>
-
-                    <div class="c-fl-group">
-                        <span class="c-fl-icon">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
-                        </span>
-                        <select name="kode_supplier" id="kode_supplier" class="fi select2Kodesupplier">
-                            <option value="">Supplier / Rekanan</option>
-                            @foreach ($supplier as $d)
-                                <option value="{{ $d->kode_supplier }}" {{ $biaya->kode_supplier == $d->kode_supplier ? 'selected' : '' }}>{{ strtoupper($d->nama_supplier) }}</option>
-                            @endforeach
-                        </select>
-                        <label for="kode_supplier" class="c-fl-label">Supplier / Rekanan</label>
-                    </div>
-
-                    <div class="c-fl-group">
-                        <span class="c-fl-icon">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
-                        </span>
-                        <select name="jenis_transaksi" id="jenis_transaksi" class="fi" required>
-                            <option value="T" {{ $biaya->jenis_transaksi == 'T' ? 'selected' : '' }}>Tunai</option>
-                            <option value="K" {{ $biaya->jenis_transaksi == 'K' ? 'selected' : '' }}>Kredit</option>
-                        </select>
-                        <label for="jenis_transaksi" class="c-fl-label">Tunai / Kredit *</label>
-                    </div>
-
-                    <div class="c-fl-group {{ $biaya->jenis_transaksi == 'K' ? '' : 'hidden' }}" id="group_jatuh_tempo">
-                        <span class="c-fl-icon">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                        </span>
-                        <input type="text" name="tanggal_jatuh_tempo" id="tanggal_jatuh_tempo" value="{{ $biaya->tanggal_jatuh_tempo }}" class="fi flatpickr-date" placeholder="Jatuh Tempo" autocomplete="off" />
-                        <label for="tanggal_jatuh_tempo" class="c-fl-label">Jatuh Tempo</label>
-                    </div>
-                </div>
+                <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold text-xs bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-200/60 dark:border-amber-500/20">
+                    <span class="w-2 h-2 rounded-full bg-amber-600 animate-pulse"></span>
+                    <span>Edit Transaksi: {{ $biaya->no_bukti }}</span>
+                </span>
             </div>
 
-            <!-- Right Panel: Input items & Data details -->
-            <div class="lg:col-span-9 space-y-4">
-                <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 space-y-4">
-                    <div class="flex justify-between items-center border-b border-gray-100 pb-3">
-                        <h3 class="font-bold text-base text-gray-900">Detail Pos Biaya / Barang</h3>
-                        <div class="flex items-center gap-2">
-                            <svg class="w-5 h-5 text-[#294C9A]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
-                            <span class="text-xs text-gray-500 font-medium">Grand Total:</span>
-                            <span id="grandtotal_text" class="text-base font-bold text-[#294C9A]">0</span>
-                        </div>
-                    </div>
+            <div class="text-xs text-slate-500 dark:text-slate-400 font-medium">
+                Kolom dengan tanda bintang (<span class="text-rose-500 font-bold">*</span>) wajib diisi
+            </div>
+        </div>
 
-                    <!-- Input Grid (Langsung input Deskripsi / Keterangan Pos Biaya) -->
-                    <div class="grid grid-cols-1 md:grid-cols-12 gap-3 items-end">
-                        <div class="md:col-span-5">
-                            <div class="c-fl-group">
-                                <span class="c-fl-icon">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                                </span>
-                                <input type="text" name="keterangan" id="keterangan" class="fi" placeholder="Keterangan / Pos Biaya *" autocomplete="off" />
-                                <label for="keterangan" class="c-fl-label">Keterangan / Pos Biaya *</label>
+        <!-- Alert Notifications -->
+        @if(session('error'))
+            <div class="p-4 rounded-xl bg-rose-50 dark:bg-rose-900/20 border border-rose-200 dark:border-rose-800/40 text-rose-800 dark:text-rose-300 flex items-center gap-3 shadow-2xs">
+                <i data-lucide="alert-triangle" class="w-5 h-5 text-rose-600 shrink-0"></i>
+                <div class="text-xs font-semibold">{{ session('error') }}</div>
+            </div>
+        @endif
+
+        @if ($errors->any())
+            <div class="p-4 rounded-xl bg-rose-50 dark:bg-rose-900/20 border border-rose-200 dark:border-rose-800/40 text-rose-800 dark:text-rose-300 shadow-2xs">
+                <div class="flex items-center gap-2 font-bold text-xs mb-1.5">
+                    <i data-lucide="alert-circle" class="w-4 h-4 text-rose-600"></i>
+                    <span>Terdapat beberapa kesalahan pengisian form:</span>
+                </div>
+                <ul class="list-disc list-inside text-xs space-y-0.5 text-rose-700 dark:text-rose-400">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
+        <!-- Main Form Container -->
+        <form action="{{ route('biaya.update', Crypt::encrypt($biaya->no_bukti)) }}" method="POST" id="formBiaya" class="w-full" novalidate>
+            @csrf
+            @method('PUT')
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                
+                <!-- Left Column (4 cols): Informasi Dasar Transaksi Biaya -->
+                <div class="lg:col-span-4 space-y-5">
+                    
+                    <!-- Card: Informasi Biaya Operasional -->
+                    <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/90 dark:border-slate-800 shadow-2xs overflow-hidden">
+                        <div class="px-5 py-4 bg-[#162a5b] text-white flex items-center gap-2.5">
+                            <div class="w-8 h-8 rounded-lg bg-white/15 flex items-center justify-center shrink-0">
+                                <i data-lucide="receipt" class="w-4 h-4 text-white"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-xs uppercase tracking-wider text-white">Informasi Biaya</h3>
+                                <p class="text-[11px] text-blue-200/80">Identitas transaksi & data rekanan</p>
                             </div>
                         </div>
 
-                        <div class="md:col-span-2">
-                            <div class="c-fl-group">
-                                <span class="c-fl-icon">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"></path></svg>
-                                </span>
-                                <input type="text" name="jumlah" id="jumlah" class="fi number-separator text-right" placeholder="1" value="1" autocomplete="off" />
-                                <label for="jumlah" class="c-fl-label">Qty</label>
+                        <div class="p-5 space-y-3.5">
+                            <!-- No. Bukti (Readonly) -->
+                            <div>
+                                <label for="no_bukti" class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                                    No. Bukti Biaya
+                                </label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                                        <i data-lucide="hash" class="w-4 h-4"></i>
+                                    </div>
+                                    <input 
+                                        type="text" 
+                                        name="no_bukti" 
+                                        id="no_bukti" 
+                                        value="{{ $biaya->no_bukti }}" 
+                                        readonly 
+                                        class="w-full h-[40px] pl-10 pr-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 text-xs font-bold font-mono text-slate-700 dark:text-slate-300 cursor-not-allowed shadow-2xs" 
+                                    />
+                                </div>
                             </div>
-                        </div>
 
-                        <div class="md:col-span-2">
-                            <div class="c-fl-group">
-                                <span class="c-fl-icon">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M12 16v1M10 5h4a2 2 0 012 2v10a2 2 0 01-2 2h-4a2 2 0 01-2-2V7a2 2 0 012-2z"></path></svg>
-                                </span>
-                                <input type="text" name="harga" id="harga" class="fi number-separator text-right" placeholder="0" autocomplete="off" />
-                                <label for="harga" class="c-fl-label">Harga *</label>
+                            <!-- Tanggal Transaksi -->
+                            <div>
+                                <label for="tanggal" class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                                    Tanggal Transaksi <span class="text-rose-500">*</span>
+                                </label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                                        <i data-lucide="calendar" class="w-4 h-4"></i>
+                                    </div>
+                                    <input 
+                                        type="text" 
+                                        name="tanggal" 
+                                        id="tanggal" 
+                                        value="{{ old('tanggal') ?? $biaya->tanggal }}" 
+                                        class="w-full h-[40px] pl-10 pr-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-semibold text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-[#162a5b] transition shadow-2xs flatpickr-date" 
+                                        placeholder="Pilih Tanggal..." 
+                                        autocomplete="off" 
+                                        required 
+                                    />
+                                </div>
                             </div>
-                        </div>
 
-                        <div class="md:col-span-3">
-                            <div class="c-fl-group">
-                                <span class="c-fl-icon">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M12 16v1M10 5h4a2 2 0 012 2v10a2 2 0 01-2 2h-4a2 2 0 01-2-2V7a2 2 0 012-2z"></path></svg>
-                                </span>
-                                <input type="text" name="penyesuaian" id="penyesuaian" class="fi number-separator text-right" placeholder="0" autocomplete="off" />
-                                <label for="penyesuaian" class="c-fl-label">Penyesuaian</label>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-12 gap-3 items-end">
-                        <div class="md:col-span-7">
-                            <div class="c-fl-group">
-                                <span class="c-fl-icon">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
-                                </span>
-                                <select name="kode_akun" id="kode_akun" class="fi select2Kodeakun">
-                                    <option value="">Akun (COA) *</option>
-                                    @foreach ($coa as $d)
-                                        <option value="{{ $d->kode_akun }}">{{ $d->kode_akun }} - {{ $d->nama_akun }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="md:col-span-5">
-                            <div class="c-fl-group">
-                                <span class="c-fl-icon">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
-                                </span>
-                                <select name="kode_cabang" id="kode_cabang" class="fi select2Kodecabang">
-                                    <option value="">Cabang (Opsional)</option>
-                                    @foreach ($cabang as $d)
-                                        <option value="{{ $d->kode_cabang }}">{{ strtoupper($d->nama_cabang) }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-
-                    <button type="button" id="btnTambahbarang" class="w-full inline-flex items-center justify-center px-4 py-2.5 text-xs font-semibold text-[#294C9A] bg-blue-50 border border-blue-200 hover:bg-blue-100 rounded-xl transition shadow-sm gap-1.5">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-                        Tambah Pos Biaya
-                    </button>
-
-                    <!-- Items Detail Table -->
-                    <div class="overflow-x-auto rounded-xl border border-gray-200 shadow-sm mt-3">
-                        <table class="w-full text-xs text-left">
-                            <thead class="text-xs uppercase bg-gray-50 text-gray-700 border-b border-gray-200">
-                                <tr>
-                                    <th class="px-3 py-2.5">Keterangan / Pos Biaya</th>
-                                    <th class="px-3 py-2.5 text-center">Qty</th>
-                                    <th class="px-3 py-2.5 text-right">Harga</th>
-                                    <th class="px-3 py-2.5 text-right">Subtotal</th>
-                                    <th class="px-3 py-2.5 text-right">Peny</th>
-                                    <th class="px-3 py-2.5 text-right">Total</th>
-                                    <th class="px-3 py-2.5">Akun (COA)</th>
-                                    <th class="px-3 py-2.5 text-center">Cabang</th>
-                                    <th class="px-3 py-2.5 text-center">#</th>
-                                </tr>
-                            </thead>
-                            <tbody id="loadbarang" class="divide-y divide-gray-100 bg-white">
-                                @foreach ($detail as $idx => $item)
+                            <!-- Bulan & Tahun Pajak -->
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label for="bulan_pajak" class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                                        Bulan Pajak
+                                    </label>
                                     @php
-                                        $subtotal = $item->jumlah * $item->harga;
-                                        $total = $subtotal + $item->penyesuaian;
-                                        $namaKet = $item->keterangan ?? $item->nama_barang;
+                                        $selectedBulan = old('bulan_pajak') ?? ($biaya->bulan_pajak ?: date('m', strtotime($biaya->tanggal)));
                                     @endphp
-                                    <tr id="index_{{ $idx + 1 }}" class="hover:bg-gray-50/80 transition">
-                                        <td class="px-3 py-2 font-medium text-gray-900">
-                                            <input type="hidden" name="keterangan_item[]" value="{{ $namaKet }}" />
-                                            <input type="hidden" name="jumlah_item[]" value="{{ formatAngkaDesimal($item->jumlah) }}" />
-                                            <input type="hidden" name="harga_item[]" value="{{ formatAngkaDesimal($item->harga) }}" />
-                                            <input type="hidden" name="penyesuaian_item[]" value="{{ formatAngkaDesimal($item->penyesuaian) }}" />
-                                            <input type="hidden" name="kode_akun_item[]" value="{{ $item->kode_akun }}" />
-                                            <input type="hidden" name="kode_cabang_item[]" value="{{ $item->kode_cabang }}" />
-                                            {{ $namaKet }}
-                                        </td>
-                                        <td class="px-3 py-2 text-center text-gray-700">{{ formatAngkaDesimal($item->jumlah) }}</td>
-                                        <td class="px-3 py-2 text-right text-gray-700">{{ formatAngkaDesimal($item->harga) }}</td>
-                                        <td class="px-3 py-2 text-right text-gray-700">{{ formatAngkaDesimal($subtotal) }}</td>
-                                        <td class="px-3 py-2 text-right text-gray-700">{{ formatAngkaDesimal($item->penyesuaian) }}</td>
-                                        <td class="px-3 py-2 text-right font-bold text-gray-950 totalharga">{{ formatAngkaDesimal($total) }}</td>
-                                        <td class="px-3 py-2 text-gray-600">{{ $item->kode_akun }}</td>
-                                        <td class="px-3 py-2 text-center text-gray-600">{{ $item->kode_cabang ?: '-' }}</td>
-                                        <td class="px-3 py-2 text-center">
-                                            <a href="#" id="index_{{ $idx + 1 }}" class="delete text-red-500 hover:text-red-700 transition">
-                                                <svg class="w-4 h-4 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                                            </a>
+                                    <select 
+                                        name="bulan_pajak" 
+                                        id="bulan_pajak" 
+                                        class="w-full h-[40px] px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-semibold text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-[#162a5b] transition shadow-2xs cursor-pointer"
+                                    >
+                                        @for ($m = 1; $m <= 12; $m++)
+                                            @php $blnVal = str_pad($m, 2, '0', STR_PAD_LEFT); @endphp
+                                            <option value="{{ $blnVal }}" {{ $selectedBulan == $blnVal ? 'selected' : '' }}>
+                                                {{ $blnVal }} - {{ date('F', mktime(0, 0, 0, $m, 10)) }}
+                                            </option>
+                                        @endfor
+                                    </select>
+                                </div>
+                                <div>
+                                    <label for="tahun_pajak" class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                                        Tahun Pajak
+                                    </label>
+                                    @php
+                                        $selectedTahun = old('tahun_pajak') ?? ($biaya->tahun_pajak ?: date('Y', strtotime($biaya->tanggal)));
+                                    @endphp
+                                    <div class="relative">
+                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                                            <i data-lucide="calendar-days" class="w-3.5 h-3.5"></i>
+                                        </div>
+                                        <input 
+                                            type="number" 
+                                            name="tahun_pajak" 
+                                            id="tahun_pajak" 
+                                            value="{{ $selectedTahun }}" 
+                                            class="w-full h-[40px] pl-9 pr-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-semibold text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-[#162a5b] transition shadow-2xs" 
+                                            placeholder="Tahun" 
+                                            autocomplete="off" 
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Supplier / Rekanan -->
+                            <div>
+                                <label for="kode_supplier" class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                                    Supplier / Rekanan (Opsional)
+                                </label>
+                                <select name="kode_supplier" id="kode_supplier" class="select2Kodesupplier w-full">
+                                    <option value="">-- Pilih Rekanan / Supplier --</option>
+                                    @foreach ($supplier as $d)
+                                        <option value="{{ $d->kode_supplier }}" {{ (old('kode_supplier') ?? $biaya->kode_supplier) == $d->kode_supplier ? 'selected' : '' }}>
+                                            {{ strtoupper($d->nama_supplier) }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <!-- Jenis Transaksi (Tunai / Kredit) -->
+                            <div>
+                                <label for="jenis_transaksi" class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                                    Jenis Transaksi <span class="text-rose-500">*</span>
+                                </label>
+                                @php
+                                    $jtVal = old('jenis_transaksi') ?? $biaya->jenis_transaksi;
+                                @endphp
+                                <select 
+                                    name="jenis_transaksi" 
+                                    id="jenis_transaksi" 
+                                    class="w-full h-[40px] px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-semibold text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-[#162a5b] transition shadow-2xs cursor-pointer"
+                                    required
+                                >
+                                    <option value="T" {{ $jtVal == 'T' ? 'selected' : '' }}>Tunai (Cash / Bank Langsung)</option>
+                                    <option value="K" {{ $jtVal == 'K' ? 'selected' : '' }}>Kredit (Hutang / Tempo)</option>
+                                </select>
+                            </div>
+
+                            <!-- Tanggal Jatuh Tempo (Hanya jika Kredit) -->
+                            <div id="group_jatuh_tempo" class="{{ $jtVal == 'K' ? '' : 'hidden' }}">
+                                <label for="tanggal_jatuh_tempo" class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                                    Tanggal Jatuh Tempo <span class="text-rose-500">*</span>
+                                </label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                                        <i data-lucide="clock" class="w-4 h-4"></i>
+                                    </div>
+                                    <input 
+                                        type="text" 
+                                        name="tanggal_jatuh_tempo" 
+                                        id="tanggal_jatuh_tempo" 
+                                        value="{{ old('tanggal_jatuh_tempo') ?? $biaya->tanggal_jatuh_tempo }}" 
+                                        class="w-full h-[40px] pl-10 pr-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-semibold text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-[#162a5b] transition shadow-2xs flatpickr-date" 
+                                        placeholder="Pilih Tanggal Jatuh Tempo..." 
+                                        autocomplete="off" 
+                                    />
+                                </div>
+                            </div>
+
+                            <!-- Catatan / Keterangan Transaksi -->
+                            <div>
+                                <label for="keterangan_transaksi" class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                                    Catatan Tambahan (Opsional)
+                                </label>
+                                <textarea 
+                                    name="keterangan" 
+                                    id="keterangan_transaksi" 
+                                    rows="2" 
+                                    class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-semibold text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-[#162a5b] transition shadow-2xs" 
+                                    placeholder="Catatan umum transaksi biaya..."
+                                >{{ old('keterangan') ?? $biaya->keterangan }}</textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column (8 cols): Input Pos Biaya & Tabel Rincian -->
+                <div class="lg:col-span-8 space-y-5">
+                    
+                    <!-- Card 1: Input Item Pos Biaya -->
+                    <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/90 dark:border-slate-800 shadow-2xs overflow-hidden">
+                        <div class="px-5 py-4 bg-[#162a5b] text-white flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-2.5">
+                                <div class="w-8 h-8 rounded-lg bg-white/15 flex items-center justify-center shrink-0">
+                                    <i data-lucide="layers" class="w-4 h-4 text-white"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-xs uppercase tracking-wider text-white">Tambah Pos Biaya</h3>
+                                    <p class="text-[11px] text-blue-200/80">Masukkan deskripsi beban pengeluaran, akun COA, dan alokasi cabang</p>
+                                </div>
+                            </div>
+
+                            <!-- Live Grand Total Indicator -->
+                            <div class="text-right">
+                                <div class="text-[10px] uppercase font-bold text-blue-200">Total Akumulasi</div>
+                                <div class="text-sm font-extrabold font-mono text-emerald-300 flex items-center justify-end gap-1">
+                                    <span>Rp</span>
+                                    <span id="grandtotal_text">0</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="p-5 space-y-4">
+                            <!-- Row 1: Keterangan, Qty, Harga, Penyesuaian -->
+                            <div class="grid grid-cols-1 md:grid-cols-12 gap-3 items-end">
+                                <!-- Keterangan / Pos Biaya -->
+                                <div class="md:col-span-5">
+                                    <label for="keterangan" class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                                        Keterangan / Pos Biaya <span class="text-rose-500">*</span>
+                                    </label>
+                                    <div class="relative">
+                                        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                                            <i data-lucide="file-text" class="w-4 h-4"></i>
+                                        </div>
+                                        <input 
+                                            type="text" 
+                                            name="keterangan" 
+                                            id="keterangan" 
+                                            class="w-full h-[40px] pl-10 pr-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-semibold text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-[#162a5b] transition shadow-2xs" 
+                                            placeholder="Contoh: Pembelian ATK Kantor" 
+                                            autocomplete="off" 
+                                        />
+                                    </div>
+                                </div>
+
+                                <!-- Qty -->
+                                <div class="md:col-span-2">
+                                    <label for="jumlah" class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                                        Qty
+                                    </label>
+                                    <div class="relative">
+                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                                            <i data-lucide="hash" class="w-3.5 h-3.5"></i>
+                                        </div>
+                                        <input 
+                                            type="text" 
+                                            name="jumlah" 
+                                            id="jumlah" 
+                                            value="1" 
+                                            class="w-full h-[40px] pl-8 pr-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-semibold text-right text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-[#162a5b] transition shadow-2xs number-separator" 
+                                            placeholder="1" 
+                                            autocomplete="off" 
+                                        />
+                                    </div>
+                                </div>
+
+                                <!-- Harga Satuan -->
+                                <div class="md:col-span-2">
+                                    <label for="harga" class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                                        Harga Satuan <span class="text-rose-500">*</span>
+                                    </label>
+                                    <div class="relative">
+                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                                            <i data-lucide="banknote" class="w-3.5 h-3.5"></i>
+                                        </div>
+                                        <input 
+                                            type="text" 
+                                            name="harga" 
+                                            id="harga" 
+                                            class="w-full h-[40px] pl-8 pr-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-bold text-right text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-[#162a5b] transition shadow-2xs number-separator" 
+                                            placeholder="0" 
+                                            autocomplete="off" 
+                                        />
+                                    </div>
+                                </div>
+
+                                <!-- Penyesuaian -->
+                                <div class="md:col-span-3">
+                                    <label for="penyesuaian" class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                                        Penyesuaian (+ / -)
+                                    </label>
+                                    <div class="relative">
+                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                                            <i data-lucide="sliders" class="w-3.5 h-3.5"></i>
+                                        </div>
+                                        <input 
+                                            type="text" 
+                                            name="penyesuaian" 
+                                            id="penyesuaian" 
+                                            class="w-full h-[40px] pl-8 pr-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-semibold text-right text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-[#162a5b] transition shadow-2xs number-separator" 
+                                            placeholder="0" 
+                                            autocomplete="off" 
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Row 2: Akun COA & Alokasi Cabang -->
+                            <div class="grid grid-cols-1 md:grid-cols-12 gap-3 items-end">
+                                <!-- Akun (COA) -->
+                                <div class="md:col-span-7">
+                                    <label for="kode_akun" class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                                        Akun Perkiraan (COA) <span class="text-rose-500">*</span>
+                                    </label>
+                                    <select name="kode_akun" id="kode_akun" class="select2Kodeakun w-full">
+                                        <option value="">-- Pilih Akun (COA) --</option>
+                                        @foreach ($coa as $d)
+                                            <option value="{{ $d->kode_akun }}">{{ $d->kode_akun }} - {{ $d->nama_akun }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+
+                                <!-- Cabang (Opsional) -->
+                                <div class="md:col-span-5">
+                                    <label for="kode_cabang" class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                                        Alokasi Cabang (Opsional)
+                                    </label>
+                                    <select name="kode_cabang" id="kode_cabang" class="select2Kodecabang w-full">
+                                        <option value="">-- Cabang (Opsional) --</option>
+                                        @foreach ($cabang as $d)
+                                            <option value="{{ $d->kode_cabang }}">{{ strtoupper($d->nama_cabang) }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Tambah Button -->
+                            <div class="pt-1">
+                                <button 
+                                    type="button" 
+                                    id="btnTambahbarang" 
+                                    class="w-full h-[42px] inline-flex items-center justify-center gap-2 px-4 rounded-xl bg-blue-50 dark:bg-blue-500/10 hover:bg-blue-100 dark:hover:bg-blue-500/20 text-[#162a5b] dark:text-blue-400 font-bold text-xs border border-blue-200/60 dark:border-blue-500/20 shadow-2xs transition cursor-pointer"
+                                >
+                                    <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                                    <span>Tambahkan ke Tabel Rincian Biaya</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card 2: Tabel Rincian Pos Biaya -->
+                    <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/90 dark:border-slate-800 shadow-2xs overflow-hidden">
+                        <div class="px-5 py-3.5 bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200/80 dark:border-slate-800 flex items-center justify-between">
+                            <div class="flex items-center gap-2">
+                                <i data-lucide="list" class="w-4 h-4 text-blue-600 dark:text-blue-400"></i>
+                                <span class="font-bold text-xs text-slate-800 dark:text-white uppercase tracking-wider">Daftar Rincian Pos Biaya</span>
+                            </div>
+                            <span class="text-[11px] text-slate-500 dark:text-slate-400 font-medium">Pastikan seluruh pos beban dan akun telah sesuai</span>
+                        </div>
+
+                        <!-- Table Responsive -->
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse">
+                                <thead class="bg-[#162a5b]">
+                                    <tr class="text-[11px] font-extrabold uppercase tracking-wider text-blue-200/90 bg-[#162a5b]">
+                                        <th class="py-2.5 px-4 min-w-[180px]">Pos Biaya / Keterangan</th>
+                                        <th class="py-2.5 px-3 w-16 text-center">Qty</th>
+                                        <th class="py-2.5 px-3 w-28 text-right">Harga</th>
+                                        <th class="py-2.5 px-3 w-28 text-right">Subtotal</th>
+                                        <th class="py-2.5 px-3 w-24 text-right">Penyesuaian</th>
+                                        <th class="py-2.5 px-3 w-32 text-right">Total</th>
+                                        <th class="py-2.5 px-4 min-w-[150px]">Akun (COA)</th>
+                                        <th class="py-2.5 px-3 w-20 text-center">Cabang</th>
+                                        <th class="py-2.5 px-3 w-14 text-center">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="loadbarang" class="divide-y divide-slate-100 dark:divide-slate-800 text-xs">
+                                    @php $initGrandTotal = 0; @endphp
+                                    @foreach ($detail as $idx => $item)
+                                        @php
+                                            $subtotal = $item->jumlah * $item->harga;
+                                            $total = $subtotal + $item->penyesuaian;
+                                            $initGrandTotal += $total;
+                                            $namaKet = $item->keterangan ?? $item->nama_barang;
+                                            $bg = "";
+                                            if ((substr($item->kode_akun, 0, 3) == '6-1' || substr($item->kode_akun, 0, 3) == '6-2') && !empty($item->kode_cabang)) {
+                                                $bg = "bg-blue-50/40 dark:bg-blue-900/10";
+                                            }
+                                        @endphp
+                                        <tr id="index_{{ $idx + 1 }}" class="item-row {{ $bg }} hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-colors">
+                                            <td class="py-2 px-4 font-semibold text-slate-800 dark:text-white">
+                                                <input type="hidden" name="keterangan_item[]" value="{{ $namaKet }}" />
+                                                <input type="hidden" name="jumlah_item[]" value="{{ formatAngkaDesimal($item->jumlah) }}" />
+                                                <input type="hidden" name="harga_item[]" value="{{ formatAngkaDesimal($item->harga) }}" />
+                                                <input type="hidden" name="penyesuaian_item[]" value="{{ formatAngkaDesimal($item->penyesuaian) }}" />
+                                                <input type="hidden" name="kode_akun_item[]" value="{{ $item->kode_akun }}" />
+                                                <input type="hidden" name="kode_cabang_item[]" value="{{ $item->kode_cabang }}" />
+                                                <div>{{ $namaKet }}</div>
+                                            </td>
+                                            <td class="py-2 px-3 text-center text-slate-700 dark:text-slate-300 font-mono">{{ formatAngkaDesimal($item->jumlah) }}</td>
+                                            <td class="py-2 px-3 text-right text-slate-700 dark:text-slate-300 font-mono">{{ formatAngkaDesimal($item->harga) }}</td>
+                                            <td class="py-2 px-3 text-right text-slate-700 dark:text-slate-300 font-mono">{{ formatAngkaDesimal($subtotal) }}</td>
+                                            <td class="py-2 px-3 text-right text-slate-700 dark:text-slate-300 font-mono">{{ formatAngkaDesimal($item->penyesuaian) }}</td>
+                                            <td class="py-2 px-3 text-right font-mono font-bold text-slate-900 dark:text-white totalharga">{{ formatAngkaDesimal($total) }}</td>
+                                            <td class="py-2 px-4 text-slate-600 dark:text-slate-400 font-medium">
+                                                <span class="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-[11px] font-mono border border-slate-200/60 dark:border-slate-700">
+                                                    {{ $item->kode_akun }}
+                                                </span>
+                                            </td>
+                                            <td class="py-2 px-3 text-center text-slate-600 dark:text-slate-400 font-medium">
+                                                @if(!empty($item->kode_cabang))
+                                                    <span class="px-2 py-0.5 rounded-md bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 text-[11px] font-bold border border-blue-200/60 dark:border-blue-500/20">
+                                                        {{ $item->kode_cabang }}
+                                                    </span>
+                                                @else
+                                                    <span class="text-slate-400">-</span>
+                                                @endif
+                                            </td>
+                                            <td class="py-2 px-3 text-center">
+                                                <button type="button" id="index_{{ $idx + 1 }}" class="delete w-7 h-7 rounded-lg inline-flex items-center justify-center bg-rose-50 dark:bg-rose-500/10 hover:bg-rose-100 dark:hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 border border-rose-200/60 dark:border-rose-500/20 transition cursor-pointer shadow-2xs" title="Hapus Pos Biaya">
+                                                    <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                    <tr id="empty_row" class="{{ count($detail) > 0 ? 'hidden' : '' }}">
+                                        <td colspan="9" class="py-12 px-4 text-center">
+                                            <div class="flex flex-col items-center justify-center max-w-sm mx-auto">
+                                                <div class="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400 mb-2 shadow-2xs">
+                                                    <i data-lucide="inbox" class="w-5 h-5"></i>
+                                                </div>
+                                                <h4 class="font-bold text-xs text-slate-700 dark:text-slate-300">Belum ada pos biaya ditambahkan</h4>
+                                                <p class="text-[11px] text-slate-400 mt-0.5">Isi form di atas kemudian klik "Tambahkan ke Tabel Rincian Biaya".</p>
+                                            </div>
                                         </td>
                                     </tr>
-                                @endforeach
-                            </tbody>
-                            <tfoot class="bg-gray-50 text-gray-900 border-t border-gray-200 font-bold">
-                                <tr>
-                                    <td colspan="5" class="px-3 py-2.5 text-right uppercase">TOTAL</td>
-                                    <td id="grandtotal" class="px-3 py-2.5 text-right">0</td>
-                                    <td colspan="3"></td>
-                                </tr>
-                            </tfoot>
-                        </table>
-                    </div>
+                                </tbody>
+                                <tfoot class="bg-slate-50 dark:bg-slate-800/40 border-t border-slate-200 dark:border-slate-800 font-bold text-xs">
+                                    <tr>
+                                        <td colspan="5" class="py-3 px-4 text-right uppercase tracking-wider text-slate-700 dark:text-slate-300 font-bold">
+                                            TOTAL BIAYA OPERASIONAL
+                                        </td>
+                                        <td class="py-3 px-3 text-right font-mono font-extrabold text-[#162a5b] dark:text-blue-400 text-sm">
+                                            <span id="grandtotal">{{ formatAngkaDesimal($initGrandTotal) }}</span>
+                                        </td>
+                                        <td colspan="3"></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
 
-                    <!-- Agreement & Submit Button -->
-                    <div class="pt-4 border-t border-gray-100 flex flex-col gap-3">
-                        <label class="inline-flex items-center text-xs text-gray-700 font-medium cursor-pointer">
-                            <input type="checkbox" name="aggrement" id="defaultCheck3" class="agreement rounded border-gray-300 text-[#294C9A] focus:ring-[#294C9A]" value="aggrement" />
-                            <span class="ml-2">Yakin Akan Disimpan ?</span>
-                        </label>
+                        <!-- Agreement Checkbox & Submit Button Area -->
+                        <div class="p-5 bg-slate-50/50 dark:bg-slate-900/50 border-t border-slate-100 dark:border-slate-800 space-y-3">
+                            <label class="inline-flex items-center gap-2.5 cursor-pointer text-xs font-semibold text-slate-700 dark:text-slate-300">
+                                <input 
+                                    type="checkbox" 
+                                    name="aggrement" 
+                                    id="defaultCheck3" 
+                                    class="agreement w-4 h-4 rounded border-slate-300 dark:border-slate-700 text-[#162a5b] focus:ring-0 cursor-pointer" 
+                                    value="aggrement" 
+                                    checked
+                                />
+                                <span>Saya menyatakan bahwa rincian perubahan transaksi biaya operasional di atas telah diverifikasi dengan benar.</span>
+                            </label>
 
-                        <div id="saveButton" class="hidden">
-                            <button type="submit" id="btnSimpan" class="w-full inline-flex items-center justify-center px-4 py-2.5 text-xs font-semibold text-white bg-[#294C9A] hover:bg-[#1E3A70] rounded-xl transition shadow-sm gap-1.5">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
-                                Update Transaksi Biaya
-                            </button>
+                            <div id="saveButton" class="pt-1">
+                                <button 
+                                    type="submit" 
+                                    id="btnSimpan" 
+                                    class="w-full h-[44px] inline-flex items-center justify-center gap-2 px-6 rounded-xl bg-[#162a5b] hover:bg-[#1c3574] text-white font-bold text-xs shadow-sm transition cursor-pointer"
+                                >
+                                    <i data-lucide="check-circle" class="w-4 h-4"></i>
+                                    <span>Perbarui Transaksi Biaya</span>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </form>
+        </form>
+    </div>
 
 @push('myscript')
 <script>
     $(document).ready(function() {
         const form = $("#formBiaya");
         let baris = {{ count($detail) }};
+
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+        }
+
         easyNumberSeparator({
             selector: '.number-separator',
             separator: '.',
@@ -505,7 +620,7 @@
             $("#btnSimpan").prop('disabled', true);
             $("#btnSimpan").html(`
                 <svg class="w-4 h-4 text-white animate-spin me-2" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                Loading..
+                Sedang Memperbarui Data...
             `);
         }
 
@@ -521,37 +636,28 @@
 
         const select2Kodesupplier = $('.select2Kodesupplier');
         if (select2Kodesupplier.length) {
-            select2Kodesupplier.each(function() {
-                var $this = $(this);
-                $this.wrap('<div class="position-relative"></div>').select2({
-                    placeholder: 'Supplier / Rekanan',
-                    allowClear: true,
-                    dropdownParent: $this.parent()
-                });
+            select2Kodesupplier.select2({
+                placeholder: '-- Pilih Rekanan / Supplier --',
+                allowClear: true,
+                width: '100%'
             });
         }
 
         const select2Kodeakun = $('.select2Kodeakun');
         if (select2Kodeakun.length) {
-            select2Kodeakun.each(function() {
-                var $this = $(this);
-                $this.wrap('<div class="position-relative"></div>').select2({
-                    placeholder: 'Akun (COA)',
-                    allowClear: true,
-                    dropdownParent: $this.parent()
-                });
+            select2Kodeakun.select2({
+                placeholder: '-- Pilih Akun (COA) --',
+                allowClear: true,
+                width: '100%'
             });
         }
 
         const select2Kodecabang = $('.select2Kodecabang');
         if (select2Kodecabang.length) {
-            select2Kodecabang.each(function() {
-                var $this = $(this);
-                $this.wrap('<div class="position-relative"></div>').select2({
-                    placeholder: 'Cabang (Opsional)',
-                    allowClear: true,
-                    dropdownParent: $this.parent()
-                });
+            select2Kodecabang.select2({
+                placeholder: '-- Cabang (Opsional) --',
+                allowClear: true,
+                width: '100%'
             });
         }
 
@@ -559,7 +665,7 @@
             if (!number) return 0;
             let formatted = number.toString().replace(/\./g, '');
             formatted = formatted.replace(/,/g, '.');
-            return parseFloat(formatted) || 0;
+            return formatted || 0;
         }
 
         function numberFormat(number, decimals, dec_point, thousands_sep) {
@@ -591,6 +697,12 @@
             });
             $('#grandtotal').text(numberFormat(grandTotal, '2', ',', '.'));
             $('#grandtotal_text').text(numberFormat(grandTotal, '2', ',', '.'));
+
+            if ($('#loadbarang tr.item-row').length === 0) {
+                $('#empty_row').removeClass('hidden');
+            } else {
+                $('#empty_row').addClass('hidden');
+            }
         }
 
         calculateTotal();
@@ -607,31 +719,31 @@
 
             if (keterangan == "") {
                 Swal.fire({
-                    title: "Oops!",
-                    text: "Keterangan / Pos Biaya Harus Diisi!",
+                    title: "Perhatian",
+                    text: "Keterangan / Pos Biaya harus diisi!",
                     icon: "warning",
-                    showConfirmButton: true,
-                    didClose: (e) => {
+                    confirmButtonColor: "#162a5b",
+                    didClose: () => {
                         form.find("#keterangan").focus();
                     },
                 });
             } else if (harga == "" || harga === 0) {
                 Swal.fire({
-                    title: "Oops!",
-                    text: "Harga Harus Diisi!",
+                    title: "Perhatian",
+                    text: "Harga satuan biaya harus diisi!",
                     icon: "warning",
-                    showConfirmButton: true,
-                    didClose: (e) => {
+                    confirmButtonColor: "#162a5b",
+                    didClose: () => {
                         form.find("#harga").focus();
                     },
                 });
             } else if (kode_akun == "") {
                 Swal.fire({
-                    title: "Oops!",
-                    text: "Akun (COA) Harus Diisi!",
+                    title: "Perhatian",
+                    text: "Akun perkiraan (COA) harus dipilih!",
                     icon: "warning",
-                    showConfirmButton: true,
-                    didClose: (e) => {
+                    confirmButtonColor: "#162a5b",
+                    didClose: () => {
                         form.find("#kode_akun").focus();
                     },
                 });
@@ -646,36 +758,47 @@
                 total = numberFormat(total, '2', ',', '.');
                 let bg = "";
                 if ((kode_akun.substring(0, 3) == '6-1' || kode_akun.substring(0, 3) == '6-2') && kode_cabang != '') {
-                    bg = "bg-blue-50/50 text-blue-900";
+                    bg = "bg-blue-50/40 dark:bg-blue-900/10";
                 }
 
                 let rowItem = `
-                <tr id="index_${baris}" class="${bg} hover:bg-gray-50/80 transition">
-                    <td class="px-3 py-2 font-medium text-gray-900">
+                <tr id="index_${baris}" class="item-row ${bg} hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-colors">
+                    <td class="py-2 px-4 font-semibold text-slate-800 dark:text-white">
                         <input type="hidden" name="keterangan_item[]" value="${keterangan}" />
                         <input type="hidden" name="jumlah_item[]" value="${jumlah || '1'}" />
                         <input type="hidden" name="harga_item[]" value="${harga}" />
                         <input type="hidden" name="penyesuaian_item[]" value="${penyesuaian || '0'}" />
                         <input type="hidden" name="kode_akun_item[]" value="${kode_akun}" />
                         <input type="hidden" name="kode_cabang_item[]" value="${kode_cabang}" />
-                        ${keterangan}
+                        <div>${keterangan}</div>
                     </td>
-                    <td class="px-3 py-2 text-center text-gray-700">${jumlah || '1'}</td>
-                    <td class="px-3 py-2 text-right text-gray-700">${harga}</td>
-                    <td class="px-3 py-2 text-right text-gray-700">${subtotal}</td>
-                    <td class="px-3 py-2 text-right text-gray-700">${penyesuaian || '0'}</td>
-                    <td class="px-3 py-2 text-right font-bold text-gray-950 totalharga">${total}</td>
-                    <td class="px-3 py-2 text-gray-600">${nama_akun}</td>
-                    <td class="px-3 py-2 text-center text-gray-600">${kode_cabang || '-'}</td>
-                    <td class="px-3 py-2 text-center">
-                        <a href="#" id="index_${baris}" class="delete text-red-500 hover:text-red-700 transition">
-                            <svg class="w-4 h-4 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                        </a>
+                    <td class="py-2 px-3 text-center text-slate-700 dark:text-slate-300 font-mono">${jumlah || '1'}</td>
+                    <td class="py-2 px-3 text-right text-slate-700 dark:text-slate-300 font-mono">${harga}</td>
+                    <td class="py-2 px-3 text-right text-slate-700 dark:text-slate-300 font-mono">${subtotal}</td>
+                    <td class="py-2 px-3 text-right text-slate-700 dark:text-slate-300 font-mono">${penyesuaian || '0'}</td>
+                    <td class="py-2 px-3 text-right font-mono font-bold text-slate-900 dark:text-white totalharga">${total}</td>
+                    <td class="py-2 px-4 text-slate-600 dark:text-slate-400 font-medium">
+                        <span class="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-[11px] font-mono border border-slate-200/60 dark:border-slate-700">
+                            ${nama_akun}
+                        </span>
+                    </td>
+                    <td class="py-2 px-3 text-center text-slate-600 dark:text-slate-400 font-medium">
+                        ${kode_cabang ? `<span class="px-2 py-0.5 rounded-md bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 text-[11px] font-bold border border-blue-200/60 dark:border-blue-500/20">${kode_cabang}</span>` : '<span class="text-slate-400">-</span>'}
+                    </td>
+                    <td class="py-2 px-3 text-center">
+                        <button type="button" id="index_${baris}" class="delete w-7 h-7 rounded-lg inline-flex items-center justify-center bg-rose-50 dark:bg-rose-500/10 hover:bg-rose-100 dark:hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 border border-rose-200/60 dark:border-rose-500/20 transition cursor-pointer shadow-2xs" title="Hapus Pos Biaya">
+                            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                        </button>
                     </td>
                 </tr>`;
+                
                 $('#loadbarang').append(rowItem);
                 calculateTotal();
                 resetForm();
+
+                if (typeof lucide !== 'undefined') {
+                    lucide.createIcons();
+                }
             }
         }
 
@@ -688,15 +811,14 @@
             e.preventDefault();
             let id = $(this).attr("id");
             Swal.fire({
-                title: `Apakah Anda Yakin Ingin Menghapus Data Ini ?`,
-                text: "Jika dihapus maka data akan hilang permanent.",
+                title: "Hapus Pos Biaya Ini?",
+                text: "Item pos biaya ini akan dihapus dari daftar rincian.",
                 icon: "warning",
-                buttons: true,
-                dangerMode: true,
                 showCancelButton: true,
-                confirmButtonColor: "#294C9A",
-                cancelButtonColor: "#d33",
-                confirmButtonText: "Yes, Hapus Saja!"
+                confirmButtonColor: "#d33",
+                cancelButtonColor: "#162a5b",
+                confirmButtonText: "Ya, Hapus!",
+                cancelButtonText: "Batal"
             }).then((result) => {
                 if (result.isConfirmed) {
                     $(`#loadbarang`).find(`#${id}`).remove();
@@ -714,16 +836,16 @@
         });
 
         form.submit(function() {
-            const tanggal = form.find("#tanggal").val();
+            const tanggal = form.find("#tanggal").val().trim();
             const jenis_transaksi = form.find("#jenis_transaksi").val();
-            const jatuh_tempo = form.find("#tanggal_jatuh_tempo").val();
+            const jatuh_tempo = form.find("#tanggal_jatuh_tempo").val().trim();
 
             if (tanggal == "") {
                 Swal.fire({
-                    title: "Oops!",
-                    text: "Tanggal harus diisi!",
+                    title: "Perhatian",
+                    text: "Tanggal transaksi harus diisi!",
                     icon: "warning",
-                    showConfirmButton: true,
+                    confirmButtonColor: "#162a5b",
                     didClose: () => {
                         form.find("#tanggal").focus();
                     },
@@ -731,10 +853,10 @@
                 return false;
             } else if (jenis_transaksi == "") {
                 Swal.fire({
-                    title: "Oops!",
-                    text: "Jenis Transaksi harus diisi!",
+                    title: "Perhatian",
+                    text: "Jenis transaksi harus dipilih!",
                     icon: "warning",
-                    showConfirmButton: true,
+                    confirmButtonColor: "#162a5b",
                     didClose: () => {
                         form.find("#jenis_transaksi").focus();
                     },
@@ -742,21 +864,21 @@
                 return false;
             } else if (jatuh_tempo == "" && jenis_transaksi == 'K') {
                 Swal.fire({
-                    title: "Oops!",
-                    text: "Jatuh Tempo harus diisi!",
+                    title: "Perhatian",
+                    text: "Tanggal jatuh tempo harus diisi untuk transaksi kredit!",
                     icon: "warning",
-                    showConfirmButton: true,
+                    confirmButtonColor: "#162a5b",
                     didClose: () => {
                         form.find("#tanggal_jatuh_tempo").focus();
                     },
                 });
                 return false;
-            } else if ($('#loadbarang tr').length == 0) {
+            } else if ($('#loadbarang tr.item-row').length == 0) {
                 Swal.fire({
-                    title: "Oops!",
-                    text: "Detail Biaya Tidak Boleh Kosong!",
+                    title: "Perhatian",
+                    text: "Rincian detail pos biaya tidak boleh kosong! Tambahkan minimal satu pos biaya.",
                     icon: "warning",
-                    showConfirmButton: true,
+                    confirmButtonColor: "#162a5b",
                     didClose: () => {
                         form.find("#keterangan").focus();
                     },

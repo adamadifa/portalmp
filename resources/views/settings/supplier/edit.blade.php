@@ -1,100 +1,158 @@
-<style>
-/* Floating Label */
-.fl-group { position: relative; }
-.fl-input, .fl-select {
-    display: block; width: 100%;
-    padding: 14px 14px 4px;
-    font-size: 12px; color: #111827;
-    background: #f9fafb;
-    border: 1.5px solid #e5e7eb;
-    border-radius: 10px;
-    outline: none;
-    transition: border-color 0.2s, box-shadow 0.2s;
-    appearance: none;
-}
-.fl-input:focus, .fl-select:focus {
-    border-color: #294C9A;
-    box-shadow: 0 0 0 3px rgba(41,76,154,0.1);
-    background: #fff;
-}
-.fl-input.is-invalid, .fl-select.is-invalid {
-    border-color: #ef4444 !important;
-    box-shadow: 0 0 0 3px rgba(239,68,68,0.1) !important;
-    background: #fff5f5 !important;
-}
-.fl-label {
-    position: absolute;
-    left: 14px; top: 9px;
-    font-size: 12px; color: #9ca3af;
-    font-weight: 500;
-    pointer-events: none;
-    transition: all 0.15s ease;
-    transform-origin: left top;
-}
-.fl-input:focus ~ .fl-label,
-.fl-input:not(:placeholder-shown) ~ .fl-label {
-    top: 3px;
-    font-size: 9px;
-    color: #294C9A;
-    font-weight: 600;
-}
-.fl-input.is-invalid ~ .fl-label {
-    color: #ef4444;
-}
-.fl-req { color: #ef4444; margin-left: 2px; }
-</style>
-
-<form action="{{ route('supplier.update', Crypt::encrypt($supplier->kode_supplier)) }}" method="POST" id="formEditSupplier" novalidate>
+<form action="{{ route('supplier.update', Crypt::encrypt($supplier->kode_supplier)) }}" method="POST" id="formEditSupplier" class="space-y-4" novalidate>
     @csrf
     @method('PUT')
 
-    {{-- Row 1: Kode (Disabled) & Nama Supplier --}}
-    <div class="grid grid-cols-2 gap-3 mb-3">
-        <div class="fl-group">
-            <input type="text" id="kode_supplier" name="kode_supplier" disabled value="{{ $supplier->kode_supplier }}" placeholder=" " class="fl-input">
-            <label class="fl-label" for="kode_supplier">Kode Supplier</label>
+    <!-- SECTION 1: INFORMASI SUPPLIER -->
+    <div class="space-y-3">
+        <div class="flex items-center gap-2 pb-1 border-b border-slate-100 dark:border-slate-800">
+            <span class="w-2 h-2 rounded-full bg-blue-600"></span>
+            <h4 class="text-xs font-bold text-slate-800 dark:text-slate-200">Informasi Utama Vendor</h4>
         </div>
-        <div class="fl-group">
-            <input type="text" id="nama_supplier" name="nama_supplier" required maxlength="100" value="{{ $supplier->nama_supplier }}" placeholder=" " class="fl-input">
-            <label class="fl-label" for="nama_supplier">Nama Supplier <span class="fl-req">*</span></label>
+
+        <!-- Row 1: Kode & Nama Supplier -->
+        <div class="grid grid-cols-1 sm:grid-cols-12 gap-3">
+            <div class="sm:col-span-4">
+                <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                    Kode Supplier
+                </label>
+                <input 
+                    type="text" 
+                    disabled 
+                    value="{{ $supplier->kode_supplier }}" 
+                    class="block w-full px-3 py-2 text-xs font-mono font-bold text-slate-500 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg cursor-not-allowed"
+                >
+            </div>
+
+            <div class="sm:col-span-8">
+                <label for="e_nama_supplier" class="flex items-center justify-between text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                    <span>Nama Supplier / Vendor <span class="text-rose-500">*</span></span>
+                    <span class="text-[10px] text-slate-400 font-normal">Maks 100 karakter</span>
+                </label>
+                <input 
+                    type="text" 
+                    id="e_nama_supplier" 
+                    name="nama_supplier" 
+                    value="{{ $supplier->nama_supplier }}" 
+                    required 
+                    maxlength="100" 
+                    class="block w-full px-3 py-2 text-xs font-medium text-slate-800 dark:text-white bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 transition placeholder-slate-400 shadow-2xs" 
+                    placeholder="Contoh: PT. Aneka Logam Jaya"
+                >
+            </div>
+        </div>
+
+        <!-- Row 2: Alamat Supplier -->
+        <div>
+            <label for="e_alamat_supplier" class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                Alamat Kantor / Pabrik Supplier
+            </label>
+            <input 
+                type="text" 
+                id="e_alamat_supplier" 
+                name="alamat_supplier" 
+                value="{{ $supplier->alamat_supplier }}" 
+                maxlength="255" 
+                class="block w-full px-3 py-2 text-xs font-medium text-slate-800 dark:text-white bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 transition placeholder-slate-400 shadow-2xs" 
+                placeholder="Contoh: Jl. Industri Raya No. 92-94, Tasikmalaya"
+            >
         </div>
     </div>
 
-    {{-- Row 2: Alamat --}}
-    <div class="mb-3 fl-group">
-        <input type="text" id="alamat_supplier" name="alamat_supplier" maxlength="255" value="{{ $supplier->alamat_supplier }}" placeholder=" " class="fl-input">
-        <label class="fl-label" for="alamat_supplier">Alamat Supplier</label>
+    <!-- SECTION 2: KONTAK & REKENING PEMBAYARAN -->
+    <div class="space-y-3 pt-2">
+        <div class="flex items-center gap-2 pb-1 border-b border-slate-100 dark:border-slate-800">
+            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+            <h4 class="text-xs font-bold text-slate-800 dark:text-slate-200">Kontak Person & Rekening Pembayaran</h4>
+        </div>
+
+        <!-- Row 3: Contact Person & Telepon -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+                <label for="e_contact_person" class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                    Contact Person (PIC)
+                </label>
+                <input 
+                    type="text" 
+                    id="e_contact_person" 
+                    name="contact_person" 
+                    value="{{ $supplier->contact_person }}" 
+                    maxlength="100" 
+                    class="block w-full px-3 py-2 text-xs font-medium text-slate-800 dark:text-white bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 transition placeholder-slate-400 shadow-2xs" 
+                    placeholder="Contoh: Bpk. Hendi / Ibu Rini"
+                >
+            </div>
+
+            <div>
+                <label for="e_no_hp_supplier" class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                    Telepon / No HP
+                </label>
+                <input 
+                    type="text" 
+                    id="e_no_hp_supplier" 
+                    name="no_hp_supplier" 
+                    value="{{ $supplier->no_hp_supplier }}" 
+                    maxlength="100" 
+                    class="block w-full px-3 py-2 text-xs font-medium text-slate-800 dark:text-white bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 transition placeholder-slate-400 shadow-2xs" 
+                    placeholder="Contoh: 08123456789 atau 0265-331519"
+                >
+            </div>
+        </div>
+
+        <!-- Row 4: Email & No Rekening -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+                <label for="e_email_supplier" class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                    Email Supplier
+                </label>
+                <input 
+                    type="email" 
+                    id="e_email_supplier" 
+                    name="email_supplier" 
+                    value="{{ $supplier->email_supplier }}" 
+                    maxlength="255" 
+                    class="block w-full px-3 py-2 text-xs font-medium text-slate-800 dark:text-white bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 transition placeholder-slate-400 shadow-2xs" 
+                    placeholder="Contoh: marketing@anekalogam.co.id"
+                >
+            </div>
+
+            <div>
+                <label for="e_no_rekening_supplier" class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                    Nomor Rekening Bank
+                </label>
+                <input 
+                    type="text" 
+                    id="e_no_rekening_supplier" 
+                    name="no_rekening_supplier" 
+                    value="{{ $supplier->no_rekening_supplier }}" 
+                    maxlength="30" 
+                    class="block w-full px-3 py-2 text-xs font-mono font-medium text-slate-800 dark:text-white bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 transition placeholder-slate-400 shadow-2xs" 
+                    placeholder="Contoh: BCA 123456789 a.n PT Aneka Logam"
+                >
+            </div>
+        </div>
     </div>
 
-    {{-- Row 3: Contact Person & Telepon --}}
-    <div class="grid grid-cols-2 gap-3 mb-3">
-        <div class="fl-group">
-            <input type="text" id="contact_person" name="contact_person" maxlength="100" value="{{ $supplier->contact_person }}" placeholder=" " class="fl-input">
-            <label class="fl-label" for="contact_person">Contact Person</label>
-        </div>
-        <div class="fl-group">
-            <input type="text" id="no_hp_supplier" name="no_hp_supplier" maxlength="100" value="{{ $supplier->no_hp_supplier }}" placeholder=" " class="fl-input">
-            <label class="fl-label" for="no_hp_supplier">Telepon / HP</label>
-        </div>
-    </div>
-
-    {{-- Row 4: Email & No Rekening --}}
-    <div class="grid grid-cols-2 gap-3 mb-3">
-        <div class="fl-group">
-            <input type="email" id="email_supplier" name="email_supplier" maxlength="255" value="{{ $supplier->email_supplier }}" placeholder=" " class="fl-input">
-            <label class="fl-label" for="email_supplier">Email Supplier</label>
-        </div>
-        <div class="fl-group">
-            <input type="text" id="no_rekening_supplier" name="no_rekening_supplier" maxlength="30" value="{{ $supplier->no_rekening_supplier }}" placeholder=" " class="fl-input">
-            <label class="fl-label" for="no_rekening_supplier">No. Rekening</label>
-        </div>
-    </div>
-
-    <div class="flex justify-end gap-2 pt-4 border-t border-gray-100">
-        <button type="button" onclick="closeModal('modalEdit')" class="px-4 py-2 text-xs font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition">Batal</button>
-        <button type="submit" class="inline-flex items-center gap-1.5 px-5 py-2 text-xs font-semibold text-white bg-[#294C9A] hover:bg-[#1E3A70] rounded-lg transition shadow-sm">
-            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-            Update Supplier
+    <!-- Form Footer Actions -->
+    <div class="flex items-center justify-end gap-2.5 pt-4 border-t border-slate-100 dark:border-slate-800">
+        <button 
+            type="button" 
+            onclick="closeModal('modalEdit')" 
+            class="px-4 py-2 text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition cursor-pointer"
+        >
+            Batal
+        </button>
+        <button 
+            type="submit" 
+            class="inline-flex items-center gap-1.5 px-5 py-2 text-xs font-bold text-white bg-[#162a5b] hover:bg-[#1c3574] rounded-lg transition shadow-xs cursor-pointer"
+        >
+            <i data-lucide="check" class="w-3.5 h-3.5"></i>
+            <span>Update Supplier</span>
         </button>
     </div>
 </form>
+
+<script>
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+    }
+</script>

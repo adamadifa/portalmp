@@ -26,7 +26,7 @@
             </div>
             <div>
                 <span class="block text-slate-400 font-semibold uppercase tracking-wider mb-1.5">Bulan / Masa Pajak</span>
-                <span class="font-bold text-[#294C9A] text-sm">
+                <span class="font-bold text-[#162a5b] text-sm">
                     {{ $biaya->bulan_pajak ? str_pad($biaya->bulan_pajak, 2, '0', STR_PAD_LEFT) : date('m', strtotime($biaya->tanggal)) }} / {{ $biaya->tahun_pajak ?: date('Y', strtotime($biaya->tanggal)) }}
                 </span>
             </div>

@@ -1,473 +1,692 @@
 <x-app-layout>
-    <x-slot name="header">
-        Laporan Pembelian
-    </x-slot>
+    <x-slot name="header">Laporan Pembelian</x-slot>
+    <x-slot name="headerTitle">Laporan Pembelian</x-slot>
+    <x-slot name="headerDescription">Pusat pencetakan dan ekspor data laporan faktur pembelian, histori pembayaran, kartu hutang, analisa umur hutang, dan rekapitulasi barang.</x-slot>
 
     <!-- Flatpickr CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-    
-    <style>
-    /* ── Isolated Floating Label & Icon Group ──────────── */
-    .c-fl-group {
-        position: relative !important;
-        width: 100% !important;
-        margin-top: 8px !important;
-        margin-bottom: 6px !important;
-    }
 
-    .c-fl-icon {
-        position: absolute !important;
-        left: 10px !important;
-        top: 50% !important;
-        transform: translateY(-50%) !important;
-        color: #6B7280 !important;
-        pointer-events: none !important;
-        z-index: 30 !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-    }
+    <div class="space-y-6">
 
-    .c-fl-group:focus-within .c-fl-icon {
-        color: #294C9A !important;
-    }
+        <!-- Top Overview Header -->
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 w-full">
+            <div class="flex items-center gap-3">
+                <span class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 font-bold text-xs shadow-2xs">
+                    <i data-lucide="printer" class="w-4 h-4 text-[#162a5b] dark:text-blue-400"></i>
+                    <span>Modul Cetak Laporan Pembelian</span>
+                </span>
+            </div>
 
-    .c-fl-label {
-        position: absolute !important;
-        left: 10px !important;
-        top: 0px !important;
-        bottom: auto !important;
-        transform: translateY(-50%) !important;
-        background-color: #ffffff !important;
-        padding: 0 4px !important;
-        font-size: 11px !important;
-        font-weight: 600 !important;
-        color: #374151 !important;
-        z-index: 30 !important;
-        pointer-events: none !important;
-        line-height: 1 !important;
-        white-space: nowrap !important;
-        border-radius: 2px !important;
-    }
-
-    .c-fl-group:focus-within .c-fl-label {
-        color: #294C9A !important;
-    }
-
-    /* ── Base input ─────────────────────────────── */
-    .fi {
-        display: block !important;
-        width: 100% !important;
-        height: 38px !important;
-        padding: 0 12px 0 34px !important;
-        font-size: 12px !important;
-        color: #111827 !important;
-        background-color: #ffffff !important;
-        border: 1px solid #D1D5DB !important;
-        border-radius: 8px !important;
-        outline: none !important;
-        transition: border-color .15s, box-shadow .15s !important;
-    }
-    .fi:focus {
-        border-color: #294C9A !important;
-        box-shadow: 0 0 0 3px rgba(41, 76, 154, 0.10) !important;
-    }
-    .fi::placeholder { color: #9CA3AF !important; font-size: 11.5px !important; }
-
-    /* ── Select & Select2 reset ─────────────────── */
-    .select2-container { width: 100% !important; }
-
-    .select2-container--default .select2-selection--single {
-        height: 38px !important;
-        border: 1px solid #D1D5DB !important;
-        border-radius: 8px !important;
-        background-color: transparent !important;
-        box-shadow: none !important;
-        position: relative !important;
-        display: block !important;
-    }
-
-    .select2-container--default.select2-container--focus .select2-selection--single,
-    .select2-container--default.select2-container--open .select2-selection--single {
-        border-color: #294C9A !important;
-        box-shadow: 0 0 0 3px rgba(41, 76, 154, 0.10) !important;
-        outline: none !important;
-    }
-
-    /* Rendered text & placeholder vertically centered */
-    .select2-container--default .select2-selection--single .select2-selection__rendered {
-        display: flex !important;
-        align-items: center !important;
-        height: 100% !important;
-        line-height: normal !important;
-        padding-left: 34px !important;
-        padding-right: 32px !important;
-        font-size: 12px !important;
-        color: #111827 !important;
-        white-space: nowrap !important;
-        overflow: hidden !important;
-        text-overflow: ellipsis !important;
-        margin: 0 !important;
-    }
-    .select2-container--default .select2-selection--single .select2-selection__placeholder {
-        display: inline-block !important;
-        line-height: normal !important;
-        color: #9CA3AF !important;
-        font-size: 11.5px !important;
-        margin: 0 !important;
-        padding: 0 !important;
-    }
-
-    /* Chevron arrow dead-center vertically */
-    .select2-container--default .select2-selection--single .select2-selection__arrow {
-        position: absolute !important;
-        top: 50% !important;
-        right: 10px !important;
-        left: auto !important;
-        bottom: auto !important;
-        transform: translateY(-50%) !important;
-        height: 16px !important;
-        width: 16px !important;
-        margin: 0 !important;
-        padding: 0 !important;
-    }
-    .select2-container--default .select2-selection--single .select2-selection__arrow b {
-        position: absolute !important;
-        top: 50% !important;
-        left: 50% !important;
-        transform: translate(-50%, -50%) !important;
-        margin: 0 !important;
-        border-color: #6B7280 transparent transparent transparent !important;
-        border-style: solid !important;
-        border-width: 5px 4px 0 4px !important;
-    }
-    .select2-container--default.select2-container--open .select2-selection--single .select2-selection__arrow b {
-        border-color: transparent transparent #6B7280 transparent !important;
-        border-width: 0 4px 5px 4px !important;
-    }
-
-    /* dropdown */
-    .select2-dropdown {
-        font-size: 12px !important;
-        border: 1px solid #D1D5DB !important;
-        border-radius: 8px !important;
-        box-shadow: 0 6px 20px rgba(0,0,0,0.10) !important;
-        overflow: hidden !important;
-    }
-    .select2-search--dropdown { padding: 6px 8px !important; }
-    .select2-search--dropdown .select2-search__field {
-        height: 30px !important;
-        padding: 0 8px !important;
-        font-size: 12px !important;
-        border: 1px solid #D1D5DB !important;
-        border-radius: 5px !important;
-        outline: none !important;
-    }
-    .select2-search--dropdown .select2-search__field:focus {
-        border-color: #294C9A !important;
-        box-shadow: 0 0 0 2px rgba(41, 76, 154, 0.10) !important;
-    }
-    .select2-container--default .select2-results__option {
-        padding: 7px 10px !important;
-        font-size: 12px !important;
-    }
-    .select2-container--default .select2-results__option--highlighted[aria-selected] {
-        background-color: #294C9A !important;
-    }
-
-    /* ── Premium Modern Flatpickr Theme ───────────────── */
-    .flatpickr-calendar {
-        background: #ffffff !important;
-        border-radius: 16px !important;
-        border: 1px solid #E5E7EB !important;
-        box-shadow: 0 20px 35px -10px rgba(41, 76, 154, 0.22), 0 10px 20px -5px rgba(0, 0, 0, 0.08) !important;
-        font-family: inherit !important;
-        overflow: hidden !important;
-        width: 307px !important;
-        z-index: 99999 !important;
-    }
-    .flatpickr-months {
-        background: linear-gradient(135deg, #294C9A 0%, #1E3A70 100%) !important;
-        padding: 8px 10px !important;
-        align-items: center !important;
-        border-radius: 15px 15px 0 0 !important;
-    }
-    .flatpickr-months .flatpickr-month { color: #ffffff !important; height: 38px !important; }
-    .flatpickr-current-month { font-size: 14px !important; font-weight: 700 !important; color: #ffffff !important; padding-top: 4px !important; }
-    .flatpickr-current-month .flatpickr-monthDropdown-months { font-weight: 700 !important; color: #ffffff !important; background: transparent !important; padding: 2px 6px !important; border-radius: 6px !important; margin-right: 4px !important; }
-    .flatpickr-current-month .flatpickr-monthDropdown-months:hover { background: rgba(255, 255, 255, 0.18) !important; }
-    .flatpickr-current-month input.cur-year { font-weight: 700 !important; color: #ffffff !important; }
-    .flatpickr-months .flatpickr-prev-month, .flatpickr-months .flatpickr-next-month { padding: 8px !important; color: #ffffff !important; fill: #ffffff !important; border-radius: 8px !important; transition: background 0.15s ease !important; }
-    .flatpickr-months .flatpickr-prev-month:hover, .flatpickr-months .flatpickr-next-month:hover { background: rgba(255, 255, 255, 0.20) !important; }
-    .flatpickr-months .flatpickr-prev-month svg, .flatpickr-months .flatpickr-next-month svg { fill: #ffffff !important; width: 14px !important; height: 14px !important; }
-    .flatpickr-weekdays { background: #F3F4F6 !important; padding: 8px 0 !important; border-bottom: 1px solid #E5E7EB !important; }
-    span.flatpickr-weekday { color: #294C9A !important; font-weight: 700 !important; font-size: 11px !important; text-transform: uppercase !important; letter-spacing: 0.05em !important; }
-    .flatpickr-days { width: 307px !important; padding: 6px !important; }
-    .dayContainer { width: 294px !important; min-width: 294px !important; max-width: 294px !important; }
-    .flatpickr-day { color: #111827 !important; font-weight: 700 !important; font-size: 13px !important; border-radius: 10px !important; height: 38px !important; line-height: 38px !important; max-width: 38px !important; margin: 2px !important; border: 1px solid transparent !important; transition: all 0.15s ease !important; }
-    .flatpickr-day:hover { background: #EBF1FF !important; color: #294C9A !important; font-weight: 800 !important; border-color: #BFDBFE !important; }
-    .flatpickr-day.today { border: 2px solid #294C9A !important; color: #294C9A !important; font-weight: 800 !important; background: #F0F4FF !important; }
-    .flatpickr-day.selected, .flatpickr-day.selected:hover { background: linear-gradient(135deg, #294C9A 0%, #1E3A70 100%) !important; color: #ffffff !important; font-weight: 800 !important; box-shadow: 0 4px 12px rgba(41, 76, 154, 0.40) !important; border: none !important; }
-    .flatpickr-day.flatpickr-disabled, .flatpickr-day.flatpickr-disabled:hover, .flatpickr-day.prevMonthDay, .flatpickr-day.nextMonthDay { color: #9CA3AF !important; font-weight: 500 !important; opacity: 0.55 !important; background: transparent !important; border-color: transparent !important; }
-    </style>
-
-    <!-- Header & Subtitle -->
-    <div class="mb-6">
-        <h2 class="text-2xl font-semibold text-gray-900 tracking-tight">Laporan Pembelian</h2>
-        <p class="text-sm text-gray-500 mt-1">Mengelola dan mencetak laporan pembelian, pembayaran, dan rekapitulasi data pembelian.</p>
-    </div>
-
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        <!-- Sidebar Navigation Tabs -->
-        <div class="lg:col-span-4 bg-white rounded-2xl border border-gray-100 shadow-sm p-3 space-y-1">
-            <button type="button" data-tab="pembelian" class="tab-btn active w-full flex items-center gap-3 px-4 py-3 text-xs font-semibold rounded-xl text-[#294C9A] bg-blue-50/80 transition-all text-left">
-                <div class="w-8 h-8 rounded-lg bg-[#294C9A] text-white flex items-center justify-center shrink-0">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
-                </div>
-                <div>
-                    <span class="block text-sm font-bold">Pembelian</span>
-                    <span class="text-[11px] font-normal text-gray-500">Detail rincian pembelian</span>
-                </div>
-            </button>
-
-            <button type="button" data-tab="pembayaran" class="tab-btn w-full flex items-center gap-3 px-4 py-3 text-xs font-semibold rounded-xl text-gray-600 hover:bg-gray-50 transition-all text-left">
-                <div class="w-8 h-8 rounded-lg bg-gray-100 text-gray-600 flex items-center justify-center shrink-0 tab-icon">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
-                </div>
-                <div>
-                    <span class="block text-sm font-bold">Pembayaran</span>
-                    <span class="text-[11px] font-normal text-gray-500">Histori pembayaran supplier</span>
-                </div>
-            </button>
-
-            <button type="button" data-tab="rekapsupplier" class="tab-btn w-full flex items-center gap-3 px-4 py-3 text-xs font-semibold rounded-xl text-gray-600 hover:bg-gray-50 transition-all text-left">
-                <div class="w-8 h-8 rounded-lg bg-gray-100 text-gray-600 flex items-center justify-center shrink-0 tab-icon">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
-                </div>
-                <div>
-                    <span class="block text-sm font-bold">Rekap Supplier</span>
-                    <span class="text-[11px] font-normal text-gray-500">Rekap total per supplier</span>
-                </div>
-            </button>
-
-            <button type="button" data-tab="rekappembelian" class="tab-btn w-full flex items-center gap-3 px-4 py-3 text-xs font-semibold rounded-xl text-gray-600 hover:bg-gray-50 transition-all text-left">
-                <div class="w-8 h-8 rounded-lg bg-gray-100 text-gray-600 flex items-center justify-center shrink-0 tab-icon">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
-                </div>
-                <div>
-                    <span class="block text-sm font-bold">Rekap Pembelian</span>
-                    <span class="text-[11px] font-normal text-gray-500">Rangkuman barang & jenis</span>
-                </div>
-            </button>
-
-            <button type="button" data-tab="kartuhutang" class="tab-btn w-full flex items-center gap-3 px-4 py-3 text-xs font-semibold rounded-xl text-gray-600 hover:bg-gray-50 transition-all text-left">
-                <div class="w-8 h-8 rounded-lg bg-gray-100 text-gray-600 flex items-center justify-center shrink-0 tab-icon">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
-                </div>
-                <div>
-                    <span class="block text-sm font-bold">Kartu Hutang</span>
-                    <span class="text-[11px] font-normal text-gray-500">Buku pembantu hutang</span>
-                </div>
-            </button>
-
-            <button type="button" data-tab="auh" class="tab-btn w-full flex items-center gap-3 px-4 py-3 text-xs font-semibold rounded-xl text-gray-600 hover:bg-gray-50 transition-all text-left">
-                <div class="w-8 h-8 rounded-lg bg-gray-100 text-gray-600 flex items-center justify-center shrink-0 tab-icon">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"></path></svg>
-                </div>
-                <div>
-                    <span class="block text-sm font-bold">AUH</span>
-                    <span class="text-[11px] font-normal text-gray-500">Analisa umur hutang</span>
-                </div>
-            </button>
-
-            <button type="button" data-tab="bahankemasan" class="tab-btn w-full flex items-center gap-3 px-4 py-3 text-xs font-semibold rounded-xl text-gray-600 hover:bg-gray-50 transition-all text-left">
-                <div class="w-8 h-8 rounded-lg bg-gray-100 text-gray-600 flex items-center justify-center shrink-0 tab-icon">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
-                </div>
-                <div>
-                    <span class="block text-sm font-bold">Bahan Kemasan</span>
-                    <span class="text-[11px] font-normal text-gray-500">Detail bahan baku & kemasan</span>
-                </div>
-            </button>
-
-            <button type="button" data-tab="rekapbahankemasan" class="tab-btn w-full flex items-center gap-3 px-4 py-3 text-xs font-semibold rounded-xl text-gray-600 hover:bg-gray-50 transition-all text-left">
-                <div class="w-8 h-8 rounded-lg bg-gray-100 text-gray-600 flex items-center justify-center shrink-0 tab-icon">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
-                </div>
-                <div>
-                    <span class="block text-sm font-bold">Kemasan / Supplier</span>
-                    <span class="text-[11px] font-normal text-gray-500">Rekap kemasan per supplier</span>
-                </div>
-            </button>
-
-            <button type="button" data-tab="jurnalkoreksi" class="tab-btn w-full flex items-center gap-3 px-4 py-3 text-xs font-semibold rounded-xl text-gray-600 hover:bg-gray-50 transition-all text-left">
-                <div class="w-8 h-8 rounded-lg bg-gray-100 text-gray-600 flex items-center justify-center shrink-0 tab-icon">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
-                </div>
-                <div>
-                    <span class="block text-sm font-bold">Jurnal Koreksi</span>
-                    <span class="text-[11px] font-normal text-gray-500">Laporan pembetulan jurnal</span>
-                </div>
-            </button>
-
-            <button type="button" data-tab="rekapakun" class="tab-btn w-full flex items-center gap-3 px-4 py-3 text-xs font-semibold rounded-xl text-gray-600 hover:bg-gray-50 transition-all text-left">
-                <div class="w-8 h-8 rounded-lg bg-gray-100 text-gray-600 flex items-center justify-center shrink-0 tab-icon">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
-                </div>
-                <div>
-                    <span class="block text-sm font-bold">Rekap Akun</span>
-                    <span class="text-[11px] font-normal text-gray-500">Rekap total per COA</span>
-                </div>
-            </button>
-
-            <button type="button" data-tab="rekapkontrabon" class="tab-btn w-full flex items-center gap-3 px-4 py-3 text-xs font-semibold rounded-xl text-gray-600 hover:bg-gray-50 transition-all text-left">
-                <div class="w-8 h-8 rounded-lg bg-gray-100 text-gray-600 flex items-center justify-center shrink-0 tab-icon">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                </div>
-                <div>
-                    <span class="block text-sm font-bold">Rekap Kontrabon</span>
-                    <span class="text-[11px] font-normal text-gray-500">Histori & rekap kontrabon</span>
-                </div>
-            </button>
-
-            <button type="button" data-tab="rekappo" class="tab-btn w-full flex items-center gap-3 px-4 py-3 text-xs font-semibold rounded-xl text-gray-600 hover:bg-gray-50 transition-all text-left">
-                <div class="w-8 h-8 rounded-lg bg-gray-100 text-gray-600 flex items-center justify-center shrink-0 tab-icon">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
-                </div>
-                <div>
-                    <span class="block text-sm font-bold">Rekap PO</span>
-                    <span class="text-[11px] font-normal text-gray-500">Rekap status Purchase Order</span>
-                </div>
-            </button>
-        </div>
-
-        <!-- Form Panels -->
-        <div class="lg:col-span-8">
-            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-                
-                <div id="panel-pembelian" class="tab-panel p-6">
-                    <div class="flex items-center gap-2 text-[#294C9A] pb-4 mb-4 border-b border-gray-100">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
-                        <h3 class="font-bold text-base">Laporan Pembelian</h3>
-                    </div>
-                    @include('pembelian.laporan.pembelian')
-                </div>
-
-                <div id="panel-pembayaran" class="tab-panel hidden p-6">
-                    <div class="flex items-center gap-2 text-[#294C9A] pb-4 mb-4 border-b border-gray-100">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
-                        <h3 class="font-bold text-base">Laporan Pembayaran</h3>
-                    </div>
-                    @include('pembelian.laporan.pembayaran')
-                </div>
-
-                <div id="panel-rekapsupplier" class="tab-panel hidden p-6">
-                    <div class="flex items-center gap-2 text-[#294C9A] pb-4 mb-4 border-b border-gray-100">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
-                        <h3 class="font-bold text-base">Rekap Pembelian Supplier</h3>
-                    </div>
-                    @include('pembelian.laporan.rekapsupplier')
-                </div>
-
-                <div id="panel-rekappembelian" class="tab-panel hidden p-6">
-                    <div class="flex items-center gap-2 text-[#294C9A] pb-4 mb-4 border-b border-gray-100">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
-                        <h3 class="font-bold text-base">Rekap Pembelian</h3>
-                    </div>
-                    @include('pembelian.laporan.rekappembelian')
-                </div>
-
-                <div id="panel-kartuhutang" class="tab-panel hidden p-6">
-                    <div class="flex items-center gap-2 text-[#294C9A] pb-4 mb-4 border-b border-gray-100">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
-                        <h3 class="font-bold text-base">Laporan Kartu Hutang</h3>
-                    </div>
-                    @include('pembelian.laporan.kartuhutang')
-                </div>
-
-                <div id="panel-auh" class="tab-panel hidden p-6">
-                    <div class="flex items-center gap-2 text-[#294C9A] pb-4 mb-4 border-b border-gray-100">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"></path></svg>
-                        <h3 class="font-bold text-base">Analisa Umur Hutang</h3>
-                    </div>
-                    @include('pembelian.laporan.auh')
-                </div>
-
-                <div id="panel-bahankemasan" class="tab-panel hidden p-6">
-                    <div class="flex items-center gap-2 text-[#294C9A] pb-4 mb-4 border-b border-gray-100">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
-                        <h3 class="font-bold text-base">Laporan Bahan Kemasan</h3>
-                    </div>
-                    @include('pembelian.laporan.bahankemasan')
-                </div>
-
-                <div id="panel-rekapbahankemasan" class="tab-panel hidden p-6">
-                    <div class="flex items-center gap-2 text-[#294C9A] pb-4 mb-4 border-b border-gray-100">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
-                        <h3 class="font-bold text-base">Rekap Bahan Kemasan / Supplier</h3>
-                    </div>
-                    @include('pembelian.laporan.rekapbahankemasan')
-                </div>
-
-                <div id="panel-jurnalkoreksi" class="tab-panel hidden p-6">
-                    <div class="flex items-center gap-2 text-[#294C9A] pb-4 mb-4 border-b border-gray-100">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
-                        <h3 class="font-bold text-base">Laporan Jurnal Koreksi</h3>
-                    </div>
-                    @include('pembelian.laporan.jurnalkoreksi')
-                </div>
-
-                <div id="panel-rekapakun" class="tab-panel hidden p-6">
-                    <div class="flex items-center gap-2 text-[#294C9A] pb-4 mb-4 border-b border-gray-100">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
-                        <h3 class="font-bold text-base">Rekap Akun</h3>
-                    </div>
-                    @include('pembelian.laporan.rekapakun')
-                </div>
-
-                <div id="panel-rekapkontrabon" class="tab-panel hidden p-6">
-                    <div class="flex items-center gap-2 text-[#294C9A] pb-4 mb-4 border-b border-gray-100">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                        <h3 class="font-bold text-base">Rekap Kontrabon</h3>
-                    </div>
-                    @include('pembelian.laporan.rekapkontrabon')
-                </div>
-
-                <div id="panel-rekappo" class="tab-panel hidden p-6">
-                    <div class="flex items-center gap-2 text-[#294C9A] pb-4 mb-4 border-b border-gray-100">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
-                        <h3 class="font-bold text-base">Rekap PO</h3>
-                    </div>
-                    @include('pembelian.laporan.rekappo')
-                </div>
+            <div class="flex items-center gap-2">
+                <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-blue-50 dark:bg-blue-900/20 text-[#162a5b] dark:text-blue-300 border border-blue-200/60 dark:border-blue-800/40">
+                    <i data-lucide="file-check-2" class="w-3.5 h-3.5 text-[#162a5b] dark:text-blue-400"></i>
+                    <span>12 Modul Laporan Siap Cetak</span>
+                </span>
             </div>
         </div>
+
+        <!-- Master-Detail 2-Column Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+            
+            <!-- Left Column (4 cols): Report Navigation Cards -->
+            <div class="lg:col-span-4 space-y-4">
+                
+                <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 p-4 shadow-2xs space-y-3">
+                    
+                    <!-- Search Filter for Modules -->
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                            <i data-lucide="search" class="w-3.5 h-3.5"></i>
+                        </div>
+                        <input 
+                            type="text" 
+                            id="reportSearch" 
+                            placeholder="Cari modul laporan..." 
+                            class="w-full pl-8 pr-3 py-2 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/70 dark:bg-slate-800 text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-[#162a5b] transition shadow-2xs font-medium"
+                        />
+                    </div>
+
+                    <div id="reportNavList" class="space-y-3 max-h-[calc(100vh-280px)] overflow-y-auto pr-1">
+                        
+                        <!-- Group 1: Transaksi & Pembayaran -->
+                        <div class="report-group space-y-1.5">
+                            <div class="px-2 pt-1 flex items-center justify-between text-[10px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                                <span>Transaksi & Pembayaran</span>
+                                <span class="text-[9px] px-1 rounded bg-slate-100 dark:bg-slate-800 font-mono">3</span>
+                            </div>
+
+                            <!-- Tab 1: Pembelian -->
+                            <button 
+                                type="button" 
+                                data-tab="pembelian" 
+                                class="tab-btn active w-full flex items-start gap-3 p-3 rounded-xl border border-transparent hover:border-slate-200 dark:hover:border-slate-700 transition text-left cursor-pointer group"
+                            >
+                                <div class="w-9 h-9 rounded-xl bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0 tab-icon group-hover:scale-105 transition">
+                                    <i data-lucide="receipt" class="w-4 h-4"></i>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex items-center justify-between gap-1 mb-0.5">
+                                        <span class="text-xs font-bold text-slate-800 dark:text-white tab-title">Laporan Pembelian</span>
+                                        <span class="text-[9px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300">Detail</span>
+                                    </div>
+                                    <p class="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-1">Faktur, item barang, akun, dan pajak</p>
+                                </div>
+                            </button>
+
+                            <!-- Tab 2: Pembayaran -->
+                            <button 
+                                type="button" 
+                                data-tab="pembayaran" 
+                                class="tab-btn w-full flex items-start gap-3 p-3 rounded-xl border border-transparent hover:border-slate-200 dark:hover:border-slate-700 transition text-left cursor-pointer group"
+                            >
+                                <div class="w-9 h-9 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 flex items-center justify-center shrink-0 tab-icon group-hover:scale-105 transition">
+                                    <i data-lucide="credit-card" class="w-4 h-4"></i>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex items-center justify-between gap-1 mb-0.5">
+                                        <span class="text-xs font-bold text-slate-800 dark:text-white tab-title">Laporan Pembayaran</span>
+                                        <span class="text-[9px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-emerald-100 dark:bg-emerald-900/50 text-emerald-700 dark:text-emerald-300">Histori</span>
+                                    </div>
+                                    <p class="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-1">Histori pembayaran tagihan kas & bank</p>
+                                </div>
+                            </button>
+
+                            <!-- Tab 3: Rekap PO -->
+                            <button 
+                                type="button" 
+                                data-tab="rekappo" 
+                                class="tab-btn w-full flex items-start gap-3 p-3 rounded-xl border border-transparent hover:border-slate-200 dark:hover:border-slate-700 transition text-left cursor-pointer group"
+                            >
+                                <div class="w-9 h-9 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 flex items-center justify-center shrink-0 tab-icon group-hover:scale-105 transition">
+                                    <i data-lucide="clipboard-list" class="w-4 h-4"></i>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex items-center justify-between gap-1 mb-0.5">
+                                        <span class="text-xs font-bold text-slate-800 dark:text-white tab-title">Rekap PO (Purchase Order)</span>
+                                        <span class="text-[9px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-cyan-100 dark:bg-cyan-900/50 text-cyan-700 dark:text-cyan-300">PO</span>
+                                    </div>
+                                    <p class="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-1">Monitoring pemesanan & realisasi beli</p>
+                                </div>
+                            </button>
+                        </div>
+
+                        <!-- Group 2: Hutang & Kontrabon -->
+                        <div class="report-group space-y-1.5 pt-2 border-t border-slate-100 dark:border-slate-800">
+                            <div class="px-2 pt-1 flex items-center justify-between text-[10px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                                <span>Hutang & Kontrabon</span>
+                                <span class="text-[9px] px-1 rounded bg-slate-100 dark:bg-slate-800 font-mono">3</span>
+                            </div>
+
+                            <!-- Tab 4: Kartu Hutang -->
+                            <button 
+                                type="button" 
+                                data-tab="kartuhutang" 
+                                class="tab-btn w-full flex items-start gap-3 p-3 rounded-xl border border-transparent hover:border-slate-200 dark:hover:border-slate-700 transition text-left cursor-pointer group"
+                            >
+                                <div class="w-9 h-9 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 flex items-center justify-center shrink-0 tab-icon group-hover:scale-105 transition">
+                                    <i data-lucide="wallet-cards" class="w-4 h-4"></i>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex items-center justify-between gap-1 mb-0.5">
+                                        <span class="text-xs font-bold text-slate-800 dark:text-white tab-title">Kartu Hutang</span>
+                                        <span class="text-[9px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-amber-100 dark:bg-amber-900/50 text-amber-700 dark:text-amber-300">Hutang</span>
+                                    </div>
+                                    <p class="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-1">Buku pembantu hutang supplier</p>
+                                </div>
+                            </button>
+
+                            <!-- Tab 5: AUH -->
+                            <button 
+                                type="button" 
+                                data-tab="auh" 
+                                class="tab-btn w-full flex items-start gap-3 p-3 rounded-xl border border-transparent hover:border-slate-200 dark:hover:border-slate-700 transition text-left cursor-pointer group"
+                            >
+                                <div class="w-9 h-9 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 flex items-center justify-center shrink-0 tab-icon group-hover:scale-105 transition">
+                                    <i data-lucide="clock-8" class="w-4 h-4"></i>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex items-center justify-between gap-1 mb-0.5">
+                                        <span class="text-xs font-bold text-slate-800 dark:text-white tab-title">Analisa Umur Hutang (AUH)</span>
+                                        <span class="text-[9px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-orange-100 dark:bg-orange-900/50 text-orange-700 dark:text-orange-300">AUH</span>
+                                    </div>
+                                    <p class="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-1">Distribusi umur tagihan jatuh tempo</p>
+                                </div>
+                            </button>
+
+                            <!-- Tab 6: Rekap Kontrabon -->
+                            <button 
+                                type="button" 
+                                data-tab="rekapkontrabon" 
+                                class="tab-btn w-full flex items-start gap-3 p-3 rounded-xl border border-transparent hover:border-slate-200 dark:hover:border-slate-700 transition text-left cursor-pointer group"
+                            >
+                                <div class="w-9 h-9 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 flex items-center justify-center shrink-0 tab-icon group-hover:scale-105 transition">
+                                    <i data-lucide="file-text" class="w-4 h-4"></i>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex items-center justify-between gap-1 mb-0.5">
+                                        <span class="text-xs font-bold text-slate-800 dark:text-white tab-title">Rekap Kontrabon</span>
+                                        <span class="text-[9px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-purple-100 dark:bg-purple-900/50 text-purple-700 dark:text-purple-300">Kontrabon</span>
+                                    </div>
+                                    <p class="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-1">Rangkuman berkas kontrabon tagihan</p>
+                                </div>
+                            </button>
+                        </div>
+
+                        <!-- Group 3: Rekapitulasi Pembelian & Barang -->
+                        <div class="report-group space-y-1.5 pt-2 border-t border-slate-100 dark:border-slate-800">
+                            <div class="px-2 pt-1 flex items-center justify-between text-[10px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                                <span>Rekapitulasi & Barang</span>
+                                <span class="text-[9px] px-1 rounded bg-slate-100 dark:bg-slate-800 font-mono">4</span>
+                            </div>
+
+                            <!-- Tab 7: Rekap Pembelian -->
+                            <button 
+                                type="button" 
+                                data-tab="rekappembelian" 
+                                class="tab-btn w-full flex items-start gap-3 p-3 rounded-xl border border-transparent hover:border-slate-200 dark:hover:border-slate-700 transition text-left cursor-pointer group"
+                            >
+                                <div class="w-9 h-9 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 flex items-center justify-center shrink-0 tab-icon group-hover:scale-105 transition">
+                                    <i data-lucide="package" class="w-4 h-4"></i>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex items-center justify-between gap-1 mb-0.5">
+                                        <span class="text-xs font-bold text-slate-800 dark:text-white tab-title">Rekap Pembelian</span>
+                                        <span class="text-[9px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-indigo-100 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300">Rekap</span>
+                                    </div>
+                                    <p class="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-1">Akumulasi kuantiti & nilai barang</p>
+                                </div>
+                            </button>
+
+                            <!-- Tab 8: Rekap Supplier -->
+                            <button 
+                                type="button" 
+                                data-tab="rekapsupplier" 
+                                class="tab-btn w-full flex items-start gap-3 p-3 rounded-xl border border-transparent hover:border-slate-200 dark:hover:border-slate-700 transition text-left cursor-pointer group"
+                            >
+                                <div class="w-9 h-9 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 flex items-center justify-center shrink-0 tab-icon group-hover:scale-105 transition">
+                                    <i data-lucide="users" class="w-4 h-4"></i>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex items-center justify-between gap-1 mb-0.5">
+                                        <span class="text-xs font-bold text-slate-800 dark:text-white tab-title">Rekap Supplier</span>
+                                        <span class="text-[9px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-sky-100 dark:bg-sky-900/50 text-sky-700 dark:text-sky-300">Supplier</span>
+                                    </div>
+                                    <p class="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-1">Total pembelanjaan per mitra supplier</p>
+                                </div>
+                            </button>
+
+                            <!-- Tab 9: Bahan Kemasan -->
+                            <button 
+                                type="button" 
+                                data-tab="bahankemasan" 
+                                class="tab-btn w-full flex items-start gap-3 p-3 rounded-xl border border-transparent hover:border-slate-200 dark:hover:border-slate-700 transition text-left cursor-pointer group"
+                            >
+                                <div class="w-9 h-9 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 flex items-center justify-center shrink-0 tab-icon group-hover:scale-105 transition">
+                                    <i data-lucide="boxes" class="w-4 h-4"></i>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex items-center justify-between gap-1 mb-0.5">
+                                        <span class="text-xs font-bold text-slate-800 dark:text-white tab-title">Bahan Baku & Kemasan</span>
+                                        <span class="text-[9px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-teal-100 dark:bg-teal-900/50 text-teal-700 dark:text-teal-300">Bahan</span>
+                                    </div>
+                                    <p class="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-1">Rincian pengadaan material produksi</p>
+                                </div>
+                            </button>
+
+                            <!-- Tab 10: Rekap Kemasan / Supplier -->
+                            <button 
+                                type="button" 
+                                data-tab="rekapbahankemasan" 
+                                class="tab-btn w-full flex items-start gap-3 p-3 rounded-xl border border-transparent hover:border-slate-200 dark:hover:border-slate-700 transition text-left cursor-pointer group"
+                            >
+                                <div class="w-9 h-9 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 flex items-center justify-center shrink-0 tab-icon group-hover:scale-105 transition">
+                                    <i data-lucide="layers" class="w-4 h-4"></i>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex items-center justify-between gap-1 mb-0.5">
+                                        <span class="text-xs font-bold text-slate-800 dark:text-white tab-title">Kemasan per Supplier</span>
+                                        <span class="text-[9px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-lime-100 dark:bg-lime-900/50 text-lime-700 dark:text-lime-300">Kemasan</span>
+                                    </div>
+                                    <p class="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-1">Rangkuman kemasan per pemasok</p>
+                                </div>
+                            </button>
+                        </div>
+
+                        <!-- Group 4: Jurnal & Akuntansi -->
+                        <div class="report-group space-y-1.5 pt-2 border-t border-slate-100 dark:border-slate-800">
+                            <div class="px-2 pt-1 flex items-center justify-between text-[10px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                                <span>Jurnal & Akuntansi</span>
+                                <span class="text-[9px] px-1 rounded bg-slate-100 dark:bg-slate-800 font-mono">2</span>
+                            </div>
+
+                            <!-- Tab 11: Rekap Akun -->
+                            <button 
+                                type="button" 
+                                data-tab="rekapakun" 
+                                class="tab-btn w-full flex items-start gap-3 p-3 rounded-xl border border-transparent hover:border-slate-200 dark:hover:border-slate-700 transition text-left cursor-pointer group"
+                            >
+                                <div class="w-9 h-9 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 flex items-center justify-center shrink-0 tab-icon group-hover:scale-105 transition">
+                                    <i data-lucide="book-open" class="w-4 h-4"></i>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex items-center justify-between gap-1 mb-0.5">
+                                        <span class="text-xs font-bold text-slate-800 dark:text-white tab-title">Rekap Akun COA</span>
+                                        <span class="text-[9px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300">COA</span>
+                                    </div>
+                                    <p class="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-1">Distribusi beban & biaya pembelian</p>
+                                </div>
+                            </button>
+
+                            <!-- Tab 12: Jurnal Koreksi -->
+                            <button 
+                                type="button" 
+                                data-tab="jurnalkoreksi" 
+                                class="tab-btn w-full flex items-start gap-3 p-3 rounded-xl border border-transparent hover:border-slate-200 dark:hover:border-slate-700 transition text-left cursor-pointer group"
+                            >
+                                <div class="w-9 h-9 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 flex items-center justify-center shrink-0 tab-icon group-hover:scale-105 transition">
+                                    <i data-lucide="file-edit" class="w-4 h-4"></i>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex items-center justify-between gap-1 mb-0.5">
+                                        <span class="text-xs font-bold text-slate-800 dark:text-white tab-title">Jurnal Koreksi</span>
+                                        <span class="text-[9px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-rose-100 dark:bg-rose-900/50 text-rose-700 dark:text-rose-300">Koreksi</span>
+                                    </div>
+                                    <p class="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-1">Daftar penyesuaian selisih nilai faktur</p>
+                                </div>
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Info Help Card -->
+                <div class="bg-gradient-to-br from-blue-50 to-indigo-50/50 dark:from-slate-900 dark:to-slate-900 rounded-2xl border border-blue-100 dark:border-slate-800 p-4 shadow-2xs">
+                    <div class="flex items-start gap-3">
+                        <div class="w-7 h-7 rounded-lg bg-[#162a5b] text-white flex items-center justify-center shrink-0 shadow-2xs">
+                            <i data-lucide="info" class="w-3.5 h-3.5"></i>
+                        </div>
+                        <div class="space-y-1 text-xs">
+                            <h5 class="font-bold text-slate-800 dark:text-slate-200">Panduan Output Laporan</h5>
+                            <p class="text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed">
+                                Gunakan <strong>Cetak Laporan</strong> untuk pratinjau siap cetak langsung / dokumen resmi. Gunakan <strong>Export Excel</strong> untuk mengunduh format spreadsheet (.xls) terstruktur.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Right Column (8 cols): Report Configuration Form -->
+            <div class="lg:col-span-8">
+                <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-2xs overflow-hidden">
+                    
+                    <!-- Dynamic Panel Header (Corporate Navy #162a5b) -->
+                    <div class="px-6 py-4 bg-[#162a5b] text-white flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center text-white shrink-0" id="header_panel_icon_wrapper">
+                                <i data-lucide="receipt" class="w-4 h-4" id="header_panel_icon"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-xs font-bold uppercase tracking-wider text-white" id="header_panel_title">
+                                    Laporan Rincian Pembelian
+                                </h3>
+                                <p class="text-[11px] text-white/70" id="header_panel_desc">
+                                    Tentukan parameter supplier, akun, dan rentang periode transaksi faktur
+                                </p>
+                            </div>
+                        </div>
+                        <span class="px-2.5 py-1 rounded-md bg-white/15 text-[10px] font-bold text-white uppercase tracking-wider" id="header_panel_tag">
+                            Detail Faktur
+                        </span>
+                    </div>
+
+                    <!-- Panel Forms Container -->
+                    <div class="p-6">
+                        
+                        <!-- Panel 1: Pembelian -->
+                        <div id="panel-pembelian" class="tab-panel">
+                            @include('pembelian.laporan.pembelian')
+                        </div>
+
+                        <!-- Panel 2: Pembayaran -->
+                        <div id="panel-pembayaran" class="tab-panel hidden">
+                            @include('pembelian.laporan.pembayaran')
+                        </div>
+
+                        <!-- Panel 3: Rekap PO -->
+                        <div id="panel-rekappo" class="tab-panel hidden">
+                            @include('pembelian.laporan.rekappo')
+                        </div>
+
+                        <!-- Panel 4: Kartu Hutang -->
+                        <div id="panel-kartuhutang" class="tab-panel hidden">
+                            @include('pembelian.laporan.kartuhutang')
+                        </div>
+
+                        <!-- Panel 5: AUH -->
+                        <div id="panel-auh" class="tab-panel hidden">
+                            @include('pembelian.laporan.auh')
+                        </div>
+
+                        <!-- Panel 6: Rekap Kontrabon -->
+                        <div id="panel-rekapkontrabon" class="tab-panel hidden">
+                            @include('pembelian.laporan.rekapkontrabon')
+                        </div>
+
+                        <!-- Panel 7: Rekap Pembelian -->
+                        <div id="panel-rekappembelian" class="tab-panel hidden">
+                            @include('pembelian.laporan.rekappembelian')
+                        </div>
+
+                        <!-- Panel 8: Rekap Supplier -->
+                        <div id="panel-rekapsupplier" class="tab-panel hidden">
+                            @include('pembelian.laporan.rekapsupplier')
+                        </div>
+
+                        <!-- Panel 9: Bahan Kemasan -->
+                        <div id="panel-bahankemasan" class="tab-panel hidden">
+                            @include('pembelian.laporan.bahankemasan')
+                        </div>
+
+                        <!-- Panel 10: Rekap Kemasan / Supplier -->
+                        <div id="panel-rekapbahankemasan" class="tab-panel hidden">
+                            @include('pembelian.laporan.rekapbahankemasan')
+                        </div>
+
+                        <!-- Panel 11: Rekap Akun -->
+                        <div id="panel-rekapakun" class="tab-panel hidden">
+                            @include('pembelian.laporan.rekapakun')
+                        </div>
+
+                        <!-- Panel 12: Jurnal Koreksi -->
+                        <div id="panel-jurnalkoreksi" class="tab-panel hidden">
+                            @include('pembelian.laporan.jurnalkoreksi')
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
     </div>
 
     @push('myscript')
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/id.js"></script>
+
+    <style>
+        /* Active Tab State */
+        .tab-btn.active {
+            background-color: rgba(22, 42, 91, 0.05) !important;
+            border-color: #162a5b !important;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+        }
+        .dark .tab-btn.active {
+            background-color: rgba(30, 58, 122, 0.25) !important;
+            border-color: #3b82f6 !important;
+        }
+        .tab-btn.active .tab-icon {
+            background-color: #162a5b !important;
+            color: #ffffff !important;
+        }
+        .dark .tab-btn.active .tab-icon {
+            background-color: #2563eb !important;
+            color: #ffffff !important;
+        }
+        .tab-btn.active .tab-title {
+            color: #162a5b !important;
+        }
+        .dark .tab-btn.active .tab-title {
+            color: #93c5fd !important;
+        }
+
+        /* Select2 Modern Alignment */
+        .select2-container { width: 100% !important; }
+        .select2-container--default .select2-selection--single {
+            height: 42px !important;
+            border: 1px solid #e2e8f0 !important;
+            border-radius: 0.75rem !important;
+            background-color: #ffffff !important;
+            display: flex !important;
+            align-items: center !important;
+            padding-left: 0.5rem !important;
+            padding-right: 2rem !important;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
+        }
+        .dark .select2-container--default .select2-selection--single {
+            background-color: #0f172a !important;
+            border-color: #334155 !important;
+            color: #f8fafc !important;
+        }
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            font-size: 0.75rem !important;
+            font-weight: 600 !important;
+            color: #1e293b !important;
+            line-height: normal !important;
+            padding-left: 0.25rem !important;
+        }
+        .dark .select2-container--default .select2-selection--single .select2-selection__rendered {
+            color: #f8fafc !important;
+        }
+        .select2-container--default .select2-selection--single .select2-selection__arrow {
+            height: 40px !important;
+            right: 10px !important;
+        }
+        .select2-dropdown {
+            border: 1px solid #e2e8f0 !important;
+            border-radius: 0.75rem !important;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1) !important;
+            z-index: 9999 !important;
+            overflow: hidden !important;
+        }
+        .dark .select2-dropdown {
+            background-color: #0f172a !important;
+            border-color: #334155 !important;
+        }
+        .select2-results__option {
+            font-size: 0.75rem !important;
+            font-weight: 500 !important;
+            padding: 8px 14px !important;
+        }
+        .select2-container--default .select2-results__option--highlighted[aria-selected] {
+            background-color: #162a5b !important;
+            color: #ffffff !important;
+        }
+        .select2-container--default.select2-container--focus .select2-selection--single,
+        .select2-container--default.select2-container--open .select2-selection--single {
+            border-color: #162a5b !important;
+            box-shadow: 0 0 0 3px rgba(22, 42, 91, 0.15) !important;
+        }
+    </style>
+
     <script>
         $(function() {
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+
             flatpickr.localize(flatpickr.l10ns.id);
             flatpickr(".flatpickr-date", {
                 dateFormat: "Y-m-d",
+                allowInput: true
             });
 
+            // Select2 Initializations
+            $(".select2Kodesupplier, .select2Kodebarang, .select2Kodesupplierpembayaran, .select2Kodeakun").each(function() {
+                var $this = $(this);
+                $this.wrap('<div class="relative"></div>').select2({
+                    placeholder: $this.data('placeholder') || 'Semua',
+                    allowClear: true,
+                    width: '100%'
+                });
+            });
+
+            // Metadata for dynamic header update
+            const tabMeta = {
+                pembelian: {
+                    title: 'Laporan Rincian Pembelian',
+                    desc: 'Tentukan parameter supplier, akun, dan rentang periode transaksi faktur',
+                    icon: 'receipt',
+                    tag: 'Detail Faktur'
+                },
+                pembayaran: {
+                    title: 'Laporan Pembayaran Pembelian',
+                    desc: 'Pantau histori pencairan dan pelunasan transaksi supplier via kas & bank',
+                    icon: 'credit-card',
+                    tag: 'Histori Bayar'
+                },
+                rekappo: {
+                    title: 'Laporan Rekap Purchase Order (PO)',
+                    desc: 'Rekapitulasi status pesanan pembelian, pemenuhan barang, dan sisa PO',
+                    icon: 'clipboard-list',
+                    tag: 'Monitoring PO'
+                },
+                kartuhutang: {
+                    title: 'Laporan Kartu Hutang Supplier',
+                    desc: 'Buku pembantu rincian mutasi kredit hutang, pembayaran, dan saldo akhir',
+                    icon: 'wallet-cards',
+                    tag: 'Buku Hutang'
+                },
+                auh: {
+                    title: 'Analisa Umur Hutang (AUH)',
+                    desc: 'Pemetaan umur hutang dagang berdasarkan tanggal jatuh tempo faktur',
+                    icon: 'clock-8',
+                    tag: 'Analisa Umur'
+                },
+                rekapkontrabon: {
+                    title: 'Laporan Rekap Kontrabon',
+                    desc: 'Rangkuman berkas kontrabon dan jadwal pembayaran tagihan supplier',
+                    icon: 'file-text',
+                    tag: 'Kontrabon'
+                },
+                rekappembelian: {
+                    title: 'Laporan Rekapitulasi Pembelian',
+                    desc: 'Rangkuman akumulasi volume dan nilai pembelian per kelompok barang / supplier',
+                    icon: 'package',
+                    tag: 'Rekap Produk'
+                },
+                rekapsupplier: {
+                    title: 'Laporan Rekap Belanja per Supplier',
+                    desc: 'Akumulasi total nilai transaksi pengadaan per masing-masing mitra supplier',
+                    icon: 'users',
+                    tag: 'Per Supplier'
+                },
+                bahankemasan: {
+                    title: 'Laporan Bahan Baku & Kemasan',
+                    desc: 'Detail pengadaan bahan mentah dan material packaging pabrik',
+                    icon: 'boxes',
+                    tag: 'Bahan Baku'
+                },
+                rekapbahankemasan: {
+                    title: 'Rekap Bahan Kemasan per Supplier',
+                    desc: 'Rangkuman kuantiti dan nominal material kemasan per mitra supplier',
+                    icon: 'layers',
+                    tag: 'Rekap Kemasan'
+                },
+                rekapakun: {
+                    title: 'Laporan Rekap Akun Biaya (COA)',
+                    desc: 'Distribusi pembebanan anggaran pembelian berdasarkan bagan akun standar',
+                    icon: 'book-open',
+                    tag: 'Rekap COA'
+                },
+                jurnalkoreksi: {
+                    title: 'Laporan Jurnal Koreksi Pembelian',
+                    desc: 'Daftar penyesuaian selisih harga, kuantiti, atau pembetulan jurnal pembelian',
+                    icon: 'file-edit',
+                    tag: 'Jurnal Koreksi'
+                }
+            };
+
             // Interactive Tab Switching
-            $('.tab-btn').click(function() {
+            $('.tab-btn').on('click', function() {
                 const targetTab = $(this).data('tab');
                 
-                // Active styles for tab button
-                $('.tab-btn').removeClass('active text-[#294C9A] bg-blue-50/80').addClass('text-gray-600 hover:bg-gray-50');
-                $('.tab-btn .tab-icon').removeClass('bg-[#294C9A] text-white').addClass('bg-gray-100 text-gray-600');
-                
-                $(this).addClass('active text-[#294C9A] bg-blue-50/80').removeClass('text-gray-600 hover:bg-gray-50');
-                $(this).find('.tab-icon').removeClass('bg-gray-100 text-gray-600').addClass('bg-[#294C9A] text-white');
+                // Toggle active styles on buttons
+                $('.tab-btn').removeClass('active');
+                $(this).addClass('active');
 
                 // Panel toggle
                 $('.tab-panel').addClass('hidden');
                 $(`#panel-${targetTab}`).removeClass('hidden');
+
+                // Update Header
+                if (tabMeta[targetTab]) {
+                    $('#header_panel_title').text(tabMeta[targetTab].title);
+                    $('#header_panel_desc').text(tabMeta[targetTab].desc);
+                    $('#header_panel_tag').text(tabMeta[targetTab].tag);
+                    
+                    // Update Icon
+                    $('#header_panel_icon_wrapper').html(`<i data-lucide="${tabMeta[targetTab].icon}" class="w-4 h-4"></i>`);
+                    if (typeof lucide !== 'undefined') {
+                        lucide.createIcons();
+                    }
+                }
+            });
+
+            // Live Search Filter for Report Navigation
+            $('#reportSearch').on('input', function() {
+                const q = $(this).val().toLowerCase().trim();
+                $('.tab-btn').each(function() {
+                    const text = $(this).text().toLowerCase();
+                    if (text.includes(q)) {
+                        $(this).removeClass('hidden');
+                    } else {
+                        $(this).addClass('hidden');
+                    }
+                });
+
+                // Hide empty groups
+                $('.report-group').each(function() {
+                    const hasVisible = $(this).find('.tab-btn:not(.hidden)').length > 0;
+                    if (hasVisible) {
+                        $(this).removeClass('hidden');
+                    } else {
+                        $(this).addClass('hidden');
+                    }
+                });
+            });
+
+            // Quick Date Presets Handler
+            $(document).on('click', '.btn-preset', function() {
+                const preset = $(this).data('preset');
+                const dariId = $(this).data('target-dari');
+                const sampaiId = $(this).data('target-sampai');
+                
+                const now = new Date();
+                let dariStr = '';
+                let sampaiStr = '';
+
+                const formatDate = (d) => {
+                    const y = d.getFullYear();
+                    const m = String(d.getMonth() + 1).padStart(2, '0');
+                    const day = String(d.getDate()).padStart(2, '0');
+                    return `${y}-${m}-${day}`;
+                };
+
+                if (preset === 'today') {
+                    dariStr = formatDate(now);
+                    sampaiStr = formatDate(now);
+                } else if (preset === 'this_month') {
+                    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+                    dariStr = formatDate(startOfMonth);
+                    sampaiStr = formatDate(now);
+                } else if (preset === 'last_month') {
+                    const startOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+                    const endOfLastMonth = new Date(now.getFullYear(), now.getMonth(), 0);
+                    dariStr = formatDate(startOfLastMonth);
+                    sampaiStr = formatDate(endOfLastMonth);
+                }
+
+                if (dariId && $(`#${dariId}`).length) {
+                    const fp = $(`#${dariId}`)[0]._flatpickr;
+                    if (fp) fp.setDate(dariStr); else $(`#${dariId}`).val(dariStr);
+                }
+                if (sampaiId && $(`#${sampaiId}`).length) {
+                    const fp = $(`#${sampaiId}`)[0]._flatpickr;
+                    if (fp) fp.setDate(sampaiStr); else $(`#${sampaiId}`).val(sampaiStr);
+                }
             });
 
             // Validation for each form
@@ -479,22 +698,20 @@
                         const tahun = $(this).find('input[name="tahun"]').val();
                         if (bulan == "" || !bulan) {
                             Swal.fire({
-                                title: "Oops!",
-                                text: 'Bulan Pajak Harus Diisi !',
+                                title: "Perhatian",
+                                text: 'Masa Pajak harus dipilih!',
                                 icon: "warning",
-                                customClass: { confirmButton: 'inline-flex items-center px-4 py-2 text-sm font-semibold text-white bg-[#294C9A] rounded-md' },
-                                buttonsStyling: false,
+                                confirmButtonColor: "#162a5b",
                                 didClose: () => $(this).find('select[name="bulan"]').focus(),
                             });
                             return false;
                         }
                         if (tahun == "" || !tahun) {
                             Swal.fire({
-                                title: "Oops!",
-                                text: 'Tahun Pajak Harus Diisi !',
+                                title: "Perhatian",
+                                text: 'Tahun Pajak harus diisi!',
                                 icon: "warning",
-                                customClass: { confirmButton: 'inline-flex items-center px-4 py-2 text-sm font-semibold text-white bg-[#294C9A] rounded-md' },
-                                buttonsStyling: false,
+                                confirmButtonColor: "#162a5b",
                                 didClose: () => $(this).find('input[name="tahun"]').focus(),
                             });
                             return false;
@@ -506,21 +723,19 @@
                     const sampai = $(this).find(`#${sampaiFieldId}`).val();
                     if (dari == "") {
                         Swal.fire({
-                            title: "Oops!",
-                            text: 'Periode Dari Harus Diisi !',
+                            title: "Perhatian",
+                            text: 'Periode Dari Tanggal harus diisi!',
                             icon: "warning",
-                            customClass: { confirmButton: 'inline-flex items-center px-4 py-2 text-sm font-semibold text-white bg-[#294C9A] rounded-md' },
-                            buttonsStyling: false,
+                            confirmButtonColor: "#162a5b",
                             didClose: () => $(this).find(`#${dariFieldId}`).focus(),
                         });
                         return false;
                     } else if (sampai == "") {
                         Swal.fire({
-                            title: "Oops!",
-                            text: 'Periode Sampai Harus Diisi !',
+                            title: "Perhatian",
+                            text: 'Periode Sampai Tanggal harus diisi!',
                             icon: "warning",
-                            customClass: { confirmButton: 'inline-flex items-center px-4 py-2 text-sm font-semibold text-white bg-[#294C9A] rounded-md' },
-                            buttonsStyling: false,
+                            confirmButtonColor: "#162a5b",
                             didClose: () => $(this).find(`#${sampaiFieldId}`).focus(),
                         });
                         return false;
@@ -529,11 +744,10 @@
                     var end = new Date(sampai);
                     if (start.getTime() > end.getTime()) {
                         Swal.fire({
-                            title: "Oops!",
-                            text: 'Periode Tidak Valid !, Periode Sampai Harus Lebih Akhir dari Periode Dari',
+                            title: "Perhatian",
+                            text: 'Periode Sampai Tanggal harus lebih akhir dari Periode Dari Tanggal!',
                             icon: "warning",
-                            customClass: { confirmButton: 'inline-flex items-center px-4 py-2 text-sm font-semibold text-white bg-[#294C9A] rounded-md' },
-                            buttonsStyling: false,
+                            confirmButtonColor: "#162a5b",
                             didClose: () => $(this).find(`#${sampaiFieldId}`).focus(),
                         });
                         return false;
@@ -551,11 +765,10 @@
                 const formatlaporan = $(this).find("#formatlaporan_kartuhutang").val();
                 if (formatlaporan == "") {
                     Swal.fire({
-                        title: "Oops!",
-                        text: 'Jenis Laporan Harus Diisi !',
+                        title: "Perhatian",
+                        text: 'Format / Bentuk Laporan harus dipilih!',
                         icon: "warning",
-                        customClass: { confirmButton: 'inline-flex items-center px-4 py-2 text-sm font-semibold text-white bg-[#294C9A] rounded-md' },
-                        buttonsStyling: false,
+                        confirmButtonColor: "#162a5b",
                         didClose: () => $(this).find("#formatlaporan_kartuhutang").focus(),
                     });
                     return false;
@@ -568,17 +781,25 @@
             validatePeriode("formLapRekapAkun", "dari_rekapakun", "sampai_rekapakun");
             validatePeriode("formLapRekapKontrabon", "dari_rekapkontrabon", "sampai_rekapkontrabon");
             validatePeriode("formLapRekapPo", "dari_rekappo", "sampai_rekappo");
-
-            // Select2 Initializations
-            $(".select2Kodesupplier, .select2Kodebarang, .select2Kodesupplierpembayaran, .select2Kodeakun").each(function() {
-                var $this = $(this);
-                $this.wrap('<div class="position-relative"></div>').select2({
-                    placeholder: 'Semua',
-                    allowClear: true,
-                    dropdownParent: $this.parent()
-                });
-            });
         });
+
+        function togglePeriodePembelian(val) {
+            if (val === 'bulan_pajak') {
+                $('#wrapper_tanggal_pembelian').addClass('hidden');
+                $('#wrapper_bulan_pajak_pembelian').removeClass('hidden');
+                $('#dari_pembelian').removeAttr('required');
+                $('#sampai_pembelian').removeAttr('required');
+                $('#bulan_pembelian').attr('required', 'required');
+                $('#tahun_pembelian').attr('required', 'required');
+            } else {
+                $('#wrapper_tanggal_pembelian').removeClass('hidden');
+                $('#wrapper_bulan_pajak_pembelian').addClass('hidden');
+                $('#dari_pembelian').attr('required', 'required');
+                $('#sampai_pembelian').attr('required', 'required');
+                $('#bulan_pembelian').removeAttr('required');
+                $('#tahun_pembelian').removeAttr('required');
+            }
+        }
     </script>
     @endpush
 </x-app-layout>

@@ -63,33 +63,33 @@
                     <table class="w-full text-left border-collapse">
                         <thead>
                             <tr class="text-xs font-semibold uppercase tracking-wider bg-[#294C9A] text-white">
-                                <th class="py-3 px-4" style="width: 15%;">Kode</th>
-                                <th class="py-3 px-4" style="width: 25%;">Bulan</th>
-                                <th class="py-3 px-4" style="width: 20%;">Tahun</th>
-                                <th class="py-3 px-4" style="width: 25%;">Tanggal</th>
-                                <th class="py-3 px-4 text-center" style="width: 15%;">Actions</th>
+                                <th class="py-2.5 px-4" style="width: 15%;">Kode</th>
+                                <th class="py-2.5 px-4" style="width: 25%;">Bulan</th>
+                                <th class="py-2.5 px-4" style="width: 20%;">Tahun</th>
+                                <th class="py-2.5 px-4" style="width: 25%;">Tanggal</th>
+                                <th class="py-2.5 px-4 text-center" style="width: 15%;">Actions</th>
                             </tr>
                         </thead>
                         <tbody class="text-sm divide-y divide-gray-100">
                             @forelse ($saldo_awal as $d)
                             <tr class="odd:bg-white even:bg-gray-50 hover:bg-gray-100/50 transition-colors">
-                                <td class="py-1.5 px-4 font-bold text-blue-600">
+                                <td class="py-1 px-4 font-bold text-blue-600">
                                     <button type="button" class="btn-show font-bold text-blue-600 hover:text-blue-800" data-code="{{ Crypt::encrypt($d->kode_saldo_awal) }}">
                                         {{ $d->kode_saldo_awal }}
                                     </button>
                                 </td>
-                                <td class="py-1.5 px-4 text-gray-700 font-medium">{{ $nama_bulan[$d->bulan] }}</td>
-                                <td class="py-1.5 px-4 text-gray-500">{{ $d->tahun }}</td>
-                                <td class="py-1.5 px-4 text-gray-500">{{ date('d-m-Y', strtotime($d->tanggal)) }}</td>
-                                <td class="py-1.5 px-4 flex items-center justify-center gap-3">
-                                    <button type="button" class="btn-show p-1.5 text-cyan-600 hover:bg-cyan-50 rounded-lg transition" data-code="{{ Crypt::encrypt($d->kode_saldo_awal) }}" title="Detail">
+                                <td class="py-1 px-4 text-gray-700 font-medium">{{ $nama_bulan[$d->bulan] }}</td>
+                                <td class="py-1 px-4 text-gray-500">{{ $d->tahun }}</td>
+                                <td class="py-1 px-4 text-gray-500">{{ date('d-m-Y', strtotime($d->tanggal)) }}</td>
+                                <td class="py-1 px-4 flex items-center justify-center gap-3">
+                                    <button type="button" class="btn-show p-1 text-cyan-600 hover:bg-cyan-50 rounded-lg transition" data-code="{{ Crypt::encrypt($d->kode_saldo_awal) }}" title="Detail">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
                                     </button>
                                     @can('sagudangjadi.delete')
                                     <form action="{{ route('sagudangjadi.destroy', Crypt::encrypt($d->kode_saldo_awal)) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus data saldo awal ini?')">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="p-1.5 text-red-600 hover:bg-red-50 rounded-lg transition" title="Hapus">
+                                        <button type="submit" class="p-1 text-red-600 hover:bg-red-50 rounded-lg transition" title="Hapus">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                                         </button>
                                     </form>

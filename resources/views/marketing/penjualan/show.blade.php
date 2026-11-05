@@ -1,304 +1,268 @@
 <x-app-layout>
-    <x-slot name="header">
-        Detail Penjualan Marketing
-    </x-slot>
+    <x-slot name="header">Detail Penjualan Marketing</x-slot>
+    <x-slot name="headerTitle">Detail Penjualan Marketing</x-slot>
+    <x-slot name="headerDescription">Faktur Penjualan #{{ $penjualan->no_bukti }} - {{ $penjualan->nama_pelanggan }}</x-slot>
 
-    <style>
-        .flatpickr-calendar {
-            border: 1px solid #E5E7EB !important;
-            border-radius: 16px !important;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
-            font-family: inherit !important;
-            overflow: hidden !important;
-        }
-        .flatpickr-months {
-            background: #294C9A !important;
-            padding: 8px 0 !important;
-        }
-        .flatpickr-months .flatpickr-month {
-            color: #ffffff !important;
-            fill: #ffffff !important;
-        }
-        .flatpickr-current-month {
-            color: #ffffff !important;
-            padding: 0 !important;
-        }
-        .flatpickr-current-month .numInputWrapper span.arrowUp::after {
-            border-bottom-color: #ffffff !important;
-        }
-        .flatpickr-current-month .numInputWrapper span.arrowDown::after {
-            border-top-color: #ffffff !important;
-        }
-        .flatpickr-current-month input.cur-year {
-            color: #ffffff !important;
-        }
-        .flatpickr-current-month .flatpickr-monthDropdown-months {
-            color: #ffffff !important;
-            background: #294C9A !important;
-            border: none !important;
-            font-weight: bold !important;
-        }
-        .flatpickr-current-month .flatpickr-monthDropdown-months option {
-            background: #ffffff !important;
-            color: #1f2937 !important;
-        }
-        .flatpickr-months .flatpickr-prev-month, 
-        .flatpickr-months .flatpickr-next-month {
-            color: #ffffff !important;
-            fill: #ffffff !important;
-            top: 10px !important;
-        }
-        .flatpickr-months .flatpickr-prev-month:hover svg, 
-        .flatpickr-months .flatpickr-next-month:hover svg {
-            fill: #60a5fa !important;
-        }
-        .flatpickr-day.selected, 
-        .flatpickr-day.startRange, 
-        .flatpickr-day.endRange, 
-        .flatpickr-day.selected.inRange, 
-        .flatpickr-day.startRange.inRange, 
-        .flatpickr-day.endRange.inRange, 
-        .flatpickr-day.selected:focus, 
-        .flatpickr-day.startRange:focus, 
-        .flatpickr-day.endRange:focus, 
-        .flatpickr-day.selected:hover, 
-        .flatpickr-day.startRange:hover, 
-        .flatpickr-day.endRange:hover, 
-        .flatpickr-day.prevMonthDay.selected, 
-        .flatpickr-day.prevMonthDay.startRange, 
-        .flatpickr-day.prevMonthDay.endRange, 
-        .flatpickr-day.prevMonthDay.selected.inRange, 
-        .flatpickr-day.prevMonthDay.startRange.inRange, 
-        .flatpickr-day.prevMonthDay.endRange.inRange, 
-        .flatpickr-day.prevMonthDay.selected:focus, 
-        .flatpickr-day.prevMonthDay.startRange:focus, 
-        .flatpickr-day.prevMonthDay.endRange:focus, 
-        .flatpickr-day.prevMonthDay.selected:hover, 
-        .flatpickr-day.prevMonthDay.startRange:hover, 
-        .flatpickr-day.prevMonthDay.endRange:hover, 
-        .flatpickr-day.nextMonthDay.selected, 
-        .flatpickr-day.nextMonthDay.startRange, 
-        .flatpickr-day.nextMonthDay.endRange, 
-        .flatpickr-day.nextMonthDay.selected.inRange, 
-        .flatpickr-day.nextMonthDay.startRange.inRange, 
-        .flatpickr-day.nextMonthDay.endRange.inRange, 
-        .flatpickr-day.nextMonthDay.selected:focus, 
-        .flatpickr-day.nextMonthDay.startRange:focus, 
-        .flatpickr-day.nextMonthDay.endRange:focus, 
-        .flatpickr-day.nextMonthDay.selected:hover, 
-        .flatpickr-day.nextMonthDay.startRange:hover, 
-        .flatpickr-day.nextMonthDay.endRange:hover {
-            background: #294C9A !important;
-            border-color: #294C9A !important;
-        }
-    </style>
-
-    <!-- Main Container -->
-    <div class="space-y-6">
+    @php
+        $total_dpp = 0;
+        $total_ppn = 0;
+        $total_jumlah = 0;
         
-        <!-- Header & Navigation -->
-        <div class="flex justify-between items-center w-full mb-6">
-            <div>
-                <h2 class="text-2xl font-semibold text-gray-900 tracking-tight">Detail Penjualan Marketing</h2>
-                <p class="text-sm text-gray-500 mt-1 font-mono"># {{ $penjualan->no_bukti }}</p>
-            </div>
-            <div>
-                <a href="{{ route('penjualanmarketing.index') }}" class="inline-flex items-center justify-center gap-1.5 px-4 py-2 text-xs font-bold text-gray-700 bg-white border border-gray-200 hover:bg-gray-50 rounded-xl transition shadow-sm h-[38px]">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-                    Kembali
+        foreach ($detail as $d) {
+            $dpp = $d->harga_dus * $d->jumlah;
+            $ppn = $dpp * 0.11;
+            $jumlah_item = $dpp + $ppn;
+            
+            $total_dpp += $dpp;
+            $total_ppn += $ppn;
+            $total_jumlah += $jumlah_item;
+        }
+        
+        $total_ppn_val = $total_ppn;
+        $total_jumlah_val = $total_jumlah;
+
+        $total_bayar = 0;
+        if (isset($historibayar)) {
+            foreach ($historibayar as $h) {
+                $total_bayar += $h->jumlah;
+            }
+        }
+        $sisa_tagihan = $total_jumlah_val - $total_bayar;
+    @endphp
+
+    <div class="space-y-6">
+
+        <!-- Top Navigation & Action Bar -->
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 w-full">
+            <div class="flex items-center gap-3">
+                <a 
+                    href="{{ route('penjualanmarketing.index') }}" 
+                    class="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold text-xs shadow-2xs transition cursor-pointer"
+                >
+                    <i data-lucide="arrow-left" class="w-4 h-4 text-slate-500"></i>
+                    <span>Kembali ke Daftar</span>
                 </a>
+
+                <div class="flex items-center gap-2">
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold text-xs {{ $penjualan->jenis_transaksi == 'T' ? 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-200/60 dark:border-emerald-500/20' : 'bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-200/60 dark:border-amber-500/20' }}">
+                        <i data-lucide="{{ $penjualan->jenis_transaksi == 'T' ? 'wallet' : 'calendar-clock' }}" class="w-3.5 h-3.5"></i>
+                        <span>{{ $penjualan->jenis_transaksi == 'T' ? 'TUNAI' : 'KREDIT' }}</span>
+                    </span>
+
+                    @if ($penjualan->status == '1' || $sisa_tagihan <= 0.05)
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold text-xs bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-200/60 dark:border-emerald-500/20">
+                            <i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i>
+                            <span>LUNAS</span>
+                        </span>
+                    @else
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold text-xs bg-rose-50 dark:bg-rose-500/10 text-rose-700 dark:text-rose-400 border border-rose-200/60 dark:border-rose-500/20">
+                            <i data-lucide="alert-circle" class="w-3.5 h-3.5"></i>
+                            <span>BELUM LUNAS</span>
+                        </span>
+                    @endif
+                </div>
+            </div>
+
+            <div class="flex items-center gap-2">
+                <span class="text-xs text-slate-500 dark:text-slate-400 font-medium">
+                    No. Bukti:
+                </span>
+                <span class="font-mono text-xs font-bold px-2.5 py-1 rounded-lg bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border border-blue-200/60 dark:border-blue-700/50">
+                    {{ $penjualan->no_bukti }}
+                </span>
             </div>
         </div>
 
-        @php
-            $total_dpp = 0;
-            $total_ppn = 0;
-            $total_jumlah = 0;
+        <!-- 3 Modern Information Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-5 items-stretch">
             
-            foreach ($detail as $d) {
-                $dpp = $d->harga_dus * $d->jumlah;
-                $ppn = $dpp * 0.11;
-                $jumlah_item = $dpp + $ppn;
-                
-                $total_dpp += $dpp;
-                $total_ppn += $ppn;
-                $total_jumlah += $jumlah_item;
-            }
-            
-            // Keep full decimal totals for formatting
-            $total_ppn_val = $total_ppn;
-            $total_jumlah_val = $total_jumlah;
-
-            $total_bayar = 0;
-            if (isset($historibayar)) {
-                foreach ($historibayar as $h) {
-                    $total_bayar += $h->jumlah;
-                }
-            }
-            $sisa_tagihan = $total_jumlah_val - $total_bayar;
-        @endphp
-
-        <!-- Top Grid: Transaction Info & Payment Summary -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-6 items-stretch text-sm">
             <!-- Card 1: Detail Transaksi -->
-            <div class="lg:col-span-4">
-                <div class="bg-white rounded-2xl border border-gray-200/80 p-6 shadow-sm h-full flex flex-col justify-between">
-                    <div>
-                        <div class="flex items-center justify-between border-b border-gray-100 pb-3 mb-4">
-                            <h5 class="text-xs font-bold uppercase tracking-wider text-[#294C9A] flex items-center gap-1.5">
-                                <svg class="w-4 h-4 text-[#294C9A]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                                Detail Transaksi
-                            </h5>
+            <div class="lg:col-span-4 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/90 dark:border-slate-800 shadow-2xs p-5 flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center gap-2.5 pb-3 mb-4 border-b border-slate-100 dark:border-slate-800">
+                        <div class="w-8 h-8 rounded-xl bg-[#162a5b] text-white flex items-center justify-center shadow-xs shrink-0">
+                            <i data-lucide="file-text" class="w-4 h-4"></i>
                         </div>
-                        <div class="space-y-4">
-                            <div>
-                                <span class="text-xs text-gray-400 font-medium block mb-0.5">No. Bukti</span>
-                                <span class="font-semibold text-gray-900 font-mono text-sm block">{{ $penjualan->no_bukti }}</span>
-                            </div>
-                            <div>
-                                <span class="text-xs text-gray-400 font-medium block mb-0.5">Tanggal</span>
-                                <span class="font-semibold text-gray-900 block">{{ date('d M Y', strtotime($penjualan->tanggal)) }}</span>
-                            </div>
-                            <div>
-                                <span class="text-xs text-gray-400 font-medium block mb-0.5">Jenis Transaksi</span>
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded text-xs font-bold {{ $penjualan->jenis_transaksi == 'T' ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700' }}">
-                                    {{ $penjualan->jenis_transaksi == 'T' ? 'TUNAI' : 'KREDIT' }}
-                                </span>
-                            </div>
-                            @if ($penjualan->jenis_transaksi == 'T')
-                            <div>
-                                <span class="text-xs text-gray-400 font-medium block mb-0.5">Metode Bayar</span>
-                                <span class="font-semibold text-gray-900 block">{{ $penjualan->jenis_bayar == 'TN' ? 'CASH' : 'TRANSFER' }}</span>
-                            </div>
-                            @endif
+                        <div>
+                            <h4 class="text-xs font-bold text-slate-800 dark:text-white uppercase tracking-wider">Detail Transaksi</h4>
+                            <p class="text-[11px] text-slate-400">Parameter faktur penjualan</p>
                         </div>
+                    </div>
+
+                    <div class="space-y-3.5 text-xs">
+                        <div class="flex items-center justify-between">
+                            <span class="text-slate-500 dark:text-slate-400 font-medium">No. Bukti</span>
+                            <span class="font-mono font-bold text-slate-900 dark:text-white">{{ $penjualan->no_bukti }}</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-slate-500 dark:text-slate-400 font-medium">Tanggal Transaksi</span>
+                            <span class="font-semibold text-slate-800 dark:text-slate-200">{{ date('d F Y', strtotime($penjualan->tanggal)) }}</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-slate-500 dark:text-slate-400 font-medium">Jenis Transaksi</span>
+                            <span class="font-bold {{ $penjualan->jenis_transaksi == 'T' ? 'text-emerald-600 dark:text-emerald-400' : 'text-amber-600 dark:text-amber-400' }}">
+                                {{ $penjualan->jenis_transaksi == 'T' ? 'TUNAI' : 'KREDIT' }}
+                            </span>
+                        </div>
+                        @if ($penjualan->jenis_transaksi == 'T')
+                        <div class="flex items-center justify-between">
+                            <span class="text-slate-500 dark:text-slate-400 font-medium">Metode Bayar</span>
+                            <span class="font-semibold text-slate-800 dark:text-slate-200">{{ $penjualan->jenis_bayar == 'TN' ? 'Cash / Tunai' : 'Transfer Bank' }}</span>
+                        </div>
+                        @endif
                     </div>
                 </div>
             </div>
 
             <!-- Card 2: Informasi Pelanggan -->
-            <div class="lg:col-span-4">
-                <div class="bg-white rounded-2xl border border-gray-200/80 p-6 shadow-sm h-full flex flex-col justify-between">
-                    <div>
-                        <div class="flex items-center justify-between border-b border-gray-100 pb-3 mb-4">
-                            <h5 class="text-xs font-bold uppercase tracking-wider text-[#294C9A] flex items-center gap-1.5">
-                                <svg class="w-4 h-4 text-[#294C9A]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
-                                Pelanggan
-                            </h5>
+            <div class="lg:col-span-4 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/90 dark:border-slate-800 shadow-2xs p-5 flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center gap-2.5 pb-3 mb-4 border-b border-slate-100 dark:border-slate-800">
+                        <div class="w-8 h-8 rounded-xl bg-[#162a5b] text-white flex items-center justify-center shadow-xs shrink-0">
+                            <i data-lucide="users" class="w-4 h-4"></i>
                         </div>
-                        <div class="space-y-4">
-                            <div>
-                                <span class="text-xs text-gray-400 font-medium block mb-0.5">Nama Customer</span>
-                                <span class="font-bold text-gray-900 text-sm block">{{ $penjualan->nama_pelanggan }}</span>
-                            </div>
-                            <div>
-                                <span class="text-xs text-gray-400 font-medium block mb-0.5">Alamat</span>
-                                <span class="text-xs text-gray-650 block leading-relaxed">{{ $penjualan->alamat_pelanggan ?? '-' }}</span>
-                            </div>
+                        <div>
+                            <h4 class="text-xs font-bold text-slate-800 dark:text-white uppercase tracking-wider">Data Pelanggan</h4>
+                            <p class="text-[11px] text-slate-400">Identitas penerima faktur</p>
+                        </div>
+                    </div>
+
+                    <div class="space-y-3.5 text-xs">
+                        <div class="flex items-center justify-between">
+                            <span class="text-slate-500 dark:text-slate-400 font-medium">Kode Pelanggan</span>
+                            <span class="font-mono text-xs font-semibold px-2 py-0.5 rounded-md bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border border-blue-200/60 dark:border-blue-700/50">
+                                {{ $penjualan->kode_pelanggan }}
+                            </span>
+                        </div>
+                        <div>
+                            <span class="text-slate-500 dark:text-slate-400 font-medium block mb-0.5">Nama Customer</span>
+                            <span class="font-bold text-slate-900 dark:text-white text-sm block">{{ $penjualan->nama_pelanggan }}</span>
+                        </div>
+                        <div>
+                            <span class="text-slate-500 dark:text-slate-400 font-medium block mb-0.5">Alamat Pengiriman</span>
+                            <span class="text-slate-600 dark:text-slate-300 block leading-relaxed">{{ $penjualan->alamat_pelanggan ?: '-' }}</span>
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- Card 3: Summary & Payment -->
-            <div class="lg:col-span-4">
-                <div class="bg-white rounded-2xl border border-gray-200/80 shadow-sm overflow-hidden h-full flex flex-col justify-between">
-                    <!-- Grand Total Display Header -->
-                    <div class="bg-gradient-to-br from-[#294C9A] to-[#1E3A70] text-white p-5 relative overflow-hidden">
-                        <div class="absolute -right-10 -top-10 w-20 h-20 bg-white/5 rounded-full blur-xl"></div>
-                        <div class="relative z-10 space-y-1">
-                            <span class="text-[9px] font-bold uppercase tracking-wider text-blue-200 block">Grand Total (+PPN)</span>
-                             <h2 class="text-xl font-bold font-mono tracking-tight">Rp {{ number_format($total_jumlah_val, 2, ',', '.') }}</h2>
+            <div class="lg:col-span-4 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/90 dark:border-slate-800 shadow-2xs overflow-hidden flex flex-col justify-between">
+                <!-- Grand Total Display Header -->
+                <div class="bg-[#162a5b] text-white p-5">
+                    <span class="text-[10px] font-extrabold uppercase tracking-widest text-blue-200 block mb-1">Total Tagihan (+PPN 11%)</span>
+                    <h2 class="text-xl font-extrabold font-mono tracking-tight text-white">Rp {{ number_format($total_jumlah_val, 2, ',', '.') }}</h2>
+                </div>
+
+                <!-- Payment summary body -->
+                <div class="p-5 space-y-3 text-xs flex-1 flex flex-col justify-between">
+                    <div class="space-y-2.5">
+                        <div class="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-800">
+                            <span class="text-slate-500 dark:text-slate-400 font-semibold">Total Nilai DPP</span>
+                            <span class="font-bold text-slate-800 dark:text-slate-200 font-mono">Rp {{ number_format($total_dpp, 2, ',', '.') }}</span>
+                        </div>
+                        <div class="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-800">
+                            <span class="text-slate-500 dark:text-slate-400 font-semibold">PPN (11%)</span>
+                            <span class="font-bold text-slate-800 dark:text-slate-200 font-mono">Rp {{ number_format($total_ppn_val, 2, ',', '.') }}</span>
+                        </div>
+                        <div class="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-800">
+                            <span class="text-slate-500 dark:text-slate-400 font-semibold">Total Terbayar</span>
+                            <span class="font-bold text-emerald-600 dark:text-emerald-400 font-mono">Rp {{ number_format($total_bayar, 2, ',', '.') }}</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-slate-700 dark:text-slate-300 font-bold">Sisa Tagihan</span>
+                            <span class="font-extrabold font-mono {{ $sisa_tagihan > 0.05 ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-600 dark:text-emerald-400' }}">
+                                Rp {{ number_format($sisa_tagihan, 2, ',', '.') }}
+                            </span>
                         </div>
                     </div>
 
-                    <!-- Payment summary body -->
-                    <div class="p-5 space-y-4 flex-1 flex flex-col justify-between">
-                        <table class="w-full text-xs text-left border-collapse">
-                            <tr class="border-b border-gray-50">
-                                <td class="py-2 text-gray-400 font-semibold">Tagihan</td>
-                                <td class="py-2 text-right font-bold text-gray-900 font-mono">Rp {{ number_format($total_jumlah_val, 2, ',', '.') }}</td>
-                            </tr>
-                             <tr class="border-b border-gray-50">
-                                <td class="py-2 text-gray-400 font-semibold">Total Bayar</td>
-                                <td class="py-2 text-right font-bold text-emerald-600 font-mono">
-                                    Rp {{ number_format($total_bayar, 2, ',', '.') }}
-                                </td>
-                            </tr>
-                            <tr class="border-b border-gray-50">
-                                <td class="py-2 text-gray-400 font-semibold">Sisa Tagihan</td>
-                                <td class="py-2 text-right font-bold text-rose-600 font-mono">
-                                    Rp {{ number_format($sisa_tagihan, 2, ',', '.') }}
-                                </td>
-                            </tr>
-                        </table>
-
-                        <div class="pt-2">
-                            @if ($penjualan->status == '1')
-                                <div class="flex items-center justify-center gap-1.5 py-2 rounded-xl bg-emerald-50 border border-emerald-200/50 text-emerald-700 text-xs font-bold uppercase tracking-wide">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                                    Lunas
-                                </div>
-                            @else
-                                <div class="flex items-center justify-center gap-1.5 py-2 rounded-xl bg-rose-50 border border-rose-200/50 text-rose-700 text-xs font-bold uppercase tracking-wide">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                                    Belum Lunas
-                                </div>
-                            @endif
-                        </div>
+                    <div class="pt-3">
+                        @if ($penjualan->status == '1' || $sisa_tagihan <= 0.05)
+                            <div class="flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200/60 dark:border-emerald-500/20 text-emerald-700 dark:text-emerald-300 text-xs font-bold uppercase tracking-wider">
+                                <i data-lucide="check-circle" class="w-4 h-4"></i>
+                                <span>Tagihan Lunas</span>
+                            </div>
+                        @else
+                            <div class="flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-rose-50 dark:bg-rose-500/10 border border-rose-200/60 dark:border-rose-500/20 text-rose-700 dark:text-rose-300 text-xs font-bold uppercase tracking-wider">
+                                <i data-lucide="clock" class="w-4 h-4"></i>
+                                <span>Menunggu Pembayaran</span>
+                            </div>
+                        @endif
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Bottom Card: Full-width Product Details -->
-        <div class="bg-white rounded-2xl border border-gray-200/80 shadow-sm overflow-hidden">
-            <div class="px-6 py-4 bg-[#294C9A] text-white">
-                <h5 class="text-xs font-bold uppercase tracking-wider text-white flex items-center gap-1.5">
-                    <svg class="w-4 h-4 text-blue-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
-                    Produk Detail
-                </h5>
+        <!-- Product Details Table Card -->
+        <div class="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-2xl shadow-2xs overflow-hidden">
+            
+            <!-- Table Card Header (Solid Biru Dongker) -->
+            <div class="px-6 pt-5 pb-3 bg-[#162a5b] text-white flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-0">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-xl bg-white/15 text-white flex items-center justify-center shadow-xs shrink-0">
+                        <i data-lucide="package" class="w-4 h-4 text-white"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-sm text-white tracking-tight flex items-center gap-2">
+                            <span>Rincian Produk Terjual</span>
+                            <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-white/20 text-white">
+                                {{ count($detail) }} Item
+                            </span>
+                        </h3>
+                        <p class="text-[11px] text-blue-200/80">Daftar item kuantiti dan subtotal harga per dus</p>
+                    </div>
+                </div>
             </div>
+
+            <!-- Table Responsive Area -->
             <div class="overflow-x-auto">
-                <table class="w-full text-sm text-left border-collapse text-gray-600">
-                    <thead class="bg-[#294C9A] text-white text-sm uppercase tracking-wider">
-                        <tr>
-                            <th class="py-3.5 px-6 font-semibold whitespace-nowrap">Kode</th>
-                            <th class="py-3.5 px-6 font-semibold whitespace-nowrap">Nama Produk</th>
-                            <th class="py-3.5 px-6 font-semibold text-center whitespace-nowrap">Satuan</th>
-                            <th class="py-3.5 px-6 font-semibold text-center whitespace-nowrap">Jumlah</th>
-                            <th class="py-3.5 px-6 font-semibold text-right whitespace-nowrap">Harga / Dus</th>
-                            <th class="py-3.5 px-6 font-semibold text-right whitespace-nowrap">PPN</th>
-                            <th class="py-3.5 px-6 font-semibold text-right whitespace-nowrap">Subtotal</th>
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-[#162a5b] text-white border-b border-blue-900/50">
+                            <th class="py-2.5 px-4 text-[11px] font-bold tracking-wider text-blue-100 uppercase text-center w-12">No</th>
+                            <th class="py-2.5 px-4 text-[11px] font-bold tracking-wider text-blue-100 uppercase w-32">Kode</th>
+                            <th class="py-2.5 px-4 text-[11px] font-bold tracking-wider text-blue-100 uppercase">Nama Produk</th>
+                            <th class="py-2.5 px-4 text-[11px] font-bold tracking-wider text-blue-100 uppercase text-center w-24">Satuan</th>
+                            <th class="py-2.5 px-4 text-[11px] font-bold tracking-wider text-blue-100 uppercase text-center w-24">Jumlah</th>
+                            <th class="py-2.5 px-4 text-[11px] font-bold tracking-wider text-blue-100 uppercase text-right w-40">Harga / Dus</th>
+                            <th class="py-2.5 px-4 text-[11px] font-bold tracking-wider text-blue-100 uppercase text-right w-36">PPN (11%)</th>
+                            <th class="py-2.5 px-4 text-[11px] font-bold tracking-wider text-blue-100 uppercase text-right w-44">Subtotal</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-gray-100 bg-white text-sm">
+                    <tbody class="divide-y divide-slate-100 dark:divide-slate-800 bg-white dark:bg-slate-900 text-xs">
                         @foreach ($detail as $d)
                             @php
                                 $dpp = $d->harga_dus * $d->jumlah;
                                 $ppn = $dpp * 0.11;
                                 $jumlah_item = $dpp + $ppn;
                             @endphp
-                            <tr class="hover:bg-gray-50/50 transition-colors">
-                                <td class="py-2.5 px-6 font-mono font-semibold text-gray-900 whitespace-nowrap">{{ $d->kode_produk }}</td>
-                                <td class="py-2.5 px-6 font-medium text-gray-800">{{ $d->nama_produk }}</td>
-                                <td class="py-2.5 px-6 text-center whitespace-nowrap">
-                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded bg-gray-100 text-gray-700 font-semibold text-[10px]">
+                            <tr class="hover:bg-slate-50/80 dark:hover:bg-slate-800/50 transition">
+                                <td class="py-1 px-4 text-center font-medium text-slate-400">{{ $loop->iteration }}</td>
+                                <td class="py-1 px-4">
+                                    <span class="font-mono text-xs font-semibold px-2 py-0.5 rounded-md bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border border-blue-200/60 dark:border-blue-700/50">
+                                        {{ $d->kode_produk }}
+                                    </span>
+                                </td>
+                                <td class="py-1 px-4 font-bold text-slate-800 dark:text-white">{{ $d->nama_produk }}</td>
+                                <td class="py-1 px-4 text-center">
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
                                         {{ $d->satuan }}
                                     </span>
                                 </td>
-                                <td class="py-2.5 px-6 text-center font-semibold text-gray-900 whitespace-nowrap">{{ number_format($d->jumlah, 0, ',', '.') }}</td>
-                                <td class="py-2.5 px-6 text-right font-mono text-gray-900 whitespace-nowrap">Rp {{ number_format($d->harga_dus, 2, ',', '.') }}</td>
-                                <td class="py-2.5 px-6 text-right font-mono text-gray-400 whitespace-nowrap">Rp {{ number_format($ppn, 2, ',', '.') }}</td>
-                                <td class="py-2.5 px-6 text-right font-mono font-bold text-gray-900 whitespace-nowrap">Rp {{ number_format($jumlah_item, 2, ',', '.') }}</td>
+                                <td class="py-1 px-4 text-center font-bold text-slate-800 dark:text-white">{{ number_format($d->jumlah, 0, ',', '.') }}</td>
+                                <td class="py-1 px-4 text-right font-mono text-slate-700 dark:text-slate-300">Rp {{ number_format($d->harga_dus, 2, ',', '.') }}</td>
+                                <td class="py-1 px-4 text-right font-mono text-slate-400">Rp {{ number_format($ppn, 2, ',', '.') }}</td>
+                                <td class="py-1 px-4 text-right font-mono font-bold text-slate-900 dark:text-white">Rp {{ number_format($jumlah_item, 2, ',', '.') }}</td>
                             </tr>
                         @endforeach
                     </tbody>
-                    <tfoot class="bg-gray-50/30 font-bold text-gray-900 border-t border-gray-100 text-sm">
+                    <tfoot class="bg-slate-50 dark:bg-slate-800/60 font-bold text-slate-800 dark:text-white border-t border-slate-200 dark:border-slate-800 text-xs">
                         <tr>
-                            <td colspan="5" class="py-2.5 px-6 text-right font-semibold text-gray-500 whitespace-nowrap">TOTAL</td>
-                            <td class="py-2.5 px-6 text-right font-mono text-gray-400 whitespace-nowrap">Rp {{ number_format($total_ppn_val, 2, ',', '.') }}</td>
-                            <td class="py-2.5 px-6 text-right font-mono text-sm text-[#294C9A] whitespace-nowrap">Rp {{ number_format($total_jumlah_val, 2, ',', '.') }}</td>
+                            <td colspan="5" class="py-2.5 px-4 text-right font-bold text-slate-500 uppercase tracking-wider">TOTAL TAGIHAN</td>
+                            <td class="py-2.5 px-4 text-right font-mono text-slate-800 dark:text-slate-200">Rp {{ number_format($total_dpp, 2, ',', '.') }}</td>
+                            <td class="py-2.5 px-4 text-right font-mono text-slate-400">Rp {{ number_format($total_ppn_val, 2, ',', '.') }}</td>
+                            <td class="py-2.5 px-4 text-right font-mono text-sm text-[#162a5b] dark:text-blue-400 font-extrabold">Rp {{ number_format($total_jumlah_val, 2, ',', '.') }}</td>
                         </tr>
                     </tfoot>
                 </table>
@@ -306,217 +270,337 @@
         </div>
 
         @if ($penjualan->jenis_transaksi == 'K')
-        <!-- Payment Section (Credit Transactions Only) -->
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 mt-6">
-            <!-- Left Card: Payment History -->
-            <div class="lg:col-span-8 bg-white rounded-2xl border border-gray-200/80 shadow-sm hover:shadow-md hover:border-gray-300 transition-all duration-300 overflow-hidden flex flex-col justify-between">
-                <div class="px-6 py-4 bg-gradient-to-br from-[#294C9A] to-[#1E3A70] text-white flex justify-between items-center relative overflow-hidden">
-                    <div class="absolute -right-8 -top-8 w-16 h-16 bg-white/10 rounded-full blur-lg"></div>
-                    <h5 class="text-xs font-bold uppercase tracking-wider text-white flex items-center gap-1.5 relative z-10">
-                        <svg class="w-4 h-4 text-blue-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
-                        Histori Pembayaran Piutang
-                    </h5>
-                    <span class="text-xs font-semibold px-2.5 py-1 bg-white/20 backdrop-blur-sm rounded-lg text-white relative z-10 border border-white/10">
-                        {{ count($historibayar) }} Pembayaran
-                    </span>
-                </div>
-                <div class="overflow-x-auto flex-1">
-                    <table class="w-full text-xs text-left border-collapse text-gray-650">
-                        <thead class="bg-gray-50 text-gray-800 text-[11px] uppercase tracking-wider font-bold border-b border-gray-100">
-                            <tr>
-                                <th class="py-2.5 px-6">No. Bukti Bayar</th>
-                                <th class="py-2.5 px-6">Tanggal</th>
-                                <th class="py-2.5 px-6 text-center">Metode</th>
-                                <th class="py-2.5 px-6 text-right">Jumlah Bayar</th>
-                                <th class="py-2.5 px-6 text-center">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-gray-100 bg-white">
-                            @forelse ($historibayar as $h)
-                                <tr class="hover:bg-gray-50/50 transition">
-                                    <td class="py-2.5 px-6 font-mono font-semibold text-gray-900">{{ $h->no_bukti }}</td>
-                                    <td class="py-2.5 px-6">{{ date('d-m-Y', strtotime($h->tanggal)) }}</td>
-                                    <td class="py-2.5 px-6 text-center">
-                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold {{ $h->jenis_bayar == 'TN' ? 'bg-amber-50 text-amber-700 border border-amber-200' : 'bg-blue-50 text-blue-700 border border-blue-200' }}">
-                                            {{ $h->jenis_bayar == 'TN' ? 'TUNAI' : 'TRANSFER' }}
-                                        </span>
-                                        @if(!empty($h->nama_bank))
-                                            <div class="text-[11px] font-semibold text-gray-700 mt-0.5">{{ $h->nama_bank }}</div>
-                                        @endif
-                                    </td>
-                                    <td class="py-2.5 px-6 text-right font-mono font-semibold text-gray-900">Rp {{ number_format($h->jumlah, 2, ',', '.') }}</td>
-                                    <td class="py-2.5 px-6 text-center flex items-center justify-center gap-1.5">
-                                        @can('penjualanmarketing.edit')
-                                        <button type="button" class="btn-edit-bayar text-[#294C9A] hover:text-[#1E3A70] p-1 hover:bg-blue-50 rounded transition" 
-                                                data-no-bukti-bayar="{{ Crypt::encrypt($h->no_bukti) }}"
-                                                data-tanggal="{{ $h->tanggal }}"
-                                                data-jumlah="{{ number_format($h->jumlah, 0, ',', '.') }}"
-                                                data-jenis-bayar="{{ $h->jenis_bayar }}"
-                                                data-kode-bank="{{ $h->kode_bank }}"
-                                                title="Edit Pembayaran">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v12a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
-                                        </button>
-                                        @endcan
+        <!-- Credit Section: Payment History & Input -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            
+            <!-- Left Card: Histori Pembayaran -->
+            <div class="lg:col-span-8 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/90 dark:border-slate-800 shadow-2xs overflow-hidden flex flex-col justify-between">
+                <div>
+                    <!-- Header -->
+                    <div class="px-6 pt-5 pb-3 bg-[#162a5b] text-white flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-xl bg-white/15 text-white flex items-center justify-center shadow-xs shrink-0">
+                                <i data-lucide="receipt" class="w-4 h-4 text-white"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-xs uppercase tracking-wider text-white">Histori Pembayaran Piutang</h4>
+                                <p class="text-[11px] text-blue-200/80">Riwayat alokasi cicilan faktur</p>
+                            </div>
+                        </div>
+                        <span class="px-2.5 py-1 rounded-full text-[10px] font-extrabold bg-white/20 text-white">
+                            {{ count($historibayar) }} Pembayaran
+                        </span>
+                    </div>
 
-                                        @can('penjualanmarketing.delete')
-                                        <form action="{{ route('penjualanmarketing.destroybayar', Crypt::encrypt($h->no_bukti)) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus pembayaran ini?')">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="text-rose-600 hover:text-rose-800 p-1 hover:bg-rose-50 rounded transition" title="Hapus Pembayaran">
-                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                                            </button>
-                                        </form>
-                                        @endcan
-                                    </td>
+                    <!-- Table -->
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-slate-50 dark:bg-slate-800/50 text-slate-700 dark:text-slate-300 border-b border-slate-200/80 dark:border-slate-800 text-[11px] font-bold uppercase tracking-wider">
+                                    <th class="py-2.5 px-4 w-40">No. Bukti Bayar</th>
+                                    <th class="py-2.5 px-4 w-32">Tanggal</th>
+                                    <th class="py-2.5 px-4 text-center w-36">Metode</th>
+                                    <th class="py-2.5 px-4 text-right">Jumlah Bayar</th>
+                                    <th class="py-2.5 px-4 text-center w-24">Aksi</th>
                                 </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="5" class="py-8 text-center text-gray-400">Belum ada histori pembayaran untuk transaksi ini.</td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100 dark:divide-slate-800 text-xs">
+                                @forelse ($historibayar as $h)
+                                    <tr class="hover:bg-slate-50/80 dark:hover:bg-slate-800/50 transition">
+                                        <td class="py-1 px-4 font-mono font-bold text-slate-800 dark:text-white">{{ $h->no_bukti }}</td>
+                                        <td class="py-1 px-4 text-slate-600 dark:text-slate-300">{{ date('d-m-Y', strtotime($h->tanggal)) }}</td>
+                                        <td class="py-1 px-4 text-center">
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold {{ $h->jenis_bayar == 'TN' ? 'bg-amber-50 text-amber-700 border border-amber-200' : 'bg-blue-50 text-blue-700 border border-blue-200' }}">
+                                                {{ $h->jenis_bayar == 'TN' ? 'TUNAI' : 'TRANSFER' }}
+                                            </span>
+                                            @if(!empty($h->nama_bank))
+                                                <div class="text-[11px] font-semibold text-slate-500 mt-0.5">{{ $h->nama_bank }}</div>
+                                            @endif
+                                        </td>
+                                        <td class="py-1 px-4 text-right font-mono font-bold text-emerald-600 dark:text-emerald-400">
+                                            Rp {{ number_format($h->jumlah, 2, ',', '.') }}
+                                        </td>
+                                        <td class="py-1 px-4 text-center">
+                                            <div class="flex items-center justify-center gap-1">
+                                                @can('penjualanmarketing.edit')
+                                                <button 
+                                                    type="button" 
+                                                    class="btn-edit-bayar p-1 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-lg transition cursor-pointer"
+                                                    data-no-bukti-bayar="{{ Crypt::encrypt($h->no_bukti) }}"
+                                                    data-tanggal="{{ $h->tanggal }}"
+                                                    data-jumlah="{{ number_format($h->jumlah, 0, ',', '.') }}"
+                                                    data-jenis-bayar="{{ $h->jenis_bayar }}"
+                                                    data-kode-bank="{{ $h->kode_bank }}"
+                                                    title="Edit Pembayaran"
+                                                >
+                                                    <i data-lucide="edit-3" class="w-4 h-4"></i>
+                                                </button>
+                                                @endcan
+
+                                                @can('penjualanmarketing.delete')
+                                                <form action="{{ route('penjualanmarketing.destroybayar', Crypt::encrypt($h->no_bukti)) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus pembayaran ini?')">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="p-1 text-rose-600 hover:text-rose-800 hover:bg-rose-50 rounded-lg transition cursor-pointer" title="Hapus Pembayaran">
+                                                        <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                                    </button>
+                                                </form>
+                                                @endcan
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="5" class="py-8 text-center text-slate-400">
+                                            <i data-lucide="inbox" class="w-6 h-6 mx-auto mb-2 text-slate-300"></i>
+                                            Belum ada histori pembayaran untuk transaksi ini.
+                                        </td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
 
             <!-- Right Card: Form Input Pembayaran -->
-            <div class="lg:col-span-4 bg-white rounded-2xl border border-gray-200/80 shadow-sm hover:shadow-md hover:border-gray-300 transition-all duration-300 overflow-hidden flex flex-col justify-between">
-                <div class="px-6 py-4 bg-gradient-to-br from-[#294C9A] to-[#1E3A70] text-white relative overflow-hidden">
-                    <div class="absolute -right-8 -top-8 w-16 h-16 bg-white/10 rounded-full blur-lg"></div>
-                    <h5 class="text-xs font-bold uppercase tracking-wider text-white flex items-center gap-1.5 relative z-10">
-                        <svg class="w-4 h-4 text-blue-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
-                        Input Pembayaran Baru
-                    </h5>
-                </div>
-                <div class="p-6 flex-1 flex flex-col justify-between">
-                    @if ($sisa_tagihan <= 0.05)
-                        <div class="flex flex-col items-center justify-center py-6 text-center text-emerald-600 space-y-2">
-                            <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                            <span class="text-xs font-bold uppercase">Transaksi Sudah Lunas</span>
-                            <span class="text-[10px] text-gray-400">Tidak dapat menambahkan pembayaran lagi.</span>
+            <div class="lg:col-span-4 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/90 dark:border-slate-800 shadow-2xs overflow-hidden flex flex-col justify-between">
+                <div>
+                    <!-- Header -->
+                    <div class="px-6 pt-5 pb-3 bg-[#162a5b] text-white flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-xl bg-white/15 text-white flex items-center justify-center shadow-xs shrink-0">
+                                <i data-lucide="plus-circle" class="w-4 h-4 text-white"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-xs uppercase tracking-wider text-white">Input Pembayaran</h4>
+                                <p class="text-[11px] text-blue-200/80">Catat pembayaran baru</p>
+                            </div>
                         </div>
-                    @else
-                        <form action="{{ route('penjualanmarketing.storebayar', Crypt::encrypt($penjualan->no_bukti)) }}" method="POST" class="space-y-3.5 pt-1">
-                            @csrf
-                            <div class="c-fl-group">
-                                <span class="c-fl-icon">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                                </span>
-                                <input type="text" name="tanggal" id="tanggal_bayar_input" value="{{ date('Y-m-d') }}" class="fi flatpickr-date" placeholder="Pilih Tanggal" required autocomplete="off">
-                                <label for="tanggal_bayar_input" class="c-fl-label">Tanggal Bayar *</label>
-                            </div>
+                    </div>
 
-                            <div class="c-fl-group">
-                                <span class="c-fl-icon">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                                </span>
-                                <input type="text" name="jumlah" id="jumlah_bayar_input" placeholder="Contoh: 50.000" class="fi font-mono font-bold text-gray-900 text-right" required autocomplete="off">
-                                <label for="jumlah_bayar_input" class="c-fl-label">Jumlah Bayar *</label>
+                    <!-- Body -->
+                    <div class="p-5">
+                        @if ($sisa_tagihan <= 0.05)
+                            <div class="flex flex-col items-center justify-center py-8 text-center text-emerald-600 space-y-2">
+                                <i data-lucide="check-circle-2" class="w-10 h-10 text-emerald-500"></i>
+                                <span class="text-xs font-bold uppercase tracking-wider">Transaksi Sudah Lunas</span>
+                                <span class="text-[11px] text-slate-400">Tidak ada sisa tagihan piutang pada faktur ini.</span>
                             </div>
+                        @else
+                            <form action="{{ route('penjualanmarketing.storebayar', Crypt::encrypt($penjualan->no_bukti)) }}" method="POST" class="space-y-4">
+                                @csrf
+                                
+                                <!-- Tanggal Bayar -->
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">Tanggal Bayar *</label>
+                                    <div class="relative">
+                                        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                                            <i data-lucide="calendar" class="w-4 h-4 text-slate-400"></i>
+                                        </div>
+                                        <input 
+                                            type="text" 
+                                            name="tanggal" 
+                                            id="tanggal_bayar_input" 
+                                            value="{{ date('Y-m-d') }}" 
+                                            placeholder="Pilih Tanggal" 
+                                            required 
+                                            autocomplete="off"
+                                            class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 bg-white dark:bg-slate-900 text-xs font-semibold text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 transition shadow-2xs flatpickr-date"
+                                        />
+                                    </div>
+                                </div>
 
-                            <div class="c-fl-group">
-                                <span class="c-fl-icon">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
-                                </span>
-                                <select name="kode_bank" id="kode_bank_input" class="fi" required>
-                                    <option value="">Pilih Bank / Kas</option>
-                                    @if(isset($bank))
-                                        @foreach($bank as $b)
-                                            <option value="{{ $b->kode_bank }}">{{ $b->nama_bank }}</option>
-                                        @endforeach
-                                    @endif
-                                </select>
-                                <label for="kode_bank_input" class="c-fl-label">Bank / Rekening *</label>
-                            </div>
+                                <!-- Jumlah Bayar -->
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">Jumlah Bayar *</label>
+                                    <div class="relative">
+                                        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                                            <i data-lucide="banknote" class="w-4 h-4 text-slate-400"></i>
+                                        </div>
+                                        <input 
+                                            type="text" 
+                                            name="jumlah" 
+                                            id="jumlah_bayar_input" 
+                                            placeholder="Contoh: 50.000" 
+                                            required 
+                                            autocomplete="off"
+                                            class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 bg-white dark:bg-slate-900 text-xs font-bold font-mono text-right text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 transition shadow-2xs"
+                                        />
+                                    </div>
+                                </div>
 
-                            <div class="c-fl-group">
-                                <span class="c-fl-icon">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
-                                </span>
-                                <select name="jenis_bayar" id="jenis_bayar_input" class="fi" required>
-                                    <option value="TR">Transfer</option>
-                                    <option value="TN">Cash / Tunai</option>
-                                </select>
-                                <label for="jenis_bayar_input" class="c-fl-label">Metode Pembayaran *</label>
-                            </div>
+                                <!-- Bank / Kas -->
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">Bank / Kas *</label>
+                                    <div class="relative">
+                                        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                                            <i data-lucide="building-2" class="w-4 h-4 text-slate-400"></i>
+                                        </div>
+                                        <select 
+                                            name="kode_bank" 
+                                            id="kode_bank_input" 
+                                            required
+                                            class="w-full pl-10 pr-8 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 bg-white dark:bg-slate-900 text-xs font-semibold text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 transition shadow-2xs cursor-pointer"
+                                        >
+                                            <option value="">-- Pilih Bank / Kas --</option>
+                                            @if(isset($bank))
+                                                @foreach($bank as $b)
+                                                    <option value="{{ $b->kode_bank }}">{{ $b->nama_bank }}</option>
+                                                @endforeach
+                                            @endif
+                                        </select>
+                                    </div>
+                                </div>
 
-                            <div class="pt-2">
-                                <button type="submit" class="w-full inline-flex items-center justify-center px-4 py-2.5 text-xs font-semibold text-white bg-[#294C9A] hover:bg-[#1E3A70] rounded-lg transition shadow-sm gap-1.5 h-[38px]">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                    Simpan Pembayaran
-                                </button>
-                            </div>
-                        </form>
-                    @endif
+                                <!-- Metode Pembayaran -->
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">Metode Pembayaran *</label>
+                                    <div class="relative">
+                                        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                                            <i data-lucide="credit-card" class="w-4 h-4 text-slate-400"></i>
+                                        </div>
+                                        <select 
+                                            name="jenis_bayar" 
+                                            id="jenis_bayar_input" 
+                                            required
+                                            class="w-full pl-10 pr-8 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 bg-white dark:bg-slate-900 text-xs font-semibold text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 transition shadow-2xs cursor-pointer"
+                                        >
+                                            <option value="TR">Transfer Bank</option>
+                                            <option value="TN">Cash / Tunai</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="pt-2">
+                                    <button 
+                                        type="submit" 
+                                        class="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#162a5b] hover:bg-[#1c3574] text-white font-bold text-xs shadow-sm transition cursor-pointer"
+                                    >
+                                        <i data-lucide="save" class="w-4 h-4"></i>
+                                        <span>Simpan Pembayaran</span>
+                                    </button>
+                                </div>
+                            </form>
+                        @endif
+                    </div>
                 </div>
             </div>
         </div>
         @endif
+
     </div>
 
     <!-- Modal Edit Pembayaran -->
-    <div id="modalEditBayar" class="fixed inset-0 z-50 flex items-center justify-center hidden bg-black/40 backdrop-blur-sm overflow-y-auto">
-        <div class="bg-white w-full max-w-md rounded-2xl shadow-xl overflow-hidden border border-gray-100 mx-4">
-            <div class="px-6 py-4 bg-gradient-to-br from-[#294C9A] to-[#1E3A70] text-white flex justify-between items-center relative overflow-hidden">
-                <div class="absolute -right-8 -top-8 w-16 h-16 bg-white/10 rounded-full blur-lg"></div>
-                <h5 class="text-xs font-bold uppercase tracking-wider text-white flex items-center gap-1.5 relative z-10">
-                    <svg class="w-4 h-4 text-blue-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
-                    Edit Pembayaran
-                </h5>
-                <button type="button" class="text-white hover:text-gray-200 transition" onclick="toggleModalEditBayar()">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
+    @push('modals')
+    <div id="modalEditBayar" class="fixed inset-0 z-[100] flex items-center justify-center hidden bg-black/50 backdrop-blur-xs overflow-y-auto">
+        <div id="modalEditBayarContentWrapper" class="bg-white dark:bg-slate-900 w-full max-w-md rounded-2xl shadow-xl overflow-hidden border border-slate-100 dark:border-slate-800 mx-4 transition-all duration-200 scale-95 opacity-0">
+            <!-- Header -->
+            <div class="px-6 py-4 bg-[#162a5b] text-white flex justify-between items-center">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-lg bg-white/15 flex items-center justify-center text-white">
+                        <i data-lucide="edit-3" class="w-4 h-4"></i>
+                    </div>
+                    <h5 class="text-xs font-bold uppercase tracking-wider text-white">Edit Pembayaran</h5>
+                </div>
+                <button type="button" class="text-white/80 hover:text-white transition cursor-pointer" onclick="closeModal('modalEditBayar')">
+                    <i data-lucide="x" class="w-5 h-5"></i>
                 </button>
             </div>
+
+            <!-- Form -->
             <div class="p-6">
-                <form id="formEditBayar" action="" method="POST" class="space-y-3.5 pt-1">
+                <form id="formEditBayar" action="" method="POST" class="space-y-4">
                     @csrf
                     @method('PUT')
-                    <div class="c-fl-group">
-                        <span class="c-fl-icon">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                        </span>
-                        <input type="text" name="tanggal" id="edit_tanggal" class="fi flatpickr-date" placeholder="Pilih Tanggal" required autocomplete="off">
-                        <label for="edit_tanggal" class="c-fl-label">Tanggal Bayar *</label>
+                    
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">Tanggal Bayar *</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                                <i data-lucide="calendar" class="w-4 h-4 text-slate-400"></i>
+                            </div>
+                            <input 
+                                type="text" 
+                                name="tanggal" 
+                                id="edit_tanggal" 
+                                required 
+                                autocomplete="off"
+                                class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 bg-white dark:bg-slate-900 text-xs font-semibold text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 transition shadow-2xs flatpickr-date"
+                            />
+                        </div>
                     </div>
 
-                    <div class="c-fl-group">
-                        <span class="c-fl-icon">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                        </span>
-                        <input type="text" name="jumlah" id="edit_jumlah" placeholder="Contoh: 50.000" class="fi font-mono font-bold text-gray-900 text-right" required autocomplete="off">
-                        <label for="edit_jumlah" class="c-fl-label">Jumlah Bayar *</label>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">Jumlah Bayar *</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                                <i data-lucide="banknote" class="w-4 h-4 text-slate-400"></i>
+                            </div>
+                            <input 
+                                type="text" 
+                                name="jumlah" 
+                                id="edit_jumlah" 
+                                placeholder="Contoh: 50.000" 
+                                required 
+                                autocomplete="off"
+                                class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 bg-white dark:bg-slate-900 text-xs font-bold font-mono text-right text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 transition shadow-2xs"
+                            />
+                        </div>
                     </div>
 
-                    <div class="c-fl-group">
-                        <span class="c-fl-icon">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
-                        </span>
-                        <select name="kode_bank" id="edit_kode_bank" class="fi" required>
-                            <option value="">Pilih Bank / Kas</option>
-                            @if(isset($bank))
-                                @foreach($bank as $b)
-                                    <option value="{{ $b->kode_bank }}">{{ $b->nama_bank }}</option>
-                                @endforeach
-                            @endif
-                        </select>
-                        <label for="edit_kode_bank" class="c-fl-label">Bank / Rekening *</label>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">Bank / Kas *</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                                <i data-lucide="building-2" class="w-4 h-4 text-slate-400"></i>
+                            </div>
+                            <select 
+                                name="kode_bank" 
+                                id="edit_kode_bank" 
+                                required
+                                class="w-full pl-10 pr-8 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 bg-white dark:bg-slate-900 text-xs font-semibold text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 transition shadow-2xs cursor-pointer"
+                            >
+                                <option value="">-- Pilih Bank / Kas --</option>
+                                @if(isset($bank))
+                                    @foreach($bank as $b)
+                                        <option value="{{ $b->kode_bank }}">{{ $b->nama_bank }}</option>
+                                    @endforeach
+                                @endif
+                            </select>
+                        </div>
                     </div>
 
-                    <div class="c-fl-group">
-                        <span class="c-fl-icon">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
-                        </span>
-                        <select name="jenis_bayar" id="edit_jenis_bayar" class="fi" required>
-                            <option value="TR">Transfer</option>
-                            <option value="TN">Cash / Tunai</option>
-                        </select>
-                        <label for="edit_jenis_bayar" class="c-fl-label">Metode Pembayaran *</label>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">Metode Pembayaran *</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                                <i data-lucide="credit-card" class="w-4 h-4 text-slate-400"></i>
+                            </div>
+                            <select 
+                                name="jenis_bayar" 
+                                id="edit_jenis_bayar" 
+                                required
+                                class="w-full pl-10 pr-8 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 bg-white dark:bg-slate-900 text-xs font-semibold text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 transition shadow-2xs cursor-pointer"
+                            >
+                                <option value="TR">Transfer Bank</option>
+                                <option value="TN">Cash / Tunai</option>
+                            </select>
+                        </div>
                     </div>
 
-                    <div class="flex items-center gap-3 pt-3">
-                        <button type="button" class="flex-1 px-4 py-2.5 text-xs font-semibold text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition" onclick="toggleModalEditBayar()">Batal</button>
-                        <button type="submit" class="flex-1 inline-flex items-center justify-center px-4 py-2.5 text-xs font-semibold text-white bg-[#294C9A] hover:bg-[#1E3A70] rounded-lg transition shadow-sm gap-1.5 h-[38px]">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                    <div class="flex items-center justify-end gap-2.5 pt-4 border-t border-slate-100 dark:border-slate-800">
+                        <button 
+                            type="button" 
+                            class="px-4 py-2.5 text-xs font-bold text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-700 transition cursor-pointer" 
+                            onclick="closeModal('modalEditBayar')"
+                        >
+                            Batal
+                        </button>
+                        <button 
+                            type="submit" 
+                            class="px-4 py-2.5 text-xs font-bold text-white bg-[#162a5b] hover:bg-[#1c3574] rounded-xl transition shadow-sm cursor-pointer"
+                        >
                             Simpan Perubahan
                         </button>
                     </div>
@@ -524,44 +608,14 @@
             </div>
         </div>
     </div>
+    @endpush
 
-    <!-- Alert Notifications -->
-    @if(session('success'))
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Berhasil',
-                    text: '{{ session('success') }}',
-                    showConfirmButton: false,
-                    timer: 2000
-                });
-            });
-        </script>
-    @endif
-    @if(session('error'))
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Gagal',
-                    text: '{{ session('error') }}',
-                    confirmButtonColor: '#294C9A'
-                });
-            });
-        </script>
-    @endif
-
-    <!-- Flatpickr CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     @push('myscript')
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script>
-        $(document).ready(function() {
-            flatpickr(".flatpickr-date", {
-                dateFormat: "Y-m-d",
-                allowInput: true
-            });
+        document.addEventListener('DOMContentLoaded', function() {
+            if (window.lucide) {
+                lucide.createIcons();
+            }
 
             // Dynamic Thousands Separator Formatter
             $('#jumlah_bayar_input, #edit_jumlah').on('keyup', function(e) {
@@ -598,13 +652,9 @@
                 $('#edit_jenis_bayar').val(jenisBayar);
                 $('#edit_kode_bank').val(kodeBank);
 
-                // Open Modal
-                $('#modalEditBayar').removeClass('hidden');
+                // Open Modal with smooth animation
+                openModal('modalEditBayar');
             });
-
-            window.toggleModalEditBayar = function() {
-                $('#modalEditBayar').addClass('hidden');
-            }
         });
     </script>
     @endpush

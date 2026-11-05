@@ -1,93 +1,210 @@
-<form action="{{ route('produk.store') }}" method="POST" id="formCreateProduk" class="space-y-4" novalidate>
+<form action="{{ route('produk.store') }}" method="POST" id="formCreateProduk" class="space-y-3.5" novalidate>
     @csrf
-    <div class="grid grid-cols-2 gap-4">
-        <div>
-            <label for="kode_produk" class="block text-sm font-semibold text-gray-700 mb-1.5">
-                Kode Produk <span class="text-red-500">*</span>
-            </label>
-            <input type="text" id="kode_produk" name="kode_produk" required maxlength="6" class="block w-full px-4 py-2 text-sm text-gray-900 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#294C9A] focus:border-[#294C9A] focus:outline-none transition uppercase placeholder-gray-400" placeholder="e.g. PR0001">
+
+    <!-- SECTION 1: INFORMASI UTAMA PRODUK -->
+    <div class="space-y-3">
+        <!-- Row 1: Kode & Nama Produk -->
+        <div class="grid grid-cols-1 sm:grid-cols-12 gap-3">
+            <div class="sm:col-span-4">
+                <label for="kode_produk" class="flex items-center justify-between text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                    <span>Kode Produk <span class="text-rose-500">*</span></span>
+                    <span class="text-[10px] text-slate-400 font-normal">Maks 6 karakter</span>
+                </label>
+                <input 
+                    type="text" 
+                    id="kode_produk" 
+                    name="kode_produk" 
+                    required 
+                    maxlength="6" 
+                    class="block w-full px-3 py-2 text-xs font-mono font-semibold text-slate-800 dark:text-white bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 transition placeholder-slate-400 shadow-2xs" 
+                    placeholder="Contoh: PR0001"
+                >
+            </div>
+            <div class="sm:col-span-8">
+                <label for="nama_produk" class="flex items-center justify-between text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                    <span>Nama Produk <span class="text-rose-500">*</span></span>
+                    <span class="text-[10px] text-slate-400 font-normal">Maks 30 karakter</span>
+                </label>
+                <input 
+                    type="text" 
+                    id="nama_produk" 
+                    name="nama_produk" 
+                    required 
+                    maxlength="30" 
+                    class="block w-full px-3 py-2 text-xs font-medium text-slate-800 dark:text-white bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 transition placeholder-slate-400 shadow-2xs" 
+                    placeholder="Contoh: Pacific Gold 500ml"
+                >
+            </div>
         </div>
-        <div>
-            <label for="nama_produk" class="block text-sm font-semibold text-gray-700 mb-1.5">
-                Nama Produk <span class="text-red-500">*</span>
-            </label>
-            <input type="text" id="nama_produk" name="nama_produk" required maxlength="30" class="block w-full px-4 py-2 text-sm text-gray-900 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#294C9A] focus:border-[#294C9A] focus:outline-none transition placeholder-gray-400" placeholder="e.g. Pacific Gold">
+
+        <!-- Row 2: Kategori & Jenis Produk -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+                <label for="kode_kategori_produk" class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                    Kategori Produk <span class="text-rose-500">*</span>
+                </label>
+                <select 
+                    id="kode_kategori_produk" 
+                    name="kode_kategori_produk" 
+                    required 
+                    class="block w-full px-3 py-2 text-xs font-medium text-slate-800 dark:text-white bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 transition cursor-pointer shadow-2xs"
+                >
+                    <option value="">Pilih kategori...</option>
+                    @foreach($kategori as $kat)
+                        <option value="{{ $kat->kode_kategori_produk }}">{{ $kat->nama_kategori_produk }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div>
+                <label for="kode_jenis_produk" class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                    Jenis Produk <span class="text-rose-500">*</span>
+                </label>
+                <select 
+                    id="kode_jenis_produk" 
+                    name="kode_jenis_produk" 
+                    required 
+                    class="block w-full px-3 py-2 text-xs font-medium text-slate-800 dark:text-white bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 transition cursor-pointer shadow-2xs"
+                >
+                    <option value="">Pilih jenis...</option>
+                    @foreach($jenis as $jen)
+                        <option value="{{ $jen->kode_jenis_produk }}">{{ $jen->nama_jenis_produk }}</option>
+                    @endforeach
+                </select>
+            </div>
+        </div>
+
+        <!-- Row 3: Satuan Utama, Urutan & Status Produk -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div>
+                <label for="satuan" class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                    Satuan Utama <span class="text-rose-500">*</span>
+                </label>
+                <input 
+                    type="text" 
+                    id="satuan" 
+                    name="satuan" 
+                    required 
+                    maxlength="4" 
+                    class="block w-full px-3 py-2 text-xs font-semibold text-slate-800 dark:text-white bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 transition placeholder-slate-400 shadow-2xs" 
+                    placeholder="Contoh: Dus"
+                >
+            </div>
+            <div>
+                <label for="urutan" class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                    Urutan Tampilan
+                </label>
+                <input 
+                    type="number" 
+                    id="urutan" 
+                    name="urutan" 
+                    min="0" 
+                    class="block w-full px-3 py-2 text-xs font-medium text-slate-800 dark:text-white bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 transition placeholder-slate-400 shadow-2xs" 
+                    placeholder="Contoh: 1"
+                >
+            </div>
+            <div>
+                <label for="status_aktif_produk" class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                    Status Produk <span class="text-rose-500">*</span>
+                </label>
+                <select 
+                    id="status_aktif_produk" 
+                    name="status_aktif_produk" 
+                    required 
+                    class="block w-full px-3 py-2 text-xs font-semibold text-slate-800 dark:text-white bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 transition cursor-pointer shadow-2xs"
+                >
+                    <option value="1">Aktif</option>
+                    <option value="0">Non-Aktif</option>
+                </select>
+            </div>
         </div>
     </div>
 
-    <div class="grid grid-cols-2 gap-4">
-        <div>
-            <label for="satuan" class="block text-sm font-semibold text-gray-700 mb-1.5">
-                Satuan <span class="text-red-500">*</span>
-            </label>
-            <input type="text" id="satuan" name="satuan" required maxlength="4" class="block w-full px-4 py-2 text-sm text-gray-900 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#294C9A] focus:border-[#294C9A] focus:outline-none transition placeholder-gray-400" placeholder="e.g. DUS">
+    <!-- SECTION 2: KONFIGURASI ISI KEMASAN -->
+    <div class="rounded-lg border border-slate-200 dark:border-slate-700/80 p-3 space-y-2.5">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center gap-1.5">
+                <i data-lucide="package" class="w-3.5 h-3.5 text-blue-600 dark:text-blue-400"></i>
+                <span class="text-xs font-bold text-slate-800 dark:text-slate-200">Konfigurasi Isi Kemasan</span>
+            </div>
+            <span class="text-[11px] text-slate-400">Rasio kemasan produk</span>
         </div>
-        <div>
-            <label for="urutan" class="block text-sm font-semibold text-gray-700 mb-1.5">Urutan</label>
-            <input type="number" id="urutan" name="urutan" class="block w-full px-4 py-2 text-sm text-gray-900 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#294C9A] focus:border-[#294C9A] focus:outline-none transition placeholder-gray-400" placeholder="e.g. 1">
+
+        <div class="grid grid-cols-3 gap-2.5">
+            <!-- Isi Pcs / Dus -->
+            <div>
+                <label for="isi_pcs_dus" class="block text-[11px] font-medium text-slate-600 dark:text-slate-400 mb-1">
+                    Pcs per Dus <span class="text-rose-500">*</span>
+                </label>
+                <div class="relative flex items-center">
+                    <input 
+                        type="number" 
+                        id="isi_pcs_dus" 
+                        name="isi_pcs_dus" 
+                        value="0" 
+                        min="0" 
+                        required 
+                        class="block w-full pr-9 pl-2.5 py-1.5 text-xs font-semibold text-slate-800 dark:text-white bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 transition shadow-2xs"
+                    >
+                    <span class="absolute right-2.5 text-[11px] text-slate-400 pointer-events-none">pcs</span>
+                </div>
+            </div>
+
+            <!-- Isi Pack / Dus -->
+            <div>
+                <label for="isi_pack_dus" class="block text-[11px] font-medium text-slate-600 dark:text-slate-400 mb-1">
+                    Pack per Dus <span class="text-rose-500">*</span>
+                </label>
+                <div class="relative flex items-center">
+                    <input 
+                        type="number" 
+                        id="isi_pack_dus" 
+                        name="isi_pack_dus" 
+                        value="0" 
+                        min="0" 
+                        required 
+                        class="block w-full pr-11 pl-2.5 py-1.5 text-xs font-semibold text-slate-800 dark:text-white bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 transition shadow-2xs"
+                    >
+                    <span class="absolute right-2.5 text-[11px] text-slate-400 pointer-events-none">pack</span>
+                </div>
+            </div>
+
+            <!-- Isi Pcs / Pack -->
+            <div>
+                <label for="isi_pcs_pack" class="block text-[11px] font-medium text-slate-600 dark:text-slate-400 mb-1">
+                    Pcs per Pack <span class="text-rose-500">*</span>
+                </label>
+                <div class="relative flex items-center">
+                    <input 
+                        type="number" 
+                        id="isi_pcs_pack" 
+                        name="isi_pcs_pack" 
+                        value="0" 
+                        min="0" 
+                        required 
+                        class="block w-full pr-9 pl-2.5 py-1.5 text-xs font-semibold text-slate-800 dark:text-white bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 transition shadow-2xs"
+                    >
+                    <span class="absolute right-2.5 text-[11px] text-slate-400 pointer-events-none">pcs</span>
+                </div>
+            </div>
         </div>
     </div>
 
-    <div class="grid grid-cols-3 gap-2 bg-gray-50 p-3 rounded-lg border border-gray-100">
-        <div>
-            <label for="isi_pcs_dus" class="block text-xs font-bold text-gray-600 mb-1">
-                Isi Pcs/Dus <span class="text-red-500">*</span>
-            </label>
-            <input type="number" id="isi_pcs_dus" name="isi_pcs_dus" value="0" required class="block w-full px-3 py-1.5 text-sm text-gray-900 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#294C9A] focus:border-[#294C9A] focus:outline-none transition">
-        </div>
-        <div>
-            <label for="isi_pack_dus" class="block text-xs font-bold text-gray-600 mb-1">
-                Isi Pack/Dus <span class="text-red-500">*</span>
-            </label>
-            <input type="number" id="isi_pack_dus" name="isi_pack_dus" value="0" required class="block w-full px-3 py-1.5 text-sm text-gray-900 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#294C9A] focus:border-[#294C9A] focus:outline-none transition">
-        </div>
-        <div>
-            <label for="isi_pcs_pack" class="block text-xs font-bold text-gray-600 mb-1">
-                Isi Pcs/Pack <span class="text-red-500">*</span>
-            </label>
-            <input type="number" id="isi_pcs_pack" name="isi_pcs_pack" value="0" required class="block w-full px-3 py-1.5 text-sm text-gray-900 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#294C9A] focus:border-[#294C9A] focus:outline-none transition">
-        </div>
-    </div>
-
-    <div class="grid grid-cols-2 gap-4">
-        <div>
-            <label for="kode_kategori_produk" class="block text-sm font-semibold text-gray-700 mb-1.5">
-                Kategori Produk <span class="text-red-500">*</span>
-            </label>
-            <select id="kode_kategori_produk" name="kode_kategori_produk" required class="block w-full px-4 py-2 text-sm text-gray-900 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#294C9A] focus:border-[#294C9A] focus:outline-none transition">
-                <option value="">Pilih Kategori...</option>
-                @foreach($kategori as $kat)
-                    <option value="{{ $kat->kode_kategori_produk }}">{{ $kat->nama_kategori_produk }}</option>
-                @endforeach
-            </select>
-        </div>
-        <div>
-            <label for="kode_jenis_produk" class="block text-sm font-semibold text-gray-700 mb-1.5">
-                Jenis Produk <span class="text-red-500">*</span>
-            </label>
-            <select id="kode_jenis_produk" name="kode_jenis_produk" required class="block w-full px-4 py-2 text-sm text-gray-900 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#294C9A] focus:border-[#294C9A] focus:outline-none transition">
-                <option value="">Pilih Jenis...</option>
-                @foreach($jenis as $jen)
-                    <option value="{{ $jen->kode_jenis_produk }}">{{ $jen->nama_jenis_produk }}</option>
-                @endforeach
-            </select>
-        </div>
-    </div>
-
-    <div>
-        <label for="status_aktif_produk" class="block text-sm font-semibold text-gray-700 mb-1.5">
-            Status Aktif <span class="text-red-500">*</span>
-        </label>
-        <select id="status_aktif_produk" name="status_aktif_produk" required class="block w-full px-4 py-2 text-sm text-gray-900 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#294C9A] focus:border-[#294C9A] focus:outline-none transition">
-            <option value="1">Aktif</option>
-            <option value="0">Non-Aktif</option>
-        </select>
-    </div>
-
-    <div class="flex justify-end gap-2 pt-4 border-t border-gray-100">
-        <button type="button" onclick="closeModal('modalCreate')" class="px-4 py-2 text-xs font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition">Batal</button>
-        <button type="submit" class="inline-flex items-center px-4 py-2 text-xs font-semibold text-white bg-[#294C9A] hover:bg-[#1E3A70] rounded-lg transition shadow-sm">
-            Simpan Produk
+    <!-- ACTION BUTTONS -->
+    <div class="flex items-center justify-end gap-2 pt-3 border-t border-slate-100 dark:border-slate-800">
+        <button 
+            type="button" 
+            onclick="closeModal('modalCreate')" 
+            class="px-3.5 py-2 text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg transition cursor-pointer flex items-center gap-1.5"
+        >
+            <i data-lucide="x" class="w-3.5 h-3.5"></i>
+            <span>Batal</span>
+        </button>
+        <button 
+            type="submit" 
+            class="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-bold text-white bg-[#162a5b] hover:bg-[#1f3a7a] rounded-lg transition shadow-xs cursor-pointer"
+        >
+            <i data-lucide="save" class="w-3.5 h-3.5"></i>
+            <span>Simpan Produk</span>
         </button>
     </div>
 </form>

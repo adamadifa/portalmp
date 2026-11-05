@@ -1,49 +1,56 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\RoleController;
-use App\Http\Controllers\UserController;
+use App\Http\Controllers\AngkutanController;
+use App\Http\Controllers\Api\SyncPembelianController;
+use App\Http\Controllers\BarangkeluargudangbahanController;
+use App\Http\Controllers\BarangkeluargudanglogistikController;
+use App\Http\Controllers\BarangmasukgudangbahanController;
+use App\Http\Controllers\BarangmasukgudanglogistikController;
+use App\Http\Controllers\BarangpembelianController;
+use App\Http\Controllers\BarangproduksiController;
+use App\Http\Controllers\BiayaController;
+use App\Http\Controllers\BpbjController;
 use App\Http\Controllers\CoaController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\FsthpController;
+use App\Http\Controllers\JurnalumumController;
+use App\Http\Controllers\KontrabonpembelianController;
+use App\Http\Controllers\LainnyagudangjadiController;
+use App\Http\Controllers\LaporanaccountingController;
+use App\Http\Controllers\LaporanbiayaController;
+use App\Http\Controllers\LaporangudangbahanController;
+use App\Http\Controllers\LaporangudangjadiController;
+use App\Http\Controllers\LaporangudanglogistikController;
+use App\Http\Controllers\LaporanmarketingController;
+use App\Http\Controllers\LaporanpembelianController;
+use App\Http\Controllers\LaporanproduksiController;
+use App\Http\Controllers\OpnamegudangbahanController;
+use App\Http\Controllers\OpnamegudanglogistikController;
+use App\Http\Controllers\PelangganController;
+use App\Http\Controllers\PembelianController;
+use App\Http\Controllers\PenjualanMarketingController;
 use App\Http\Controllers\ProdukController;
 use App\Http\Controllers\ProdukHargaController;
-use App\Http\Controllers\PenjualanMarketingController;
-use App\Http\Controllers\PelangganController;
-use App\Http\Controllers\SupplierController;
-use App\Http\Controllers\AngkutanController;
-use App\Http\Controllers\TujuanangkutanController;
-use App\Http\Controllers\BarangpembelianController;
-use App\Http\Controllers\PembelianController;
-use App\Http\Controllers\LaporanpembelianController;
-use App\Http\Controllers\KontrabonpembelianController;
-use App\Http\Controllers\BarangproduksiController;
-use App\Http\Controllers\SaldoawalgudangjadiController;
-use App\Http\Controllers\SamutasiproduksiController;
-use App\Http\Controllers\BpbjController;
-use App\Http\Controllers\FsthpController;
-use App\Http\Controllers\LaporanproduksiController;
-use App\Http\Controllers\RepackgudangjadiController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RejectgudangjadiController;
-use App\Http\Controllers\LainnyagudangjadiController;
-use App\Http\Controllers\LaporangudangjadiController;
-use App\Http\Controllers\BarangkeluargudangbahanController;
-use App\Http\Controllers\BarangmasukgudangbahanController;
-use App\Http\Controllers\LaporangudangbahanController;
-use App\Http\Controllers\LaporangudanglogistikController;
-use App\Http\Controllers\OpnamegudangbahanController;
-use App\Http\Controllers\SaldoawalgudangbahanController;
-use App\Http\Controllers\SaldoawalhargagudangbahanController;
-use App\Http\Controllers\BiayaController;
+use App\Http\Controllers\RepackgudangjadiController;
+use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SaldoawalbukubesarController;
-use App\Http\Controllers\LaporanaccountingController;
-use App\Http\Controllers\JurnalumumController;
+use App\Http\Controllers\SaldoawalgudangbahanController;
+use App\Http\Controllers\SaldoawalgudangjadiController;
+use App\Http\Controllers\SaldoawalgudanglogistikController;
+use App\Http\Controllers\SaldoawalhargagudangbahanController;
+use App\Http\Controllers\SamutasiproduksiController;
+use App\Http\Controllers\SupplierController;
+use App\Http\Controllers\TujuanangkutanController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 Route::redirect('/', '/login');
 
-
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard', [DashboardController::class, 'index'])
+    ->middleware(['auth', 'verified'])
+    ->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -77,7 +84,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('penjualanmarketing', PenjualanMarketingController::class);
 
     // Marketing - Laporan
-    Route::controller(\App\Http\Controllers\LaporanmarketingController::class)->group(function () {
+    Route::controller(LaporanmarketingController::class)->group(function () {
         Route::get('/laporanmarketing', 'index')->name('laporanmarketing.index');
         Route::post('/laporanmarketing/cetakpenjualan', 'cetakpenjualan')->name('laporanmarketing.cetakpenjualan');
         Route::post('/laporanmarketing/cetakrekap', 'cetakrekap')->name('laporanmarketing.cetakrekap');
@@ -167,7 +174,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('biaya', BiayaController::class);
 
     // Laporan Biaya
-    Route::controller(\App\Http\Controllers\LaporanbiayaController::class)->group(function () {
+    Route::controller(LaporanbiayaController::class)->group(function () {
         Route::get('/laporanbiaya', 'index')->name('laporanbiaya.index');
         Route::post('/laporanbiaya/cetakbiaya', 'cetakbiaya')->name('laporanbiaya.cetakbiaya');
         Route::post('/laporanbiaya/cetakpembayaran', 'cetakpembayaran')->name('laporanbiaya.cetakpembayaran');
@@ -191,7 +198,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('coa', CoaController::class);
     Route::resource('saldoawalbukubesar', SaldoawalbukubesarController::class);
     Route::post('/saldoawalbukubesar/getsaldo', [SaldoawalbukubesarController::class, 'getsaldo'])->name('saldoawalbukubesar.getsaldo');
-    
+
     // Jurnal Umum
     Route::controller(JurnalumumController::class)->group(function () {
         Route::get('/jurnalumum', 'index')->name('jurnalumum.index');
@@ -364,7 +371,7 @@ Route::middleware('auth')->group(function () {
     });
 
     // Gudang Logistik - Barang Masuk
-    Route::controller(\App\Http\Controllers\BarangmasukgudanglogistikController::class)->group(function () {
+    Route::controller(BarangmasukgudanglogistikController::class)->group(function () {
         Route::get('/barangmasukgudanglogistik', 'index')->name('barangmasukgudanglogistik.index');
         Route::get('/barangmasukgudanglogistik/create', 'create')->name('barangmasukgudanglogistik.create');
         Route::post('/barangmasukgudanglogistik', 'store')->name('barangmasukgudanglogistik.store');
@@ -375,7 +382,7 @@ Route::middleware('auth')->group(function () {
     });
 
     // Gudang Logistik - Barang Keluar
-    Route::controller(\App\Http\Controllers\BarangkeluargudanglogistikController::class)->group(function () {
+    Route::controller(BarangkeluargudanglogistikController::class)->group(function () {
         Route::get('/barangkeluargudanglogistik', 'index')->name('barangkeluargudanglogistik.index');
         Route::get('/barangkeluargudanglogistik/create', 'create')->name('barangkeluargudanglogistik.create');
         Route::post('/barangkeluargudanglogistik', 'store')->name('barangkeluargudanglogistik.store');
@@ -386,7 +393,7 @@ Route::middleware('auth')->group(function () {
     });
 
     // Gudang Logistik - Opname
-    Route::controller(\App\Http\Controllers\OpnamegudanglogistikController::class)->group(function () {
+    Route::controller(OpnamegudanglogistikController::class)->group(function () {
         Route::get('/opgudanglogistik', 'index')->name('opgudanglogistik.index');
         Route::get('/opgudanglogistik/create', 'create')->name('opgudanglogistik.create');
         Route::post('/opgudanglogistik', 'store')->name('opgudanglogistik.store');
@@ -397,7 +404,7 @@ Route::middleware('auth')->group(function () {
     });
 
     // Gudang Logistik - Saldo Awal
-    Route::controller(\App\Http\Controllers\SaldoawalgudanglogistikController::class)->group(function () {
+    Route::controller(SaldoawalgudanglogistikController::class)->group(function () {
         Route::get('/sagudanglogistik', 'index')->name('sagudanglogistik.index');
         Route::get('/sagudanglogistik/create', 'create')->name('sagudanglogistik.create');
         Route::post('/sagudanglogistik', 'store')->name('sagudanglogistik.store');
@@ -407,7 +414,7 @@ Route::middleware('auth')->group(function () {
     });
 });
 
-Route::post('/api/sync/pembelian', [App\Http\Controllers\Api\SyncPembelianController::class, 'sync']);
-Route::post('/api/sync/pembelian/delete', [App\Http\Controllers\Api\SyncPembelianController::class, 'delete']);
+Route::post('/api/sync/pembelian', [SyncPembelianController::class, 'sync']);
+Route::post('/api/sync/pembelian/delete', [SyncPembelianController::class, 'delete']);
 
-require __DIR__ . '/auth.php';
+require __DIR__.'/auth.php';

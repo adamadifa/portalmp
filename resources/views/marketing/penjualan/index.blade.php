@@ -1,315 +1,566 @@
 <x-app-layout>
-    <x-slot name="header">
-        Penjualan Marketing
-    </x-slot>
+    <x-slot name="header">Penjualan Marketing</x-slot>
+    <x-slot name="headerTitle">Penjualan Marketing</x-slot>
+    <x-slot name="headerDescription">Manajemen transaksi penjualan produk, alokasi pembayaran piutang, dan integrasi import data Excel.</x-slot>
 
-    <!-- Header & Navigation -->
-    <div class="mb-6">
-        <h2 class="text-2xl font-semibold text-gray-900 tracking-tight">Penjualan Marketing</h2>
-        <p class="text-sm text-gray-500 mt-1">Mengelola data transaksi penjualan produk ke Portax.</p>
+    <div class="space-y-6">
+
+        <!-- Action & Filter Bar (Consistent with /produk) -->
+        <div class="space-y-3 w-full">
+            <!-- Top Action Toolbar -->
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 w-full">
+                <div class="flex items-center gap-2">
+                    <span class="text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+                        <i data-lucide="filter" class="w-4 h-4 text-blue-600 dark:text-blue-400"></i>
+                        <span>Filter & Pencarian Transaksi</span>
+                    </span>
+                </div>
+
+                <!-- Action Buttons Group -->
+                @can('penjualanmarketing.create')
+                <div class="flex flex-wrap items-center gap-2 shrink-0">
+                    <!-- Bulk Delete (Dynamic) -->
+                    @can('penjualanmarketing.delete')
+                    <button 
+                        type="button" 
+                        id="btnHapusTerpilih" 
+                        onclick="hapusTerpilih()" 
+                        class="hidden items-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs shadow-sm transition cursor-pointer animate-pulse"
+                    >
+                        <i data-lucide="trash-2" class="w-4 h-4"></i>
+                        <span>Hapus Terpilih</span>
+                    </button>
+                    @endcan
+
+                    <!-- Reset Options Dropdown -->
+                    <div class="relative inline-block text-left" id="resetDropdownWrapper">
+                        <button 
+                            type="button" 
+                            onclick="$('#resetDropdownMenu').toggleClass('hidden')" 
+                            class="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold text-xs shadow-2xs transition cursor-pointer"
+                            title="Opsi Pembersihan Data"
+                        >
+                            <i data-lucide="sliders-horizontal" class="w-4 h-4 text-slate-400"></i>
+                            <span>Opsi Data</span>
+                            <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-400"></i>
+                        </button>
+                        <div id="resetDropdownMenu" class="hidden absolute right-0 z-30 mt-2 w-52 rounded-xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-xl py-1 text-xs">
+                            <button 
+                                type="button" 
+                                onclick="$('#resetDropdownMenu').addClass('hidden'); resetPembayaran();" 
+                                class="w-full text-left px-4 py-2.5 text-amber-600 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-500/10 font-semibold flex items-center gap-2 transition cursor-pointer"
+                            >
+                                <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+                                <span>Reset Pembayaran</span>
+                            </button>
+                            <button 
+                                type="button" 
+                                onclick="$('#resetDropdownMenu').addClass('hidden'); resetPenjualan();" 
+                                class="w-full text-left px-4 py-2.5 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-500/10 font-semibold flex items-center gap-2 transition cursor-pointer"
+                            >
+                                <i data-lucide="alert-triangle" class="w-4 h-4"></i>
+                                <span>Reset Semua Penjualan</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Import Data Excel -->
+                    <button 
+                        type="button" 
+                        onclick="toggleModalImport()" 
+                        class="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-xs transition cursor-pointer"
+                        title="Import Data dari Excel"
+                    >
+                        <i data-lucide="file-spreadsheet" class="w-4 h-4"></i>
+                        <span>Import Excel</span>
+                    </button>
+
+                    <!-- Import Pembayaran -->
+                    <button 
+                        type="button" 
+                        onclick="toggleModalImportPembayaran()" 
+                        class="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs shadow-xs transition cursor-pointer"
+                        title="Import Pembayaran Piutang Excel"
+                    >
+                        <i data-lucide="receipt" class="w-4 h-4"></i>
+                        <span>Import Pembayaran</span>
+                    </button>
+
+                    <!-- Tambah Penjualan -->
+                    <a 
+                        href="{{ route('penjualanmarketing.create') }}" 
+                        class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#162a5b] hover:bg-[#1c3574] text-white font-bold text-xs shadow-sm transition cursor-pointer"
+                    >
+                        <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                        <span>Input Penjualan</span>
+                    </a>
+                </div>
+                @endcan
+            </div>
+
+            <!-- Full Width Filter Form -->
+            <form method="GET" action="{{ route('penjualanmarketing.index') }}" id="formSearch" class="flex flex-wrap lg:flex-nowrap items-center gap-3 w-full">
+                <!-- No Bukti -->
+                <div class="relative flex-1 min-w-[200px] w-full">
+                    <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                        <i data-lucide="search" class="w-4 h-4 text-slate-400"></i>
+                    </div>
+                    <input 
+                        type="text" 
+                        name="no_bukti_search" 
+                        id="no_bukti_search" 
+                        value="{{ request('no_bukti_search') }}" 
+                        placeholder="Cari no. bukti penjualan..." 
+                        class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 bg-white dark:bg-slate-900 text-xs font-semibold text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 transition shadow-2xs" 
+                    />
+                </div>
+
+                <!-- Nama Pelanggan -->
+                <div class="relative flex-1 min-w-[200px] w-full">
+                    <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                        <i data-lucide="users" class="w-4 h-4 text-slate-400"></i>
+                    </div>
+                    <input 
+                        type="text" 
+                        name="nama_pelanggan_search" 
+                        id="nama_pelanggan_search" 
+                        value="{{ request('nama_pelanggan_search') }}" 
+                        placeholder="Cari nama pelanggan..." 
+                        class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 bg-white dark:bg-slate-900 text-xs font-semibold text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 transition shadow-2xs" 
+                    />
+                </div>
+
+                <!-- Dari Tanggal -->
+                <div class="relative w-full sm:w-44">
+                    <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                        <i data-lucide="calendar" class="w-4 h-4 text-slate-400"></i>
+                    </div>
+                    <input 
+                        type="text" 
+                        name="dari" 
+                        id="dari" 
+                        value="{{ request('dari') }}" 
+                        placeholder="Dari Tanggal" 
+                        class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 bg-white dark:bg-slate-900 text-xs font-semibold text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 transition shadow-2xs flatpickr-date" 
+                        autocomplete="off" 
+                    />
+                </div>
+
+                <!-- Sampai Tanggal -->
+                <div class="relative w-full sm:w-44">
+                    <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                        <i data-lucide="calendar" class="w-4 h-4 text-slate-400"></i>
+                    </div>
+                    <input 
+                        type="text" 
+                        name="sampai" 
+                        id="sampai" 
+                        value="{{ request('sampai') }}" 
+                        placeholder="Sampai Tanggal" 
+                        class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 bg-white dark:bg-slate-900 text-xs font-semibold text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 transition shadow-2xs flatpickr-date" 
+                        autocomplete="off" 
+                    />
+                </div>
+
+                <!-- Action Button Filter & Reset -->
+                <div class="flex items-center gap-2 shrink-0">
+                    <button 
+                        type="submit" 
+                        class="px-4 py-2.5 rounded-xl bg-slate-800 dark:bg-slate-700 hover:bg-slate-900 text-white font-bold text-xs transition shadow-2xs flex items-center gap-1.5 cursor-pointer"
+                    >
+                        <i data-lucide="filter" class="w-3.5 h-3.5"></i>
+                        <span>Filter</span>
+                    </button>
+                    @if(request('no_bukti_search') || request('nama_pelanggan_search') || request('dari') || request('sampai'))
+                        <a 
+                            href="{{ route('penjualanmarketing.index') }}" 
+                            class="px-3.5 py-2.5 rounded-xl bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 hover:bg-rose-100 font-bold text-xs transition flex items-center gap-1 cursor-pointer" 
+                            title="Reset Filter"
+                        >
+                            <i data-lucide="x" class="w-3.5 h-3.5"></i>
+                            <span>Reset</span>
+                        </a>
+                    @endif
+                </div>
+            </form>
+        </div>
+
+        <!-- Table Card -->
+        <div class="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-2xl shadow-2xs overflow-hidden">
+            <!-- Table Card Header (Solid Biru Dongker - Seamless with Table Header) -->
+            <div class="px-6 pt-5 pb-3 bg-[#162a5b] text-white flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-0">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-xl bg-white/15 text-white flex items-center justify-center shadow-xs shrink-0">
+                        <i data-lucide="receipt" class="w-4 h-4 text-white"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-sm text-white tracking-tight flex items-center gap-2">
+                            <span>Data Transaksi Penjualan Marketing</span>
+                            <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-white/20 text-white">
+                                {{ $penjualan->total() }} Total
+                            </span>
+                        </h3>
+                        <p class="text-[11px] text-blue-200/80">Katalog faktur penjualan produk ke Portax, histori pembayaran, dan status pelunasan</p>
+                    </div>
+                </div>
+
+                @if(request('no_bukti_search') || request('nama_pelanggan_search') || request('dari') || request('sampai'))
+                <div class="text-[11px] text-blue-100 flex items-center gap-1.5 bg-black/20 px-3 py-1.5 rounded-xl self-start sm:self-auto">
+                    <i data-lucide="check-circle-2" class="w-3.5 h-3.5 text-sky-300"></i>
+                    <span>Filter aktif diterapkan</span>
+                </div>
+                @endif
+            </div>
+
+            <!-- Table Responsive Area -->
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead class="bg-[#162a5b]">
+                        <tr class="text-[11px] font-extrabold uppercase tracking-wider text-blue-200/90 bg-[#162a5b]">
+                            <th class="py-2.5 px-4 w-12 text-center">
+                                <input type="checkbox" id="checkAll" class="rounded border-blue-300/40 text-blue-600 focus:ring-0 w-3.5 h-3.5 cursor-pointer bg-white/10 checked:bg-blue-600">
+                            </th>
+                            <th class="py-2.5 px-4 w-40 min-w-[140px] whitespace-nowrap">No. Bukti</th>
+                            <th class="py-2.5 px-4 w-28 whitespace-nowrap">Tanggal</th>
+                            <th class="py-2.5 px-4 w-36 min-w-[130px] whitespace-nowrap">Kode Pelanggan</th>
+                            <th class="py-2.5 px-4">Nama Pelanggan</th>
+                            <th class="py-2.5 px-4 w-36 whitespace-nowrap">Transaksi</th>
+                            <th class="py-2.5 px-4 w-36 text-right whitespace-nowrap">Total</th>
+                            <th class="py-2.5 px-4 w-32 text-center whitespace-nowrap">Status</th>
+                            <th class="py-2.5 px-4 w-28 text-center">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100 dark:divide-slate-800 text-xs">
+                        @forelse ($penjualan as $d)
+                            <tr class="hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-colors">
+                                <!-- Checkbox -->
+                                <td class="py-1 px-4 text-center">
+                                    <input type="checkbox" name="selected_no_bukti[]" value="{{ $d->no_bukti }}" class="row-checkbox rounded border-slate-300 dark:border-slate-700 text-[#162a5b] focus:ring-0 w-3.5 h-3.5 cursor-pointer">
+                                </td>
+
+                                <!-- No Bukti -->
+                                <td class="py-1 px-4 whitespace-nowrap">
+                                    <span class="font-mono text-xs font-bold px-2 py-0.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-[#162a5b] dark:text-blue-400 border border-slate-200/60 dark:border-slate-700">
+                                        {{ $d->no_bukti }}
+                                    </span>
+                                </td>
+
+                                <!-- Tanggal -->
+                                <td class="py-1 px-4 whitespace-nowrap text-slate-600 dark:text-slate-400 font-medium">
+                                    {{ date('d-m-Y', strtotime($d->tanggal)) }}
+                                </td>
+
+                                <!-- Kode Pelanggan -->
+                                <td class="py-1 px-4 whitespace-nowrap">
+                                    @if($d->kode_pelanggan)
+                                        <span class="font-mono text-xs font-semibold px-2 py-0.5 rounded-md bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 border border-blue-200/60 dark:border-blue-500/20">
+                                            {{ $d->kode_pelanggan }}
+                                        </span>
+                                    @else
+                                        <span class="text-slate-400 text-xs">-</span>
+                                    @endif
+                                </td>
+
+                                <!-- Nama Pelanggan -->
+                                <td class="py-1 px-4">
+                                    <div class="font-bold text-slate-900 dark:text-white leading-tight">
+                                        {{ $d->nama_pelanggan }}
+                                    </div>
+                                </td>
+
+                                <!-- Jenis Transaksi -->
+                                <td class="py-1 px-4 whitespace-nowrap">
+                                    @if ($d->jenis_transaksi == 'T')
+                                        <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-[11px] font-bold bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-200/60 dark:border-emerald-500/20">
+                                            <i data-lucide="banknote" class="w-3 h-3"></i>
+                                            <span>TUNAI ({{ $d->jenis_bayar }})</span>
+                                        </span>
+                                    @else
+                                        <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-[11px] font-bold bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-200/60 dark:border-amber-500/20">
+                                            <i data-lucide="clock" class="w-3 h-3"></i>
+                                            <span>KREDIT</span>
+                                        </span>
+                                    @endif
+                                </td>
+
+                                <!-- Total -->
+                                <td class="py-1 px-4 text-right whitespace-nowrap">
+                                    <span class="font-mono text-xs font-bold text-slate-900 dark:text-white">
+                                        Rp {{ number_format($d->total, 0, ',', '.') }}
+                                    </span>
+                                </td>
+
+                                <!-- Status (Consistent Full Width Pill) -->
+                                <td class="py-1 px-4 text-center whitespace-nowrap">
+                                    @if ($d->status == '1')
+                                        <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-200/60 dark:border-emerald-500/20">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                                            <span>Lunas</span>
+                                        </span>
+                                    @else
+                                        <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-200/60 dark:border-rose-500/20">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
+                                            <span>Belum Lunas</span>
+                                        </span>
+                                    @endif
+                                </td>
+
+                                <!-- Actions -->
+                                <td class="py-1 px-4 text-center">
+                                    <div class="flex items-center justify-center gap-1.5">
+                                        <!-- Show Detail -->
+                                        <a 
+                                            href="{{ route('penjualanmarketing.show', Crypt::encrypt($d->no_bukti)) }}" 
+                                            class="w-7 h-7 rounded-lg flex items-center justify-center bg-sky-50 dark:bg-sky-500/10 hover:bg-sky-100 dark:hover:bg-sky-500/20 text-sky-600 dark:text-sky-400 border border-sky-200/60 dark:border-sky-500/20 transition cursor-pointer shadow-2xs" 
+                                            title="Detail Transaksi"
+                                        >
+                                            <i data-lucide="eye" class="w-3.5 h-3.5"></i>
+                                        </a>
+
+                                        <!-- Edit -->
+                                        @can('penjualanmarketing.edit')
+                                        <a 
+                                            href="{{ route('penjualanmarketing.edit', Crypt::encrypt($d->no_bukti)) }}" 
+                                            class="w-7 h-7 rounded-lg flex items-center justify-center bg-blue-50 dark:bg-blue-500/10 hover:bg-blue-100 dark:hover:bg-blue-500/20 text-blue-600 dark:text-blue-400 border border-blue-200/60 dark:border-blue-500/20 transition cursor-pointer shadow-2xs" 
+                                            title="Edit Transaksi"
+                                        >
+                                            <i data-lucide="pencil" class="w-3.5 h-3.5"></i>
+                                        </a>
+                                        @endcan
+
+                                        <!-- Delete -->
+                                        @can('penjualanmarketing.delete')
+                                        <button 
+                                            type="button" 
+                                            class="btn-delete w-7 h-7 rounded-lg flex items-center justify-center bg-rose-50 dark:bg-rose-500/10 hover:bg-rose-100 dark:hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 border border-rose-200/60 dark:border-rose-500/20 transition cursor-pointer shadow-2xs" 
+                                            data-id="{{ Crypt::encrypt($d->no_bukti) }}" 
+                                            data-name="{{ $d->no_bukti }}" 
+                                            title="Hapus Transaksi"
+                                        >
+                                            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                                        </button>
+                                        @endcan
+                                    </div>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="9" class="py-16 px-4 text-center">
+                                    <div class="flex flex-col items-center justify-center max-w-sm mx-auto">
+                                        <div class="w-12 h-12 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400 mb-3 shadow-xs">
+                                            <i data-lucide="receipt" class="w-6 h-6"></i>
+                                        </div>
+                                        <h4 class="font-bold text-sm text-slate-800 dark:text-white">Belum ada transaksi penjualan marketing</h4>
+                                        <p class="text-xs text-slate-400 mt-1">Gunakan tombol "Input Penjualan" atau "Import Excel" untuk menambahkan transaksi baru.</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination Area -->
+            @if ($penjualan->hasPages())
+                <div class="px-6 py-4 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500">
+                    <div>
+                        Menampilkan <span class="font-bold text-slate-800 dark:text-slate-200">{{ $penjualan->firstItem() ?? 0 }}</span> - <span class="font-bold text-slate-800 dark:text-slate-200">{{ $penjualan->lastItem() ?? 0 }}</span> dari <span class="font-bold text-slate-800 dark:text-slate-200">{{ $penjualan->total() }}</span> transaksi
+                    </div>
+                    <div>
+                        {{ $penjualan->links() }}
+                    </div>
+                </div>
+            @endif
+        </div>
+
     </div>
 
-    <!-- Alert Notifications -->
-    @if(session('success'))
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Berhasil',
-                    text: '{{ session('success') }}',
-                    showConfirmButton: false,
-                    timer: 2000
-                });
-            });
-        </script>
-    @endif
-    @if(session('error'))
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Gagal',
-                    text: '{{ session('error') }}',
-                    confirmButtonColor: '#294C9A'
-                });
-            });
-        </script>
-    @endif
-
-    <!-- Filter Panel (c-fl-group style) -->
-    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 mb-4">
-        <form action="{{ route('penjualanmarketing.index') }}" method="GET" id="formSearch">
-            <div class="grid grid-cols-1 md:grid-cols-12 gap-3 items-end">
-                <div class="md:col-span-3">
-                    <div class="c-fl-group">
-                        <span class="c-fl-icon">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"></path></svg>
-                        </span>
-                        <input type="text" name="no_bukti_search" id="no_bukti_search" value="{{ request('no_bukti_search') }}" class="fi" placeholder="No. Bukti Penjualan" autocomplete="off" />
-                        <label for="no_bukti_search" class="c-fl-label">No. Bukti Penjualan</label>
+    @push('modals')
+        <!-- Modal Import Penjualan Excel -->
+        <div id="modalImport" class="fixed inset-0 z-[100] hidden bg-slate-950/60 backdrop-blur-sm flex items-center justify-center p-4">
+            <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200/90 dark:border-slate-800 shadow-2xl w-full max-w-md overflow-hidden transform scale-95 opacity-0 transition-all duration-300" id="modalImportContentWrapper">
+                <!-- Modal Header -->
+                <div class="bg-[#162a5b] px-5 py-3.5 flex items-center justify-between text-white">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-8 h-8 rounded-lg bg-white/15 flex items-center justify-center shadow-xs">
+                            <i data-lucide="file-spreadsheet" class="w-4 h-4 text-white"></i>
+                        </div>
+                        <h3 class="font-bold text-sm text-white">Import Penjualan Excel</h3>
                     </div>
-                </div>
-
-                <div class="md:col-span-3">
-                    <div class="c-fl-group">
-                        <span class="c-fl-icon">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
-                        </span>
-                        <input type="text" name="nama_pelanggan_search" id="nama_pelanggan_search" value="{{ request('nama_pelanggan_search') }}" class="fi" placeholder="Nama Pelanggan" autocomplete="off" />
-                        <label for="nama_pelanggan_search" class="c-fl-label">Nama Pelanggan</label>
-                    </div>
-                </div>
-
-                <div class="md:col-span-2">
-                    <div class="c-fl-group">
-                        <span class="c-fl-icon">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                        </span>
-                        <input type="text" name="dari" id="dari" value="{{ request('dari') }}" class="fi flatpickr-date" placeholder="Dari Tanggal" autocomplete="off" />
-                        <label for="dari" class="c-fl-label">Dari Tanggal</label>
-                    </div>
-                </div>
-
-                <div class="md:col-span-2">
-                    <div class="c-fl-group">
-                        <span class="c-fl-icon">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                        </span>
-                        <input type="text" name="sampai" id="sampai" value="{{ request('sampai') }}" class="fi flatpickr-date" placeholder="Sampai Tanggal" autocomplete="off" />
-                        <label for="sampai" class="c-fl-label">Sampai Tanggal</label>
-                    </div>
-                </div>
-
-                <div class="md:col-span-2">
-                    <button type="submit" class="w-full inline-flex items-center justify-center px-4 py-2 text-xs font-semibold text-white bg-[#294C9A] hover:bg-[#1E3A70] rounded-xl transition shadow-sm gap-1.5 h-[38px]">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                        Cari
+                    <button type="button" class="text-white/80 hover:text-white p-1 rounded-lg hover:bg-white/10 transition cursor-pointer" onclick="closeModal('modalImport')">
+                        <i data-lucide="x" class="w-5 h-5"></i>
                     </button>
                 </div>
-            </div>
-        </form>
-    </div>
 
-    <!-- Table Card -->
-    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden mb-6">
-        <div class="p-5 border-b border-gray-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-gradient-to-r from-[#294C9A] to-[#1E3A70] text-white">
-            <div class="flex items-center gap-2">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
-                <h3 class="font-bold text-base">Data Transaksi Penjualan Marketing</h3>
-            </div>
-            @can('penjualanmarketing.create')
-            <div class="flex gap-2">
-                @can('penjualanmarketing.delete')
-                <button type="button" id="btnHapusTerpilih" onclick="hapusTerpilih()" class="hidden inline-flex items-center px-3.5 py-2 text-xs font-semibold text-white bg-red-600 rounded-xl hover:bg-red-700 transition shadow-sm gap-1.5 animate-pulse">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                    Hapus Terpilih
-                </button>
-                @endcan
-                <button type="button" onclick="resetPenjualan()" class="inline-flex items-center px-3.5 py-2 text-xs font-semibold text-white bg-red-600 rounded-xl hover:bg-red-700 transition shadow-sm gap-1.5">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                    Reset Penjualan
-                </button>
-                <button type="button" onclick="toggleModalImport()" class="inline-flex items-center px-3.5 py-2 text-xs font-semibold text-white bg-emerald-600 rounded-xl hover:bg-emerald-700 transition shadow-sm gap-1.5">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
-                    Import Excel
-                </button>
-                <button type="button" onclick="toggleModalImportPembayaran()" class="inline-flex items-center px-3.5 py-2 text-xs font-semibold text-white bg-teal-600 rounded-xl hover:bg-teal-700 transition shadow-sm gap-1.5">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
-                    Import Pembayaran
-                </button>
-                <button type="button" onclick="resetPembayaran()" class="inline-flex items-center px-3.5 py-2 text-xs font-semibold text-white bg-amber-600 rounded-xl hover:bg-amber-700 transition shadow-sm gap-1.5">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                    Reset Pembayaran
-                </button>
-                <a href="{{ route('penjualanmarketing.create') }}" class="inline-flex items-center px-3.5 py-2 text-xs font-semibold text-[#294C9A] bg-white rounded-xl hover:bg-gray-50 transition shadow-sm gap-1.5">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-                    Input Penjualan
-                </a>
-            </div>
-            @endcan
-        </div>
-        <div class="overflow-x-auto">
-            <table class="w-full text-sm text-left text-gray-600">
-                <thead class="text-sm uppercase bg-gradient-to-r from-[#294C9A] to-[#1E3A70] text-white">
-                    <tr>
-                        <th class="px-6 py-2.5 font-bold text-center w-12">
-                            <input type="checkbox" id="checkAll" class="rounded border-gray-350 text-[#294C9A] focus:ring-[#294C9A] w-4 h-4 cursor-pointer">
-                        </th>
-                        <th class="px-6 py-2.5 font-bold">NO. BUKTI</th>
-                        <th class="px-6 py-2.5 font-bold">TANGGAL</th>
-                        <th class="px-6 py-2.5 font-bold">PELANGGAN</th>
-                        <th class="px-6 py-2.5 font-bold">TRANSAKSI</th>
-                        <th class="px-6 py-2.5 font-bold text-right">TOTAL</th>
-                        <th class="px-6 py-2.5 font-bold text-center">STATUS</th>
-                        <th class="px-6 py-2.5 font-bold text-center">AKSI</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-100 bg-white">
-                    @forelse ($penjualan as $d)
-                        <tr class="hover:bg-gray-50/80 transition">
-                            <td class="px-6 py-2.5 text-center">
-                                <input type="checkbox" name="selected_no_bukti[]" value="{{ $d->no_bukti }}" class="row-checkbox rounded border-gray-350 text-[#294C9A] focus:ring-[#294C9A] w-4 h-4 cursor-pointer">
-                            </td>
-                            <td class="px-6 py-2.5 font-bold text-[#294C9A] font-mono">
-                                {{ $d->no_bukti }}
-                            </td>
-                            <td class="px-6 py-2.5 text-gray-600">
-                                {{ date('d-m-Y', strtotime($d->tanggal)) }}
-                            </td>
-                            <td class="px-6 py-2.5 font-semibold text-gray-900">
-                                {{ $d->nama_pelanggan }}
-                            </td>
-                            <td class="px-6 py-2.5 text-xs font-bold">
-                                @if ($d->jenis_transaksi == 'T')
-                                    <span class="px-2.5 py-1 bg-emerald-50 text-emerald-700 rounded-full">TUNAI ({{ $d->jenis_bayar }})</span>
-                                @else
-                                    <span class="px-2.5 py-1 bg-amber-50 text-amber-700 rounded-full">KREDIT</span>
-                                @endif
-                            </td>
-                            <td class="px-6 py-2.5 text-right font-semibold text-gray-900">
-                                Rp {{ number_format($d->total, 2, ',', '.') }}
-                            </td>
-                            <td class="px-6 py-2.5 text-center">
-                                @if ($d->status == '1')
-                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-100 text-green-800">Lunas</span>
-                                @else
-                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-800">Belum Lunas</span>
-                                @endif
-                            </td>
-                            <td class="px-6 py-2.5">
-                                <div class="flex items-center justify-center gap-3">
-                                    <!-- Show -->
-                                    <a href="{{ route('penjualanmarketing.show', Crypt::encrypt($d->no_bukti)) }}" class="text-blue-600 hover:text-blue-900 p-1.5 hover:bg-blue-50 rounded-lg transition" title="Detail Penjualan">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
-                                    </a>
-                                    <!-- Edit -->
-                                    @can('penjualanmarketing.edit')
-                                    <a href="{{ route('penjualanmarketing.edit', Crypt::encrypt($d->no_bukti)) }}" class="text-emerald-600 hover:text-emerald-900 p-1.5 hover:bg-emerald-50 rounded-lg transition" title="Edit Transaksi">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
-                                    </a>
-                                    @endcan
-                                    <!-- Delete -->
-                                    @can('penjualanmarketing.delete')
-                                    <button type="button" class="btn-delete text-red-600 hover:text-red-950 p-1.5 hover:bg-red-50 rounded-lg transition" data-id="{{ Crypt::encrypt($d->no_bukti) }}" data-name="{{ $d->no_bukti }}" title="Hapus Transaksi">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                                    </button>
-                                    @endcan
-                                </div>
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="8" class="py-12 px-6 text-center text-gray-500">
-                                <div class="flex flex-col items-center justify-center">
-                                    <svg class="w-10 h-10 text-gray-300 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
-                                    <span>Belum ada data penjualan marketing.</span>
-                                </div>
-                            </td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
-        @if ($penjualan->hasPages())
-            <div class="p-4 border-t border-gray-100 bg-gray-50/50">
-                {{ $penjualan->links() }}
-            </div>
-        @endif
-    </div>
-
-    <!-- Modal Import Excel -->
-    <div id="modalImport" class="fixed inset-0 z-50 flex items-center justify-center hidden bg-black/40 backdrop-blur-sm overflow-y-auto">
-        <div class="bg-white rounded-2xl shadow-xl w-full max-w-md mx-4 overflow-hidden border border-gray-100">
-            <div class="p-5 border-b border-gray-100 flex justify-between items-center bg-gradient-to-r from-[#294C9A] to-[#1E3A70] text-white">
-                <div class="flex items-center gap-2">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
-                    <h3 class="font-bold text-base text-white">Import Penjualan Excel</h3>
-                </div>
-                <button type="button" class="btn-close-modal text-white hover:text-gray-200 transition" onclick="toggleModalImport()">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                </button>
-            </div>
-            <form action="{{ route('penjualanmarketing.import') }}" method="POST" enctype="multipart/form-data" class="p-6 space-y-4">
-                @csrf
-                <div>
-                    <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Pilih File Excel (.xlsx, .xls, .csv)</label>
-                    <input type="file" id="file_excel" name="file_excel" accept=".xlsx,.xls,.csv" required class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-[#294C9A] hover:file:bg-blue-100 transition border border-gray-200 rounded-xl p-2" />
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Pilih Sheet</label>
-                    <select name="sheet_name" id="import_sheet_name" class="w-full text-sm border-gray-200 rounded-xl focus:border-blue-500 focus:ring-blue-500 p-2.5">
-                        <option value="">-- Unggah File Excel Dahulu --</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Jenis Transaksi</label>
-                    <select name="jenis_transaksi" id="import_jenis_transaksi" class="w-full text-sm border-gray-200 rounded-xl focus:border-blue-500 focus:ring-blue-500 p-2.5" required>
-                        <option value="K">Kredit (Tempo)</option>
-                        <option value="T">Tunai (Cash)</option>
-                    </select>
-                </div>
-                <div id="import_jenis_bayar_container" class="hidden">
-                    <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Jenis Bayar</label>
-                    <select name="jenis_bayar" class="w-full text-sm border-gray-200 rounded-xl focus:border-blue-500 focus:ring-blue-500 p-2.5">
-                        <option value="TN">Cash / Tunai</option>
-                        <option value="TR">Transfer</option>
-                    </select>
-                </div>
-                <div class="flex justify-end gap-3 pt-4 border-t border-gray-100">
-                    <button type="button" class="px-4 py-2 text-xs font-semibold text-gray-700 bg-gray-100 rounded-xl hover:bg-gray-200 transition" onclick="toggleModalImport()">Batal</button>
-                    <button type="submit" class="px-4 py-2 text-xs font-semibold text-white bg-[#294C9A] rounded-xl hover:bg-[#1E3A70] transition shadow-sm">Proses Import</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Modal Import Pembayaran Excel (FIFO Pelunasan Piutang) -->
-    <div id="modalImportPembayaran" class="fixed inset-0 z-50 flex items-center justify-center hidden bg-black/40 backdrop-blur-sm overflow-y-auto">
-        <div class="bg-white rounded-2xl shadow-xl w-full max-w-md mx-4 overflow-hidden border border-gray-100">
-            <div class="p-5 border-b border-gray-100 flex justify-between items-center bg-gradient-to-r from-teal-600 to-teal-800 text-white">
-                <div class="flex items-center gap-2">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
-                    <h3 class="font-bold text-base text-white">Import Pembayaran Piutang (FIFO)</h3>
-                </div>
-                <button type="button" class="btn-close-modal text-white hover:text-gray-200 transition" onclick="toggleModalImportPembayaran()">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                </button>
-            </div>
-            <form action="{{ route('penjualanmarketing.importpembayaran') }}" method="POST" enctype="multipart/form-data" class="p-6 space-y-4">
-                @csrf
-                <div class="p-3 bg-teal-50 border border-teal-100 rounded-xl text-teal-800 text-xs leading-relaxed">
-                    <div class="font-bold flex items-center gap-1.5 mb-1">
-                        <svg class="w-4 h-4 text-teal-600 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path></svg>
-                        Alokasi Otomatis (FIFO)
+                <!-- Form Import -->
+                <form action="{{ route('penjualanmarketing.import') }}" method="POST" enctype="multipart/form-data" class="p-6 space-y-4">
+                    @csrf
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">File Excel (.xlsx, .xls, .csv)</label>
+                        <input 
+                            type="file" 
+                            id="file_excel" 
+                            name="file_excel" 
+                            accept=".xlsx,.xls,.csv" 
+                            required 
+                            class="w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-3.5 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-blue-50 file:text-[#162a5b] hover:file:bg-blue-100 transition border border-slate-200 dark:border-slate-800 rounded-xl p-2 bg-white dark:bg-slate-900 cursor-pointer" 
+                        />
                     </div>
-                    Pembayaran akan otomatis dialokasikan ke faktur pelanggan mulai dari tanggal yang paling awal hingga lunas berurutan.
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Pilih File Excel (.xlsx, .xls, .csv)</label>
-                    <input type="file" id="file_excel_pembayaran" name="file_excel" accept=".xlsx,.xls,.csv" required class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100 transition border border-gray-200 rounded-xl p-2" />
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Pilih Sheet</label>
-                    <select name="sheet_name" id="import_sheet_name_pembayaran" class="w-full text-sm border-gray-200 rounded-xl focus:border-teal-500 focus:ring-teal-500 p-2.5">
-                        <option value="">-- Pilih Sheet / Deteksi Otomatis --</option>
-                    </select>
-                </div>
-                <div class="flex justify-end gap-3 pt-4 border-t border-gray-100">
-                    <button type="button" class="px-4 py-2 text-xs font-semibold text-gray-700 bg-gray-100 rounded-xl hover:bg-gray-200 transition" onclick="toggleModalImportPembayaran()">Batal</button>
-                    <button type="submit" class="px-4 py-2 text-xs font-semibold text-white bg-teal-600 hover:bg-teal-700 rounded-xl transition shadow-sm">Proses Import</button>
-                </div>
-            </form>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">Pilih Sheet</label>
+                        <select 
+                            name="sheet_name" 
+                            id="import_sheet_name" 
+                            class="w-full px-3.5 py-2.5 text-xs font-semibold rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 cursor-pointer"
+                        >
+                            <option value="">-- Unggah File Excel Dahulu --</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">Jenis Transaksi</label>
+                        <select 
+                            name="jenis_transaksi" 
+                            id="import_jenis_transaksi" 
+                            class="w-full px-3.5 py-2.5 text-xs font-semibold rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 cursor-pointer" 
+                            required
+                        >
+                            <option value="K">Kredit (Tempo)</option>
+                            <option value="T">Tunai (Cash)</option>
+                        </select>
+                    </div>
+
+                    <div id="import_jenis_bayar_container" class="hidden">
+                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">Jenis Bayar</label>
+                        <select 
+                            name="jenis_bayar" 
+                            class="w-full px-3.5 py-2.5 text-xs font-semibold rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 cursor-pointer"
+                        >
+                            <option value="TN">Cash / Tunai</option>
+                            <option value="TR">Transfer</option>
+                        </select>
+                    </div>
+
+                    <div class="flex items-center justify-end gap-2.5 pt-4 border-t border-slate-100 dark:border-slate-800">
+                        <button 
+                            type="button" 
+                            class="px-4 py-2 text-xs font-bold text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-700 transition cursor-pointer" 
+                            onclick="closeModal('modalImport')"
+                        >
+                            Batal
+                        </button>
+                        <button 
+                            type="submit" 
+                            class="px-4 py-2 text-xs font-bold text-white bg-[#162a5b] hover:bg-[#1c3574] rounded-xl transition shadow-sm cursor-pointer"
+                        >
+                            Proses Import
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
-    </div>
+
+        <!-- Modal Import Pembayaran Excel (FIFO Pelunasan Piutang) -->
+        <div id="modalImportPembayaran" class="fixed inset-0 z-[100] hidden bg-slate-950/60 backdrop-blur-sm flex items-center justify-center p-4">
+            <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200/90 dark:border-slate-800 shadow-2xl w-full max-w-md overflow-hidden transform scale-95 opacity-0 transition-all duration-300" id="modalImportPembayaranContentWrapper">
+                <!-- Modal Header -->
+                <div class="bg-teal-700 px-5 py-3.5 flex items-center justify-between text-white">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-8 h-8 rounded-lg bg-white/15 flex items-center justify-center shadow-xs">
+                            <i data-lucide="credit-card" class="w-4 h-4 text-white"></i>
+                        </div>
+                        <h3 class="font-bold text-sm text-white">Import Pembayaran Piutang (FIFO)</h3>
+                    </div>
+                    <button type="button" class="text-white/80 hover:text-white p-1 rounded-lg hover:bg-white/10 transition cursor-pointer" onclick="closeModal('modalImportPembayaran')">
+                        <i data-lucide="x" class="w-5 h-5"></i>
+                    </button>
+                </div>
+
+                <!-- Form Import Pembayaran -->
+                <form action="{{ route('penjualanmarketing.importpembayaran') }}" method="POST" enctype="multipart/form-data" class="p-6 space-y-4">
+                    @csrf
+                    <div class="p-3 bg-teal-50 dark:bg-teal-500/10 border border-teal-200/70 dark:border-teal-500/20 rounded-xl text-teal-800 dark:text-teal-300 text-xs leading-relaxed">
+                        <div class="font-bold flex items-center gap-1.5 mb-1 text-teal-900 dark:text-teal-200">
+                            <i data-lucide="info" class="w-4 h-4 text-teal-600 dark:text-teal-400 shrink-0"></i>
+                            <span>Alokasi Otomatis (FIFO)</span>
+                        </div>
+                        Pembayaran akan otomatis dialokasikan ke faktur penjualan pelanggan mulai dari tanggal yang paling awal hingga lunas berurutan.
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">Pilih File Excel (.xlsx, .xls, .csv)</label>
+                        <input 
+                            type="file" 
+                            id="file_excel_pembayaran" 
+                            name="file_excel" 
+                            accept=".xlsx,.xls,.csv" 
+                            required 
+                            class="w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-3.5 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100 transition border border-slate-200 dark:border-slate-800 rounded-xl p-2 bg-white dark:bg-slate-900 cursor-pointer" 
+                        />
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">Pilih Sheet</label>
+                        <select 
+                            name="sheet_name" 
+                            id="import_sheet_name_pembayaran" 
+                            class="w-full px-3.5 py-2.5 text-xs font-semibold rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-teal-600/20 focus:border-teal-600 cursor-pointer"
+                        >
+                            <option value="">-- Pilih Sheet / Deteksi Otomatis --</option>
+                        </select>
+                    </div>
+
+                    <div class="flex items-center justify-end gap-2.5 pt-4 border-t border-slate-100 dark:border-slate-800">
+                        <button 
+                            type="button" 
+                            class="px-4 py-2 text-xs font-bold text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-700 transition cursor-pointer" 
+                            onclick="closeModal('modalImportPembayaran')"
+                        >
+                            Batal
+                        </button>
+                        <button 
+                            type="submit" 
+                            class="px-4 py-2 text-xs font-bold text-white bg-teal-600 hover:bg-teal-700 rounded-xl transition shadow-sm cursor-pointer"
+                        >
+                            Proses Import
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    @endpush
 
     @push('myscript')
         <script>
+            // Initialize Lucide Icons
+            document.addEventListener('DOMContentLoaded', function() {
+                if (window.lucide) {
+                    lucide.createIcons();
+                }
+            });
+
+            // Close reset dropdown on click outside
+            $(document).on('click', function(e) {
+                if (!$(e.target).closest('#resetDropdownWrapper').length) {
+                    $('#resetDropdownMenu').addClass('hidden');
+                }
+            });
+
             function toggleModalImport() {
-                $('#modalImport').toggleClass('hidden');
+                if ($('#modalImport').hasClass('hidden')) {
+                    openModal('modalImport');
+                } else {
+                    closeModal('modalImport');
+                }
             }
 
             function toggleModalImportPembayaran() {
-                $('#modalImportPembayaran').toggleClass('hidden');
+                if ($('#modalImportPembayaran').hasClass('hidden')) {
+                    openModal('modalImportPembayaran');
+                } else {
+                    closeModal('modalImportPembayaran');
+                }
             }
 
             $('#file_excel_pembayaran').change(function() {
@@ -397,8 +648,8 @@
                     text: "Apakah Anda yakin ingin menghapus transaksi '" + name + "'?",
                     icon: 'warning',
                     showCancelButton: true,
-                    confirmButtonColor: '#294C9A',
-                    cancelButtonColor: '#d33',
+                    confirmButtonColor: '#162a5b',
+                    cancelButtonColor: '#ef4444',
                     confirmButtonText: 'Ya, Hapus!',
                     cancelButtonText: 'Batal'
                 }).then((result) => {
@@ -430,8 +681,8 @@
                     text: "Seluruh data transaksi, item produk detail, dan histori pembayaran akan dihapus permanen!",
                     icon: 'warning',
                     showCancelButton: true,
-                    confirmButtonColor: '#d33',
-                    cancelButtonColor: '#3085d6',
+                    confirmButtonColor: '#ef4444',
+                    cancelButtonColor: '#64748b',
                     confirmButtonText: 'Ya, Reset Semua!',
                     cancelButtonText: 'Batal'
                 }).then((result) => {
@@ -459,7 +710,7 @@
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonColor: '#d97706',
-                    cancelButtonColor: '#3085d6',
+                    cancelButtonColor: '#64748b',
                     confirmButtonText: 'Ya, Reset Pembayaran!',
                     cancelButtonText: 'Batal'
                 }).then((result) => {
@@ -486,7 +737,7 @@
             });
 
             $(document).on('change', '.row-checkbox', function() {
-                if ($('.row-checkbox:checked').length == $('.row-checkbox').length) {
+                if ($('.row-checkbox:checked').length == $('.row-checkbox').length && $('.row-checkbox').length > 0) {
                     $('#checkAll').prop('checked', true);
                 } else {
                     $('#checkAll').prop('checked', false);
@@ -516,8 +767,8 @@
                     text: "Apakah Anda yakin ingin menghapus " + selected.length + " transaksi penjualan yang terpilih beserta detail dan pembayaran terkait?",
                     icon: 'warning',
                     showCancelButton: true,
-                    confirmButtonColor: '#d33',
-                    cancelButtonColor: '#3085d6',
+                    confirmButtonColor: '#ef4444',
+                    cancelButtonColor: '#64748b',
                     confirmButtonText: 'Ya, Hapus!',
                     cancelButtonText: 'Batal'
                 }).then((result) => {

@@ -1,308 +1,335 @@
 <x-app-layout>
-    <x-slot name="header">
-        Supplier Management
-    </x-slot>
+    <x-slot name="header">Master Data Supplier</x-slot>
+    <x-slot name="headerTitle">Master Data Supplier</x-slot>
+    <x-slot name="headerDescription">Kelola data vendor & pemasok, informasi kontak person, telepon, alamat, dan nomor rekening pembayaran.</x-slot>
 
-    <!-- Header Actions -->
-    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-        <div>
-            <h2 class="text-2xl font-semibold text-gray-900 tracking-tight">Master Data Supplier</h2>
-            <p class="text-sm text-gray-500 mt-1">Manage system suppliers, contact info, and bank accounts.</p>
-        </div>
-        <div class="flex items-center gap-3">
-            <!-- Breadcrumbs -->
-            <nav class="flex" aria-label="Breadcrumb">
-                <ol class="inline-flex items-center space-x-1 md:space-x-2 text-xs font-semibold text-gray-500">
-                    <li class="inline-flex items-center">
-                        <a href="#" class="inline-flex items-center hover:text-gray-700">
-                            <svg class="w-3 h-3 mr-1.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path></svg>
-                            Data Master
-                        </a>
-                    </li>
-                    <li>
-                        <div class="flex items-center">
-                            <svg class="w-3.5 h-3.5 text-gray-400 mx-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg>
-                            <span class="text-[#294C9A] font-bold">Supplier</span>
-                        </div>
-                    </li>
-                </ol>
-            </nav>
-            <a href="{{ route('supplier.export', request()->query()) }}" class="inline-flex items-center gap-2 px-4 py-2 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-xl transition shadow-sm">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                Export Excel
-            </a>
-            @can('supplier.create')
-            <button type="button" onclick="openModal('modalImportSupplier')" class="inline-flex items-center gap-2 px-4 py-2 text-xs font-semibold text-white bg-teal-600 hover:bg-teal-700 rounded-xl transition shadow-sm">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
-                Import Excel
-            </button>
-            <button type="button" onclick="openModalCreate()" class="inline-flex items-center gap-2 px-4 py-2 text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl transition shadow-sm">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-                Tambah Supplier
-            </button>
-            @endcan
-        </div>
-    </div>
+    <div class="space-y-6">
 
-    <!-- Alert Notifications -->
-    @if(session('success'))
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Berhasil',
-                    text: '{{ session('success') }}',
-                    showConfirmButton: false,
-                    timer: 2000
-                });
-            });
-        </script>
-    @endif
-    @if(session('error'))
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Gagal',
-                    text: '{{ session('error') }}',
-                    confirmButtonColor: '#294C9A'
-                });
-            });
-        </script>
-    @endif
-
-    <style>
-        /* Custom Pagination Styling */
-        nav[role="navigation"] svg {
-            display: inline-block;
-        }
-        nav[role="navigation"] .relative.z-0.inline-flex.shadow-sm.rounded-md {
-            box-shadow: none !important;
-        }
-        nav[role="navigation"] span.relative.z-0.inline-flex, 
-        nav[role="navigation"] div.flex.justify-between.flex-1 {
-            display: flex;
-            gap: 4px;
-        }
-        nav[role="navigation"] a, 
-        nav[role="navigation"] span[placeholder] {
-            border-radius: 8px !important;
-            border: 1px solid #294C9A !important;
-            background-color: #294C9A !important;
-            color: white !important;
-            font-size: 11px !important;
-            font-weight: 600 !important;
-            padding: 6px 12px !important;
-            transition: all 0.2s;
-        }
-        nav[role="navigation"] span[aria-current="page"] > span {
-            background-color: #1E3A70 !important;
-            color: white !important;
-            border-color: #1E3A70 !important;
-            border-radius: 8px !important;
-            font-size: 11px !important;
-            font-weight: 800 !important;
-            padding: 6px 12px !important;
-        }
-        nav[role="navigation"] a:hover {
-            background-color: #1E3A70 !important;
-            border-color: #1E3A70 !important;
-            color: white !important;
-        }
-        nav[role="navigation"] span[aria-disabled="true"] > span {
-            background-color: #f3f4f6 !important;
-            color: #9ca3af !important;
-            border-color: #e5e7eb !important;
-            border-radius: 8px !important;
-            font-size: 11px !important;
-            padding: 6px 12px !important;
-        }
-    </style>
-
-    <!-- Full Width Wrapper -->
-    <div class="w-full">
-        <!-- Filter -->  
-        <div class="mb-4">
-            <form action="{{ route('supplier.index') }}" method="GET" class="flex flex-col sm:flex-row gap-2 w-full">
-                <div class="relative flex-1">
-                    <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+        <!-- Action & Filter Bar (Modern Frameless & Full Width - Consistent with /produk & /pelanggan) -->
+        <div class="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4 w-full">
+            <form method="GET" action="{{ route('supplier.index') }}" class="flex flex-wrap sm:flex-nowrap items-center gap-3 flex-1 w-full">
+                
+                <!-- Search Input: Placeholder without floating label -->
+                <div class="relative flex-1 min-w-[220px] w-full">
+                    <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                        <i data-lucide="search" class="w-4 h-4 text-slate-400"></i>
                     </div>
-                    <input type="text" name="nama_supplier" value="{{ request('nama_supplier') }}" class="block w-full py-3 pl-9 pr-4 text-xs text-gray-900 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#294C9A] focus:border-[#294C9A] focus:outline-none transition placeholder-gray-400 shadow-sm" placeholder="Cari Kode / Nama Supplier...">
+                    <input 
+                        type="text" 
+                        name="nama_supplier" 
+                        value="{{ request('nama_supplier') }}" 
+                        placeholder="Cari kode atau nama supplier..." 
+                        class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 bg-white dark:bg-slate-900 text-xs font-semibold text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 transition shadow-2xs"
+                    >
                 </div>
-                <div>
-                    <button type="submit" class="w-full sm:w-auto inline-flex items-center justify-center px-5 py-3 text-xs font-semibold text-white bg-[#294C9A] hover:bg-[#1E3A70] rounded-xl transition shadow-sm">
-                        <svg class="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                        Cari
+
+                <div class="flex items-center gap-2">
+                    <button type="submit" class="px-4 py-2.5 rounded-xl bg-slate-800 dark:bg-slate-700 hover:bg-slate-900 text-white font-bold text-xs transition shadow-2xs flex items-center gap-1.5 cursor-pointer">
+                        <i data-lucide="filter" class="w-3.5 h-3.5"></i>
+                        <span>Filter</span>
                     </button>
+
+                    @if(request('nama_supplier'))
+                        <a href="{{ route('supplier.index') }}" class="px-3 py-2.5 rounded-xl bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 hover:bg-rose-100 font-bold text-xs transition flex items-center gap-1">
+                            <i data-lucide="x" class="w-3.5 h-3.5"></i>
+                            <span>Reset</span>
+                        </a>
+                    @endif
                 </div>
             </form>
+
+            <!-- Actions Group: Export, Import & Tambah Supplier -->
+            <div class="flex flex-wrap items-center gap-2.5 shrink-0">
+                <!-- Export Excel -->
+                <a 
+                    href="{{ route('supplier.export', request()->query()) }}" 
+                    class="flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-xs transition cursor-pointer"
+                    title="Export Data ke Excel"
+                >
+                    <i data-lucide="file-spreadsheet" class="w-4 h-4"></i>
+                    <span class="hidden sm:inline">Export Excel</span>
+                </a>
+
+                @can('supplier.create')
+                <!-- Import Excel -->
+                <button 
+                    type="button" 
+                    onclick="openModal('modalImportSupplier')" 
+                    class="flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs shadow-xs transition cursor-pointer"
+                    title="Import Data dari Excel"
+                >
+                    <i data-lucide="upload" class="w-4 h-4"></i>
+                    <span class="hidden sm:inline">Import Excel</span>
+                </button>
+
+                <!-- Tambah Supplier -->
+                <button 
+                    type="button" 
+                    onclick="openModalCreate()" 
+                    class="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#162a5b] hover:bg-[#1c3574] text-white font-bold text-xs shadow-sm transition cursor-pointer"
+                >
+                    <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                    <span>Tambah Supplier</span>
+                </button>
+                @endcan
+            </div>
         </div>
 
-        <!-- Cards List (One per row, full width) -->
-        <div class="space-y-3 mb-6">
+        <!-- Section Header Strip (Solid Biru Dongker #162a5b) -->
+        <div class="px-6 py-4 bg-[#162a5b] text-white flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-2xl shadow-2xs">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-xl bg-white/15 text-white flex items-center justify-center shadow-xs shrink-0">
+                    <i data-lucide="truck" class="w-4 h-4 text-white"></i>
+                </div>
+                <div>
+                    <h3 class="font-bold text-sm text-white tracking-tight flex items-center gap-2">
+                        <span>Daftar Master Supplier</span>
+                        <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-white/20 text-white">
+                            {{ $supplier->total() }} Total
+                        </span>
+                    </h3>
+                    <p class="text-[11px] text-blue-200/80">Katalog vendor/pemasok barang, kontak person, telepon, dan nomor rekening</p>
+                </div>
+            </div>
+
+            @if(request('nama_supplier'))
+            <div class="text-[11px] text-blue-100 flex items-center gap-1.5 bg-black/20 px-3 py-1.5 rounded-xl self-start sm:self-auto">
+                <i data-lucide="check-circle-2" class="w-3.5 h-3.5 text-sky-300"></i>
+                <span>Filter aktif diterapkan</span>
+            </div>
+            @endif
+        </div>
+
+        <!-- Cards List (Compact Full Width Supplier Cards) -->
+        <div class="space-y-2.5">
             @forelse ($supplier as $d)
-                <div class="bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition duration-200 p-4">
-                    <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
+                <div class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-xl p-3 sm:px-4 sm:py-3 shadow-2xs hover:shadow-xs hover:border-slate-300 dark:hover:border-slate-700 transition-all duration-150">
+                    <div class="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
                         
-                        <!-- Col 1: Identity & Address (5 cols) -->
-                        <div class="md:col-span-5 flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-full bg-[#294C9A]/5 border border-[#294C9A]/10 flex items-center justify-center shrink-0">
-                                <span class="text-[#294C9A] font-bold text-xs uppercase">
-                                    {{ substr($d->nama_supplier, 0, 2) }}
-                                </span>
+                        <!-- Col 1: Identity & Address (md:col-span-4) -->
+                        <div class="md:col-span-4 flex items-center gap-3 min-w-0">
+                            <!-- Avatar: Solid Navy #162a5b (No gradient) -->
+                            <div class="w-10 h-10 rounded-xl bg-[#162a5b] text-white flex items-center justify-center font-bold text-xs tracking-wider shrink-0 shadow-xs">
+                                {{ strtoupper(substr($d->nama_supplier, 0, 2)) }}
                             </div>
-                            <div class="min-w-0">
+                            <div class="min-w-0 flex-1">
                                 <div class="flex items-center gap-1.5 mb-0.5">
-                                    <span class="px-1.5 py-0.5 text-[9px] font-mono font-bold text-gray-500 bg-gray-100 rounded-md">{{ $d->kode_supplier }}</span>
+                                    <span class="font-mono text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200/60 dark:border-slate-700">
+                                        {{ $d->kode_supplier }}
+                                    </span>
+                                    <span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-md text-[10px] font-semibold bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-200/60 dark:border-emerald-500/20">
+                                        <i data-lucide="shield-check" class="w-2.5 h-2.5"></i>
+                                        <span>Terverifikasi</span>
+                                    </span>
                                 </div>
-                                <h4 class="text-sm font-semibold text-gray-900 leading-tight truncate" title="{{ $d->nama_supplier }}">{{ textUpperCase($d->nama_supplier) }}</h4>
+                                <h4 class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white truncate" title="{{ $d->nama_supplier }}">
+                                    {{ $d->nama_supplier }}
+                                </h4>
                                 @if($d->alamat_supplier)
-                                    <p class="text-xs text-gray-400 mt-1 truncate max-w-md" title="{{ $d->alamat_supplier }}">
-                                        <svg class="inline w-3.5 h-3.5 mr-0.5 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                        </svg>
-                                        {{ textCamelCase($d->alamat_supplier) }}
-                                    </p>
+                                <div class="flex items-center gap-1 text-[11px] text-slate-400 dark:text-slate-500 truncate mt-0.5" title="{{ $d->alamat_supplier }}">
+                                    <i data-lucide="map-pin" class="w-3 h-3 text-slate-400 shrink-0"></i>
+                                    <span class="truncate">{{ $d->alamat_supplier }}</span>
+                                </div>
                                 @endif
                             </div>
                         </div>
 
-                        <!-- Col 2: Contact Person & Email (3 cols) -->
-                        <div class="md:col-span-3 flex items-start gap-2">
-                            <svg class="w-4 h-4 text-gray-400 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                            </svg>
-                            <div class="min-w-0">
-                                <p class="text-[10px] text-gray-400 font-bold uppercase tracking-wider mb-0.5">Contact Person</p>
-                                <p class="text-xs font-semibold text-gray-800 truncate" title="{{ strip_tags($d->contact_person) }}">{!! strip_tags($d->contact_person) ?: '-' !!}</p>
-                                @if($d->email_supplier)
-                                    <p class="text-[10px] text-gray-400 truncate mt-0.5">{{ $d->email_supplier }}</p>
-                                @endif
+                        <!-- Col 2: Contact Person & Telepon (md:col-span-3) -->
+                        <div class="md:col-span-3 min-w-0 pl-0 md:pl-2 border-t md:border-t-0 border-slate-100 dark:border-slate-800 pt-2 md:pt-0">
+                            <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-0.5">Kontak & Telepon</p>
+                            <div class="flex items-center gap-1 text-xs font-semibold text-slate-800 dark:text-slate-200 truncate">
+                                <i data-lucide="user" class="w-3.5 h-3.5 text-slate-400 shrink-0"></i>
+                                <span class="truncate">{!! strip_tags($d->contact_person) ?: '-' !!}</span>
+                            </div>
+                            <div class="flex items-center gap-1 text-xs text-slate-600 dark:text-slate-400 truncate mt-0.5">
+                                <i data-lucide="phone" class="w-3.5 h-3.5 text-slate-400 shrink-0"></i>
+                                <span class="font-medium truncate">{{ $d->no_hp_supplier ?: '-' }}</span>
                             </div>
                         </div>
 
-                        <!-- Col 3: Phone & Account (3 cols) -->
-                        <div class="md:col-span-3 flex items-start gap-2">
-                            <svg class="w-4 h-4 text-gray-400 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.94.725l.548 2.2a1 1 0 01-.321.988l-1.305.98a10.582 10.582 0 004.872 4.872l.98-1.305a1 1 0 01.988-.321l2.2.548a1 1 0 01.725.94V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
-                            </svg>
-                            <div class="min-w-0">
-                                <p class="text-[10px] text-gray-400 font-bold uppercase tracking-wider mb-0.5">Telepon & Rekening</p>
-                                <p class="text-xs text-gray-800 font-medium truncate">{{ $d->no_hp_supplier ?: '-' }}</p>
-                                @if($d->no_rekening_supplier)
-                                    <p class="text-[10px] text-gray-500 font-mono truncate mt-0.5">{{ $d->no_rekening_supplier }}</p>
-                                @endif
+                        <!-- Col 3: Rekening & Email (md:col-span-3) -->
+                        <div class="md:col-span-3 min-w-0 pl-0 md:pl-2 border-t md:border-t-0 border-slate-100 dark:border-slate-800 pt-2 md:pt-0">
+                            <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-0.5">Rekening & Email</p>
+                            <div class="flex items-center gap-1 text-xs font-bold text-slate-800 dark:text-slate-200 truncate">
+                                <i data-lucide="credit-card" class="w-3.5 h-3.5 text-slate-400 shrink-0"></i>
+                                <span class="font-mono truncate">{{ $d->no_rekening_supplier ?: '-' }}</span>
+                            </div>
+                            <div class="flex items-center gap-1 text-[11px] text-slate-500 dark:text-slate-400 truncate mt-0.5">
+                                <i data-lucide="mail" class="w-3 h-3 text-slate-400 shrink-0"></i>
+                                <span class="truncate">{{ $d->email_supplier ?: '-' }}</span>
                             </div>
                         </div>
 
-                        <!-- Actions (1 col) -->
-                        <div class="md:col-span-1 flex justify-end gap-1">
+                        <!-- Col 4: Action Buttons (md:col-span-2) -->
+                        <div class="md:col-span-2 flex items-center justify-end gap-1.5 pt-2 md:pt-0 border-t md:border-t-0 border-slate-100 dark:border-slate-800 shrink-0">
                             @can('supplier.edit')
-                            <button onclick="openModalEdit('{{ Crypt::encrypt($d->kode_supplier) }}')" class="p-1.5 bg-emerald-50 text-emerald-600 hover:bg-emerald-100 rounded-lg transition" title="Edit Supplier">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                            <button 
+                                type="button" 
+                                onclick="openModalEdit('{{ Crypt::encrypt($d->kode_supplier) }}')" 
+                                class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center bg-blue-50 dark:bg-blue-500/10 hover:bg-blue-100 dark:hover:bg-blue-500/20 text-blue-600 dark:text-blue-400 border border-blue-200/60 dark:border-blue-500/20 transition cursor-pointer shadow-2xs" 
+                                title="Edit Supplier"
+                            >
+                                <i data-lucide="pencil" class="w-3.5 h-3.5"></i>
                             </button>
                             @endcan
+
                             @can('supplier.delete')
-                            <button type="button" class="btn-delete p-1.5 bg-red-50 text-red-600 hover:bg-red-100 rounded-lg transition" data-id="{{ Crypt::encrypt($d->kode_supplier) }}" data-name="{{ $d->nama_supplier }}" title="Delete Supplier">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                            <button 
+                                type="button" 
+                                class="btn-delete w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center bg-rose-50 dark:bg-rose-500/10 hover:bg-rose-100 dark:hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 border border-rose-200/60 dark:border-rose-500/20 transition cursor-pointer shadow-2xs" 
+                                data-id="{{ Crypt::encrypt($d->kode_supplier) }}" 
+                                data-name="{{ $d->nama_supplier }}" 
+                                title="Hapus Supplier"
+                            >
+                                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
                             </button>
                             @endcan
                         </div>
-
                     </div>
                 </div>
             @empty
-                <div class="bg-white rounded-2xl border border-gray-100 py-16 text-center text-gray-500">
-                    <div class="flex flex-col items-center justify-center">
-                        <svg class="w-10 h-10 text-gray-300 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
-                        <span>No suppliers registered in the database.</span>
+                <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 py-16 px-4 text-center">
+                    <div class="flex flex-col items-center justify-center max-w-sm mx-auto">
+                        <div class="w-12 h-12 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400 mb-3 shadow-xs">
+                            <i data-lucide="truck" class="w-6 h-6"></i>
+                        </div>
+                        <h4 class="font-bold text-sm text-slate-800 dark:text-white">Tidak ada data supplier</h4>
+                        <p class="text-xs text-slate-400 mt-1">Data supplier belum terdaftar atau tidak cocok dengan filter pencarian.</p>
+                        @if(request('nama_supplier'))
+                            <a href="{{ route('supplier.index') }}" class="mt-4 px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-slate-300 font-bold text-xs transition">
+                                Reset Filter
+                            </a>
+                        @endif
                     </div>
                 </div>
             @endforelse
         </div>
 
+        <!-- Custom Pagination -->
         @if ($supplier->hasPages())
-            <div class="bg-white rounded-xl border border-gray-100 p-4">
+            <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/90 dark:border-slate-800 p-4 shadow-2xs">
                 {{ $supplier->links() }}
             </div>
         @endif
     </div>
 
-    <!-- Modal Create -->
-    <div id="modalCreate" class="fixed inset-0 z-50 hidden bg-gray-900/50 backdrop-blur-sm flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl border border-gray-100 shadow-xl w-full max-w-xl overflow-hidden transform scale-95 opacity-0 transition-all duration-300" id="modalCreateContentWrapper">
-            <div class="bg-[#294C9A] px-6 py-4 flex items-center justify-between">
-                <h3 class="text-sm font-semibold text-white">Tambah Supplier</h3>
-                <button onclick="closeModal('modalCreate')" class="text-white/80 hover:text-white">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                </button>
-            </div>
-            <div id="loadCreateContent" class="max-h-[80vh] overflow-y-auto p-6">
-                <!-- Loader -->
-                <div class="flex items-center justify-center py-6">
-                    <svg class="animate-spin h-6 w-6 text-[#294C9A]" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal Edit -->
-    <div id="modalEdit" class="fixed inset-0 z-50 hidden bg-gray-900/50 backdrop-blur-sm flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl border border-gray-100 shadow-xl w-full max-w-xl overflow-hidden transform scale-95 opacity-0 transition-all duration-300" id="modalEditContentWrapper">
-            <div class="bg-[#294C9A] px-6 py-4 flex items-center justify-between">
-                <h3 class="text-sm font-semibold text-white">Edit Supplier</h3>
-                <button onclick="closeModal('modalEdit')" class="text-white/80 hover:text-white">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                </button>
-            </div>
-            <div id="loadEditContent" class="max-h-[80vh] overflow-y-auto p-6">
-                <!-- Loader -->
-                <div class="flex items-center justify-center py-6">
-                    <svg class="animate-spin h-6 w-6 text-[#294C9A]" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal Import Supplier -->
-    <div id="modalImportSupplier" class="fixed inset-0 z-50 hidden bg-gray-900/50 backdrop-blur-sm flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl border border-gray-100 shadow-xl w-full max-w-lg overflow-hidden transform scale-95 opacity-0 transition-all duration-300" id="modalImportSupplierContentWrapper">
-            <div class="bg-teal-600 px-6 py-4 flex items-center justify-between">
-                <div class="flex items-center gap-2">
-                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
-                    <h3 class="text-sm font-semibold text-white">Import Data Supplier</h3>
-                </div>
-                <button onclick="closeModal('modalImportSupplier')" class="text-white/80 hover:text-white">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                </button>
-            </div>
-            <form action="{{ route('supplier.import') }}" method="POST" enctype="multipart/form-data" class="p-6 space-y-4">
-                @csrf
-                <div class="p-3.5 bg-blue-50/70 border border-blue-100 rounded-xl text-xs text-blue-800 space-y-1">
-                    <p class="font-bold flex items-center gap-1.5">
-                        <svg class="w-4 h-4 text-[#294C9A]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                        Informasi Format Import:
-                    </p>
-                    <p>File Excel cukup berisi kolom header <b>Nama Supplier</b> (atau di kolom pertama). Kode Supplier akan di-generate otomatis secara berurutan oleh sistem (contoh: <code>SP0001</code>, <code>SP0002</code>, dst).</p>
-                </div>
-
-                <div>
-                    <label class="block text-xs font-semibold text-gray-700 mb-1">Pilih File Excel (.xlsx / .xls / .csv) <span class="text-red-500">*</span></label>
-                    <input type="file" name="file_excel" accept=".xlsx,.xls,.csv" required class="block w-full text-xs text-gray-900 bg-white border border-gray-200 rounded-xl cursor-pointer focus:outline-none file:mr-4 file:py-2.5 file:px-4 file:rounded-l-xl file:border-0 file:text-xs file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100 p-1 border-dashed" />
-                </div>
-
-                <div class="flex items-center justify-end gap-2 pt-2 border-t border-gray-100">
-                    <button type="button" onclick="closeModal('modalImportSupplier')" class="px-4 py-2 text-xs font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-xl transition">Batal</button>
-                    <button type="submit" class="px-5 py-2 text-xs font-semibold text-white bg-teal-600 hover:bg-teal-700 rounded-xl transition shadow-sm flex items-center gap-1.5">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
-                        Proses Import
+    @push('modals')
+        <!-- Modal Create -->
+        <div id="modalCreate" class="fixed inset-0 z-[100] hidden bg-slate-950/60 backdrop-blur-sm flex items-center justify-center p-4">
+            <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200/90 dark:border-slate-800 shadow-2xl w-full max-w-xl overflow-hidden transform scale-95 opacity-0 transition-all duration-300" id="modalCreateContentWrapper">
+                <div class="bg-[#162a5b] px-5 py-3.5 flex items-center justify-between text-white">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-8 h-8 rounded-lg bg-white/15 flex items-center justify-center shadow-xs">
+                            <i data-lucide="plus-circle" class="w-4 h-4 text-white"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-bold text-white tracking-tight">Tambah Supplier Baru</h3>
+                            <p class="text-[10px] text-blue-200/80">Masukkan informasi vendor, kontak, alamat, dan nomor rekening</p>
+                        </div>
+                    </div>
+                    <button onclick="closeModal('modalCreate')" type="button" class="text-white/80 hover:text-white p-1 rounded-lg hover:bg-white/10 transition cursor-pointer">
+                        <i data-lucide="x" class="w-5 h-5"></i>
                     </button>
                 </div>
-            </form>
+                <div id="loadCreateContent" class="max-h-[82vh] overflow-y-auto p-5">
+                    <!-- Loader -->
+                    <div class="flex flex-col items-center justify-center py-12 gap-2.5">
+                        <div class="w-8 h-8 border-3 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                        <span class="text-xs font-semibold text-slate-500">Memuat formulir...</span>
+                    </div>
+                </div>
+            </div>
         </div>
-    </div>
+
+        <!-- Modal Edit -->
+        <div id="modalEdit" class="fixed inset-0 z-[100] hidden bg-slate-950/60 backdrop-blur-sm flex items-center justify-center p-4">
+            <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200/90 dark:border-slate-800 shadow-2xl w-full max-w-xl overflow-hidden transform scale-95 opacity-0 transition-all duration-300" id="modalEditContentWrapper">
+                <div class="bg-[#162a5b] px-5 py-3.5 flex items-center justify-between text-white">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-8 h-8 rounded-lg bg-white/15 flex items-center justify-center shadow-xs">
+                            <i data-lucide="pencil" class="w-4 h-4 text-white"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-bold text-white tracking-tight">Edit Data Supplier</h3>
+                            <p class="text-[10px] text-blue-200/80">Perbarui data vendor, kontak, alamat, atau nomor rekening</p>
+                        </div>
+                    </div>
+                    <button onclick="closeModal('modalEdit')" type="button" class="text-white/80 hover:text-white p-1 rounded-lg hover:bg-white/10 transition cursor-pointer">
+                        <i data-lucide="x" class="w-5 h-5"></i>
+                    </button>
+                </div>
+                <div id="loadEditContent" class="max-h-[82vh] overflow-y-auto p-5">
+                    <!-- Loader -->
+                    <div class="flex flex-col items-center justify-center py-12 gap-2.5">
+                        <div class="w-8 h-8 border-3 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                        <span class="text-xs font-semibold text-slate-500">Memuat formulir...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Import Supplier -->
+        <div id="modalImportSupplier" class="fixed inset-0 z-[100] hidden bg-slate-950/60 backdrop-blur-sm flex items-center justify-center p-4">
+            <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200/90 dark:border-slate-800 shadow-2xl w-full max-w-lg overflow-hidden transform scale-95 opacity-0 transition-all duration-300" id="modalImportSupplierContentWrapper">
+                <div class="bg-[#162a5b] px-5 py-3.5 flex items-center justify-between text-white">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-8 h-8 rounded-lg bg-white/15 flex items-center justify-center shadow-xs">
+                            <i data-lucide="upload" class="w-4 h-4 text-white"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-bold text-white tracking-tight">Import Data Supplier</h3>
+                            <p class="text-[10px] text-blue-200/80">Upload file Excel (.xlsx / .xls / .csv)</p>
+                        </div>
+                    </div>
+                    <button onclick="closeModal('modalImportSupplier')" type="button" class="text-white/80 hover:text-white p-1 rounded-lg hover:bg-white/10 transition cursor-pointer">
+                        <i data-lucide="x" class="w-5 h-5"></i>
+                    </button>
+                </div>
+                <form action="{{ route('supplier.import') }}" method="POST" enctype="multipart/form-data" class="p-5 space-y-4">
+                    @csrf
+                    <div class="p-3.5 bg-blue-50/80 dark:bg-blue-500/10 border border-blue-100 dark:border-blue-500/20 rounded-xl text-xs text-blue-800 dark:text-blue-300 space-y-1">
+                        <p class="font-bold flex items-center gap-1.5">
+                            <i data-lucide="info" class="w-4 h-4 text-blue-600 dark:text-blue-400 shrink-0"></i>
+                            <span>Panduan Format Excel:</span>
+                        </p>
+                        <p class="text-[11px] leading-relaxed">
+                            File Excel wajib memiliki kolom header <strong>Nama Supplier</strong> (atau di kolom pertama). Kode Supplier akan dibuat otomatis secara berurutan oleh sistem (contoh: <code>SP0001</code>, <code>SP0002</code>, dst).
+                        </p>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                            Pilih File Excel (.xlsx / .xls / .csv) <span class="text-rose-500">*</span>
+                        </label>
+                        <input 
+                            type="file" 
+                            name="file_excel" 
+                            accept=".xlsx,.xls,.csv" 
+                            required 
+                            class="block w-full text-xs text-slate-700 dark:text-slate-300 file:mr-4 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-slate-100 hover:file:bg-slate-200 dark:file:bg-slate-800 dark:hover:file:bg-slate-700 file:text-slate-700 dark:file:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-900 transition cursor-pointer"
+                        />
+                    </div>
+
+                    <div class="flex items-center justify-end gap-2.5 pt-3 border-t border-slate-100 dark:border-slate-800">
+                        <button 
+                            type="button" 
+                            onclick="closeModal('modalImportSupplier')" 
+                            class="px-4 py-2 text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition cursor-pointer"
+                        >
+                            Batal
+                        </button>
+                        <button 
+                            type="submit" 
+                            class="inline-flex items-center gap-1.5 px-5 py-2 text-xs font-bold text-white bg-teal-600 hover:bg-teal-700 rounded-lg transition shadow-xs cursor-pointer"
+                        >
+                            <i data-lucide="upload" class="w-3.5 h-3.5"></i>
+                            <span>Proses Import</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    @endpush
 
     @push('myscript')
         <script>
@@ -313,7 +340,7 @@
                 setTimeout(() => {
                     wrapper.classList.remove('scale-95', 'opacity-0');
                     wrapper.classList.add('scale-100', 'opacity-100');
-                }, 50);
+                }, 20);
             }
 
             function closeModal(id) {
@@ -323,13 +350,14 @@
                 wrapper.classList.add('scale-95', 'opacity-0');
                 setTimeout(() => {
                     modal.classList.add('hidden');
-                }, 300);
+                }, 250);
             }
 
             function openModalCreate() {
                 openModal('modalCreate');
                 $('#loadCreateContent').load('/supplier/create', function() {
                     initFormValidation('#formCreateSupplier');
+                    if (typeof lucide !== 'undefined') lucide.createIcons();
                 });
             }
 
@@ -337,6 +365,7 @@
                 openModal('modalEdit');
                 $('#loadEditContent').load('/supplier/' + id + '/edit', function() {
                     initFormValidation('#formEditSupplier');
+                    if (typeof lucide !== 'undefined') lucide.createIcons();
                 });
             }
 
@@ -347,13 +376,13 @@
 
                 function validateField(field) {
                     const input = $(field);
-                    const value = input.val().trim();
+                    const value = (input.val() || '').trim();
                     let isValid = true;
                     let errorMsg = '';
 
                     if (value === '') {
                         isValid = false;
-                        errorMsg = 'Kolom ini tidak boleh kosong.';
+                        errorMsg = 'Kolom ini wajib diisi.';
                     } else if (input.attr('type') === 'number' && isNaN(value)) {
                         isValid = false;
                         errorMsg = 'Nilai harus berupa angka.';
@@ -362,14 +391,15 @@
                         errorMsg = 'Maksimal ' + input.attr('maxlength') + ' karakter.';
                     }
 
-                    // Remove existing error message
                     input.parent().find('.error-msg').remove();
 
                     if (!isValid) {
-                        input.addClass('is-invalid');
-                        input.after('<p class="text-xs text-red-500 mt-1 error-msg">' + errorMsg + '</p>');
+                        input.removeClass('border-slate-200 dark:border-slate-700 focus:ring-blue-600 focus:border-blue-600')
+                             .addClass('border-rose-500 focus:ring-rose-500 focus:border-rose-500');
+                        input.after('<p class="text-[11px] text-rose-500 font-semibold mt-1 error-msg">' + errorMsg + '</p>');
                     } else {
-                        input.removeClass('is-invalid');
+                        input.removeClass('border-rose-500 focus:ring-rose-500 focus:border-rose-500')
+                             .addClass('border-slate-200 dark:border-slate-700 focus:ring-blue-600 focus:border-blue-600');
                     }
                     return isValid;
                 }
@@ -402,10 +432,15 @@
                     text: "Apakah Anda yakin ingin menghapus supplier '" + name + "' secara permanen?",
                     icon: 'warning',
                     showCancelButton: true,
-                    confirmButtonColor: '#294C9A',
-                    cancelButtonColor: '#d33',
+                    confirmButtonColor: '#162a5b',
+                    cancelButtonColor: '#ef4444',
                     confirmButtonText: 'Ya, Hapus!',
-                    cancelButtonText: 'Batal'
+                    cancelButtonText: 'Batal',
+                    customClass: {
+                        popup: 'rounded-2xl',
+                        confirmButton: 'rounded-xl text-xs font-bold px-4 py-2.5',
+                        cancelButton: 'rounded-xl text-xs font-bold px-4 py-2.5'
+                    }
                 }).then((result) => {
                     if (result.isConfirmed) {
                         var form = $('<form>', {
@@ -426,6 +461,12 @@
                         form.submit();
                     }
                 });
+            });
+
+            document.addEventListener('DOMContentLoaded', function () {
+                if (typeof lucide !== 'undefined') {
+                    lucide.createIcons();
+                }
             });
         </script>
     @endpush

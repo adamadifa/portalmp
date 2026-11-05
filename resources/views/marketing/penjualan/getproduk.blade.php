@@ -1,59 +1,91 @@
-<div class="border border-gray-100 rounded-2xl overflow-hidden shadow-md bg-white flex flex-col">
-    <!-- Card Header with Solid Blue & Search Input (Fixed at Top of Modal Component) -->
-    <div class="px-5 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 bg-[#294C9A] text-white shrink-0">
-        <div class="flex items-center gap-2">
-            <svg class="w-4 h-4 text-blue-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
-            <h3 class="font-bold text-sm tracking-wide">Daftar Produk Tersedia</h3>
+<div class="border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden shadow-lg bg-white dark:bg-slate-900 flex flex-col">
+    <!-- Card Header with Corporate Navy & Search Input -->
+    <div class="px-5 py-3.5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 bg-[#162a5b] text-white shrink-0">
+        <div class="flex items-center gap-2.5">
+            <div class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-white shrink-0">
+                <i data-lucide="package" class="w-4 h-4"></i>
+            </div>
+            <div>
+                <h3 class="font-bold text-xs uppercase tracking-wider text-white">Katalog Produk Tersedia</h3>
+                <p class="text-[10px] text-white/70">Klik salah satu produk untuk menambahkan ke faktur</p>
+            </div>
         </div>
-        <!-- Embedded Search Bar inside Card Header -->
-        <div class="relative w-full sm:w-64">
-            <input type="text" id="search_produk_modal" class="w-full h-[32px] pl-9 pr-3 text-xs font-semibold text-gray-800 bg-white/95 hover:bg-white focus:bg-white border border-transparent rounded-lg focus:outline-none focus:ring-2 focus:ring-white/20 transition placeholder-gray-400" placeholder="Cari nama atau kode..." autocomplete="off">
-            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-            </span>
+        <!-- Search Bar inside Header -->
+        <div class="relative w-full sm:w-72">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                <i data-lucide="search" class="w-3.5 h-3.5"></i>
+            </div>
+            <input 
+                type="text" 
+                id="search_produk_modal" 
+                class="w-full h-8 pl-8 pr-3 text-xs font-medium text-slate-800 bg-white/95 hover:bg-white focus:bg-white border-0 rounded-lg focus:outline-none focus:ring-2 focus:ring-white/40 transition placeholder-slate-400 shadow-2xs" 
+                placeholder="Cari nama atau kode produk..." 
+                autocomplete="off"
+            >
         </div>
     </div>
 
-    <!-- Scrollable Table Container (Only Table Body Scrolls, Header is Sticky) -->
-    <div class="overflow-y-auto max-h-[380px]">
+    <!-- Scrollable Table Container -->
+    <div class="overflow-y-auto max-h-[380px] divide-y divide-slate-100 dark:divide-slate-800">
         <table class="w-full text-xs text-left border-collapse" id="tabelproduk_modal">
-            <thead class="sticky top-0 bg-[#294C9A] text-white z-10">
+            <thead class="sticky top-0 bg-slate-50 dark:bg-slate-800/90 backdrop-blur-xs text-slate-600 dark:text-slate-300 z-10 border-b border-slate-200 dark:border-slate-700">
                 <tr>
-                    <th class="py-3 px-5 font-bold uppercase tracking-wider whitespace-nowrap" style="width: 15%;">Kode</th>
-                    <th class="py-3 px-5 font-bold uppercase tracking-wider whitespace-nowrap" style="width: 40%;">Nama Produk</th>
-                    <th class="py-3 px-5 font-bold uppercase tracking-wider text-center whitespace-nowrap" style="width: 10%;">Satuan</th>
-                    <th class="py-3 px-5 font-bold uppercase tracking-wider text-right whitespace-nowrap" style="width: 25%;">Harga / Dus</th>
-                    <th class="py-3 px-5 font-bold uppercase tracking-wider text-center whitespace-nowrap" style="width: 10%;">Aksi</th>
+                    <th class="py-2.5 px-4 font-bold uppercase tracking-wider whitespace-nowrap text-[11px]" style="width: 15%;">Kode</th>
+                    <th class="py-2.5 px-4 font-bold uppercase tracking-wider whitespace-nowrap text-[11px]" style="width: 45%;">Nama Produk</th>
+                    <th class="py-2.5 px-4 font-bold uppercase tracking-wider text-center whitespace-nowrap text-[11px]" style="width: 10%;">Satuan</th>
+                    <th class="py-2.5 px-4 font-bold uppercase tracking-wider text-right whitespace-nowrap text-[11px]" style="width: 20%;">Harga / Dus</th>
+                    <th class="py-2.5 px-4 font-bold uppercase tracking-wider text-center whitespace-nowrap text-[11px]" style="width: 10%;">Aksi</th>
                 </tr>
             </thead>
-            <tbody class="divide-y divide-gray-100 bg-white" id="list_produk_modal">
-                @foreach ($produk as $d)
-                    <tr class="hover:bg-blue-50/30 transition-colors duration-150 product-row" data-search="{{ strtolower($d->kode_produk . ' ' . $d->nama_produk) }}">
-                        <td class="py-3 px-5 font-mono font-bold text-[#294C9A]">{{ $d->kode_produk }}</td>
-                        <td class="py-3 px-5 font-semibold text-gray-900">{{ $d->nama_produk }}</td>
-                        <td class="py-3 px-5 text-center">
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-gray-100 text-gray-800">
+            <tbody class="divide-y divide-slate-100 dark:divide-slate-800 bg-white dark:bg-slate-900" id="list_produk_modal">
+                @forelse ($produk as $d)
+                    <tr class="hover:bg-blue-50/40 dark:hover:bg-slate-800/60 transition-colors product-row" data-search="{{ strtolower($d->kode_produk . ' ' . $d->nama_produk) }}">
+                        <td class="py-2.5 px-4 font-mono font-bold">
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-bold bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border border-blue-200/50 dark:border-blue-700/30">
+                                {{ $d->kode_produk }}
+                            </span>
+                        </td>
+                        <td class="py-2.5 px-4 font-semibold text-slate-800 dark:text-slate-100">{{ $d->nama_produk }}</td>
+                        <td class="py-2.5 px-4 text-center">
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400">
                                 {{ $d->satuan }}
                             </span>
                         </td>
-                        <td class="py-3 px-5 text-right font-bold text-gray-900">Rp {{ number_format($d->harga, 0, ',', '.') }}</td>
-                        <td class="py-3 px-5 text-center">
-                            <a href="#" class="pilihProduk inline-flex items-center justify-center px-3.5 py-1.5 bg-[#294C9A] hover:bg-[#1E3A70] text-white rounded-xl text-[11px] font-bold transition shadow-sm active:scale-95 duration-100" 
-                               kode_produk="{{ $d->kode_produk }}" 
-                               nama_produk="{{ $d->nama_produk }}" 
-                               harga_dus="{{ $d->harga }}">
-                                Pilih
-                            </a>
+                        <td class="py-2.5 px-4 text-right font-bold text-slate-800 dark:text-white">
+                            Rp {{ number_format($d->harga, 0, ',', '.') }}
+                        </td>
+                        <td class="py-2.5 px-4 text-center">
+                            <button 
+                                type="button" 
+                                class="pilihProduk inline-flex items-center justify-center gap-1.5 px-3 py-1.5 bg-[#162a5b] hover:bg-[#1f3a7a] text-white rounded-lg text-xs font-bold transition shadow-2xs active:scale-95 cursor-pointer" 
+                                kode_produk="{{ $d->kode_produk }}" 
+                                nama_produk="{{ $d->nama_produk }}" 
+                                satuan="{{ $d->satuan }}"
+                                harga_dus="{{ $d->harga }}"
+                            >
+                                <i data-lucide="check" class="w-3.5 h-3.5"></i>
+                                <span>Pilih</span>
+                            </button>
                         </td>
                     </tr>
-                @endforeach
+                @empty
+                    <tr>
+                        <td colspan="5" class="py-8 text-center text-slate-400 dark:text-slate-500">
+                            <p class="text-xs">Tidak ada data produk yang aktif.</p>
+                        </td>
+                    </tr>
+                @endforelse
             </tbody>
         </table>
     </div>
 </div>
 
 <script>
-    // Live Search inside Modal
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+    }
+
+    // Live Instant Search inside Modal
     $('#search_produk_modal').on('keyup', function() {
         let value = $(this).val().toLowerCase();
         $('.product-row').filter(function() {

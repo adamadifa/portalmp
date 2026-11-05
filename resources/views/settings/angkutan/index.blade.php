@@ -144,10 +144,10 @@
                 <table class="w-full text-left border-collapse">
                     <thead>
                         <tr class="text-xs font-semibold uppercase tracking-wider bg-[#294C9A] text-white">
-                            <th class="py-3 px-4" style="width: 15%;">Kode</th>
-                            <th class="py-3 px-4" style="width: 45%;">Nama Angkutan</th>
-                            <th class="py-3 px-4" style="width: 25%;">Keterangan</th>
-                            <th class="py-3 px-4 text-center" style="width: 15%;">Actions</th>
+                            <th class="py-2.5 px-4" style="width: 15%;">Kode</th>
+                            <th class="py-2.5 px-4" style="width: 45%;">Nama Angkutan</th>
+                            <th class="py-2.5 px-4" style="width: 25%;">Keterangan</th>
+                            <th class="py-2.5 px-4 text-center" style="width: 15%;">Actions</th>
                         </tr>
                     </thead>
                     <tbody class="text-sm divide-y divide-gray-100">

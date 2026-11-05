@@ -1,141 +1,442 @@
-<html lang="en">
-
+<!DOCTYPE html>
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Laporan Penjualan Marketing {{ date('Y-m-d H:i:s') }}</title>
-    <link rel="stylesheet" href="{{ asset('assets/css/report.css') }}">
+    <title>Laporan Rincian Penjualan Marketing - {{ date('d-m-Y H:i') }}</title>
+    
     <script src="https://code.jquery.com/jquery-2.2.4.js"></script>
     <script src="{{ asset('assets/vendor/libs/freeze/js/freeze-table.min.js') }}"></script>
+    
     <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            font-size: 11px;
+            color: #1e293b;
+            background-color: #ffffff;
+            margin: 0;
+            padding: 20px;
+        }
+
+        /* Report Header */
+        .report-header {
+            margin-bottom: 20px;
+            border-bottom: 2px solid #162a5b;
+            padding-bottom: 12px;
+        }
+
+        .report-title {
+            font-size: 16px;
+            font-weight: 800;
+            color: #162a5b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin: 0 0 6px 0;
+        }
+
+        .report-meta-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 11px;
+            margin-top: 8px;
+        }
+
+        .report-meta-table td {
+            padding: 2px 4px;
+            vertical-align: top;
+        }
+
+        .report-meta-table td.label {
+            font-weight: 700;
+            color: #475569;
+            width: 130px;
+        }
+
+        .report-meta-table td.separator {
+            width: 10px;
+            text-align: center;
+        }
+
+        .report-meta-table td.value {
+            color: #0f172a;
+            font-weight: 600;
+        }
+
+        /* Freeze & Table Container */
         .freeze-table {
             height: auto;
-            max-height: 830px;
+            max-height: 820px;
             overflow: auto;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+        }
+
+        /* Datatable Styling */
+        .report-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 11px;
+            white-space: nowrap;
+        }
+
+        .report-table thead th {
+            background-color: #162a5b !important;
+            color: #ffffff !important;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 9px 8px;
+            border: 1px solid #1e3a7a;
+            font-size: 10.5px;
+            position: sticky;
+            top: 0;
+            z-index: 20;
+        }
+
+        .report-table tbody td {
+            padding: 5px 8px;
+            border: 1px solid #e2e8f0;
+            font-size: 11px;
+            color: #334155;
+            vertical-align: middle;
+        }
+
+        /* Alternating row colors */
+        .report-table tbody tr.row-even {
+            background-color: #ffffff;
+        }
+        .report-table tbody tr.row-odd {
+            background-color: #f8fafc;
+        }
+
+        .report-table tbody tr:hover {
+            background-color: #f1f5f9;
+        }
+
+        /* Subtotal Row */
+        .report-table tr.row-subtotal td {
+            background-color: #edf2f7 !important;
+            font-weight: 700;
+            border-top: 1px solid #cbd5e1;
+            border-bottom: 2px solid #cbd5e1;
+            color: #1e293b;
+            padding: 6px 8px;
+        }
+
+        /* Grand Total Row */
+        .report-table tfoot th {
+            background-color: #162a5b !important;
+            color: #ffffff !important;
+            font-weight: 800;
+            padding: 9px 8px;
+            border: 1px solid #1e3a7a;
+            font-size: 11px;
+        }
+
+        /* Alignment Utilities */
+        .center {
+            text-align: center !important;
+        }
+        .right {
+            text-align: right !important;
+        }
+        .left {
+            text-align: left !important;
+        }
+        .font-mono {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !important;
+        }
+        .font-bold {
+            font-weight: 700 !important;
+        }
+
+        /* Badge for Satuan & Kode */
+        .badge-satuan {
+            display: inline-block;
+            padding: 1px 5px;
+            border-radius: 4px;
+            font-size: 9.5px;
+            font-weight: 700;
+            background-color: #f1f5f9;
+            color: #475569;
+            border: 1px solid #e2e8f0;
+            text-transform: uppercase;
+        }
+
+        /* Floating Action Bar (Screen Only) */
+        .action-bar {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            display: flex;
+            gap: 10px;
+            z-index: 9999;
+        }
+
+        .btn-action {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 10px 18px;
+            border-radius: 30px;
+            font-size: 12px;
+            font-weight: 700;
+            text-decoration: none;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transition: all 0.2s ease;
+            border: none;
+        }
+
+        .btn-print {
+            background-color: #162a5b;
+            color: #ffffff;
+        }
+        .btn-print:hover {
+            background-color: #1f3a7a;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(22, 42, 91, 0.3);
+        }
+
+        .btn-close {
+            background-color: #64748b;
+            color: #ffffff;
+        }
+        .btn-close:hover {
+            background-color: #475569;
+            transform: translateY(-2px);
+        }
+
+        /* Print Media Styles */
+        @media print {
+            body {
+                padding: 0;
+                background-color: #ffffff;
+                font-size: 9.5px;
+            }
+
+            .action-bar {
+                display: none !important;
+            }
+
+            .freeze-table {
+                max-height: none !important;
+                overflow: visible !important;
+                border: none !important;
+            }
+
+            .report-header {
+                margin-bottom: 12px;
+            }
+
+            .report-title {
+                font-size: 14px;
+            }
+
+            .report-table thead th {
+                position: static !important;
+                background-color: #f1f5f9 !important;
+                color: #0f172a !important;
+                border: 1px solid #94a3b8 !important;
+                padding: 6px 4px;
+                font-size: 9px;
+            }
+
+            .report-table tbody td {
+                padding: 4px;
+                border: 1px solid #cbd5e1 !important;
+                font-size: 9px;
+            }
+
+            .report-table tr.row-subtotal td {
+                background-color: #f8fafc !important;
+            }
+
+            .report-table tfoot th {
+                background-color: #f1f5f9 !important;
+                color: #0f172a !important;
+                border: 1px solid #94a3b8 !important;
+                padding: 6px 4px;
+                font-size: 9px;
+            }
+
+            @page {
+                size: landscape;
+                margin: 8mm 6mm;
+            }
         }
     </style>
 </head>
 
 <body>
-    <div class="header">
-        <h4 class="title">
-            LAPORAN RINCIAN PENJUALAN MARKETING<br>
-        </h4>
-        <h4> PERIODE {{ DateToIndo($dari) }} s/d {{ DateToIndo($sampai) }}</h4>
-        @if ($selected_pelanggan != null)
-            <h4>
-                {{ $selected_pelanggan->kode_pelanggan }} - {{ $selected_pelanggan->nama_pelanggan }}
-            </h4>
-        @endif
+    <!-- Floating Quick Actions -->
+    <div class="action-bar">
+        <button type="button" class="btn-action btn-print" onclick="window.print()">
+            <svg style="width: 16px; height: 16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+            <span>Cetak / Cetak PDF</span>
+        </button>
+        <button type="button" class="btn-action btn-close" onclick="window.close()">
+            <svg style="width: 16px; height: 16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            <span>Tutup</span>
+        </button>
     </div>
-    <div class="content">
-        <div class="freeze-table">
-            <table class="datatable3" style="width: 100%">
-                <thead>
-                    <tr>
-                        <th style="width:1%">NO</th>
-                        <th style="width:5%">TGL</th>
-                        <th style="width:7%">NO BUKTI</th>
-                        <th style="width:15%">PELANGGAN</th>
-                        <th style="width:6%">KODE PRODUK</th>
-                        <th style="width:15%">NAMA PRODUK</th>
-                        <th style="width:4%">SATUAN</th>
-                        <th style="width:4%">QTY</th>
-                        <th style="width:8%">HARGA</th>
-                        <th style="width:10%">DPP</th>
-                        <th style="width:10%">DPP LAIN</th>
-                        <th style="width:10%">PPN (11%)</th>
-                        <th style="width:12%">TOTAL</th>
-                    </tr>
-                </thead>
-                <tbody>
+
+    <!-- Letterhead & Report Metadata -->
+    <div class="report-header">
+        <h1 class="report-title">Laporan Rincian Penjualan Marketing</h1>
+        
+        <table class="report-meta-table">
+            <tr>
+                <td class="label">Periode Transaksi</td>
+                <td class="separator">:</td>
+                <td class="value">{{ DateToIndo($dari) }} s/d {{ DateToIndo($sampai) }}</td>
+                <td class="label" style="text-align: right; width: 100px;">Waktu Cetak</td>
+                <td class="separator">:</td>
+                <td class="value" style="width: 160px;">{{ date('d-m-Y H:i:s') }}</td>
+            </tr>
+            <tr>
+                <td class="label">Filter Pelanggan</td>
+                <td class="separator">:</td>
+                <td class="value">
+                    @if ($selected_pelanggan != null)
+                        <strong>{{ $selected_pelanggan->kode_pelanggan }}</strong> - {{ $selected_pelanggan->nama_pelanggan }}
+                    @else
+                        <em>Semua Pelanggan</em>
+                    @endif
+                </td>
+                <td class="label" style="text-align: right;">Dicetak Oleh</td>
+                <td class="separator">:</td>
+                <td class="value">{{ auth()->user()->name ?? 'Administrator' }}</td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- Main Data Table Container -->
+    <div class="freeze-table">
+        <table class="report-table" id="tabel_penjualan_cetak">
+            <thead>
+                <tr>
+                    <th style="width: 35px;" class="center">No</th>
+                    <th style="width: 75px;" class="center">Tanggal</th>
+                    <th style="width: 95px;" class="center">No. Bukti</th>
+                    <th style="width: 150px;" class="left">Nama Pelanggan</th>
+                    <th style="width: 65px;" class="center">Kode</th>
+                    <th style="width: 180px;" class="left">Nama Produk</th>
+                    <th style="width: 55px;" class="center">Satuan</th>
+                    <th style="width: 60px;" class="right">Qty</th>
+                    <th style="width: 95px;" class="right">Harga / Dus</th>
+                    <th style="width: 105px;" class="right">DPP</th>
+                    <th style="width: 105px;" class="right">DPP Lain</th>
+                    <th style="width: 95px;" class="right">PPN (11%)</th>
+                    <th style="width: 115px;" class="right">Total (+PPN)</th>
+                </tr>
+            </thead>
+            <tbody>
+                @php
+                    $grouped = $penjualan->groupBy('no_bukti');
+                    $grand_qty = 0;
+                    $grand_dpp = 0;
+                    $grand_dpp_lain = 0;
+                    $grand_ppn = 0;
+                    $grand_total = 0;
+                    $global_index = 1;
+                    $row_parity = 0;
+                @endphp
+
+                @forelse ($grouped as $no_bukti => $items)
                     @php
-                        $grouped = $penjualan->groupBy('no_bukti');
-                        $grand_qty = 0;
-                        $grand_dpp = 0;
-                        $grand_dpp_lain = 0;
-                        $grand_ppn = 0;
-                        $grand_total = 0;
-                        $global_index = 1;
+                        $sub_qty = 0;
+                        $sub_dpp = 0;
+                        $sub_dpp_lain = 0;
+                        $sub_ppn = 0;
+                        $sub_total = 0;
                     @endphp
-                    @foreach ($grouped as $no_bukti => $items)
+
+                    @foreach ($items as $d)
                         @php
-                            $sub_qty = 0;
-                            $sub_dpp = 0;
-                            $sub_dpp_lain = 0;
-                            $sub_ppn = 0;
-                            $sub_total = 0;
+                            $dpp = $d->harga * $d->qty;
+                            $dpp_lain = $dpp * 11 / 12;
+                            $ppn = $dpp_lain * 0.12;
+                            $total = $dpp + $ppn;
+
+                            $sub_qty += $d->qty;
+                            $sub_dpp += $dpp;
+                            $sub_dpp_lain += $dpp_lain;
+                            $sub_ppn += $ppn;
+                            $sub_total += $total;
+
+                            $grand_qty += $d->qty;
+                            $grand_dpp += $dpp;
+                            $grand_dpp_lain += $dpp_lain;
+                            $grand_ppn += $ppn;
+                            $grand_total += $total;
+
+                            $row_class = ($row_parity++ % 2 == 0) ? 'row-even' : 'row-odd';
                         @endphp
-                        @foreach ($items as $d)
-                            @php
-                                $dpp = $d->harga * $d->qty;
-                                $dpp_lain = $dpp * 11 / 12;
-                                $ppn = $dpp_lain * 0.12;
-                                $total = $dpp + $ppn;
-
-                                $sub_qty += $d->qty;
-                                $sub_dpp += $dpp;
-                                $sub_dpp_lain += $dpp_lain;
-                                $sub_ppn += $ppn;
-                                $sub_total += $total;
-
-                                $grand_qty += $d->qty;
-                                $grand_dpp += $dpp;
-                                $grand_dpp_lain += $dpp_lain;
-                                $grand_ppn += $ppn;
-                                $grand_total += $total;
-                            @endphp
-                            <tr>
-                                <td class="center">{{ $global_index++ }}</td>
-                                <td class="center">{{ date('d-m-Y', strtotime($d->tanggal)) }}</td>
-                                <td class="center font-mono">{{ $d->no_bukti }}</td>
-                                <td>{{ $d->nama_pelanggan }}</td>
-                                <td class="center font-mono">{{ $d->kode_produk }}</td>
-                                <td>{{ $d->nama_produk }}</td>
-                                <td class="center">
-                                    <span style="text-transform: uppercase;">{{ $d->satuan }}</span>
-                                </td>
-                                <td class="right">{{ formatAngkaDesimal($d->qty) }}</td>
-                                <td class="right">Rp {{ formatAngkaDesimal($d->harga) }}</td>
-                                <td class="right">Rp {{ formatAngkaDesimal($dpp) }}</td>
-                                <td class="right">Rp {{ formatAngkaDesimal($dpp_lain) }}</td>
-                                <td class="right">Rp {{ formatAngkaDesimal($ppn) }}</td>
-                                <td class="right" style="font-weight: bold;">Rp {{ formatAngkaDesimal($total) }}</td>
-                            </tr>
-                        @endforeach
-                        <!-- Subtotal Row per No Bukti -->
-                        <tr style="background-color: #f8fafc; font-weight: bold; font-style: italic;">
-                            <td colspan="7" class="right" style="color: #4b5563;">SUBTOTAL ({{ $no_bukti }}) :</td>
-                            <td class="right" style="color: #1e3a8a;">{{ formatAngkaDesimal($sub_qty) }}</td>
-                            <td></td>
-                            <td class="right" style="color: #1e3a8a;">Rp {{ formatAngkaDesimal($sub_dpp) }}</td>
-                            <td class="right" style="color: #1e3a8a;">Rp {{ formatAngkaDesimal($sub_dpp_lain) }}</td>
-                            <td class="right" style="color: #1e3a8a;">Rp {{ formatAngkaDesimal($sub_ppn) }}</td>
-                            <td class="right" style="color: #1e3a8a;">Rp {{ formatAngkaDesimal($sub_total) }}</td>
+                        <tr class="{{ $row_class }}">
+                            <td class="center">{{ $global_index++ }}</td>
+                            <td class="center">{{ date('d-m-Y', strtotime($d->tanggal)) }}</td>
+                            <td class="center font-mono font-bold">{{ $d->no_bukti }}</td>
+                            <td class="left font-bold">{{ $d->nama_pelanggan }}</td>
+                            <td class="center font-mono">{{ $d->kode_produk }}</td>
+                            <td class="left">{{ $d->nama_produk }}</td>
+                            <td class="center">
+                                <span class="badge-satuan">{{ $d->satuan }}</span>
+                            </td>
+                            <td class="right font-bold">{{ formatAngkaDesimal($d->qty) }}</td>
+                            <td class="right font-mono">{{ formatAngkaDesimal($d->harga) }}</td>
+                            <td class="right font-mono">{{ formatAngkaDesimal($dpp) }}</td>
+                            <td class="right font-mono">{{ formatAngkaDesimal($dpp_lain) }}</td>
+                            <td class="right font-mono">{{ formatAngkaDesimal($ppn) }}</td>
+                            <td class="right font-mono font-bold">{{ formatAngkaDesimal($total) }}</td>
                         </tr>
                     @endforeach
-                </tbody>
-                <tfoot class="table-dark">
-                    <tr style="font-weight: bold; background-color: #f3f4f6;">
-                        <th colspan="7" align="center"><b>TOTAL</b></th>
-                        <th class="right">{{ formatAngkaDesimal($grand_qty) }}</th>
-                        <th></th>
-                        <th class="right">Rp {{ formatAngkaDesimal($grand_dpp) }}</th>
-                        <th class="right">Rp {{ formatAngkaDesimal($grand_dpp_lain) }}</th>
-                        <th class="right">Rp {{ formatAngkaDesimal($grand_ppn) }}</th>
-                        <th class="right">Rp {{ formatAngkaDesimal($grand_total) }}</th>
+
+                    <!-- Subtotal Per No Bukti -->
+                    <tr class="row-subtotal">
+                        <td colspan="7" class="right">SUBTOTAL ({{ $no_bukti }}) :</td>
+                        <td class="right font-bold">{{ formatAngkaDesimal($sub_qty) }}</td>
+                        <td class="right"></td>
+                        <td class="right font-mono">{{ formatAngkaDesimal($sub_dpp) }}</td>
+                        <td class="right font-mono">{{ formatAngkaDesimal($sub_dpp_lain) }}</td>
+                        <td class="right font-mono">{{ formatAngkaDesimal($sub_ppn) }}</td>
+                        <td class="right font-mono font-bold">{{ formatAngkaDesimal($sub_total) }}</td>
                     </tr>
-                </tfoot>
-            </table>
-        </div>
+                @empty
+                    <tr>
+                        <td colspan="13" class="center" style="padding: 30px; color: #94a3b8;">
+                            Tidak ada transaksi penjualan marketing yang ditemukan pada periode ini.
+                        </td>
+                    </tr>
+                @endforelse
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th colspan="7" class="center">GRAND TOTAL</th>
+                    <th class="right font-bold">{{ formatAngkaDesimal($grand_qty) }}</th>
+                    <th></th>
+                    <th class="right font-mono">{{ formatAngkaDesimal($grand_dpp) }}</th>
+                    <th class="right font-mono">{{ formatAngkaDesimal($grand_dpp_lain) }}</th>
+                    <th class="right font-mono">{{ formatAngkaDesimal($grand_ppn) }}</th>
+                    <th class="right font-mono font-bold">{{ formatAngkaDesimal($grand_total) }}</th>
+                </tr>
+            </tfoot>
+        </table>
     </div>
+
+    <script>
+        $(document).ready(function() {
+            $(".freeze-table").freezeTable({
+                'scrollable': true,
+                'columnNum': 4,
+                'shadow': true
+            });
+        });
+    </script>
 </body>
-<script>
-    $(".freeze-table").freezeTable({
-        'scrollable': true,
-        'columnNum': 4,
-        'shadow': true,
-    });
-</script>
 </html>

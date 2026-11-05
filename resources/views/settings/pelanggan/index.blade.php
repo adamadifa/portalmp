@@ -1,245 +1,308 @@
 <x-app-layout>
-    <x-slot name="header">
-        Pelanggan Management
-    </x-slot>
+    <x-slot name="header">Master Data Pelanggan</x-slot>
+    <x-slot name="headerTitle">Master Data Pelanggan</x-slot>
+    <x-slot name="headerDescription">Kelola data pelanggan, informasi outlet/toko, limit piutang, dan cabang operasional.</x-slot>
 
-    <!-- Header Actions -->
-    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-        <div>
-            <h2 class="text-2xl font-semibold text-gray-900 tracking-tight">Master Data Pelanggan</h2>
-            <p class="text-sm text-gray-500 mt-1">Manage system customers, billing limits, and store addresses.</p>
-        </div>
-        <div class="flex items-center gap-3">
-            <!-- Breadcrumbs -->
-            <nav class="flex" aria-label="Breadcrumb">
-                <ol class="inline-flex items-center space-x-1 md:space-x-2 text-xs font-semibold text-gray-500">
-                    <li class="inline-flex items-center">
-                        <a href="#" class="inline-flex items-center hover:text-gray-700">
-                            <svg class="w-3 h-3 mr-1.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path></svg>
-                            Data Master
-                        </a>
-                    </li>
-                    <li>
-                        <div class="flex items-center">
-                            <svg class="w-3.5 h-3.5 text-gray-400 mx-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg>
-                            <span class="text-[#294C9A] font-bold">Pelanggan</span>
-                        </div>
-                    </li>
-                </ol>
-            </nav>
-            @can('pelanggan.create')
-            <button type="button" onclick="openModalCreate()" class="inline-flex items-center gap-2 px-4 py-2 text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl transition shadow-sm">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-                Tambah Pelanggan
-            </button>
-            @endcan
-        </div>
-    </div>
+    <div class="space-y-6">
 
-    <!-- Alert Notifications -->
-    @if(session('success'))
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Berhasil',
-                    text: '{{ session('success') }}',
-                    showConfirmButton: false,
-                    timer: 2000
-                });
-            });
-        </script>
-    @endif
-    @if(session('error'))
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Gagal',
-                    text: '{{ session('error') }}',
-                    confirmButtonColor: '#294C9A'
-                });
-            });
-        </script>
-    @endif
-
-    <style>
-        /* Custom Pagination Styling */
-        nav[role="navigation"] svg {
-            display: inline-block;
-        }
-        nav[role="navigation"] .relative.z-0.inline-flex.shadow-sm.rounded-md {
-            box-shadow: none !important;
-        }
-        nav[role="navigation"] span.relative.z-0.inline-flex, 
-        nav[role="navigation"] div.flex.justify-between.flex-1 {
-            display: flex;
-            gap: 4px;
-        }
-        nav[role="navigation"] a, 
-        nav[role="navigation"] span[placeholder] {
-            border-radius: 8px !important;
-            border: 1px solid #294C9A !important;
-            background-color: #294C9A !important;
-            color: white !important;
-            font-size: 11px !important;
-            font-weight: 600 !important;
-            padding: 6px 12px !important;
-            transition: all 0.2s;
-        }
-        nav[role="navigation"] span[aria-current="page"] > span {
-            background-color: #1E3A70 !important;
-            color: white !important;
-            border-color: #1E3A70 !important;
-            border-radius: 8px !important;
-            font-size: 11px !important;
-            font-weight: 800 !important;
-            padding: 6px 12px !important;
-        }
-        nav[role="navigation"] a:hover {
-            background-color: #1E3A70 !important;
-            border-color: #1E3A70 !important;
-            color: white !important;
-        }
-        nav[role="navigation"] span[aria-disabled="true"] > span {
-            background-color: #f3f4f6 !important;
-            color: #9ca3af !important;
-            border-color: #e5e7eb !important;
-            border-radius: 8px !important;
-            font-size: 11px !important;
-            padding: 6px 12px !important;
-        }
-    </style>
-
-    <!-- Full Width Wrapper -->
-    <div class="w-full">
-        <!-- Filter -->  
-        <div class="mb-4">
-            <form action="{{ route('pelanggan.index') }}" method="GET" class="flex flex-col sm:flex-row gap-2 w-full">
-                <div class="relative flex-1">
-                    <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+        <!-- Action & Filter Bar (Modern Frameless & Full Width - Consistent with /produk) -->
+        <div class="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4 w-full">
+            <form method="GET" action="{{ route('pelanggan.index') }}" class="flex flex-wrap sm:flex-nowrap items-center gap-3 flex-1 w-full">
+                
+                <!-- Search Input: Placeholder without floating label -->
+                <div class="relative flex-1 min-w-[220px] w-full">
+                    <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                        <i data-lucide="search" class="w-4 h-4 text-slate-400"></i>
                     </div>
-                    <input type="text" name="nama_pelanggan" value="{{ request('nama_pelanggan') }}" class="block w-full py-3 pl-9 pr-4 text-xs text-gray-900 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#294C9A] focus:border-[#294C9A] focus:outline-none transition placeholder-gray-400 shadow-sm" placeholder="Cari Kode / Nama Pelanggan...">
+                    <input 
+                        type="text" 
+                        name="nama_pelanggan" 
+                        value="{{ request('nama_pelanggan') }}" 
+                        placeholder="Cari kode atau nama pelanggan..." 
+                        class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 bg-white dark:bg-slate-900 text-xs font-semibold text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 transition shadow-2xs"
+                    >
                 </div>
-                <div>
-                    <button type="submit" class="w-full sm:w-auto inline-flex items-center justify-center px-5 py-3 text-xs font-semibold text-white bg-[#294C9A] hover:bg-[#1E3A70] rounded-xl transition shadow-sm">
-                        <svg class="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                        Cari
+
+                <!-- Filter Cabang -->
+                <div class="relative min-w-[190px] w-full sm:w-auto">
+                    <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                        <i data-lucide="building-2" class="w-4 h-4 text-slate-400"></i>
+                    </div>
+                    <select name="kode_cabang" onchange="this.form.submit()" class="w-full pl-10 pr-8 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 bg-white dark:bg-slate-900 text-xs font-semibold text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 transition shadow-2xs cursor-pointer">
+                        <option value="">Semua Cabang</option>
+                        @foreach($cabang as $c)
+                            <option value="{{ $c->kode_cabang }}" {{ request('kode_cabang') == $c->kode_cabang ? 'selected' : '' }}>
+                                {{ $c->nama_cabang }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <button type="submit" class="px-4 py-2.5 rounded-xl bg-slate-800 dark:bg-slate-700 hover:bg-slate-900 text-white font-bold text-xs transition shadow-2xs flex items-center gap-1.5 cursor-pointer">
+                        <i data-lucide="filter" class="w-3.5 h-3.5"></i>
+                        <span>Filter</span>
                     </button>
+
+                    @if(request('nama_pelanggan') || request('kode_cabang'))
+                        <a href="{{ route('pelanggan.index') }}" class="px-3 py-2.5 rounded-xl bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 hover:bg-rose-100 font-bold text-xs transition flex items-center gap-1">
+                            <i data-lucide="x" class="w-3.5 h-3.5"></i>
+                            <span>Reset</span>
+                        </a>
+                    @endif
                 </div>
             </form>
+
+            <!-- Action: Tambah Pelanggan -->
+            @can('pelanggan.create')
+            <div class="shrink-0">
+                <button type="button" onclick="openModalCreate()" class="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#162a5b] hover:bg-[#1c3574] text-white font-bold text-xs shadow-sm transition cursor-pointer">
+                    <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                    <span>Tambah Pelanggan</span>
+                </button>
+            </div>
+            @endcan
         </div>
 
+        <!-- Section Header Strip (Solid Biru Dongker #162a5b) -->
+        <div class="px-6 py-4 bg-[#162a5b] text-white flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-2xl shadow-2xs">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-xl bg-white/15 text-white flex items-center justify-center shadow-xs shrink-0">
+                    <i data-lucide="users-round" class="w-4 h-4 text-white"></i>
+                </div>
+                <div>
+                    <h3 class="font-bold text-sm text-white tracking-tight flex items-center gap-2">
+                        <span>Daftar Master Pelanggan</span>
+                        <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-white/20 text-white">
+                            {{ $pelanggan->total() }} Total
+                        </span>
+                    </h3>
+                    <p class="text-[11px] text-blue-200/80">Kelola data pelanggan, outlet/toko, limit piutang, dan cabang operasional</p>
+                </div>
+            </div>
 
-        <!-- Cards List (One per row, full width) -->
-        <div class="space-y-3 mb-6">
+            @if(request('nama_pelanggan') || request('kode_cabang'))
+            <div class="text-[11px] text-blue-100 flex items-center gap-1.5 bg-black/20 px-3 py-1.5 rounded-xl self-start sm:self-auto">
+                <i data-lucide="check-circle-2" class="w-3.5 h-3.5 text-sky-300"></i>
+                <span>Filter aktif diterapkan</span>
+            </div>
+            @endif
+        </div>
+
+        <!-- Cards List (Full Width Customer Cards) -->
+        <div class="space-y-3.5">
             @forelse ($pelanggan as $d)
                 @if(str_contains(strtoupper($d->kode_pelanggan), 'PST'))
                     @continue
                 @endif
-                <div class="bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition duration-200 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                    <div class="flex items-center gap-4">
-                        <!-- Photo/Avatar -->
-                        <div class="w-14 h-14 rounded-full bg-gray-50 border border-gray-100 flex items-center justify-center overflow-hidden shadow-inner relative shrink-0">
-                            @if($d->foto)
-                                <img src="{{ asset('storage/pelanggan/' . $d->foto) }}" alt="{{ $d->nama_pelanggan }}" class="w-full h-full object-cover">
-                            @else
-                                <div class="w-full h-full bg-[#294C9A]/5 flex items-center justify-center text-[#294C9A] font-bold text-lg uppercase">
-                                    {{ substr($d->nama_pelanggan, 0, 2) }}
+                <div class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-4 sm:p-5 shadow-2xs hover:shadow-md hover:border-slate-300 dark:hover:border-slate-700 transition-all duration-200">
+                    <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                        
+                        <!-- Left Details Area -->
+                        <div class="flex items-start sm:items-center gap-4 min-w-0">
+                            
+                            <!-- Avatar / Photo with Online Status Dot -->
+                            <div class="relative shrink-0">
+                                <div class="w-13 h-13 sm:w-14 sm:h-14 rounded-xl overflow-hidden border border-slate-200/80 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 flex items-center justify-center shadow-xs">
+                                    @if($d->foto)
+                                        <img src="{{ asset('storage/pelanggan/' . $d->foto) }}" alt="{{ $d->nama_pelanggan }}" class="w-full h-full object-cover">
+                                    @else
+                                        <div class="w-full h-full bg-[#162a5b] text-white flex items-center justify-center font-bold text-sm tracking-wider">
+                                            {{ strtoupper(substr($d->nama_pelanggan, 0, 2)) }}
+                                        </div>
+                                    @endif
                                 </div>
-                            @endif
-                            <!-- Active Status Dot -->
-                            <div class="absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-white {{ $d->status_aktif_pelanggan == '1' ? 'bg-emerald-500' : 'bg-red-500' }}" title="{{ $d->status_aktif_pelanggan == '1' ? 'Aktif' : 'Non-Aktif' }}"></div>
-                        </div>
-
-                        <!-- Customer Details -->
-                        <div>
-                            <div class="flex items-center gap-2 mb-1">
-                                <span class="px-2 py-0.5 text-[9px] font-mono font-bold text-gray-500 bg-gray-100 rounded-md">{{ $d->kode_pelanggan }}</span>
+                                <span 
+                                    class="w-3.5 h-3.5 rounded-full absolute -bottom-0.5 -right-0.5 ring-2 ring-white dark:ring-slate-900 {{ $d->status_aktif_pelanggan == '1' ? 'bg-emerald-500' : 'bg-rose-500' }}" 
+                                    title="{{ $d->status_aktif_pelanggan == '1' ? 'Pelanggan Aktif' : 'Pelanggan Non-Aktif' }}"
+                                ></span>
                             </div>
-                            <h4 class="text-sm font-semibold text-gray-900" title="{{ $d->nama_pelanggan }}">{{ $d->nama_pelanggan }}</h4>
-                            @if($d->alamat_pelanggan)
-                            <p class="text-xs text-gray-400 mt-0.5 truncate max-w-xs">
-                                <svg class="inline w-3 h-3 mr-0.5 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                                {{ $d->alamat_pelanggan }}
-                            </p>
-                            @endif
-                        </div>
-                    </div>
 
-                    <!-- Metadata & Actions -->
-                    <div class="flex items-center justify-between sm:justify-end gap-6 w-full sm:w-auto">
-                        <div class="text-left sm:text-right">
-                            <p class="text-xs text-gray-400">Telepon / HP</p>
-                            <p class="text-xs font-semibold text-gray-700 mt-0.5">{{ $d->no_hp_pelanggan ?? '-' }}</p>
+                            <!-- Customer Information -->
+                            <div class="min-w-0 flex-1">
+                                <!-- Top Badges Row -->
+                                <div class="flex flex-wrap items-center gap-2 mb-1">
+                                    <span class="font-mono text-xs font-bold px-2 py-0.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200/60 dark:border-slate-700">
+                                        {{ $d->kode_pelanggan }}
+                                    </span>
+
+                                    @if($d->cabang)
+                                        <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg text-[11px] font-semibold bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 border border-blue-200/60 dark:border-blue-500/20">
+                                            <i data-lucide="building-2" class="w-3 h-3"></i>
+                                            <span>{{ $d->cabang->nama_cabang }}</span>
+                                        </span>
+                                    @endif
+
+                                    <!-- Status Pill -->
+                                    @if($d->status_aktif_pelanggan == '1')
+                                        <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-200/60 dark:border-emerald-500/20">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                                            <span>Aktif</span>
+                                        </span>
+                                    @else
+                                        <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-200/60 dark:border-rose-500/20">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
+                                            <span>Non-Aktif</span>
+                                        </span>
+                                    @endif
+                                </div>
+
+                                <!-- Customer Name -->
+                                <h4 class="text-sm sm:text-base font-bold text-slate-900 dark:text-white truncate">
+                                    {{ $d->nama_pelanggan }}
+                                </h4>
+
+                                <!-- Store / Home Address -->
+                                @if($d->alamat_toko || $d->alamat_pelanggan)
+                                <div class="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-xl truncate">
+                                    <i data-lucide="map-pin" class="w-3.5 h-3.5 text-slate-400 shrink-0"></i>
+                                    <span class="truncate">{{ $d->alamat_toko ?: $d->alamat_pelanggan }}</span>
+                                </div>
+                                @endif
+
+                                <!-- Secondary Metadata Chips Row -->
+                                <div class="flex flex-wrap items-center gap-3 mt-2 text-xs text-slate-600 dark:text-slate-400">
+                                    <span class="inline-flex items-center gap-1 font-medium">
+                                        <i data-lucide="phone" class="w-3.5 h-3.5 text-slate-400"></i>
+                                        <span class="text-slate-700 dark:text-slate-200 font-semibold">{{ $d->no_hp_pelanggan ?: '-' }}</span>
+                                    </span>
+                                    
+                                    <span class="text-slate-300 dark:text-slate-700 hidden sm:inline">•</span>
+
+                                    <span class="inline-flex items-center gap-1 font-medium">
+                                        <i data-lucide="credit-card" class="w-3.5 h-3.5 text-slate-400"></i>
+                                        <span>Limit:</span>
+                                        <span class="text-slate-800 dark:text-slate-200 font-bold">Rp {{ number_format($d->limit_pelanggan ?? 0, 0, ',', '.') }}</span>
+                                    </span>
+
+                                    <span class="text-slate-300 dark:text-slate-700 hidden sm:inline">•</span>
+
+                                    <span class="inline-flex items-center gap-1 font-medium">
+                                        <i data-lucide="clock" class="w-3.5 h-3.5 text-slate-400"></i>
+                                        <span>LJT:</span>
+                                        <span class="text-slate-800 dark:text-slate-200 font-bold">{{ $d->ljt ?? 0 }} Hari</span>
+                                    </span>
+
+                                    @if($d->hari)
+                                    <span class="text-slate-300 dark:text-slate-700 hidden sm:inline">•</span>
+                                    <span class="inline-flex items-center gap-1 font-medium">
+                                        <i data-lucide="calendar" class="w-3.5 h-3.5 text-slate-400"></i>
+                                        <span>Kunjungan:</span>
+                                        <span class="text-slate-700 dark:text-slate-300 font-semibold">{{ $d->hari }}</span>
+                                    </span>
+                                    @endif
+                                </div>
+                            </div>
                         </div>
-                        <div class="flex gap-2">
+
+                        <!-- Right Action Buttons Area -->
+                        <div class="flex items-center justify-end gap-2 pt-3 lg:pt-0 border-t lg:border-t-0 border-slate-100 dark:border-slate-800 shrink-0">
                             @can('pelanggan.edit')
-                            <button onclick="openModalEdit('{{ Crypt::encrypt($d->kode_pelanggan) }}')" class="p-2 bg-emerald-50 text-emerald-600 hover:bg-emerald-100 rounded-lg transition" title="Edit Pelanggan">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                            <button 
+                                type="button" 
+                                onclick="openModalEdit('{{ Crypt::encrypt($d->kode_pelanggan) }}')" 
+                                class="w-8 h-8 rounded-lg flex items-center justify-center bg-blue-50 dark:bg-blue-500/10 hover:bg-blue-100 dark:hover:bg-blue-500/20 text-blue-600 dark:text-blue-400 border border-blue-200/60 dark:border-blue-500/20 transition cursor-pointer shadow-2xs" 
+                                title="Edit Pelanggan"
+                            >
+                                <i data-lucide="pencil" class="w-3.5 h-3.5"></i>
                             </button>
                             @endcan
+
                             @can('pelanggan.delete')
-                            <button type="button" class="btn-delete p-2 bg-red-50 text-red-600 hover:bg-red-100 rounded-lg transition" data-id="{{ Crypt::encrypt($d->kode_pelanggan) }}" data-name="{{ $d->nama_pelanggan }}" title="Delete Pelanggan">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                            <button 
+                                type="button" 
+                                class="btn-delete w-8 h-8 rounded-lg flex items-center justify-center bg-rose-50 dark:bg-rose-500/10 hover:bg-rose-100 dark:hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 border border-rose-200/60 dark:border-rose-500/20 transition cursor-pointer shadow-2xs" 
+                                data-id="{{ Crypt::encrypt($d->kode_pelanggan) }}" 
+                                data-name="{{ $d->nama_pelanggan }}" 
+                                title="Hapus Pelanggan"
+                            >
+                                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
                             </button>
                             @endcan
                         </div>
                     </div>
                 </div>
             @empty
-                <div class="bg-white rounded-2xl border border-gray-100 py-16 text-center text-gray-500">
-                    <div class="flex flex-col items-center justify-center">
-                        <svg class="w-10 h-10 text-gray-300 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
-                        <span>No customers registered in the database.</span>
+                <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 py-16 px-4 text-center">
+                    <div class="flex flex-col items-center justify-center max-w-sm mx-auto">
+                        <div class="w-12 h-12 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400 mb-3 shadow-xs">
+                            <i data-lucide="users" class="w-6 h-6"></i>
+                        </div>
+                        <h4 class="font-bold text-sm text-slate-800 dark:text-white">Tidak ada data pelanggan</h4>
+                        <p class="text-xs text-slate-400 mt-1">Data pelanggan belum terdaftar atau tidak cocok dengan filter pencarian.</p>
+                        @if(request('nama_pelanggan') || request('kode_cabang'))
+                            <a href="{{ route('pelanggan.index') }}" class="mt-4 px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-slate-300 font-bold text-xs transition">
+                                Reset Filter
+                            </a>
+                        @endif
                     </div>
                 </div>
             @endforelse
         </div>
 
+        <!-- Custom Pagination -->
         @if ($pelanggan->hasPages())
-            <div class="bg-white rounded-xl border border-gray-100 p-4">
+            <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/90 dark:border-slate-800 p-4 shadow-2xs">
                 {{ $pelanggan->links() }}
             </div>
         @endif
     </div>
 
-    <!-- Modal Create -->
-    <div id="modalCreate" class="fixed inset-0 z-50 hidden bg-gray-900/50 backdrop-blur-sm flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl border border-gray-100 shadow-xl w-full max-w-3xl overflow-hidden transform scale-95 opacity-0 transition-all duration-300" id="modalCreateContentWrapper">
-            <div class="bg-[#294C9A] px-6 py-4 flex items-center justify-between">
-                <h3 class="text-sm font-semibold text-white">Tambah Pelanggan</h3>
-                <button onclick="closeModal('modalCreate')" class="text-white/80 hover:text-white">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                </button>
-            </div>
-            <div id="loadCreateContent" class="max-h-[80vh] overflow-y-auto p-6">
-                <!-- Loader -->
-                <div class="flex items-center justify-center py-6">
-                    <svg class="animate-spin h-6 w-6 text-[#294C9A]" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+    @push('modals')
+        <!-- Modal Create -->
+        <div id="modalCreate" class="fixed inset-0 z-[100] hidden bg-slate-950/60 backdrop-blur-sm flex items-center justify-center p-4">
+            <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200/90 dark:border-slate-800 shadow-2xl w-full max-w-3xl overflow-hidden transform scale-95 opacity-0 transition-all duration-300" id="modalCreateContentWrapper">
+                <div class="bg-[#162a5b] px-5 py-3.5 flex items-center justify-between text-white">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-8 h-8 rounded-lg bg-white/15 flex items-center justify-center shadow-xs">
+                            <i data-lucide="user-plus" class="w-4 h-4 text-white"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-bold text-white tracking-tight">Tambah Pelanggan Baru</h3>
+                            <p class="text-[10px] text-blue-200/80">Masukkan informasi toko, kontak, limit piutang, dan cabang</p>
+                        </div>
+                    </div>
+                    <button onclick="closeModal('modalCreate')" type="button" class="text-white/80 hover:text-white p-1 rounded-lg hover:bg-white/10 transition cursor-pointer">
+                        <i data-lucide="x" class="w-5 h-5"></i>
+                    </button>
+                </div>
+                <div id="loadCreateContent" class="max-h-[82vh] overflow-y-auto p-5">
+                    <!-- Loader -->
+                    <div class="flex flex-col items-center justify-center py-12 gap-2.5">
+                        <div class="w-8 h-8 border-3 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                        <span class="text-xs font-semibold text-slate-500">Memuat formulir...</span>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Modal Edit -->
-    <div id="modalEdit" class="fixed inset-0 z-50 hidden bg-gray-900/50 backdrop-blur-sm flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl border border-gray-100 shadow-xl w-full max-w-3xl overflow-hidden transform scale-95 opacity-0 transition-all duration-300" id="modalEditContentWrapper">
-            <div class="bg-[#294C9A] px-6 py-4 flex items-center justify-between">
-                <h3 class="text-sm font-semibold text-white">Edit Pelanggan</h3>
-                <button onclick="closeModal('modalEdit')" class="text-white/80 hover:text-white">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                </button>
-            </div>
-            <div id="loadEditContent" class="max-h-[80vh] overflow-y-auto p-6">
-                <!-- Loader -->
-                <div class="flex items-center justify-center py-6">
-                    <svg class="animate-spin h-6 w-6 text-[#294C9A]" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+        <!-- Modal Edit -->
+        <div id="modalEdit" class="fixed inset-0 z-[100] hidden bg-slate-950/60 backdrop-blur-sm flex items-center justify-center p-4">
+            <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200/90 dark:border-slate-800 shadow-2xl w-full max-w-3xl overflow-hidden transform scale-95 opacity-0 transition-all duration-300" id="modalEditContentWrapper">
+                <div class="bg-[#162a5b] px-5 py-3.5 flex items-center justify-between text-white">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-8 h-8 rounded-lg bg-white/15 flex items-center justify-center shadow-xs">
+                            <i data-lucide="pencil" class="w-4 h-4 text-white"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-bold text-white tracking-tight">Edit Data Pelanggan</h3>
+                            <p class="text-[10px] text-blue-200/80">Perbarui data kontak, toko, limit piutang, atau cabang</p>
+                        </div>
+                    </div>
+                    <button onclick="closeModal('modalEdit')" type="button" class="text-white/80 hover:text-white p-1 rounded-lg hover:bg-white/10 transition cursor-pointer">
+                        <i data-lucide="x" class="w-5 h-5"></i>
+                    </button>
+                </div>
+                <div id="loadEditContent" class="max-h-[82vh] overflow-y-auto p-5">
+                    <!-- Loader -->
+                    <div class="flex flex-col items-center justify-center py-12 gap-2.5">
+                        <div class="w-8 h-8 border-3 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                        <span class="text-xs font-semibold text-slate-500">Memuat formulir...</span>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+    @endpush
 
     @push('myscript')
         <script>
@@ -250,7 +313,7 @@
                 setTimeout(() => {
                     wrapper.classList.remove('scale-95', 'opacity-0');
                     wrapper.classList.add('scale-100', 'opacity-100');
-                }, 50);
+                }, 20);
             }
 
             function closeModal(id) {
@@ -260,13 +323,14 @@
                 wrapper.classList.add('scale-95', 'opacity-0');
                 setTimeout(() => {
                     modal.classList.add('hidden');
-                }, 300);
+                }, 250);
             }
 
             function openModalCreate() {
                 openModal('modalCreate');
                 $('#loadCreateContent').load('/pelanggan/create', function() {
                     initFormValidation('#formCreatePelanggan');
+                    if (typeof lucide !== 'undefined') lucide.createIcons();
                 });
             }
 
@@ -274,6 +338,7 @@
                 openModal('modalEdit');
                 $('#loadEditContent').load('/pelanggan/' + id + '/edit', function() {
                     initFormValidation('#formEditPelanggan');
+                    if (typeof lucide !== 'undefined') lucide.createIcons();
                 });
             }
 
@@ -284,13 +349,13 @@
 
                 function validateField(field) {
                     const input = $(field);
-                    const value = input.val().trim();
+                    const value = (input.val() || '').trim();
                     let isValid = true;
                     let errorMsg = '';
 
                     if (value === '') {
                         isValid = false;
-                        errorMsg = 'Kolom ini tidak boleh kosong.';
+                        errorMsg = 'Kolom ini wajib diisi.';
                     } else if (input.attr('type') === 'number' && isNaN(value)) {
                         isValid = false;
                         errorMsg = 'Nilai harus berupa angka.';
@@ -299,14 +364,15 @@
                         errorMsg = 'Maksimal ' + input.attr('maxlength') + ' karakter.';
                     }
 
-                    // Remove existing error message
                     input.parent().find('.error-msg').remove();
 
                     if (!isValid) {
-                        input.addClass('is-invalid');
-                        input.after('<p class="text-xs text-red-500 mt-1 error-msg">' + errorMsg + '</p>');
+                        input.removeClass('border-slate-200 dark:border-slate-700 focus:ring-blue-600 focus:border-blue-600')
+                             .addClass('border-rose-500 focus:ring-rose-500 focus:border-rose-500');
+                        input.after('<p class="text-[11px] text-rose-500 font-semibold mt-1 error-msg">' + errorMsg + '</p>');
                     } else {
-                        input.removeClass('is-invalid');
+                        input.removeClass('border-rose-500 focus:ring-rose-500 focus:border-rose-500')
+                             .addClass('border-slate-200 dark:border-slate-700 focus:ring-blue-600 focus:border-blue-600');
                     }
                     return isValid;
                 }
@@ -339,10 +405,15 @@
                     text: "Apakah Anda yakin ingin menghapus pelanggan '" + name + "' secara permanen?",
                     icon: 'warning',
                     showCancelButton: true,
-                    confirmButtonColor: '#294C9A',
-                    cancelButtonColor: '#d33',
+                    confirmButtonColor: '#162a5b',
+                    cancelButtonColor: '#ef4444',
                     confirmButtonText: 'Ya, Hapus!',
-                    cancelButtonText: 'Batal'
+                    cancelButtonText: 'Batal',
+                    customClass: {
+                        popup: 'rounded-2xl',
+                        confirmButton: 'rounded-xl text-xs font-bold px-4 py-2.5',
+                        cancelButton: 'rounded-xl text-xs font-bold px-4 py-2.5'
+                    }
                 }).then((result) => {
                     if (result.isConfirmed) {
                         var form = $('<form>', {
@@ -363,6 +434,12 @@
                         form.submit();
                     }
                 });
+            });
+
+            document.addEventListener('DOMContentLoaded', function () {
+                if (typeof lucide !== 'undefined') {
+                    lucide.createIcons();
+                }
             });
         </script>
     @endpush
