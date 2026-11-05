@@ -25,7 +25,16 @@ class BiayaController extends Controller
         $data['supplier'] = Supplier::orderBy('nama_supplier')->get();
 
         $biayaModel = new Biaya;
-        $data['biaya'] = $biayaModel->getBiaya('', $request)->paginate(15);
+        $queryBiaya = $biayaModel->getBiaya('', $request);
+
+        $perPage = $request->get('per_page', '15');
+        if ($perPage === 'all') {
+            $totalCount = (clone $queryBiaya)->count();
+            $data['biaya'] = $queryBiaya->paginate(max($totalCount, 1));
+        } else {
+            $perPage = in_array((int) $perPage, [10, 15, 25, 50, 100, 200]) ? (int) $perPage : 15;
+            $data['biaya'] = $queryBiaya->paginate($perPage);
+        }
         $data['biaya']->appends(request()->all());
 
         return view('biaya.index', $data);

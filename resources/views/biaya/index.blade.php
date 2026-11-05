@@ -326,6 +326,7 @@
                         @endif
                     </div>
                 </div>
+                <input type="hidden" name="per_page" id="form_per_page" value="{{ Request('per_page', '15') }}">
             </form>
         </div>
 
@@ -553,17 +554,33 @@
                 </table>
             </div>
 
-            <!-- Pagination Area (Consistent with /penjualan) -->
-            @if ($biaya->hasPages())
-                <div class="px-6 py-4 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500">
+            <!-- Pagination & Per-Page Controls Area -->
+            <div class="px-6 py-4 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 flex flex-col md:flex-row items-center justify-between gap-3 text-xs text-slate-500">
+                <div class="flex flex-wrap items-center gap-3">
                     <div>
-                        Menampilkan <span class="font-bold text-slate-800 dark:text-slate-200">{{ $biaya->firstItem() ?? 0 }}</span> - <span class="font-bold text-slate-800 dark:text-slate-200">{{ $biaya->lastItem() ?? 0 }}</span> dari <span class="font-bold text-slate-800 dark:text-slate-200">{{ $biaya->total() }}</span> transaksi
+                        Menampilkan <span class="font-bold text-slate-800 dark:text-slate-200">{{ $biaya->total() > 0 ? ($biaya->firstItem() ?? 1) : 0 }}</span> - <span class="font-bold text-slate-800 dark:text-slate-200">{{ $biaya->total() > 0 ? ($biaya->lastItem() ?? $biaya->total()) : 0 }}</span> dari <span class="font-bold text-slate-800 dark:text-slate-200">{{ $biaya->total() }}</span> transaksi
                     </div>
-                    <div>
-                        {{ $biaya->links() }}
+                    <!-- Pilihan Banyak Data Per Halaman -->
+                    <div class="flex items-center gap-1.5 pl-2 sm:border-l sm:border-slate-300 dark:sm:border-slate-700">
+                        <span class="text-[11px] text-slate-500 font-medium">Tampilkan:</span>
+                        <select 
+                            id="per_page_select" 
+                            class="h-[30px] px-2 py-0 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-bold text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-1 focus:ring-blue-600 cursor-pointer shadow-2xs"
+                            onchange="changePerPage(this.value)"
+                        >
+                            <option value="10" {{ Request('per_page') == '10' ? 'selected' : '' }}>10 / hal</option>
+                            <option value="15" {{ Request('per_page', '15') == '15' ? 'selected' : '' }}>15 / hal</option>
+                            <option value="25" {{ Request('per_page') == '25' ? 'selected' : '' }}>25 / hal</option>
+                            <option value="50" {{ Request('per_page') == '50' ? 'selected' : '' }}>50 / hal</option>
+                            <option value="100" {{ Request('per_page') == '100' ? 'selected' : '' }}>100 / hal</option>
+                            <option value="all" {{ Request('per_page') == 'all' ? 'selected' : '' }}>Semua Data</option>
+                        </select>
                     </div>
                 </div>
-            @endif
+                <div>
+                    {{ $biaya->links() }}
+                </div>
+            </div>
         </div>
     </div>
 
@@ -903,6 +920,13 @@
                     });
                 }
             });
+        };
+
+        window.changePerPage = function(val) {
+            var url = new URL(window.location.href);
+            url.searchParams.set('per_page', val);
+            url.searchParams.delete('page'); // Reset ke halaman 1 saat ganti jumlah limit per halaman
+            window.location.href = url.toString();
         };
 
         $(".btnHistoriBayar").click(function(e) {
