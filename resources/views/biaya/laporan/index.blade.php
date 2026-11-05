@@ -1,537 +1,887 @@
 <x-app-layout>
-    <x-slot name="header">
-        Laporan Biaya
-    </x-slot>
+    <x-slot name="header">Laporan Biaya Operasional</x-slot>
+    <x-slot name="headerTitle">Laporan Biaya Operasional</x-slot>
+    <x-slot name="headerDescription">Pusat pencetakan dan ekspor data laporan transaksi biaya operasional, histori pembayaran kas & bank, dan rekapitulasi akun beban (COA).</x-slot>
 
     <!-- Flatpickr CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-    
-    <style>
-    /* ── Isolated Floating Label & Icon Group ──────────── */
-    .c-fl-group {
-        position: relative !important;
-        width: 100% !important;
-        margin-top: 8px !important;
-        margin-bottom: 6px !important;
-    }
 
-    .c-fl-icon {
-        position: absolute !important;
-        left: 10px !important;
-        top: 50% !important;
-        transform: translateY(-50%) !important;
-        color: #6B7280 !important;
-        pointer-events: none !important;
-        z-index: 30 !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-    }
+    <div class="space-y-6">
 
-    .c-fl-group:focus-within .c-fl-icon {
-        color: #294C9A !important;
-    }
-
-    .c-fl-label {
-        position: absolute !important;
-        left: 10px !important;
-        top: 0px !important;
-        bottom: auto !important;
-        transform: translateY(-50%) !important;
-        background-color: #ffffff !important;
-        padding: 0 4px !important;
-        font-size: 11px !important;
-        font-weight: 600 !important;
-        color: #374151 !important;
-        z-index: 30 !important;
-        pointer-events: none !important;
-        line-height: 1 !important;
-        white-space: nowrap !important;
-        border-radius: 2px !important;
-    }
-
-    .c-fl-group:focus-within .c-fl-label {
-        color: #294C9A !important;
-    }
-
-    /* ── Base input ─────────────────────────────── */
-    .fi {
-        display: block !important;
-        width: 100% !important;
-        height: 38px !important;
-        padding: 0 12px 0 34px !important;
-        font-size: 12px !important;
-        color: #111827 !important;
-        background-color: #ffffff !important;
-        border: 1px solid #D1D5DB !important;
-        border-radius: 8px !important;
-        outline: none !important;
-        transition: border-color .15s, box-shadow .15s !important;
-    }
-    .fi:focus {
-        border-color: #294C9A !important;
-        box-shadow: 0 0 0 3px rgba(41, 76, 154, 0.10) !important;
-    }
-    .fi::placeholder { color: #9CA3AF !important; font-size: 11.5px !important; }
-
-    /* ── Select & Select2 reset ─────────────────── */
-    .select2-container { width: 100% !important; }
-
-    .select2-container--default .select2-selection--single {
-        height: 38px !important;
-        border: 1px solid #D1D5DB !important;
-        border-radius: 8px !important;
-        background-color: transparent !important;
-        box-shadow: none !important;
-        position: relative !important;
-        display: block !important;
-    }
-
-    .select2-container--default.select2-container--focus .select2-selection--single,
-    .select2-container--default.select2-container--open .select2-selection--single {
-        border-color: #294C9A !important;
-        box-shadow: 0 0 0 3px rgba(41, 76, 154, 0.10) !important;
-        outline: none !important;
-    }
-
-    .select2-container--default .select2-selection--single .select2-selection__rendered {
-        display: flex !important;
-        align-items: center !important;
-        height: 36px !important;
-        padding-left: 34px !important;
-        padding-right: 28px !important;
-        font-size: 12px !important;
-        color: #111827 !important;
-        line-height: normal !important;
-    }
-
-    .select2-container--default .select2-selection--single .select2-selection__arrow {
-        height: 36px !important;
-        right: 8px !important;
-    }
-
-    .select2-dropdown {
-        font-size: 12px !important;
-        border: 1px solid #D1D5DB !important;
-        border-radius: 8px !important;
-        box-shadow: 0 6px 20px rgba(0,0,0,0.10) !important;
-        overflow: hidden !important;
-    }
-    .select2-search--dropdown { padding: 6px 8px !important; }
-    .select2-search--dropdown .select2-search__field {
-        height: 30px !important;
-        padding: 0 8px !important;
-        font-size: 12px !important;
-        border: 1px solid #D1D5DB !important;
-        border-radius: 5px !important;
-        outline: none !important;
-    }
-    .select2-search--dropdown .select2-search__field:focus {
-        border-color: #294C9A !important;
-        box-shadow: 0 0 0 2px rgba(41, 76, 154, 0.10) !important;
-    }
-    .select2-container--default .select2-results__option {
-        padding: 7px 10px !important;
-        font-size: 12px !important;
-    }
-    .select2-container--default .select2-results__option--highlighted[aria-selected] {
-        background-color: #294C9A !important;
-    }
-
-    /* ── Flatpickr Theme ───────────────── */
-    .flatpickr-calendar {
-        background: #ffffff !important;
-        border-radius: 16px !important;
-        border: 1px solid #E5E7EB !important;
-        box-shadow: 0 20px 35px -10px rgba(41, 76, 154, 0.22), 0 10px 20px -5px rgba(0, 0, 0, 0.08) !important;
-        font-family: inherit !important;
-        overflow: hidden !important;
-        width: 307px !important;
-        z-index: 99999 !important;
-    }
-    .flatpickr-months {
-        background: linear-gradient(135deg, #294C9A 0%, #1E3A70 100%) !important;
-        padding: 8px 10px !important;
-        align-items: center !important;
-        border-radius: 15px 15px 0 0 !important;
-    }
-    .flatpickr-months .flatpickr-month { color: #ffffff !important; height: 38px !important; }
-    .flatpickr-current-month { font-size: 14px !important; font-weight: 700 !important; color: #ffffff !important; padding-top: 4px !important; }
-    .flatpickr-current-month .flatpickr-monthDropdown-months { font-weight: 700 !important; color: #ffffff !important; background: transparent !important; padding: 2px 6px !important; border-radius: 6px !important; margin-right: 4px !important; }
-    .flatpickr-current-month .flatpickr-monthDropdown-months:hover { background: rgba(255, 255, 255, 0.18) !important; }
-    .flatpickr-current-month input.cur-year { font-weight: 700 !important; color: #ffffff !important; }
-    .flatpickr-months .flatpickr-prev-month, .flatpickr-months .flatpickr-next-month { padding: 8px !important; color: #ffffff !important; fill: #ffffff !important; border-radius: 8px !important; transition: background 0.15s ease !important; }
-    .flatpickr-months .flatpickr-prev-month:hover, .flatpickr-months .flatpickr-next-month:hover { background: rgba(255, 255, 255, 0.20) !important; }
-    .flatpickr-months .flatpickr-prev-month svg, .flatpickr-months .flatpickr-next-month svg { fill: #ffffff !important; width: 14px !important; height: 14px !important; }
-    .flatpickr-weekdays { background: #F3F4F6 !important; padding: 8px 0 !important; border-bottom: 1px solid #E5E7EB !important; }
-    span.flatpickr-weekday { color: #294C9A !important; font-weight: 700 !important; font-size: 11px !important; text-transform: uppercase !important; letter-spacing: 0.05em !important; }
-    .flatpickr-days { width: 307px !important; padding: 6px !important; }
-    .dayContainer { width: 294px !important; min-width: 294px !important; max-width: 294px !important; }
-    .flatpickr-day { color: #111827 !important; font-weight: 700 !important; font-size: 13px !important; border-radius: 10px !important; height: 38px !important; line-height: 38px !important; max-width: 38px !important; margin: 2px !important; border: 1px solid transparent !important; transition: all 0.15s ease !important; }
-    .flatpickr-day:hover { background: #EBF1FF !important; color: #294C9A !important; font-weight: 800 !important; border-color: #BFDBFE !important; }
-    .flatpickr-day.today { border: 2px solid #294C9A !important; color: #294C9A !important; font-weight: 800 !important; background: #F0F4FF !important; }
-    .flatpickr-day.selected, .flatpickr-day.selected:hover { background: linear-gradient(135deg, #294C9A 0%, #1E3A70 100%) !important; color: #ffffff !important; font-weight: 800 !important; box-shadow: 0 4px 12px rgba(41, 76, 154, 0.40) !important; border: none !important; }
-    .flatpickr-day.flatpickr-disabled, .flatpickr-day.flatpickr-disabled:hover, .flatpickr-day.prevMonthDay, .flatpickr-day.nextMonthDay { color: #9CA3AF !important; font-weight: 500 !important; opacity: 0.55 !important; background: transparent !important; border-color: transparent !important; }
-    </style>
-
-    <!-- Header & Subtitle -->
-    <div class="mb-6">
-        <h2 class="text-2xl font-semibold text-gray-900 tracking-tight">Laporan Biaya</h2>
-        <p class="text-sm text-gray-500 mt-1">Mengelola dan mencetak laporan transaksi biaya operasional, histori pembayaran, dan rekapitulasi akun.</p>
-    </div>
-
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        <!-- Sidebar Navigation Tabs -->
-        <div class="lg:col-span-4 bg-white rounded-2xl border border-gray-100 shadow-sm p-3 space-y-1">
-            <button type="button" data-tab="biaya" class="tab-btn active w-full flex items-center gap-3 px-4 py-3 text-xs font-semibold rounded-xl text-[#294C9A] bg-blue-50/80 transition-all text-left">
-                <div class="w-8 h-8 rounded-lg bg-[#294C9A] text-white flex items-center justify-center shrink-0">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                </div>
-                <div>
-                    <span class="block text-sm font-bold">Laporan Biaya</span>
-                    <span class="text-[11px] font-normal text-gray-500">Detail rincian transaksi biaya</span>
-                </div>
-            </button>
-
-            <button type="button" data-tab="pembayaran" class="tab-btn w-full flex items-center gap-3 px-4 py-3 text-xs font-semibold rounded-xl text-gray-600 hover:bg-gray-50 transition-all text-left">
-                <div class="w-8 h-8 rounded-lg bg-gray-100 text-gray-600 flex items-center justify-center shrink-0 tab-icon">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
-                </div>
-                <div>
-                    <span class="block text-sm font-bold">Laporan Pembayaran</span>
-                    <span class="text-[11px] font-normal text-gray-500">Histori pembayaran per bank</span>
-                </div>
-            </button>
-
-            <button type="button" data-tab="rekapakun" class="tab-btn w-full flex items-center gap-3 px-4 py-3 text-xs font-semibold rounded-xl text-gray-600 hover:bg-gray-50 transition-all text-left">
-                <div class="w-8 h-8 rounded-lg bg-gray-100 text-gray-600 flex items-center justify-center shrink-0 tab-icon">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
-                </div>
-                <div>
-                    <span class="block text-sm font-bold">Rekap Akun (COA)</span>
-                    <span class="text-[11px] font-normal text-gray-500">Rekap total per kode akun</span>
-                </div>
-            </button>
-        </div>
-
-        <!-- Form Content Container -->
-        <div class="lg:col-span-8 bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-            <!-- 1. Tab Laporan Biaya -->
-            <div id="tab-biaya" class="tab-pane block">
-                <div class="border-b border-gray-100 pb-4 mb-5">
-                    <h3 class="text-base font-bold text-gray-800">Filter Laporan Transaksi Biaya</h3>
-                    <p class="text-xs text-gray-500 mt-0.5">Tentukan parameter tanggal dan filter untuk mencetak data biaya.</p>
-                </div>
-                <form action="{{ route('laporanbiaya.cetakbiaya') }}" method="POST" target="_blank" class="space-y-4">
-                    @csrf
-                    <div class="c-fl-group">
-                        <span class="c-fl-icon">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
-                        </span>
-                        <select name="kode_supplier" id="kode_supplier_biaya" class="select2-filter">
-                            <option value="">Semua Supplier / Rekanan</option>
-                            @foreach ($supplier as $d)
-                                <option value="{{ $d->kode_supplier }}">{{ strtoupper($d->nama_supplier) }}</option>
-                            @endforeach
-                        </select>
-                        <label class="c-fl-label">Supplier / Rekanan</label>
-                    </div>
-
-                    <div class="c-fl-group">
-                        <span class="c-fl-icon">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
-                        </span>
-                        <select name="kode_akun" id="kode_akun_biaya" class="select2-filter">
-                            <option value="">Semua Kode Akun (COA)</option>
-                            @foreach ($akun as $d)
-                                <option value="{{ $d->kode_akun }}">{{ $d->kode_akun }} - {{ $d->nama_akun }}</option>
-                            @endforeach
-                        </select>
-                        <label class="c-fl-label">Akun (COA)</label>
-                    </div>
-
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div class="c-fl-group">
-                            <span class="c-fl-icon">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
-                            </span>
-                            <select name="kode_cabang" class="fi">
-                                <option value="">Semua Cabang</option>
-                                @foreach ($cabang as $c)
-                                    <option value="{{ $c->kode_cabang }}">{{ $c->nama_cabang }}</option>
-                                @endforeach
-                            </select>
-                            <label class="c-fl-label">Cabang</label>
-                        </div>
-                        <div class="c-fl-group">
-                            <span class="c-fl-icon">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                            </span>
-                            <select name="ppn" class="fi">
-                                <option value="">PPN / NON PPN</option>
-                                <option value="1">PPN</option>
-                                <option value="0">NON PPN</option>
-                            </select>
-                            <label class="c-fl-label">Status PPN</label>
-                        </div>
-                    </div>
-
-                    <div class="c-fl-group">
-                        <span class="c-fl-icon">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                        </span>
-                        <select name="jenis_periode" id="jenis_periode_biaya" class="fi" onchange="togglePeriodeBiaya(this.value)">
-                            <option value="tanggal" selected>Berdasarkan Tanggal Transaksi</option>
-                            <option value="bulan_pajak">Berdasarkan Bulan & Tahun Pajak</option>
-                        </select>
-                        <label class="c-fl-label">Jenis Filter Periode *</label>
-                    </div>
-
-                    <!-- Filter Rentang Tanggal -->
-                    <div id="wrapper_tanggal_biaya" class="grid grid-cols-2 gap-4">
-                        <div class="c-fl-group">
-                            <span class="c-fl-icon">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                            </span>
-                            <input type="text" name="dari" id="dari_biaya" class="fi flatpickr-date" placeholder="Pilih Tanggal" autocomplete="off" />
-                            <label class="c-fl-label">Dari Tanggal *</label>
-                        </div>
-                        <div class="c-fl-group">
-                            <span class="c-fl-icon">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                            </span>
-                            <input type="text" name="sampai" id="sampai_biaya" class="fi flatpickr-date" placeholder="Pilih Tanggal" autocomplete="off" />
-                            <label class="c-fl-label">Sampai Tanggal *</label>
-                        </div>
-                    </div>
-
-                    <!-- Filter Bulan & Tahun Pajak -->
-                    <div id="wrapper_bulan_pajak_biaya" class="grid grid-cols-2 gap-4 hidden">
-                        <div class="c-fl-group">
-                            <span class="c-fl-icon">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                            </span>
-                            <select name="bulan" id="bulan_biaya" class="fi">
-                                <option value="">Pilih Bulan Pajak</option>
-                                @foreach ($list_bulan as $d)
-                                    <option value="{{ $d['kode_bulan'] }}" {{ date('m') == $d['kode_bulan'] ? 'selected' : '' }}>{{ $d['nama_bulan'] }}</option>
-                                @endforeach
-                            </select>
-                            <label class="c-fl-label">Bulan Pajak *</label>
-                        </div>
-                        <div class="c-fl-group">
-                            <span class="c-fl-icon">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                            </span>
-                            <select name="tahun" id="tahun_biaya" class="fi">
-                                <option value="">Pilih Tahun Pajak</option>
-                                @for ($t = $start_year; $t <= date('Y') + 1; $t++)
-                                    <option value="{{ $t }}" {{ date('Y') == $t ? 'selected' : '' }}>{{ $t }}</option>
-                                @endfor
-                            </select>
-                            <label class="c-fl-label">Tahun Pajak *</label>
-                        </div>
-                    </div>
-
-                    <div class="flex items-center gap-2 pt-3">
-                        <button type="submit" name="submitButton" class="flex-1 inline-flex items-center justify-center px-4 py-2.5 text-xs font-semibold text-white bg-[#294C9A] hover:bg-[#1E3A70] rounded-lg transition shadow-sm gap-1.5 h-[38px]">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
-                            Cetak Laporan
-                        </button>
-                        <button type="submit" name="exportButton" class="inline-flex items-center justify-center px-4 py-2.5 text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg transition shadow-sm gap-1.5 h-[38px]">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                            Export Excel
-                        </button>
-                    </div>
-                </form>
+        <!-- Top Overview Header -->
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 w-full">
+            <div class="flex items-center gap-3">
+                <span class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 font-bold text-xs shadow-2xs">
+                    <i data-lucide="printer" class="w-4 h-4 text-[#162a5b] dark:text-blue-400"></i>
+                    <span>Modul Cetak Laporan Biaya Operasional</span>
+                </span>
             </div>
 
-            <!-- 2. Tab Laporan Pembayaran -->
-            <div id="tab-pembayaran" class="tab-pane hidden">
-                <div class="border-b border-gray-100 pb-4 mb-5">
-                    <h3 class="text-base font-bold text-gray-800">Filter Laporan Pembayaran Biaya</h3>
-                    <p class="text-xs text-gray-500 mt-0.5">Tentukan parameter untuk mencetak riwayat pembayaran kas & bank.</p>
-                </div>
-                <form action="{{ route('laporanbiaya.cetakpembayaran') }}" method="POST" target="_blank" class="space-y-4">
-                    @csrf
-                    <div class="c-fl-group">
-                        <span class="c-fl-icon">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
-                        </span>
-                        <select name="kode_supplier" class="select2-filter">
-                            <option value="">Semua Supplier / Rekanan</option>
-                            @foreach ($supplier as $d)
-                                <option value="{{ $d->kode_supplier }}">{{ strtoupper($d->nama_supplier) }}</option>
-                            @endforeach
-                        </select>
-                        <label class="c-fl-label">Supplier / Rekanan</label>
-                    </div>
-
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div class="c-fl-group">
-                            <span class="c-fl-icon">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
-                            </span>
-                            <select name="kode_bank" class="fi">
-                                <option value="">Semua Bank / Kas</option>
-                                @foreach ($bank as $b)
-                                    <option value="{{ $b->kode_bank }}">{{ $b->kode_bank }} - {{ $b->nama_bank }}</option>
-                                @endforeach
-                            </select>
-                            <label class="c-fl-label">Bank / Kas</label>
-                        </div>
-                        <div class="c-fl-group">
-                            <span class="c-fl-icon">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
-                            </span>
-                            <select name="kode_cabang" class="fi">
-                                <option value="">Semua Cabang</option>
-                                @foreach ($cabang as $c)
-                                    <option value="{{ $c->kode_cabang }}">{{ $c->nama_cabang }}</option>
-                                @endforeach
-                            </select>
-                            <label class="c-fl-label">Cabang</label>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="c-fl-group">
-                            <span class="c-fl-icon">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                            </span>
-                            <input type="text" name="dari" class="fi flatpickr-date" placeholder="Pilih Tanggal" required autocomplete="off" />
-                            <label class="c-fl-label">Dari Tanggal *</label>
-                        </div>
-                        <div class="c-fl-group">
-                            <span class="c-fl-icon">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                            </span>
-                            <input type="text" name="sampai" class="fi flatpickr-date" placeholder="Pilih Tanggal" required autocomplete="off" />
-                            <label class="c-fl-label">Sampai Tanggal *</label>
-                        </div>
-                    </div>
-
-                    <div class="flex items-center gap-2 pt-3">
-                        <button type="submit" name="submitButton" class="flex-1 inline-flex items-center justify-center px-4 py-2.5 text-xs font-semibold text-white bg-[#294C9A] hover:bg-[#1E3A70] rounded-lg transition shadow-sm gap-1.5 h-[38px]">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
-                            Cetak Laporan
-                        </button>
-                        <button type="submit" name="exportButton" class="inline-flex items-center justify-center px-4 py-2.5 text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg transition shadow-sm gap-1.5 h-[38px]">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                            Export Excel
-                        </button>
-                    </div>
-                </form>
-            </div>
-
-            <!-- 3. Tab Rekap Akun -->
-            <div id="tab-rekapakun" class="tab-pane hidden">
-                <div class="border-b border-gray-100 pb-4 mb-5">
-                    <h3 class="text-base font-bold text-gray-800">Rekapitulasi Akun (COA) Biaya</h3>
-                    <p class="text-xs text-gray-500 mt-0.5">Merekap total akumulasi biaya per pos akun (COA) untuk periode yang dipilih.</p>
-                </div>
-                <form action="{{ route('laporanbiaya.cetakrekapakun') }}" method="POST" target="_blank" class="space-y-4">
-                    @csrf
-                    <div class="c-fl-group">
-                        <span class="c-fl-icon">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
-                        </span>
-                        <select name="kode_cabang" class="fi">
-                            <option value="">Semua Cabang</option>
-                            @foreach ($cabang as $c)
-                                <option value="{{ $c->kode_cabang }}">{{ $c->nama_cabang }}</option>
-                            @endforeach
-                        </select>
-                        <label class="c-fl-label">Cabang</label>
-                    </div>
-
-                    <div class="c-fl-group">
-                        <span class="c-fl-icon">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                        </span>
-                        <select name="jenis_periode" id="jenis_periode_rekap" class="fi" onchange="togglePeriodeRekap(this.value)">
-                            <option value="tanggal" selected>Berdasarkan Tanggal Transaksi</option>
-                            <option value="bulan_pajak">Berdasarkan Bulan & Tahun Pajak</option>
-                        </select>
-                        <label class="c-fl-label">Jenis Filter Periode *</label>
-                    </div>
-
-                    <!-- Filter Rentang Tanggal -->
-                    <div id="wrapper_tanggal_rekap" class="grid grid-cols-2 gap-4">
-                        <div class="c-fl-group">
-                            <span class="c-fl-icon">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                            </span>
-                            <input type="text" name="dari" id="dari_rekap" class="fi flatpickr-date" placeholder="Pilih Tanggal" autocomplete="off" />
-                            <label class="c-fl-label">Dari Tanggal *</label>
-                        </div>
-                        <div class="c-fl-group">
-                            <span class="c-fl-icon">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                            </span>
-                            <input type="text" name="sampai" id="sampai_rekap" class="fi flatpickr-date" placeholder="Pilih Tanggal" autocomplete="off" />
-                            <label class="c-fl-label">Sampai Tanggal *</label>
-                        </div>
-                    </div>
-
-                    <!-- Filter Bulan & Tahun Pajak -->
-                    <div id="wrapper_bulan_pajak_rekap" class="grid grid-cols-2 gap-4 hidden">
-                        <div class="c-fl-group">
-                            <span class="c-fl-icon">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                            </span>
-                            <select name="bulan" id="bulan_rekap" class="fi">
-                                <option value="">Pilih Bulan Pajak</option>
-                                @foreach ($list_bulan as $d)
-                                    <option value="{{ $d['kode_bulan'] }}" {{ date('m') == $d['kode_bulan'] ? 'selected' : '' }}>{{ $d['nama_bulan'] }}</option>
-                                @endforeach
-                            </select>
-                            <label class="c-fl-label">Bulan Pajak *</label>
-                        </div>
-                        <div class="c-fl-group">
-                            <span class="c-fl-icon">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                            </span>
-                            <select name="tahun" id="tahun_rekap" class="fi">
-                                <option value="">Pilih Tahun Pajak</option>
-                                @for ($t = $start_year; $t <= date('Y') + 1; $t++)
-                                    <option value="{{ $t }}" {{ date('Y') == $t ? 'selected' : '' }}>{{ $t }}</option>
-                                @endfor
-                            </select>
-                            <label class="c-fl-label">Tahun Pajak *</label>
-                        </div>
-                    </div>
-
-                    <div class="flex items-center gap-2 pt-3">
-                        <button type="submit" name="submitButton" class="flex-1 inline-flex items-center justify-center px-4 py-2.5 text-xs font-semibold text-white bg-[#294C9A] hover:bg-[#1E3A70] rounded-lg transition shadow-sm gap-1.5 h-[38px]">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
-                            Cetak Rekap
-                        </button>
-                        <button type="submit" name="exportButton" class="inline-flex items-center justify-center px-4 py-2.5 text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg transition shadow-sm gap-1.5 h-[38px]">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                            Export Excel
-                        </button>
-                    </div>
-                </form>
+            <div class="flex items-center gap-2">
+                <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-blue-50 dark:bg-blue-900/20 text-[#162a5b] dark:text-blue-300 border border-blue-200/60 dark:border-blue-800/40">
+                    <i data-lucide="file-check-2" class="w-3.5 h-3.5 text-[#162a5b] dark:text-blue-400"></i>
+                    <span>3 Modul Laporan Siap Cetak</span>
+                </span>
             </div>
         </div>
+
+        <!-- Master-Detail 2-Column Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+            
+            <!-- Left Column (4 cols): Report Navigation Cards -->
+            <div class="lg:col-span-4 space-y-4">
+                
+                <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 p-4 shadow-2xs space-y-3">
+                    
+                    <!-- Search Filter for Modules -->
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                            <i data-lucide="search" class="w-3.5 h-3.5"></i>
+                        </div>
+                        <input 
+                            type="text" 
+                            id="reportSearch" 
+                            placeholder="Cari modul laporan..." 
+                            class="w-full pl-8 pr-3 py-2 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/70 dark:bg-slate-800 text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-[#162a5b] transition shadow-2xs font-medium"
+                        />
+                    </div>
+
+                    <div id="reportNavList" class="space-y-3">
+                        
+                        <!-- Group 1: Transaksi & Pembayaran -->
+                        <div class="report-group space-y-1.5">
+                            <div class="px-2 pt-1 flex items-center justify-between text-[10px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                                <span>Kategori Laporan Biaya</span>
+                                <span class="text-[9px] px-1 rounded bg-slate-100 dark:bg-slate-800 font-mono">3</span>
+                            </div>
+
+                            <!-- Tab 1: Biaya -->
+                            <button 
+                                type="button" 
+                                data-tab="biaya" 
+                                class="tab-btn active w-full flex items-start gap-3 p-3 rounded-xl border border-transparent hover:border-slate-200 dark:hover:border-slate-700 transition text-left cursor-pointer group"
+                            >
+                                <div class="w-9 h-9 rounded-xl bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0 tab-icon group-hover:scale-105 transition">
+                                    <i data-lucide="receipt" class="w-4 h-4"></i>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex items-center justify-between gap-1 mb-0.5">
+                                        <span class="text-xs font-bold text-slate-800 dark:text-white tab-title">Laporan Biaya</span>
+                                        <span class="text-[9px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300">Detail</span>
+                                    </div>
+                                    <p class="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-1">Rincian pos biaya, akun beban, dan PPN</p>
+                                </div>
+                            </button>
+
+                            <!-- Tab 2: Pembayaran -->
+                            <button 
+                                type="button" 
+                                data-tab="pembayaran" 
+                                class="tab-btn w-full flex items-start gap-3 p-3 rounded-xl border border-transparent hover:border-slate-200 dark:hover:border-slate-700 transition text-left cursor-pointer group"
+                            >
+                                <div class="w-9 h-9 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 flex items-center justify-center shrink-0 tab-icon group-hover:scale-105 transition">
+                                    <i data-lucide="credit-card" class="w-4 h-4"></i>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex items-center justify-between gap-1 mb-0.5">
+                                        <span class="text-xs font-bold text-slate-800 dark:text-white tab-title">Laporan Pembayaran</span>
+                                        <span class="text-[9px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-emerald-100 dark:bg-emerald-900/50 text-emerald-700 dark:text-emerald-300">Histori</span>
+                                    </div>
+                                    <p class="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-1">Riwayat pembayaran kas & bank operasional</p>
+                                </div>
+                            </button>
+
+                            <!-- Tab 3: Rekap Akun -->
+                            <button 
+                                type="button" 
+                                data-tab="rekapakun" 
+                                class="tab-btn w-full flex items-start gap-3 p-3 rounded-xl border border-transparent hover:border-slate-200 dark:hover:border-slate-700 transition text-left cursor-pointer group"
+                            >
+                                <div class="w-9 h-9 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 flex items-center justify-center shrink-0 tab-icon group-hover:scale-105 transition">
+                                    <i data-lucide="book-open" class="w-4 h-4"></i>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex items-center justify-between gap-1 mb-0.5">
+                                        <span class="text-xs font-bold text-slate-800 dark:text-white tab-title">Rekap Akun (COA)</span>
+                                        <span class="text-[9px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-indigo-100 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300">Akuntansi</span>
+                                    </div>
+                                    <p class="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-1">Akumulasi total pengeluaran per kode akun</p>
+                                </div>
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Info Help Card -->
+                <div class="bg-gradient-to-br from-blue-50 to-indigo-50/50 dark:from-slate-900 dark:to-slate-900 rounded-2xl border border-blue-100 dark:border-slate-800 p-4 shadow-2xs">
+                    <div class="flex items-start gap-3">
+                        <div class="w-7 h-7 rounded-lg bg-[#162a5b] text-white flex items-center justify-center shrink-0 shadow-2xs">
+                            <i data-lucide="info" class="w-3.5 h-3.5"></i>
+                        </div>
+                        <div class="space-y-1 text-xs">
+                            <h5 class="font-bold text-slate-800 dark:text-slate-200">Panduan Output Dokumen</h5>
+                            <p class="text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed">
+                                Gunakan <strong>Cetak Laporan</strong> untuk pratinjau tabel cetak resmi dengan kolom beku (*freeze header*). Gunakan <strong>Export Excel</strong> untuk mengunduh berkas spreadsheet terstruktur.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Right Column (8 cols): Report Configuration Form -->
+            <div class="lg:col-span-8">
+                <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-2xs overflow-hidden">
+                    
+                    <!-- Dynamic Panel Header (Corporate Navy #162a5b) -->
+                    <div class="px-6 py-4 bg-[#162a5b] text-white flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center text-white shrink-0" id="header_panel_icon_wrapper">
+                                <i data-lucide="receipt" class="w-4 h-4" id="header_panel_icon"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-xs font-bold uppercase tracking-wider text-white" id="header_panel_title">
+                                    Laporan Rincian Biaya
+                                </h3>
+                                <p class="text-[11px] text-white/70" id="header_panel_desc">
+                                    Tentukan parameter rekanan, akun COA, dan periode transaksi biaya
+                                </p>
+                            </div>
+                        </div>
+                        <span class="px-2.5 py-1 rounded-md bg-white/15 text-[10px] font-bold text-white uppercase tracking-wider" id="header_panel_tag">
+                            Detail Transaksi
+                        </span>
+                    </div>
+
+                    <!-- Panel Forms Container -->
+                    <div class="p-6">
+                        
+                        <!-- Panel 1: Laporan Biaya -->
+                        <div id="panel-biaya" class="tab-panel">
+                            <form action="{{ route('laporanbiaya.cetakbiaya') }}" method="POST" id="formLapBiaya" target="_blank" class="space-y-4" novalidate>
+                                @csrf
+
+                                <!-- Supplier & Akun -->
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div class="space-y-1.5">
+                                        <label for="kode_supplier_biaya" class="block text-xs font-bold text-slate-700 dark:text-slate-300">
+                                            Supplier / Rekanan
+                                        </label>
+                                        <select name="kode_supplier" id="kode_supplier_biaya" class="select2-filter w-full text-xs font-semibold" data-placeholder="Semua Supplier / Rekanan">
+                                            <option value="">Semua Supplier / Rekanan</option>
+                                            @foreach ($supplier as $d)
+                                                <option value="{{ $d->kode_supplier }}">{{ strtoupper($d->nama_supplier) }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+
+                                    <div class="space-y-1.5">
+                                        <label for="kode_akun_biaya" class="block text-xs font-bold text-slate-700 dark:text-slate-300">
+                                            Kode Akun Beban (COA)
+                                        </label>
+                                        <select name="kode_akun" id="kode_akun_biaya" class="select2-filter w-full text-xs font-semibold" data-placeholder="Semua Kode Akun">
+                                            <option value="">Semua Kode Akun (COA)</option>
+                                            @foreach ($akun as $d)
+                                                <option value="{{ $d->kode_akun }}">{{ $d->kode_akun }} - {{ $d->nama_akun }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <!-- Cabang & PPN -->
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div class="space-y-1.5">
+                                        <label for="kode_cabang_biaya" class="block text-xs font-bold text-slate-700 dark:text-slate-300">
+                                            Cabang Operasional
+                                        </label>
+                                        <select name="kode_cabang" id="kode_cabang_biaya" class="w-full h-[42px] px-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-semibold text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-[#162a5b] transition shadow-2xs">
+                                            <option value="">Semua Cabang</option>
+                                            @foreach ($cabang as $c)
+                                                <option value="{{ $c->kode_cabang }}">{{ $c->nama_cabang }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+
+                                    <div class="space-y-1.5">
+                                        <label for="ppn_biaya" class="block text-xs font-bold text-slate-700 dark:text-slate-300">
+                                            Status Pajak (PPN)
+                                        </label>
+                                        <select name="ppn" id="ppn_biaya" class="w-full h-[42px] px-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-semibold text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-[#162a5b] transition shadow-2xs">
+                                            <option value="">Semua (PPN & Non-PPN)</option>
+                                            <option value="1">PPN Aktif Saja</option>
+                                            <option value="0">Non-PPN Saja</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <!-- Kriteria Periode -->
+                                <div class="space-y-1.5">
+                                    <label for="jenis_periode_biaya" class="block text-xs font-bold text-slate-700 dark:text-slate-300">
+                                        Kriteria Filter Periode <span class="text-rose-500">*</span>
+                                    </label>
+                                    <select name="jenis_periode" id="jenis_periode_biaya" class="w-full h-[42px] px-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-semibold text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-[#162a5b] transition shadow-2xs" onchange="togglePeriodeBiaya(this.value)">
+                                        <option value="tanggal" selected>Berdasarkan Rentang Tanggal Transaksi</option>
+                                        <option value="bulan_pajak">Berdasarkan Masa & Tahun Pajak</option>
+                                    </select>
+                                </div>
+
+                                <!-- Filter Rentang Tanggal -->
+                                <div id="wrapper_tanggal_biaya" class="space-y-2">
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-xs font-bold text-slate-600 dark:text-slate-400 flex items-center gap-1.5">
+                                            <i data-lucide="calendar" class="w-4 h-4 text-slate-400"></i>
+                                            <span>Rentang Tanggal Transaksi</span>
+                                        </span>
+                                        <!-- Quick Presets -->
+                                        <div class="flex items-center gap-1.5">
+                                            <button type="button" class="btn-preset text-[11px] font-semibold px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition cursor-pointer" data-target-dari="dari_biaya" data-target-sampai="sampai_biaya" data-preset="today">Hari Ini</button>
+                                            <button type="button" class="btn-preset text-[11px] font-semibold px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition cursor-pointer" data-target-dari="dari_biaya" data-target-sampai="sampai_biaya" data-preset="this_month">Bulan Ini</button>
+                                            <button type="button" class="btn-preset text-[11px] font-semibold px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition cursor-pointer" data-target-dari="dari_biaya" data-target-sampai="sampai_biaya" data-preset="last_month">Bulan Lalu</button>
+                                        </div>
+                                    </div>
+
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                        <div class="relative">
+                                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                                                <i data-lucide="calendar" class="w-4 h-4"></i>
+                                            </div>
+                                            <input 
+                                                type="text" 
+                                                name="dari" 
+                                                id="dari_biaya" 
+                                                class="block w-full pl-10 pr-3.5 py-2.5 text-xs font-semibold text-slate-800 dark:text-white bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-[#162a5b] transition shadow-2xs placeholder-slate-400 flatpickr-date" 
+                                                placeholder="Dari Tanggal" 
+                                                required 
+                                                autocomplete="off" 
+                                                value="{{ date('Y-m-01') }}"
+                                            />
+                                        </div>
+                                        <div class="relative">
+                                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                                                <i data-lucide="calendar" class="w-4 h-4"></i>
+                                            </div>
+                                            <input 
+                                                type="text" 
+                                                name="sampai" 
+                                                id="sampai_biaya" 
+                                                class="block w-full pl-10 pr-3.5 py-2.5 text-xs font-semibold text-slate-800 dark:text-white bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-[#162a5b] transition shadow-2xs placeholder-slate-400 flatpickr-date" 
+                                                placeholder="Sampai Tanggal" 
+                                                required 
+                                                autocomplete="off" 
+                                                value="{{ date('Y-m-d') }}"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Filter Masa & Tahun Pajak -->
+                                <div id="wrapper_bulan_pajak_biaya" class="space-y-2 hidden">
+                                    <span class="text-xs font-bold text-slate-600 dark:text-slate-400 flex items-center gap-1.5">
+                                        <i data-lucide="calendar-range" class="w-4 h-4 text-slate-400"></i>
+                                        <span>Masa & Tahun Pajak</span>
+                                    </span>
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                        <select name="bulan" id="bulan_biaya" class="w-full h-[42px] px-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-semibold text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-[#162a5b] transition shadow-2xs">
+                                            <option value="">Pilih Masa Pajak</option>
+                                            @foreach ($list_bulan ?? [] as $d)
+                                                <option value="{{ $d['kode_bulan'] }}" {{ date('m') == $d['kode_bulan'] ? 'selected' : '' }}>{{ $d['nama_bulan'] }}</option>
+                                            @endforeach
+                                        </select>
+                                        <input 
+                                            type="number" 
+                                            name="tahun" 
+                                            id="tahun_biaya" 
+                                            class="w-full h-[42px] px-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-semibold text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-[#162a5b] transition shadow-2xs" 
+                                            value="{{ date('Y') }}" 
+                                            placeholder="Tahun Pajak" 
+                                            autocomplete="off" 
+                                        />
+                                    </div>
+                                </div>
+
+                                <!-- Actions Toolbar -->
+                                <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-4 border-t border-slate-100 dark:border-slate-800">
+                                    <button 
+                                        type="submit" 
+                                        name="submitButton" 
+                                        class="flex-1 inline-flex items-center justify-center gap-2 px-5 py-2.5 text-xs font-bold text-white bg-[#162a5b] hover:bg-[#1f3a7a] rounded-xl transition shadow-sm active:scale-95 cursor-pointer h-[42px]"
+                                    >
+                                        <i data-lucide="printer" class="w-4 h-4"></i>
+                                        <span>Cetak Laporan</span>
+                                    </button>
+                                    <button 
+                                        type="submit" 
+                                        name="exportButton" 
+                                        class="inline-flex items-center justify-center gap-2 px-5 py-2.5 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl transition shadow-sm active:scale-95 cursor-pointer h-[42px]"
+                                    >
+                                        <i data-lucide="file-spreadsheet" class="w-4 h-4"></i>
+                                        <span>Export Excel</span>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- Panel 2: Laporan Pembayaran -->
+                        <div id="panel-pembayaran" class="tab-panel hidden">
+                            <form action="{{ route('laporanbiaya.cetakpembayaran') }}" method="POST" id="formLapPembayaran" target="_blank" class="space-y-4" novalidate>
+                                @csrf
+
+                                <!-- Supplier -->
+                                <div class="space-y-1.5">
+                                    <label for="kode_supplier_pembayaran" class="block text-xs font-bold text-slate-700 dark:text-slate-300">
+                                        Supplier / Rekanan
+                                    </label>
+                                    <select name="kode_supplier" id="kode_supplier_pembayaran" class="select2-filter w-full text-xs font-semibold" data-placeholder="Semua Supplier / Rekanan">
+                                        <option value="">Semua Supplier / Rekanan</option>
+                                        @foreach ($supplier as $d)
+                                            <option value="{{ $d->kode_supplier }}">{{ strtoupper($d->nama_supplier) }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+
+                                <!-- Bank & Cabang -->
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div class="space-y-1.5">
+                                        <label for="kode_bank_pembayaran" class="block text-xs font-bold text-slate-700 dark:text-slate-300">
+                                            Bank / Kas
+                                        </label>
+                                        <select name="kode_bank" id="kode_bank_pembayaran" class="w-full h-[42px] px-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-semibold text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-[#162a5b] transition shadow-2xs">
+                                            <option value="">Semua Bank / Kas</option>
+                                            @foreach ($bank as $b)
+                                                <option value="{{ $b->kode_bank }}">{{ $b->kode_bank }} - {{ $b->nama_bank }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+
+                                    <div class="space-y-1.5">
+                                        <label for="kode_cabang_pembayaran" class="block text-xs font-bold text-slate-700 dark:text-slate-300">
+                                            Cabang Operasional
+                                        </label>
+                                        <select name="kode_cabang" id="kode_cabang_pembayaran" class="w-full h-[42px] px-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-semibold text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-[#162a5b] transition shadow-2xs">
+                                            <option value="">Semua Cabang</option>
+                                            @foreach ($cabang as $c)
+                                                <option value="{{ $c->kode_cabang }}">{{ $c->nama_cabang }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <!-- Periode Tanggal -->
+                                <div class="space-y-2">
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-xs font-bold text-slate-600 dark:text-slate-400 flex items-center gap-1.5">
+                                            <i data-lucide="calendar" class="w-4 h-4 text-slate-400"></i>
+                                            <span>Periode Pembayaran</span>
+                                        </span>
+                                        <!-- Quick Presets -->
+                                        <div class="flex items-center gap-1.5">
+                                            <button type="button" class="btn-preset text-[11px] font-semibold px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition cursor-pointer" data-target-dari="dari_pembayaran" data-target-sampai="sampai_pembayaran" data-preset="today">Hari Ini</button>
+                                            <button type="button" class="btn-preset text-[11px] font-semibold px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition cursor-pointer" data-target-dari="dari_pembayaran" data-target-sampai="sampai_pembayaran" data-preset="this_month">Bulan Ini</button>
+                                            <button type="button" class="btn-preset text-[11px] font-semibold px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition cursor-pointer" data-target-dari="dari_pembayaran" data-target-sampai="sampai_pembayaran" data-preset="last_month">Bulan Lalu</button>
+                                        </div>
+                                    </div>
+
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                        <div class="relative">
+                                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                                                <i data-lucide="calendar" class="w-4 h-4"></i>
+                                            </div>
+                                            <input 
+                                                type="text" 
+                                                name="dari" 
+                                                id="dari_pembayaran" 
+                                                class="block w-full pl-10 pr-3.5 py-2.5 text-xs font-semibold text-slate-800 dark:text-white bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-[#162a5b] transition shadow-2xs placeholder-slate-400 flatpickr-date" 
+                                                placeholder="Dari Tanggal" 
+                                                required 
+                                                autocomplete="off" 
+                                                value="{{ date('Y-m-01') }}"
+                                            />
+                                        </div>
+                                        <div class="relative">
+                                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                                                <i data-lucide="calendar" class="w-4 h-4"></i>
+                                            </div>
+                                            <input 
+                                                type="text" 
+                                                name="sampai" 
+                                                id="sampai_pembayaran" 
+                                                class="block w-full pl-10 pr-3.5 py-2.5 text-xs font-semibold text-slate-800 dark:text-white bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-[#162a5b] transition shadow-2xs placeholder-slate-400 flatpickr-date" 
+                                                placeholder="Sampai Tanggal" 
+                                                required 
+                                                autocomplete="off" 
+                                                value="{{ date('Y-m-d') }}"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Actions Toolbar -->
+                                <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-4 border-t border-slate-100 dark:border-slate-800">
+                                    <button 
+                                        type="submit" 
+                                        name="submitButton" 
+                                        class="flex-1 inline-flex items-center justify-center gap-2 px-5 py-2.5 text-xs font-bold text-white bg-[#162a5b] hover:bg-[#1f3a7a] rounded-xl transition shadow-sm active:scale-95 cursor-pointer h-[42px]"
+                                    >
+                                        <i data-lucide="printer" class="w-4 h-4"></i>
+                                        <span>Cetak Laporan</span>
+                                    </button>
+                                    <button 
+                                        type="submit" 
+                                        name="exportButton" 
+                                        class="inline-flex items-center justify-center gap-2 px-5 py-2.5 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl transition shadow-sm active:scale-95 cursor-pointer h-[42px]"
+                                    >
+                                        <i data-lucide="file-spreadsheet" class="w-4 h-4"></i>
+                                        <span>Export Excel</span>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- Panel 3: Rekap Akun (COA) -->
+                        <div id="panel-rekapakun" class="tab-panel hidden">
+                            <form action="{{ route('laporanbiaya.cetakrekapakun') }}" method="POST" id="formLapRekapAkun" target="_blank" class="space-y-4" novalidate>
+                                @csrf
+
+                                <!-- Cabang -->
+                                <div class="space-y-1.5">
+                                    <label for="kode_cabang_rekap" class="block text-xs font-bold text-slate-700 dark:text-slate-300">
+                                        Cabang Operasional
+                                    </label>
+                                    <select name="kode_cabang" id="kode_cabang_rekap" class="w-full h-[42px] px-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-semibold text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-[#162a5b] transition shadow-2xs">
+                                        <option value="">Semua Cabang</option>
+                                        @foreach ($cabang as $c)
+                                            <option value="{{ $c->kode_cabang }}">{{ $c->nama_cabang }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+
+                                <!-- Kriteria Periode -->
+                                <div class="space-y-1.5">
+                                    <label for="jenis_periode_rekap" class="block text-xs font-bold text-slate-700 dark:text-slate-300">
+                                        Kriteria Filter Periode <span class="text-rose-500">*</span>
+                                    </label>
+                                    <select name="jenis_periode" id="jenis_periode_rekap" class="w-full h-[42px] px-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-semibold text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-[#162a5b] transition shadow-2xs" onchange="togglePeriodeRekap(this.value)">
+                                        <option value="tanggal" selected>Berdasarkan Rentang Tanggal Transaksi</option>
+                                        <option value="bulan_pajak">Berdasarkan Masa & Tahun Pajak</option>
+                                    </select>
+                                </div>
+
+                                <!-- Filter Rentang Tanggal -->
+                                <div id="wrapper_tanggal_rekap" class="space-y-2">
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-xs font-bold text-slate-600 dark:text-slate-400 flex items-center gap-1.5">
+                                            <i data-lucide="calendar" class="w-4 h-4 text-slate-400"></i>
+                                            <span>Rentang Tanggal Transaksi</span>
+                                        </span>
+                                        <!-- Quick Presets -->
+                                        <div class="flex items-center gap-1.5">
+                                            <button type="button" class="btn-preset text-[11px] font-semibold px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition cursor-pointer" data-target-dari="dari_rekap" data-target-sampai="sampai_rekap" data-preset="today">Hari Ini</button>
+                                            <button type="button" class="btn-preset text-[11px] font-semibold px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition cursor-pointer" data-target-dari="dari_rekap" data-target-sampai="sampai_rekap" data-preset="this_month">Bulan Ini</button>
+                                            <button type="button" class="btn-preset text-[11px] font-semibold px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition cursor-pointer" data-target-dari="dari_rekap" data-target-sampai="sampai_rekap" data-preset="last_month">Bulan Lalu</button>
+                                        </div>
+                                    </div>
+
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                        <div class="relative">
+                                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                                                <i data-lucide="calendar" class="w-4 h-4"></i>
+                                            </div>
+                                            <input 
+                                                type="text" 
+                                                name="dari" 
+                                                id="dari_rekap" 
+                                                class="block w-full pl-10 pr-3.5 py-2.5 text-xs font-semibold text-slate-800 dark:text-white bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-[#162a5b] transition shadow-2xs placeholder-slate-400 flatpickr-date" 
+                                                placeholder="Dari Tanggal" 
+                                                required 
+                                                autocomplete="off" 
+                                                value="{{ date('Y-m-01') }}"
+                                            />
+                                        </div>
+                                        <div class="relative">
+                                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                                                <i data-lucide="calendar" class="w-4 h-4"></i>
+                                            </div>
+                                            <input 
+                                                type="text" 
+                                                name="sampai" 
+                                                id="sampai_rekap" 
+                                                class="block w-full pl-10 pr-3.5 py-2.5 text-xs font-semibold text-slate-800 dark:text-white bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-[#162a5b] transition shadow-2xs placeholder-slate-400 flatpickr-date" 
+                                                placeholder="Sampai Tanggal" 
+                                                required 
+                                                autocomplete="off" 
+                                                value="{{ date('Y-m-d') }}"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Filter Masa & Tahun Pajak -->
+                                <div id="wrapper_bulan_pajak_rekap" class="space-y-2 hidden">
+                                    <span class="text-xs font-bold text-slate-600 dark:text-slate-400 flex items-center gap-1.5">
+                                        <i data-lucide="calendar-range" class="w-4 h-4 text-slate-400"></i>
+                                        <span>Masa & Tahun Pajak</span>
+                                    </span>
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                        <select name="bulan" id="bulan_rekap" class="w-full h-[42px] px-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-semibold text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-[#162a5b] transition shadow-2xs">
+                                            <option value="">Pilih Masa Pajak</option>
+                                            @foreach ($list_bulan ?? [] as $d)
+                                                <option value="{{ $d['kode_bulan'] }}" {{ date('m') == $d['kode_bulan'] ? 'selected' : '' }}>{{ $d['nama_bulan'] }}</option>
+                                            @endforeach
+                                        </select>
+                                        <input 
+                                            type="number" 
+                                            name="tahun" 
+                                            id="tahun_rekap" 
+                                            class="w-full h-[42px] px-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-semibold text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-[#162a5b] transition shadow-2xs" 
+                                            value="{{ date('Y') }}" 
+                                            placeholder="Tahun Pajak" 
+                                            autocomplete="off" 
+                                        />
+                                    </div>
+                                </div>
+
+                                <!-- Actions Toolbar -->
+                                <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-4 border-t border-slate-100 dark:border-slate-800">
+                                    <button 
+                                        type="submit" 
+                                        name="submitButton" 
+                                        class="flex-1 inline-flex items-center justify-center gap-2 px-5 py-2.5 text-xs font-bold text-white bg-[#162a5b] hover:bg-[#1f3a7a] rounded-xl transition shadow-sm active:scale-95 cursor-pointer h-[42px]"
+                                    >
+                                        <i data-lucide="printer" class="w-4 h-4"></i>
+                                        <span>Cetak Rekap</span>
+                                    </button>
+                                    <button 
+                                        type="submit" 
+                                        name="exportButton" 
+                                        class="inline-flex items-center justify-center gap-2 px-5 py-2.5 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl transition shadow-sm active:scale-95 cursor-pointer h-[42px]"
+                                    >
+                                        <i data-lucide="file-spreadsheet" class="w-4 h-4"></i>
+                                        <span>Export Excel</span>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
     </div>
 
     @push('myscript')
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-    <script src="https://npmcdn.com/flatpickr/dist/l10n/id.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/id.js"></script>
+
+    <style>
+        /* Active Tab State */
+        .tab-btn.active {
+            background-color: rgba(22, 42, 91, 0.05) !important;
+            border-color: #162a5b !important;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+        }
+        .dark .tab-btn.active {
+            background-color: rgba(30, 58, 122, 0.25) !important;
+            border-color: #3b82f6 !important;
+        }
+        .tab-btn.active .tab-icon {
+            background-color: #162a5b !important;
+            color: #ffffff !important;
+        }
+        .dark .tab-btn.active .tab-icon {
+            background-color: #2563eb !important;
+            color: #ffffff !important;
+        }
+        .tab-btn.active .tab-title {
+            color: #162a5b !important;
+        }
+        .dark .tab-btn.active .tab-title {
+            color: #93c5fd !important;
+        }
+
+        /* Select2 Modern Alignment */
+        .select2-container { width: 100% !important; }
+        .select2-container--default .select2-selection--single {
+            height: 42px !important;
+            border: 1px solid #e2e8f0 !important;
+            border-radius: 0.75rem !important;
+            background-color: #ffffff !important;
+            display: flex !important;
+            align-items: center !important;
+            padding-left: 0.5rem !important;
+            padding-right: 2rem !important;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
+        }
+        .dark .select2-container--default .select2-selection--single {
+            background-color: #0f172a !important;
+            border-color: #334155 !important;
+            color: #f8fafc !important;
+        }
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            font-size: 0.75rem !important;
+            font-weight: 600 !important;
+            color: #1e293b !important;
+            line-height: normal !important;
+            padding-left: 0.25rem !important;
+        }
+        .dark .select2-container--default .select2-selection--single .select2-selection__rendered {
+            color: #f8fafc !important;
+        }
+        .select2-container--default .select2-selection--single .select2-selection__arrow {
+            height: 40px !important;
+            right: 10px !important;
+        }
+        .select2-dropdown {
+            border: 1px solid #e2e8f0 !important;
+            border-radius: 0.75rem !important;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1) !important;
+            z-index: 9999 !important;
+            overflow: hidden !important;
+        }
+        .dark .select2-dropdown {
+            background-color: #0f172a !important;
+            border-color: #334155 !important;
+        }
+        .select2-results__option {
+            font-size: 0.75rem !important;
+            font-weight: 500 !important;
+            padding: 8px 14px !important;
+        }
+        .select2-container--default .select2-results__option--highlighted[aria-selected] {
+            background-color: #162a5b !important;
+            color: #ffffff !important;
+        }
+        .select2-container--default.select2-container--focus .select2-selection--single,
+        .select2-container--default.select2-container--open .select2-selection--single {
+            border-color: #162a5b !important;
+            box-shadow: 0 0 0 3px rgba(22, 42, 91, 0.15) !important;
+        }
+    </style>
+
     <script>
+        $(function() {
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+
+            flatpickr.localize(flatpickr.l10ns.id);
+            flatpickr(".flatpickr-date", {
+                dateFormat: "Y-m-d",
+                allowInput: true
+            });
+
+            // Select2 Initializations
+            $(".select2-filter").each(function() {
+                var $this = $(this);
+                $this.wrap('<div class="relative"></div>').select2({
+                    placeholder: $this.data('placeholder') || 'Semua',
+                    allowClear: true,
+                    width: '100%'
+                });
+            });
+
+            // Metadata for dynamic header update
+            const tabMeta = {
+                biaya: {
+                    title: 'Laporan Rincian Biaya',
+                    desc: 'Tentukan parameter rekanan, akun COA, dan periode transaksi biaya',
+                    icon: 'receipt',
+                    tag: 'Detail Transaksi'
+                },
+                pembayaran: {
+                    title: 'Laporan Pembayaran Biaya',
+                    desc: 'Pantau histori pelunasan transaksi biaya operasional via kas & bank',
+                    icon: 'credit-card',
+                    tag: 'Histori Bayar'
+                },
+                rekapakun: {
+                    title: 'Laporan Rekap Akun Biaya (COA)',
+                    desc: 'Distribusi pembebanan anggaran operasional berdasarkan kode akun COA',
+                    icon: 'book-open',
+                    tag: 'Rekap COA'
+                }
+            };
+
+            // Interactive Tab Switching
+            $('.tab-btn').on('click', function() {
+                const targetTab = $(this).data('tab');
+                
+                // Toggle active styles on buttons
+                $('.tab-btn').removeClass('active');
+                $(this).addClass('active');
+
+                // Panel toggle
+                $('.tab-panel').addClass('hidden');
+                $(`#panel-${targetTab}`).removeClass('hidden');
+
+                // Update Header
+                if (tabMeta[targetTab]) {
+                    $('#header_panel_title').text(tabMeta[targetTab].title);
+                    $('#header_panel_desc').text(tabMeta[targetTab].desc);
+                    $('#header_panel_tag').text(tabMeta[targetTab].tag);
+                    
+                    // Update Icon
+                    $('#header_panel_icon_wrapper').html(`<i data-lucide="${tabMeta[targetTab].icon}" class="w-4 h-4"></i>`);
+                    if (typeof lucide !== 'undefined') {
+                        lucide.createIcons();
+                    }
+                }
+            });
+
+            // Live Search Filter for Report Navigation
+            $('#reportSearch').on('input', function() {
+                const q = $(this).val().toLowerCase().trim();
+                $('.tab-btn').each(function() {
+                    const text = $(this).text().toLowerCase();
+                    if (text.includes(q)) {
+                        $(this).removeClass('hidden');
+                    } else {
+                        $(this).addClass('hidden');
+                    }
+                });
+
+                // Hide empty groups
+                $('.report-group').each(function() {
+                    const hasVisible = $(this).find('.tab-btn:not(.hidden)').length > 0;
+                    if (hasVisible) {
+                        $(this).removeClass('hidden');
+                    } else {
+                        $(this).addClass('hidden');
+                    }
+                });
+            });
+
+            // Quick Date Presets Handler
+            $(document).on('click', '.btn-preset', function() {
+                const preset = $(this).data('preset');
+                const dariId = $(this).data('target-dari');
+                const sampaiId = $(this).data('target-sampai');
+                
+                const now = new Date();
+                let dariStr = '';
+                let sampaiStr = '';
+
+                const formatDate = (d) => {
+                    const y = d.getFullYear();
+                    const m = String(d.getMonth() + 1).padStart(2, '0');
+                    const day = String(d.getDate()).padStart(2, '0');
+                    return `${y}-${m}-${day}`;
+                };
+
+                if (preset === 'today') {
+                    dariStr = formatDate(now);
+                    sampaiStr = formatDate(now);
+                } else if (preset === 'this_month') {
+                    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+                    dariStr = formatDate(startOfMonth);
+                    sampaiStr = formatDate(now);
+                } else if (preset === 'last_month') {
+                    const startOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+                    const endOfLastMonth = new Date(now.getFullYear(), now.getMonth(), 0);
+                    dariStr = formatDate(startOfLastMonth);
+                    sampaiStr = formatDate(endOfLastMonth);
+                }
+
+                if (dariId && $(`#${dariId}`).length) {
+                    const fp = $(`#${dariId}`)[0]._flatpickr;
+                    if (fp) fp.setDate(dariStr); else $(`#${dariId}`).val(dariStr);
+                }
+                if (sampaiId && $(`#${sampaiId}`).length) {
+                    const fp = $(`#${sampaiId}`)[0]._flatpickr;
+                    if (fp) fp.setDate(sampaiStr); else $(`#${sampaiId}`).val(sampaiStr);
+                }
+            });
+
+            // Validation Helper
+            function validatePeriode(formId, dariFieldId = "dari", sampaiFieldId = "sampai") {
+                $(`#${formId}`).submit(function() {
+                    const jenisPeriode = $(this).find('select[name="jenis_periode"]').val();
+                    if (jenisPeriode === 'bulan_pajak') {
+                        const bulan = $(this).find('select[name="bulan"]').val();
+                        const tahun = $(this).find('input[name="tahun"]').val();
+                        if (bulan == "" || !bulan) {
+                            Swal.fire({
+                                title: "Perhatian",
+                                text: 'Masa Pajak harus dipilih!',
+                                icon: "warning",
+                                confirmButtonColor: "#162a5b",
+                                didClose: () => $(this).find('select[name="bulan"]').focus(),
+                            });
+                            return false;
+                        }
+                        if (tahun == "" || !tahun) {
+                            Swal.fire({
+                                title: "Perhatian",
+                                text: 'Tahun Pajak harus diisi!',
+                                icon: "warning",
+                                confirmButtonColor: "#162a5b",
+                                didClose: () => $(this).find('input[name="tahun"]').focus(),
+                            });
+                            return false;
+                        }
+                        return true;
+                    }
+
+                    const dari = $(this).find(`#${dariFieldId}`).val();
+                    const sampai = $(this).find(`#${sampaiFieldId}`).val();
+                    if (dari == "") {
+                        Swal.fire({
+                            title: "Perhatian",
+                            text: 'Periode Dari Tanggal harus diisi!',
+                            icon: "warning",
+                            confirmButtonColor: "#162a5b",
+                            didClose: () => $(this).find(`#${dariFieldId}`).focus(),
+                        });
+                        return false;
+                    } else if (sampai == "") {
+                        Swal.fire({
+                            title: "Perhatian",
+                            text: 'Periode Sampai Tanggal harus diisi!',
+                            icon: "warning",
+                            confirmButtonColor: "#162a5b",
+                            didClose: () => $(this).find(`#${sampaiFieldId}`).focus(),
+                        });
+                        return false;
+                    }
+                    var start = new Date(dari);
+                    var end = new Date(sampai);
+                    if (start.getTime() > end.getTime()) {
+                        Swal.fire({
+                            title: "Perhatian",
+                            text: 'Periode Sampai Tanggal harus lebih akhir dari Periode Dari Tanggal!',
+                            icon: "warning",
+                            confirmButtonColor: "#162a5b",
+                            didClose: () => $(this).find(`#${sampaiFieldId}`).focus(),
+                        });
+                        return false;
+                    }
+                });
+            }
+
+            // Bind validations
+            validatePeriode("formLapBiaya", "dari_biaya", "sampai_biaya");
+            validatePeriode("formLapPembayaran", "dari_pembayaran", "sampai_pembayaran");
+            validatePeriode("formLapRekapAkun", "dari_rekap", "sampai_rekap");
+        });
+
         function togglePeriodeBiaya(val) {
             if (val === 'bulan_pajak') {
                 $('#wrapper_tanggal_biaya').addClass('hidden');
                 $('#wrapper_bulan_pajak_biaya').removeClass('hidden');
-                $('#dari_biaya, #sampai_biaya').removeAttr('required');
-                $('#bulan_biaya, #tahun_biaya').attr('required', 'required');
+                $('#dari_biaya').removeAttr('required');
+                $('#sampai_biaya').removeAttr('required');
+                $('#bulan_biaya').attr('required', 'required');
+                $('#tahun_biaya').attr('required', 'required');
             } else {
                 $('#wrapper_tanggal_biaya').removeClass('hidden');
                 $('#wrapper_bulan_pajak_biaya').addClass('hidden');
-                $('#dari_biaya, #sampai_biaya').attr('required', 'required');
-                $('#bulan_biaya, #tahun_biaya').removeAttr('required');
+                $('#dari_biaya').attr('required', 'required');
+                $('#sampai_biaya').attr('required', 'required');
+                $('#bulan_biaya').removeAttr('required');
+                $('#tahun_biaya').removeAttr('required');
             }
         }
 
@@ -539,49 +889,19 @@
             if (val === 'bulan_pajak') {
                 $('#wrapper_tanggal_rekap').addClass('hidden');
                 $('#wrapper_bulan_pajak_rekap').removeClass('hidden');
-                $('#dari_rekap, #sampai_rekap').removeAttr('required');
-                $('#bulan_rekap, #tahun_rekap').attr('required', 'required');
+                $('#dari_rekap').removeAttr('required');
+                $('#sampai_rekap').removeAttr('required');
+                $('#bulan_rekap').attr('required', 'required');
+                $('#tahun_rekap').attr('required', 'required');
             } else {
                 $('#wrapper_tanggal_rekap').removeClass('hidden');
                 $('#wrapper_bulan_pajak_rekap').addClass('hidden');
-                $('#dari_rekap, #sampai_rekap').attr('required', 'required');
-                $('#bulan_rekap, #tahun_rekap').removeAttr('required');
+                $('#dari_rekap').attr('required', 'required');
+                $('#sampai_rekap').attr('required', 'required');
+                $('#bulan_rekap').removeAttr('required');
+                $('#tahun_rekap').removeAttr('required');
             }
         }
-
-        $(document).ready(function() {
-            $('.select2-filter').select2({
-                width: '100%'
-            });
-
-            flatpickr(".flatpickr-date", {
-                locale: "id",
-                dateFormat: "Y-m-d",
-                altInput: true,
-                altFormat: "d F Y",
-                allowInput: true
-            });
-
-            // Initialize default required state
-            togglePeriodeBiaya($('#jenis_periode_biaya').val());
-            togglePeriodeRekap($('#jenis_periode_rekap').val());
-
-            $('.tab-btn').on('click', function() {
-                var targetTab = $(this).data('tab');
-
-                // Update tab buttons style
-                $('.tab-btn').removeClass('active text-[#294C9A] bg-blue-50/80')
-                    .addClass('text-gray-600 hover:bg-gray-50');
-                $('.tab-btn .tab-icon').removeClass('bg-[#294C9A] text-white').addClass('bg-gray-100 text-gray-600');
-
-                $(this).addClass('active text-[#294C9A] bg-blue-50/80').removeClass('text-gray-600 hover:bg-gray-50');
-                $(this).find('div:first').removeClass('bg-gray-100 text-gray-600').addClass('bg-[#294C9A] text-white');
-
-                // Switch visible pane
-                $('.tab-pane').addClass('hidden').removeClass('block');
-                $('#tab-' + targetTab).removeClass('hidden').addClass('block');
-            });
-        });
     </script>
     @endpush
 </x-app-layout>
