@@ -337,7 +337,7 @@
             $mTotalBiayaProduksi[$m] = $mUsedBB[$m] + $mUsedBK[$m] + $mTotalBOP[$m] + $mTotalBPTL[$m] + $mTotalOverheadLainnya[$m];
         }
 
-        // Persediaan Barang Jadi (5-12103 & 5-13103)
+        // Persediaan Barang Jadi (5-12104 & 5-13104)
         $mSaBJ = $hppBahanTahunan['bj']['sa'] ?? array_fill(1, 12, 0.0);
         $mAkBJ = $hppBahanTahunan['bj']['ak'] ?? array_fill(1, 12, 0.0);
 
@@ -635,14 +635,14 @@
 
                 <!-- PERSEDIAAN BARANG JADI -->
                 <tr>
-                    <td class="col-keterangan">5-12103 &nbsp; {{ $nameOf('5-12103', 'P/L Persediaan Barang Jadi') }}</td>
+                    <td class="col-keterangan">5-12104 &nbsp; {{ $nameOf('5-12104', 'P/L Persediaan Barang Jadi') }}</td>
                     @for ($m = 1; $m <= 12; $m++)
                         <td class="text-right">{{ $fmt($mSaBJ[$m]) }}</td>
                     @endfor
                     <td class="text-right">{{ $fmt(array_sum($mSaBJ)) }}</td>
                 </tr>
                 <tr>
-                    <td class="col-keterangan">5-13103 &nbsp; {{ $nameOf('5-13103', 'P/L Persediaan Barang Jadi') }}</td>
+                    <td class="col-keterangan">5-13104 &nbsp; {{ $nameOf('5-13104', 'P/L Persediaan Barang Jadi') }}</td>
                     @for ($m = 1; $m <= 12; $m++)
                         <td class="text-right">{{ $mAkBJ[$m] != 0 ? '(' . number_format($mAkBJ[$m], 0, ',', '.') . ')' : '-' }}</td>
                     @endfor

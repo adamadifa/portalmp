@@ -233,8 +233,8 @@
             //    - Biaya Tidak Langsung (BPTL)
             //    - Biaya Overhead Lainnya
             //    = Total Biaya Produksi
-            //    + Persediaan Awal Barang Jadi (5-12103)
-            //    - Persediaan Akhir Barang Jadi (5-13103)
+            //    + Persediaan Awal Barang Jadi (5-12104)
+            //    - Persediaan Akhir Barang Jadi (5-13104)
             //    = HPP
             // ==========================================
             $sa_bb   = $hppBahan['sa_bb'] ?? 0;
@@ -268,9 +268,9 @@
             // Total Biaya Produksi
             $totalBiayaProduksi = $used_bb + $used_bk + $totalBOP + $totalBPTL + $totalOverheadLainnya;
 
-            // Persediaan Barang Jadi (5-12103 & 5-13103)
-            $sa_bj = $hppBahan['sa_bj'] ?? $valOf('5-12103');
-            $ak_bj = $hppBahan['ak_bj'] ?? $valOf('5-13103');
+            // Persediaan Barang Jadi (5-12104 & 5-13104)
+            $sa_bj = $hppBahan['sa_bj'] ?? $valOf('5-12104');
+            $ak_bj = $hppBahan['ak_bj'] ?? $valOf('5-13104');
 
             // HPP (Harga Pokok Penjualan)
             $totalHpp = $totalBiayaProduksi + $sa_bj - $ak_bj;
@@ -516,13 +516,13 @@
 
                 <!-- PENYESUAIAN PERSEDIAAN BARANG JADI -->
                 <tr>
-                    <td class="col-kode">5-12103</td>
-                    <td class="col-nama">{{ $nameOf('5-12103', 'P/L Persediaan Barang Jadi') }}</td>
+                    <td class="col-kode">5-12104</td>
+                    <td class="col-nama">{{ $nameOf('5-12104', 'P/L Persediaan Barang Jadi') }}</td>
                     <td class="col-jumlah">{{ $fmt($sa_bj) }}</td>
                 </tr>
                 <tr>
-                    <td class="col-kode">5-13103</td>
-                    <td class="col-nama">{{ $nameOf('5-13103', 'P/L Persediaan Barang Jadi') }}</td>
+                    <td class="col-kode">5-13104</td>
+                    <td class="col-nama">{{ $nameOf('5-13104', 'P/L Persediaan Barang Jadi') }}</td>
                     <td class="col-jumlah">{{ $ak_bj != 0 ? '(' . number_format($ak_bj, 0, ',', '.') . ')' : '-' }}</td>
                 </tr>
 

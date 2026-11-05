@@ -508,13 +508,13 @@ class LaporanaccountingController extends Controller
                     $hppBahanTahunan['bk']['ak'][$m] = $ak_bk;
                     $hppBahanTahunan['bk']['used'][$m] = $used_bk;
 
-                    // 5-12103 (P/L Persediaan Awal Barang Jadi / Bahan Bakar)
-                    $bjSaRow = $monthlyMatrix['5-12103'][$m] ?? null;
+                    // 5-12104 (P/L Persediaan Awal Barang Jadi / Bahan Bakar)
+                    $bjSaRow = $monthlyMatrix['5-12104'][$m] ?? null;
                     $sa_bj = $bjSaRow ? ((float) $bjSaRow['debet'] - (float) $bjSaRow['kredit']) : 0.0;
                     $hppBahanTahunan['bj']['sa'][$m] = $sa_bj;
 
-                    // 5-13103 (P/L Persediaan Akhir Barang Jadi / Bahan Bakar)
-                    $bjAkRow = $monthlyMatrix['5-13103'][$m] ?? null;
+                    // 5-13104 (P/L Persediaan Akhir Barang Jadi / Bahan Bakar)
+                    $bjAkRow = $monthlyMatrix['5-13104'][$m] ?? null;
                     $ak_bj = $bjAkRow ? abs((float) $bjAkRow['kredit'] - (float) $bjAkRow['debet']) : 0.0;
                     $hppBahanTahunan['bj']['ak'][$m] = $ak_bj;
                 }
@@ -1021,9 +1021,9 @@ class LaporanaccountingController extends Controller
             $ak_bk = isset($mutasiLR['5-13102']) ? abs((float) $mutasiLR['5-13102']->kredit - (float) $mutasiLR['5-13102']->debet) : 0;
             $used_bk = $sa_bk + $pemb_bk - $ak_bk;
 
-            // 3. Persediaan Barang Jadi (5-12103 & 5-13103)
-            $sa_bj = isset($mutasiLR['5-12103']) ? ((float) $mutasiLR['5-12103']->debet - (float) $mutasiLR['5-12103']->kredit) : 0;
-            $ak_bj = isset($mutasiLR['5-13103']) ? abs((float) $mutasiLR['5-13103']->kredit - (float) $mutasiLR['5-13103']->debet) : 0;
+            // 3. Persediaan Barang Jadi (5-12104 & 5-13104)
+            $sa_bj = isset($mutasiLR['5-12104']) ? ((float) $mutasiLR['5-12104']->debet - (float) $mutasiLR['5-12104']->kredit) : 0;
+            $ak_bj = isset($mutasiLR['5-13104']) ? abs((float) $mutasiLR['5-13104']->kredit - (float) $mutasiLR['5-13104']->debet) : 0;
 
             $data['hppBahan'] = [
                 'sa_bb' => $sa_bb,
