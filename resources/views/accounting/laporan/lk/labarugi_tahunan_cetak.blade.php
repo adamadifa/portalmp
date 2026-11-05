@@ -7,19 +7,20 @@
     <title>Laba Rugi Tahunan {{ $tahun }}</title>
     <style>
         body {
-            font-family: 'Arial', sans-serif;
-            color: #111;
+            font-family: Arial, Helvetica, sans-serif;
+            color: #000;
             margin: 15px;
             background-color: #fff;
+            font-size: 10px;
         }
 
         .header {
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
 
         .header .company-name {
-            font-size: 16px;
+            font-size: 14px;
             font-weight: bold;
             text-transform: uppercase;
             margin: 0;
@@ -27,15 +28,15 @@
         }
 
         .header .report-title {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: bold;
-            margin: 5px 0;
-            color: #900000;
+            margin: 4px 0;
+            color: #1e3a8a;
         }
 
         .header .period {
-            font-size: 13px;
-            margin: 5px 0 0 0;
+            font-size: 12px;
+            margin: 2px 0 0 0;
             color: #333;
             font-weight: bold;
         }
@@ -44,29 +45,81 @@
             margin: 0 auto;
             width: 100%;
             overflow-x: auto;
+            position: relative;
         }
 
-        .datatable9 {
-            width: 100%;
+        .table-lr-tahunan {
+            width: max-content;
+            min-width: 100%;
             border-collapse: collapse;
-            margin-top: 10px;
+            font-size: 10px;
+            line-height: 1.4;
         }
 
-        .datatable9 th {
-            border-top: 2px solid #000;
-            border-bottom: 2px solid #000;
-            padding: 6px 4px;
-            font-size: 11px;
+        .table-lr-tahunan th {
+            border-top: 1.5px solid #000;
+            border-bottom: 1.5px solid #000;
+            padding: 5px 6px;
             font-weight: bold;
-            text-transform: uppercase;
+            background-color: #f1f5f9;
             text-align: center;
+            white-space: nowrap;
         }
 
-        .datatable9 td {
-            padding: 4px 4px;
-            font-size: 10.5px;
+        .table-lr-tahunan td {
+            padding: 2.5px 6px;
+            border-bottom: 1px dotted #555;
             vertical-align: middle;
-            height: 18px;
+            white-space: nowrap;
+        }
+
+        /* =====================
+           FREEZE COLUMN PERTAMA
+           ===================== */
+        .col-keterangan {
+            text-align: left;
+            min-width: 320px;
+            max-width: 420px;
+            white-space: normal;
+            word-break: break-word;
+            /* Sticky freeze */
+            position: sticky;
+            left: 0;
+            z-index: 2;
+            background-color: #fff;
+            border-right: 2px solid #cbd5e1 !important;
+        }
+
+        /* Freeze header kolom keterangan */
+        .table-lr-tahunan thead th:first-child {
+            position: sticky;
+            left: 0;
+            z-index: 3;
+            background-color: #f1f5f9;
+            border-right: 2px solid #94a3b8 !important;
+        }
+
+        /* Pastikan background row tertentu tetap terlihat saat freeze */
+        .row-laba-kotor .col-keterangan {
+            background-color: #ffff00 !important;
+        }
+        .row-subtotal .col-keterangan {
+            background-color: #fafafa;
+        }
+        .row-total-prod .col-keterangan {
+            background-color: #f8fafc;
+        }
+        .row-hpp .col-keterangan {
+            background-color: #f8fafc;
+        }
+        .row-grand-total .col-keterangan {
+            background-color: #f1f5f9;
+        }
+        .header-main .col-keterangan,
+        .header-sub .col-keterangan,
+        .header-underline .col-keterangan,
+        .account-group .col-keterangan {
+            background-color: #fff;
         }
 
         .text-right {
@@ -77,33 +130,109 @@
             text-align: center;
         }
 
-        /* Subtotal/Total Rows */
-        .subtotal-row td {
+        .header-main td {
+            font-weight: bold;
+            text-transform: uppercase;
+            border-bottom: 1px dotted #555;
+            padding-top: 10px;
+            padding-bottom: 3px;
+            font-size: 10.5px;
+        }
+
+        .header-sub td {
+            font-weight: bold;
+            text-transform: uppercase;
+            border-bottom: 1px dotted #555;
+            padding-top: 6px;
+            padding-bottom: 2px;
+        }
+
+        .header-underline td {
+            font-weight: bold;
+            text-transform: uppercase;
+            text-decoration: underline;
+            border-bottom: 1px dotted #555;
+            padding-top: 6px;
+            padding-bottom: 2px;
+        }
+
+        .account-group td {
+            font-weight: bold;
+            border-bottom: 1px dotted #555;
+        }
+
+        .row-subtotal td {
             font-weight: bold !important;
+            font-style: italic;
             border-top: 1px solid #000;
+            border-bottom: 1px dotted #000;
+            background-color: #fafafa;
+        }
+
+        .row-total-prod td {
+            font-weight: bold !important;
+            font-style: italic;
+            border-top: 1px solid #000;
+            border-bottom: 1px solid #000;
+            background-color: #f8fafc;
+        }
+
+        .row-hpp td {
+            font-weight: bold !important;
+            border-top: 1.5px solid #000;
             border-bottom: 1.5px solid #000;
+            background-color: #f8fafc;
+        }
+
+        .row-laba-kotor td {
+            font-weight: bold !important;
+            background-color: #ffff00 !important;
+            border-top: 1.5px solid #000 !important;
+            border-bottom: 1.5px solid #000 !important;
+            color: #000;
+        }
+
+        .row-grand-total td {
+            font-weight: bold !important;
+            border-top: 1.5px solid #000;
+            border-bottom: 2px double #000;
+            background-color: #f1f5f9;
             padding-top: 5px;
             padding-bottom: 5px;
         }
 
-        .subtotal-row-grand td {
-            font-weight: bold !important;
-            border-top: 1.5px solid #000;
-            border-bottom: 2px double #000;
-            padding-top: 6px;
-            padding-bottom: 6px;
-            font-size: 11px;
-        }
-
-        .section-header td {
-            font-weight: bold;
-            font-size: 11px;
-            padding-top: 8px;
-        }
+        .pl-1 { padding-left: 10px !important; }
+        .pl-2 { padding-left: 20px !important; }
+        .pl-sub { padding-left: 25px !important; }
 
         @media print {
             body {
                 margin: 5px;
+                font-size: 9px;
+            }
+
+            /* Non-aktifkan sticky saat print agar halaman tercetak normal */
+            .col-keterangan,
+            .table-lr-tahunan thead th:first-child {
+                position: static !important;
+                border-right: 1px solid #000 !important;
+            }
+
+            /* Paksa warna tercetak */
+            .row-laba-kotor td,
+            .row-laba-kotor .col-keterangan {
+                background-color: #ffff00 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            /* Lebar tabel print penuh */
+            .table-lr-tahunan {
+                width: 100% !important;
+            }
+
+            .content {
+                overflow-x: visible !important;
             }
         }
     </style>
@@ -117,470 +246,616 @@
     </div>
 
     @php
-        // Group coas by parent code (sub_akun)
-        $nodesByParent = [];
-        foreach ($labarugi as $coa) {
-            $node_monthly_balances = [];
+        $lrMap = $lrMap ?? $labarugi->keyBy('kode_akun');
+
+        // Helper formatting
+        $fmt = function($val) {
+            if ($val === null || abs($val) < 0.001) return '-';
+            if ($val < 0) return '(' . number_format(abs($val), 0, ',', '.') . ')';
+            return number_format($val, 0, ',', '.');
+        };
+
+        // Monthly balance arrays
+        $mVal = function($code, $m) use ($balances) {
+            return $balances[$code][$m] ?? 0.0;
+        };
+
+        $yearVal = function($code) use ($balances) {
+            $sum = 0;
             for ($m = 1; $m <= 12; $m++) {
-                $node_monthly_balances[$m] = $balances[$coa->kode_akun][$m] ?? 0.0;
+                $sum += ($balances[$code][$m] ?? 0.0);
             }
-            $parentKey = empty($coa->sub_akun) ? '0' : $coa->sub_akun;
-            $nodesByParent[$parentKey][] = [
-                'kode_akun' => $coa->kode_akun,
-                'nama_akun' => $coa->nama_akun,
-                'sub_akun' => $coa->sub_akun,
-                'level' => $coa->level,
-                'monthly_balances' => $node_monthly_balances,
-                'children' => []
-            ];
-        }
+            return $sum;
+        };
 
-        // Recursive tree builder
-        if (!function_exists('buildTreeLRTahunan')) {
-            function buildTreeLRTahunan(&$nodesByParent, $parentId = '0')
-            {
-                $branch = [];
-                if (isset($nodesByParent[$parentId])) {
-                    foreach ($nodesByParent[$parentId] as $node) {
-                        $node['children'] = buildTreeLRTahunan($nodesByParent, $node['kode_akun']);
-                        $branch[] = $node;
-                    }
-                }
-                return $branch;
+        $nameOf = function($code, $default = '') use ($lrMap) {
+            return isset($lrMap[$code]) ? $lrMap[$code]->nama_akun : $default;
+        };
+
+        // 1. PENDAPATAN (4)
+        $pendapatanAccounts = $labarugi->filter(function($a) {
+            return substr($a->kode_akun, 0, 1) === '4' && ($a->is_leaf ?? ($a->level >= 2));
+        });
+
+        $mTotalPendapatan = array_fill(1, 12, 0.0);
+        for ($m = 1; $m <= 12; $m++) {
+            foreach ($pendapatanAccounts as $acc) {
+                $mTotalPendapatan[$m] += $mVal($acc->kode_akun, $m);
             }
         }
+        $yTotalPendapatan = array_sum($mTotalPendapatan);
 
-        // Build the top level trees
-        $tree = buildTreeLRTahunan($nodesByParent, '0');
+        // 2. HPP & BIAYA PRODUKSI
+        // Bahan Baku
+        $mSaBB = $hppBahanTahunan['bb']['sa'] ?? array_fill(1, 12, 0.0);
+        $mPembBB = $hppBahanTahunan['bb']['pemb'] ?? array_fill(1, 12, 0.0);
+        $mAkBB = $hppBahanTahunan['bb']['ak'] ?? array_fill(1, 12, 0.0);
+        $mUsedBB = $hppBahanTahunan['bb']['used'] ?? array_fill(1, 12, 0.0);
 
-        // Separate Pendapatan (4), HPP / Pembelian (5), and Biaya / Beban (6)
-        $pendapatanTree = [];
-        $hppTree = [];
-        $bebanTree = [];
+        // Bahan Kemasan
+        $mSaBK = $hppBahanTahunan['bk']['sa'] ?? array_fill(1, 12, 0.0);
+        $mPembBK = $hppBahanTahunan['bk']['pemb'] ?? array_fill(1, 12, 0.0);
+        $mAkBK = $hppBahanTahunan['bk']['ak'] ?? array_fill(1, 12, 0.0);
+        $mUsedBK = $hppBahanTahunan['bk']['used'] ?? array_fill(1, 12, 0.0);
 
-        foreach ($tree as $rootNode) {
-            $prefix = substr($rootNode['kode_akun'], 0, 1);
-            if ($prefix == '4') {
-                $pendapatanTree[] = $rootNode;
-            } elseif ($prefix == '5' || str_starts_with($rootNode['kode_akun'], '6-1')) {
-                $hppTree[] = $rootNode;
-            } elseif (str_starts_with($rootNode['kode_akun'], '6-2') || $prefix == '6') {
-                $bebanTree[] = $rootNode;
-            }
-        }
-
-        // Recursive balance calculator
-        if (!function_exists('calculateTreeBalancesLRTahunan')) {
-            function calculateTreeBalancesLRTahunan(&$nodes)
-            {
-                $monthly_totals = array_fill(1, 12, 0.0);
-                foreach ($nodes as &$node) {
-                    if (count($node['children']) > 0) {
-                        $node['monthly_balances'] = calculateTreeBalancesLRTahunan($node['children']);
-                    }
-                    for ($m = 1; $m <= 12; $m++) {
-                        $monthly_totals[$m] += $node['monthly_balances'][$m] ?? 0.0;
-                    }
-                }
-                return $monthly_totals;
+        // BOP (6-11100)
+        $bopAccounts = $labarugi->filter(function($a) {
+            return str_starts_with($a->kode_akun, '6-111') && ($a->is_leaf ?? ($a->level >= 2));
+        });
+        $mTotalBOP = array_fill(1, 12, 0.0);
+        for ($m = 1; $m <= 12; $m++) {
+            foreach ($bopAccounts as $acc) {
+                $mTotalBOP[$m] += $mVal($acc->kode_akun, $m);
             }
         }
 
-        // Calculate recursive balances
-        calculateTreeBalancesLRTahunan($pendapatanTree);
-        calculateTreeBalancesLRTahunan($hppTree);
-        calculateTreeBalancesLRTahunan($bebanTree);
-
-        // Helper function to format negative values with parentheses
-        if (!function_exists('formatLRTahunanValue')) {
-            function formatLRTahunanValue($value, $hideIfZero = false) {
-                if ($value === null || $value == 0) {
-                    return $hideIfZero ? '' : '-';
-                }
-                if ($value < 0) {
-                    return '(' . (function_exists('formatAngkaDesimal') ? formatAngkaDesimal(abs($value)) : number_format(abs($value), 2, ',', '.')) . ')';
-                }
-                return function_exists('formatAngkaDesimal') ? formatAngkaDesimal($value) : number_format($value, 2, ',', '.');
+        // BPTL (6-12100)
+        $bptlAccounts = $labarugi->filter(function($a) {
+            return str_starts_with($a->kode_akun, '6-121') && ($a->is_leaf ?? ($a->level >= 2));
+        });
+        $mTotalBPTL = array_fill(1, 12, 0.0);
+        for ($m = 1; $m <= 12; $m++) {
+            foreach ($bptlAccounts as $acc) {
+                $mTotalBPTL[$m] += $mVal($acc->kode_akun, $m);
             }
         }
 
-        // Recursive tree rendering function
-        if (!function_exists('renderTreeLRTahunan')) {
-            function renderTreeLRTahunan($nodes, $level = 0)
-            {
-                foreach ($nodes as $node) {
-                    $indent = $level * 12;
-                    $hasChildren = count($node['children']) > 0;
-
-                    // Check if node has non-zero values in any month
-                    $hasAnyValue = false;
-                    for ($m = 1; $m <= 12; $m++) {
-                        if (abs($node['monthly_balances'][$m] ?? 0) > 0.001) {
-                            $hasAnyValue = true;
-                            break;
-                        }
-                    }
-
-                    if ($hasChildren) {
-                        // Category Header (Root or Sub-Root)
-                        echo '<tr class="' . ($level == 0 ? 'section-header' : '') . '">';
-                        echo '<td style="padding-left: ' . $indent . 'px; font-weight: bold;">' . $node['kode_akun'] . ' &nbsp; ' . $node['nama_akun'] . '</td>';
-                        for ($m = 1; $m <= 12; $m++) {
-                            echo '<td></td>';
-                        }
-                        echo '<td></td>';
-                        echo '</tr>';
-
-                        // Render children recursively
-                        renderTreeLRTahunan($node['children'], $level + 1);
-
-                        // Render Subtotal/Jumlah row
-                        echo '<tr class="subtotal-row">';
-                        echo '<td style="padding-left: ' . $indent . 'px;">Jumlah ' . $node['nama_akun'] . '</td>';
-                        $subtotalYear = 0;
-                        for ($m = 1; $m <= 12; $m++) {
-                            $val = $node['monthly_balances'][$m] ?? 0;
-                            $subtotalYear += $val;
-                            echo '<td class="text-right">' . formatLRTahunanValue($val) . '</td>';
-                        }
-                        echo '<td class="text-right">' . formatLRTahunanValue($subtotalYear) . '</td>';
-                        echo '</tr>';
-                    } else {
-                        // Leaf account - show even if zero or only if non-zero
-                        echo '<tr>';
-                        echo '<td style="padding-left: ' . $indent . 'px;">' . $node['kode_akun'] . ' &nbsp; ' . $node['nama_akun'] . '</td>';
-                        $leafYear = 0;
-                        for ($m = 1; $m <= 12; $m++) {
-                            $val = $node['monthly_balances'][$m] ?? 0;
-                            $leafYear += $val;
-                            echo '<td class="text-right">' . formatLRTahunanValue($val) . '</td>';
-                        }
-                        echo '<td class="text-right">' . formatLRTahunanValue($leafYear) . '</td>';
-                        echo '</tr>';
-                    }
-                }
+        // Overhead Lainnya (6-13100)
+        $overheadLainnyaAccounts = $labarugi->filter(function($a) {
+            return str_starts_with($a->kode_akun, '6-131') && ($a->is_leaf ?? ($a->level >= 2));
+        });
+        $mTotalOverheadLainnya = array_fill(1, 12, 0.0);
+        for ($m = 1; $m <= 12; $m++) {
+            foreach ($overheadLainnyaAccounts as $acc) {
+                $mTotalOverheadLainnya[$m] += $mVal($acc->kode_akun, $m);
             }
+        }
+
+        // Total Biaya Produksi
+        $mTotalBiayaProduksi = array_fill(1, 12, 0.0);
+        for ($m = 1; $m <= 12; $m++) {
+            $mTotalBiayaProduksi[$m] = $mUsedBB[$m] + $mUsedBK[$m] + $mTotalBOP[$m] + $mTotalBPTL[$m] + $mTotalOverheadLainnya[$m];
+        }
+
+        // Persediaan Barang Jadi (5-12103 & 5-13103)
+        $mSaBJ = $hppBahanTahunan['bj']['sa'] ?? array_fill(1, 12, 0.0);
+        $mAkBJ = $hppBahanTahunan['bj']['ak'] ?? array_fill(1, 12, 0.0);
+
+        // Total HPP & Laba Kotor
+        $mTotalHPP = array_fill(1, 12, 0.0);
+        $mLabaKotor = array_fill(1, 12, 0.0);
+        for ($m = 1; $m <= 12; $m++) {
+            $mTotalHPP[$m] = $mTotalBiayaProduksi[$m] + $mSaBJ[$m] - $mAkBJ[$m];
+            $mLabaKotor[$m] = $mTotalPendapatan[$m] - $mTotalHPP[$m];
+        }
+
+        // 3. BIAYA OPERASIONAL (6-2)
+        // Admin (6-21100)
+        $adminAccounts = $labarugi->filter(function($a) {
+            return str_starts_with($a->kode_akun, '6-211') && ($a->is_leaf ?? ($a->level >= 2));
+        });
+        $mTotalAdmin = array_fill(1, 12, 0.0);
+        for ($m = 1; $m <= 12; $m++) {
+            foreach ($adminAccounts as $acc) {
+                $mTotalAdmin[$m] += $mVal($acc->kode_akun, $m);
+            }
+        }
+
+        // Penyusutan & Amortisasi (6-22100)
+        $penyusutanAccounts = $labarugi->filter(function($a) {
+            return str_starts_with($a->kode_akun, '6-221') && ($a->is_leaf ?? ($a->level >= 2));
+        });
+        $mTotalPenyusutan = array_fill(1, 12, 0.0);
+        for ($m = 1; $m <= 12; $m++) {
+            foreach ($penyusutanAccounts as $acc) {
+                $mTotalPenyusutan[$m] += $mVal($acc->kode_akun, $m);
+            }
+        }
+
+        // Jasa (6-23100)
+        $jasaAccounts = $labarugi->filter(function($a) {
+            return str_starts_with($a->kode_akun, '6-231') && ($a->is_leaf ?? ($a->level >= 2));
+        });
+        $mTotalJasa = array_fill(1, 12, 0.0);
+        for ($m = 1; $m <= 12; $m++) {
+            foreach ($jasaAccounts as $acc) {
+                $mTotalJasa[$m] += $mVal($acc->kode_akun, $m);
+            }
+        }
+
+        // Impor (6-24100)
+        $imporAccounts = $labarugi->filter(function($a) {
+            return str_starts_with($a->kode_akun, '6-241') && ($a->is_leaf ?? ($a->level >= 2));
+        });
+        $mTotalImpor = array_fill(1, 12, 0.0);
+        for ($m = 1; $m <= 12; $m++) {
+            foreach ($imporAccounts as $acc) {
+                $mTotalImpor[$m] += $mVal($acc->kode_akun, $m);
+            }
+        }
+
+        // Gaji (6-25110)
+        $gajiAccounts = $labarugi->filter(function($a) {
+            return str_starts_with($a->kode_akun, '6-2511') && ($a->is_leaf ?? ($a->level >= 2));
+        });
+        $mTotalGaji = array_fill(1, 12, 0.0);
+        for ($m = 1; $m <= 12; $m++) {
+            foreach ($gajiAccounts as $acc) {
+                $mTotalGaji[$m] += $mVal($acc->kode_akun, $m);
+            }
+        }
+
+        // Utiliti, Adm, Sewa (6-25120 & 6-25130)
+        $utilitiAccounts = $labarugi->filter(function($a) {
+            return (str_starts_with($a->kode_akun, '6-2512') || str_starts_with($a->kode_akun, '6-2513')) && ($a->is_leaf ?? ($a->level >= 2));
+        });
+        $mTotalUtiliti = array_fill(1, 12, 0.0);
+        for ($m = 1; $m <= 12; $m++) {
+            foreach ($utilitiAccounts as $acc) {
+                $mTotalUtiliti[$m] += $mVal($acc->kode_akun, $m);
+            }
+        }
+
+        // Total Biaya Umum & Administrasi
+        $mTotalUmumAdm = array_fill(1, 12, 0.0);
+        for ($m = 1; $m <= 12; $m++) {
+            $mTotalUmumAdm[$m] = $mTotalGaji[$m] + $mTotalUtiliti[$m];
+        }
+
+        // TOTAL BIAYA OPERASIONAL & LABA BERSIH
+        $mTotalBiayaOperasional = array_fill(1, 12, 0.0);
+        $mLabaBersih = array_fill(1, 12, 0.0);
+        for ($m = 1; $m <= 12; $m++) {
+            $mTotalBiayaOperasional[$m] = $mTotalAdmin[$m] + $mTotalPenyusutan[$m] + $mTotalJasa[$m] + $mTotalImpor[$m] + $mTotalUmumAdm[$m];
+            $mLabaBersih[$m] = $mLabaKotor[$m] - $mTotalBiayaOperasional[$m];
         }
     @endphp
 
     <div class="content">
-        <table class="datatable9">
+        <table class="table-lr-tahunan">
             <thead>
                 <tr>
-                    <th style="text-align: left; width: 16%;">Deskripsi Akun</th>
-                    <th style="width: 6.5%;">Jan</th>
-                    <th style="width: 6.5%;">Feb</th>
-                    <th style="width: 6.5%;">Mar</th>
-                    <th style="width: 6.5%;">Apr</th>
-                    <th style="width: 6.5%;">Mei</th>
-                    <th style="width: 6.5%;">Jun</th>
-                    <th style="width: 6.5%;">Jul</th>
-                    <th style="width: 6.5%;">Ags</th>
-                    <th style="width: 6.5%;">Sep</th>
-                    <th style="width: 6.5%;">Okt</th>
-                    <th style="width: 6.5%;">Nov</th>
-                    <th style="width: 6.5%;">Des</th>
-                    <th style="width: 6%;">Total</th>
+                    <th class="col-keterangan">Keterangan</th>
+                    @for ($m = 1; $m <= 12; $m++)
+                        <th style="width: 55px;">{{ ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'][$m - 1] }}</th>
+                    @endfor
+                    <th style="width: 80px;">Total</th>
                 </tr>
             </thead>
             <tbody>
-                <!-- 1. PENDAPATAN OPERASIONAL (4) -->
-                <tr class="section-header">
-                    <td style="font-weight: bold; font-size: 11px; text-transform: uppercase;">PENDAPATAN OPERASIONAL</td>
-                    @for ($m = 1; $m <= 12; $m++)
+                <!-- 1. PENDAPATAN -->
+                @if (isset($lrMap['4-11000']))
+                    <tr class="account-group">
+                        <td class="col-keterangan">4-11000 &nbsp; {{ $lrMap['4-11000']->nama_akun }}</td>
+                        @for ($m = 1; $m <= 12; $m++) <td></td> @endfor
                         <td></td>
-                    @endfor
-                    <td></td>
-                </tr>
-                @if (!empty($pendapatanTree))
-                    @php renderTreeLRTahunan($pendapatanTree, 1); @endphp
+                    </tr>
                 @endif
-
-                <!-- Total Pendapatan Operasional -->
-                <tr class="subtotal-row">
-                    <td style="font-weight: bold;">TOTAL PENDAPATAN OPERASIONAL</td>
-                    @php $grandTotalPendapatanYear = 0; @endphp
-                    @for ($m = 1; $m <= 12; $m++)
-                        <td class="text-right" style="font-weight: bold;">
-                            @php
-                                $totalPendapatan = 0;
-                                foreach ($pendapatanTree as $node) {
-                                    $totalPendapatan += ($node['monthly_balances'][$m] ?? 0);
-                                }
-                                $grandTotalPendapatanYear += $totalPendapatan;
-                                echo formatLRTahunanValue($totalPendapatan);
-                            @endphp
-                        </td>
-                    @endfor
-                    <td class="text-right" style="font-weight: bold;">
-                        {{ formatLRTahunanValue($grandTotalPendapatanYear) }}
-                    </td>
-                </tr>
-
-                <!-- Spacer -->
-                <tr><td colspan="14" style="height: 10px;"></td></tr>
-
-                <!-- 2. HARGA POKOK PENJUALAN / PEMBELIAN (5) -->
-                <tr class="section-header">
-                    <td style="font-weight: bold; font-size: 11px; text-transform: uppercase;">HARGA POKOK PENJUALAN (HPP)</td>
-                    @for ($m = 1; $m <= 12; $m++)
+                @if (isset($lrMap['4-11100']))
+                    <tr class="account-group">
+                        <td class="col-keterangan pl-1">4-11100 &nbsp; {{ $lrMap['4-11100']->nama_akun }}</td>
+                        @for ($m = 1; $m <= 12; $m++) <td></td> @endfor
                         <td></td>
-                    @endfor
-                    <td></td>
-                </tr>
-                @if (isset($hppBahanTahunan))
-                    <!-- Persediaaan Awal Bahan Baku -->
-                    <tr>
-                        <td style="padding-left: 12px;">Persediaaan Awal Bahan Baku</td>
-                        @php $totSaBB = 0; @endphp
-                        @for ($m = 1; $m <= 12; $m++)
-                            @php $totSaBB += ($hppBahanTahunan['bb']['sa'][$m] ?? 0); @endphp
-                            <td class="text-right">{{ formatLRTahunanValue($hppBahanTahunan['bb']['sa'][$m] ?? 0) }}</td>
-                        @endfor
-                        <td class="text-right">{{ formatLRTahunanValue($totSaBB) }}</td>
                     </tr>
-
-                    <!-- Pembelian Bahan Baku -->
-                    <tr>
-                        <td style="padding-left: 12px;">Pembelian Bahan Baku</td>
-                        @php $totPembBB = 0; @endphp
-                        @for ($m = 1; $m <= 12; $m++)
-                            @php $totPembBB += ($hppBahanTahunan['bb']['pemb'][$m] ?? 0); @endphp
-                            <td class="text-right">{{ formatLRTahunanValue($hppBahanTahunan['bb']['pemb'][$m] ?? 0) }}</td>
-                        @endfor
-                        <td class="text-right">{{ formatLRTahunanValue($totPembBB) }}</td>
-                    </tr>
-
-                    <!-- Persediaaan Akhir Bahan Baku -->
-                    <tr>
-                        <td style="padding-left: 12px;">Persediaaan Akhir Bahan Baku</td>
-                        @php $totAkBB = 0; @endphp
-                        @for ($m = 1; $m <= 12; $m++)
-                            @php $totAkBB += ($hppBahanTahunan['bb']['ak'][$m] ?? 0); @endphp
-                            <td class="text-right">{{ formatLRTahunanValue(-($hppBahanTahunan['bb']['ak'][$m] ?? 0)) }}</td>
-                        @endfor
-                        <td class="text-right">{{ formatLRTahunanValue(-$totAkBB) }}</td>
-                    </tr>
-
-                    <!-- Bahan Baku yang digunakan -->
-                    <tr class="subtotal-row">
-                        <td style="padding-left: 12px; font-weight: bold;">Bahan Baku yang digunakan</td>
-                        @php $totUsedBB = 0; @endphp
-                        @for ($m = 1; $m <= 12; $m++)
-                            @php $totUsedBB += ($hppBahanTahunan['bb']['used'][$m] ?? 0); @endphp
-                            <td class="text-right" style="font-weight: bold;">{{ formatLRTahunanValue($hppBahanTahunan['bb']['used'][$m] ?? 0) }}</td>
-                        @endfor
-                        <td class="text-right" style="font-weight: bold;">{{ formatLRTahunanValue($totUsedBB) }}</td>
-                    </tr>
-
-                    <!-- Persediaan Awal Bahan Kemasan -->
-                    <tr>
-                        <td style="padding-left: 12px;">Persediaan Awal Bahan Kemasan</td>
-                        @php $totSaBK = 0; @endphp
-                        @for ($m = 1; $m <= 12; $m++)
-                            @php $totSaBK += ($hppBahanTahunan['bk']['sa'][$m] ?? 0); @endphp
-                            <td class="text-right">{{ formatLRTahunanValue($hppBahanTahunan['bk']['sa'][$m] ?? 0) }}</td>
-                        @endfor
-                        <td class="text-right">{{ formatLRTahunanValue($totSaBK) }}</td>
-                    </tr>
-
-                    <!-- Pembelian Bahan Kemasan -->
-                    <tr>
-                        <td style="padding-left: 12px;">Pembelian Bahan Kemasan</td>
-                        @php $totPembBK = 0; @endphp
-                        @for ($m = 1; $m <= 12; $m++)
-                            @php $totPembBK += ($hppBahanTahunan['bk']['pemb'][$m] ?? 0); @endphp
-                            <td class="text-right">{{ formatLRTahunanValue($hppBahanTahunan['bk']['pemb'][$m] ?? 0) }}</td>
-                        @endfor
-                        <td class="text-right">{{ formatLRTahunanValue($totPembBK) }}</td>
-                    </tr>
-
-                    <!-- Persediaan Akhir Bahan Kemasan -->
-                    <tr>
-                        <td style="padding-left: 12px;">Persediaan Akhir Bahan Kemasan</td>
-                        @php $totAkBK = 0; @endphp
-                        @for ($m = 1; $m <= 12; $m++)
-                            @php $totAkBK += ($hppBahanTahunan['bk']['ak'][$m] ?? 0); @endphp
-                            <td class="text-right">{{ formatLRTahunanValue(-($hppBahanTahunan['bk']['ak'][$m] ?? 0)) }}</td>
-                        @endfor
-                        <td class="text-right">{{ formatLRTahunanValue(-$totAkBK) }}</td>
-                    </tr>
-
-                    <!-- Bahan Kemasan yg digunakan -->
-                    <tr class="subtotal-row">
-                        <td style="padding-left: 12px; font-weight: bold;">Bahan Kemasan yg digunakan</td>
-                        @php $totUsedBK = 0; @endphp
-                        @for ($m = 1; $m <= 12; $m++)
-                            @php $totUsedBK += ($hppBahanTahunan['bk']['used'][$m] ?? 0); @endphp
-                            <td class="text-right" style="font-weight: bold;">{{ formatLRTahunanValue($hppBahanTahunan['bk']['used'][$m] ?? 0) }}</td>
-                        @endfor
-                        <td class="text-right" style="font-weight: bold;">{{ formatLRTahunanValue($totUsedBK) }}</td>
-                    </tr>
-                @else
-                    @if (!empty($hppTree))
-                        @php renderTreeLRTahunan($hppTree, 1); @endphp
-                    @endif
                 @endif
-
-                {{-- Other HPP accounts if any (like 5-11103) --}}
-                @php
-                    $otherHppAccounts = [];
-                    foreach ($labarugi as $acc) {
-                        $is5 = substr($acc->kode_akun, 0, 1) === '5' && !in_array($acc->kode_akun, [
-                            '5-11000', '5-11100', '5-11101', '5-11102',
-                            '5-12000', '5-12100', '5-12101', '5-12102', '5-12103',
-                            '5-13000', '5-13100', '5-13101', '5-13102', '5-13103'
-                        ]);
-                        $is6Overhead = str_starts_with($acc->kode_akun, '6-1') && !in_array($acc->kode_akun, [
-                            '6-11000', '6-11100', '6-12100', '6-13100'
-                        ]);
-                        if ($is5 || $is6Overhead) {
-                            $otherHppAccounts[] = $acc;
-                        }
-                    }
-                @endphp
-                @foreach ($otherHppAccounts as $acc)
-                    @php $rowYear = 0; @endphp
+                @foreach ($pendapatanAccounts as $acc)
                     <tr>
-                        <td style="padding-left: 12px;">{{ $acc->kode_akun }} &nbsp; {{ $acc->nama_akun }}</td>
+                        <td class="col-keterangan pl-2">{{ $acc->kode_akun }} &nbsp; {{ $acc->nama_akun }}</td>
                         @for ($m = 1; $m <= 12; $m++)
-                            @php
-                                $val = $balances[$acc->kode_akun][$m] ?? 0;
-                                $rowYear += $val;
-                            @endphp
-                            <td class="text-right">{{ formatLRTahunanValue($val) }}</td>
+                            <td class="text-right">{{ $fmt($mVal($acc->kode_akun, $m)) }}</td>
                         @endfor
-                        <td class="text-right">{{ formatLRTahunanValue($rowYear) }}</td>
+                        <td class="text-right font-bold">{{ $fmt($yearVal($acc->kode_akun)) }}</td>
                     </tr>
                 @endforeach
-
-                <!-- Total HPP -->
-                <tr class="subtotal-row">
-                    <td style="font-weight: bold;">TOTAL HARGA POKOK PENJUALAN</td>
-                    @php 
-                        $grandTotalHppYear = 0; 
-                        $monthlyHppTotals = [];
-                    @endphp
+                <tr class="row-subtotal">
+                    <td class="pl-sub">Jumlah Pendapatan</td>
                     @for ($m = 1; $m <= 12; $m++)
-                        <td class="text-right" style="font-weight: bold;">
-                            @php
-                                if (isset($hppBahanTahunan)) {
-                                    $mHpp = ($hppBahanTahunan['bb']['used'][$m] ?? 0) + ($hppBahanTahunan['bk']['used'][$m] ?? 0);
-                                    foreach ($otherHppAccounts as $acc) {
-                                        $mHpp += ($balances[$acc->kode_akun][$m] ?? 0);
-                                    }
-                                } else {
-                                    $mHpp = 0;
-                                    foreach ($hppTree as $node) {
-                                        $mHpp += ($node['monthly_balances'][$m] ?? 0);
-                                    }
-                                }
-                                $monthlyHppTotals[$m] = $mHpp;
-                                $grandTotalHppYear += $mHpp;
-                                echo formatLRTahunanValue($mHpp);
-                            @endphp
-                        </td>
+                        <td class="text-right">{{ $fmt($mTotalPendapatan[$m]) }}</td>
                     @endfor
-                    <td class="text-right" style="font-weight: bold;">
-                        {{ formatLRTahunanValue($grandTotalHppYear) }}
-                    </td>
+                    <td class="text-right">{{ $fmt($yTotalPendapatan) }}</td>
                 </tr>
 
-                <!-- Spacer -->
-                <tr><td colspan="14" style="height: 10px;"></td></tr>
-
-                <!-- 3. LABA KOTOR (Pendapatan - HPP) -->
-                <tr class="subtotal-row" style="background-color: #f1f5f9;">
-                    <td style="font-weight: bold; text-transform: uppercase;">LABA KOTOR</td>
-                    @php 
-                        $grandTotalLabaKotorYear = 0; 
-                        $monthlyLabaKotorTotals = [];
-                    @endphp
-                    @for ($m = 1; $m <= 12; $m++)
-                        <td class="text-right" style="font-weight: bold;">
-                            @php
-                                $totP = 0;
-                                foreach ($pendapatanTree as $node) {
-                                    $totP += ($node['monthly_balances'][$m] ?? 0);
-                                }
-                                $totH = $monthlyHppTotals[$m] ?? 0;
-                                $labaKotor = $totP - $totH;
-                                $monthlyLabaKotorTotals[$m] = $labaKotor;
-                                $grandTotalLabaKotorYear += $labaKotor;
-                                echo formatLRTahunanValue($labaKotor);
-                            @endphp
-                        </td>
-                    @endfor
-                    <td class="text-right" style="font-weight: bold;">
-                        {{ formatLRTahunanValue($grandTotalLabaKotorYear) }}
-                    </td>
+                <!-- 2. HARGA POKOK PENJUALAN -->
+                <tr class="header-main">
+                    <td colspan="14">HARGA POKOK PENJUALAN</td>
                 </tr>
 
-                <!-- Spacer -->
-                <tr><td colspan="14" style="height: 10px;"></td></tr>
-
-                <!-- 4. BEBAN OPERASIONAL (6) -->
-                <tr class="section-header">
-                    <td style="font-weight: bold; font-size: 11px; text-transform: uppercase;">BEBAN OPERASIONAL</td>
+                <!-- BAHAN BAKU -->
+                <tr class="header-sub">
+                    <td colspan="14">BAHAN BAKU</td>
+                </tr>
+                <tr>
+                    <td class="col-keterangan">5-12101 &nbsp; {{ $nameOf('5-12101', 'P/L Persediaan Bahan Baku') }}</td>
                     @for ($m = 1; $m <= 12; $m++)
+                        <td class="text-right">{{ $fmt($mSaBB[$m]) }}</td>
+                    @endfor
+                    <td class="text-right">{{ $fmt(array_sum($mSaBB)) }}</td>
+                </tr>
+                <tr>
+                    <td class="col-keterangan">5-11101 &nbsp; {{ $nameOf('5-11101', 'Pembelian Bahan Baku') }}</td>
+                    @for ($m = 1; $m <= 12; $m++)
+                        <td class="text-right">{{ $fmt($mPembBB[$m]) }}</td>
+                    @endfor
+                    <td class="text-right">{{ $fmt(array_sum($mPembBB)) }}</td>
+                </tr>
+                <tr>
+                    <td class="col-keterangan">5-13101 &nbsp; {{ $nameOf('5-13101', 'P/L Persediaan Bahan Baku') }}</td>
+                    @for ($m = 1; $m <= 12; $m++)
+                        <td class="text-right">{{ $mAkBB[$m] != 0 ? '(' . number_format($mAkBB[$m], 0, ',', '.') . ')' : '-' }}</td>
+                    @endfor
+                    <td class="text-right">{{ array_sum($mAkBB) != 0 ? '(' . number_format(array_sum($mAkBB), 0, ',', '.') . ')' : '-' }}</td>
+                </tr>
+                <tr class="row-subtotal">
+                    <td class="pl-sub">Bahan Baku yang digunakan</td>
+                    @for ($m = 1; $m <= 12; $m++)
+                        <td class="text-right">{{ $fmt($mUsedBB[$m]) }}</td>
+                    @endfor
+                    <td class="text-right">{{ $fmt(array_sum($mUsedBB)) }}</td>
+                </tr>
+
+                <!-- BAHAN KEMASAN -->
+                <tr class="header-sub">
+                    <td colspan="14">BAHAN KEMASAN</td>
+                </tr>
+                <tr>
+                    <td class="col-keterangan">5-12102 &nbsp; {{ $nameOf('5-12102', 'P/L Persediaan Bahan Kemasan') }}</td>
+                    @for ($m = 1; $m <= 12; $m++)
+                        <td class="text-right">{{ $fmt($mSaBK[$m]) }}</td>
+                    @endfor
+                    <td class="text-right">{{ $fmt(array_sum($mSaBK)) }}</td>
+                </tr>
+                <tr>
+                    <td class="col-keterangan">5-11102 &nbsp; {{ $nameOf('5-11102', 'Pembelian Bahan Kemasan') }}</td>
+                    @for ($m = 1; $m <= 12; $m++)
+                        <td class="text-right">{{ $fmt($mPembBK[$m]) }}</td>
+                    @endfor
+                    <td class="text-right">{{ $fmt(array_sum($mPembBK)) }}</td>
+                </tr>
+                <tr>
+                    <td class="col-keterangan">5-13102 &nbsp; {{ $nameOf('5-13102', 'P/L Persediaan Bahan Kemasan') }}</td>
+                    @for ($m = 1; $m <= 12; $m++)
+                        <td class="text-right">{{ $mAkBK[$m] != 0 ? '(' . number_format($mAkBK[$m], 0, ',', '.') . ')' : '-' }}</td>
+                    @endfor
+                    <td class="text-right">{{ array_sum($mAkBK) != 0 ? '(' . number_format(array_sum($mAkBK), 0, ',', '.') . ')' : '-' }}</td>
+                </tr>
+                <tr class="row-subtotal">
+                    <td class="pl-sub">Bahan Kemasan yang digunakan</td>
+                    @for ($m = 1; $m <= 12; $m++)
+                        <td class="text-right">{{ $fmt($mUsedBK[$m]) }}</td>
+                    @endfor
+                    <td class="text-right">{{ $fmt(array_sum($mUsedBK)) }}</td>
+                </tr>
+
+                <!-- BIAYA OVERHEAD PABRIK -->
+                <tr class="header-underline">
+                    <td colspan="14">BIAYA OVERHEAD PABRIK</td>
+                </tr>
+                @if (isset($lrMap['6-11100']))
+                    <tr class="account-group">
+                        <td class="col-keterangan">6-11100 &nbsp; {{ $lrMap['6-11100']->nama_akun }}</td>
+                        @for ($m = 1; $m <= 12; $m++) <td></td> @endfor
                         <td></td>
+                    </tr>
+                @endif
+                @foreach ($bopAccounts as $acc)
+                    <tr>
+                        <td class="col-keterangan pl-1">{{ $acc->kode_akun }} &nbsp; {{ $acc->nama_akun }}</td>
+                        @for ($m = 1; $m <= 12; $m++)
+                            <td class="text-right">{{ $fmt($mVal($acc->kode_akun, $m)) }}</td>
+                        @endfor
+                        <td class="text-right">{{ $fmt($yearVal($acc->kode_akun)) }}</td>
+                    </tr>
+                @endforeach
+                <tr class="row-subtotal">
+                    <td class="pl-sub">Total Biaya Overhead Pabrik</td>
+                    @for ($m = 1; $m <= 12; $m++)
+                        <td class="text-right">{{ $fmt($mTotalBOP[$m]) }}</td>
                     @endfor
+                    <td class="text-right">{{ $fmt(array_sum($mTotalBOP)) }}</td>
+                </tr>
+
+                <!-- BIAYA TIDAK LANGSUNG (BPTL) -->
+                @if (isset($lrMap['6-12100']))
+                    <tr class="account-group">
+                        <td class="col-keterangan">6-12100 &nbsp; {{ $lrMap['6-12100']->nama_akun }}</td>
+                        @for ($m = 1; $m <= 12; $m++) <td></td> @endfor
+                        <td></td>
+                    </tr>
+                @endif
+                @foreach ($bptlAccounts as $acc)
+                    <tr>
+                        <td class="col-keterangan pl-1">{{ $acc->kode_akun }} &nbsp; {{ $acc->nama_akun }}</td>
+                        @for ($m = 1; $m <= 12; $m++)
+                            <td class="text-right">{{ $fmt($mVal($acc->kode_akun, $m)) }}</td>
+                        @endfor
+                        <td class="text-right">{{ $fmt($yearVal($acc->kode_akun)) }}</td>
+                    </tr>
+                @endforeach
+                <tr class="row-subtotal">
+                    <td class="pl-sub">Total Biaya Produksi Tidak Langsung</td>
+                    @for ($m = 1; $m <= 12; $m++)
+                        <td class="text-right">{{ $fmt($mTotalBPTL[$m]) }}</td>
+                    @endfor
+                    <td class="text-right">{{ $fmt(array_sum($mTotalBPTL)) }}</td>
+                </tr>
+
+                <!-- BIAYA OVERHEAD LAINNYA -->
+                @if (isset($lrMap['6-13100']))
+                    <tr class="account-group">
+                        <td class="col-keterangan">6-13100 &nbsp; {{ $lrMap['6-13100']->nama_akun }}</td>
+                        @for ($m = 1; $m <= 12; $m++) <td></td> @endfor
+                        <td></td>
+                    </tr>
+                @endif
+                @foreach ($overheadLainnyaAccounts as $acc)
+                    <tr>
+                        <td class="col-keterangan pl-1">{{ $acc->kode_akun }} &nbsp; {{ $acc->nama_akun }}</td>
+                        @for ($m = 1; $m <= 12; $m++)
+                            <td class="text-right">{{ $fmt($mVal($acc->kode_akun, $m)) }}</td>
+                        @endfor
+                        <td class="text-right">{{ $fmt($yearVal($acc->kode_akun)) }}</td>
+                    </tr>
+                @endforeach
+                <tr class="row-subtotal">
+                    <td class="pl-sub">Total Biaya Overhead Lainnya</td>
+                    @for ($m = 1; $m <= 12; $m++)
+                        <td class="text-right">{{ $fmt($mTotalOverheadLainnya[$m]) }}</td>
+                    @endfor
+                    <td class="text-right">{{ $fmt(array_sum($mTotalOverheadLainnya)) }}</td>
+                </tr>
+
+                <!-- TOTAL BIAYA PRODUKSI -->
+                <tr class="row-total-prod">
+                    <td class="pl-sub">Total Biaya Produksi</td>
+                    @for ($m = 1; $m <= 12; $m++)
+                        <td class="text-right">{{ $fmt($mTotalBiayaProduksi[$m]) }}</td>
+                    @endfor
+                    <td class="text-right">{{ $fmt(array_sum($mTotalBiayaProduksi)) }}</td>
+                </tr>
+
+                <!-- PERSEDIAAN BARANG JADI -->
+                <tr>
+                    <td class="col-keterangan">5-12103 &nbsp; {{ $nameOf('5-12103', 'P/L Persediaan Barang Jadi') }}</td>
+                    @for ($m = 1; $m <= 12; $m++)
+                        <td class="text-right">{{ $fmt($mSaBJ[$m]) }}</td>
+                    @endfor
+                    <td class="text-right">{{ $fmt(array_sum($mSaBJ)) }}</td>
+                </tr>
+                <tr>
+                    <td class="col-keterangan">5-13103 &nbsp; {{ $nameOf('5-13103', 'P/L Persediaan Barang Jadi') }}</td>
+                    @for ($m = 1; $m <= 12; $m++)
+                        <td class="text-right">{{ $mAkBJ[$m] != 0 ? '(' . number_format($mAkBJ[$m], 0, ',', '.') . ')' : '-' }}</td>
+                    @endfor
+                    <td class="text-right">{{ array_sum($mAkBJ) != 0 ? '(' . number_format(array_sum($mAkBJ), 0, ',', '.') . ')' : '-' }}</td>
+                </tr>
+
+                <!-- TOTAL HARGA POKOK PENJUALAN (HPP) -->
+                <tr class="row-hpp">
+                    <td class="pl-sub">TOTAL HARGA POKOK PENJUALAN (HPP)</td>
+                    @for ($m = 1; $m <= 12; $m++)
+                        <td class="text-right">{{ $fmt($mTotalHPP[$m]) }}</td>
+                    @endfor
+                    <td class="text-right">{{ $fmt(array_sum($mTotalHPP)) }}</td>
+                </tr>
+
+                <!-- LABA KOTOR (YELLOW HIGHLIGHT) -->
+                <tr class="row-laba-kotor">
+                    <td class="pl-sub">LABA KOTOR</td>
+                    @for ($m = 1; $m <= 12; $m++)
+                        <td class="text-right">{{ $fmt($mLabaKotor[$m]) }}</td>
+                    @endfor
+                    <td class="text-right">{{ $fmt(array_sum($mLabaKotor)) }}</td>
+                </tr>
+
+                <!-- 3. BIAYA OPERASIONAL -->
+                <tr class="header-main">
+                    <td colspan="14">BIAYA OPERASIONAL</td>
+                </tr>
+                <tr class="account-group">
+                    <td class="col-keterangan">6-21100 &nbsp; Beban Operasi</td>
+                    @for ($m = 1; $m <= 12; $m++) <td></td> @endfor
                     <td></td>
                 </tr>
-                @if (!empty($bebanTree))
-                    @php renderTreeLRTahunan($bebanTree, 1); @endphp
-                @endif
-
-                <!-- Total Beban Operasional -->
-                <tr class="subtotal-row">
-                    <td style="font-weight: bold;">TOTAL BEBAN OPERASIONAL</td>
-                    @php 
-                        $grandTotalBebanYear = 0; 
-                        $monthlyBebanTotals = [];
-                    @endphp
+                <tr class="account-group">
+                    <td class="col-keterangan pl-1">6-21100 &nbsp; Biaya ADM</td>
+                    @for ($m = 1; $m <= 12; $m++) <td></td> @endfor
+                    <td></td>
+                </tr>
+                @foreach ($adminAccounts as $acc)
+                    <tr>
+                        <td class="col-keterangan pl-2">{{ $acc->kode_akun }} &nbsp; {{ $acc->nama_akun }}</td>
+                        @for ($m = 1; $m <= 12; $m++)
+                            <td class="text-right">{{ $fmt($mVal($acc->kode_akun, $m)) }}</td>
+                        @endfor
+                        <td class="text-right">{{ $fmt($yearVal($acc->kode_akun)) }}</td>
+                    </tr>
+                @endforeach
+                <tr class="row-subtotal">
+                    <td class="pl-sub">Total Biaya Admin</td>
                     @for ($m = 1; $m <= 12; $m++)
-                        <td class="text-right" style="font-weight: bold;">
-                            @php
-                                $totalBeban = 0;
-                                foreach ($bebanTree as $node) {
-                                    $totalBeban += ($node['monthly_balances'][$m] ?? 0);
-                                }
-                                $monthlyBebanTotals[$m] = $totalBeban;
-                                $grandTotalBebanYear += $totalBeban;
-                                echo formatLRTahunanValue($totalBeban);
-                            @endphp
-                        </td>
+                        <td class="text-right">{{ $fmt($mTotalAdmin[$m]) }}</td>
                     @endfor
-                    <td class="text-right" style="font-weight: bold;">
-                        {{ formatLRTahunanValue($grandTotalBebanYear) }}
-                    </td>
+                    <td class="text-right">{{ $fmt(array_sum($mTotalAdmin)) }}</td>
                 </tr>
 
-                <!-- Spacer -->
-                <tr><td colspan="14" style="height: 15px;"></td></tr>
-
-                <!-- 5. LABA / RUGI BERSIH (Laba Kotor - Total Beban) -->
-                <tr class="subtotal-row-grand">
-                    <td style="font-weight: bold; text-transform: uppercase;">LABA (RUGI) BERSIH</td>
-                    @php $grandTotalLabaBersihYear = 0; @endphp
+                <!-- BIAYA PENYUSUTAN & AMORTISASI -->
+                <tr class="account-group">
+                    <td class="col-keterangan">6-22100 &nbsp; BIAYA PEMASARAN UMUM</td>
+                    @for ($m = 1; $m <= 12; $m++) <td></td> @endfor
+                    <td></td>
+                </tr>
+                <tr class="account-group">
+                    <td class="col-keterangan pl-1">6-22100 &nbsp; Biaya Penyusutan & Amortisasi</td>
+                    @for ($m = 1; $m <= 12; $m++) <td></td> @endfor
+                    <td></td>
+                </tr>
+                @foreach ($penyusutanAccounts as $acc)
+                    <tr>
+                        <td class="col-keterangan pl-2">{{ $acc->kode_akun }} &nbsp; {{ $acc->nama_akun }}</td>
+                        @for ($m = 1; $m <= 12; $m++)
+                            <td class="text-right">{{ $fmt($mVal($acc->kode_akun, $m)) }}</td>
+                        @endfor
+                        <td class="text-right">{{ $fmt($yearVal($acc->kode_akun)) }}</td>
+                    </tr>
+                @endforeach
+                <tr class="row-subtotal">
+                    <td class="pl-sub">Total Biaya Penyusutan & Amortisasi</td>
                     @for ($m = 1; $m <= 12; $m++)
-                        <td class="text-right" style="font-weight: bold;">
-                            @php
-                                $totLK = $monthlyLabaKotorTotals[$m] ?? 0;
-                                $totB = $monthlyBebanTotals[$m] ?? 0;
-                                $labaBersih = $totLK - $totB;
-                                $grandTotalLabaBersihYear += $labaBersih;
-                                echo formatLRTahunanValue($labaBersih);
-                            @endphp
+                        <td class="text-right">{{ $fmt($mTotalPenyusutan[$m]) }}</td>
+                    @endfor
+                    <td class="text-right">{{ $fmt(array_sum($mTotalPenyusutan)) }}</td>
+                </tr>
+
+                <!-- BIAYA JASA -->
+                @if (isset($lrMap['6-23100']))
+                    <tr class="account-group">
+                        <td class="col-keterangan">6-23100 &nbsp; {{ $lrMap['6-23100']->nama_akun }}</td>
+                        @for ($m = 1; $m <= 12; $m++) <td></td> @endfor
+                        <td></td>
+                    </tr>
+                @endif
+                @foreach ($jasaAccounts as $acc)
+                    <tr>
+                        <td class="col-keterangan pl-1">{{ $acc->kode_akun }} &nbsp; {{ $acc->nama_akun }}</td>
+                        @for ($m = 1; $m <= 12; $m++)
+                            <td class="text-right">{{ $fmt($mVal($acc->kode_akun, $m)) }}</td>
+                        @endfor
+                        <td class="text-right">{{ $fmt($yearVal($acc->kode_akun)) }}</td>
+                    </tr>
+                @endforeach
+                <tr class="row-subtotal">
+                    <td class="pl-sub">Total Biaya Jasa</td>
+                    @for ($m = 1; $m <= 12; $m++)
+                        <td class="text-right">{{ $fmt($mTotalJasa[$m]) }}</td>
+                    @endfor
+                    <td class="text-right">{{ $fmt(array_sum($mTotalJasa)) }}</td>
+                </tr>
+
+                <!-- BIAYA IMPOR -->
+                @if (isset($lrMap['6-24100']))
+                    <tr class="account-group">
+                        <td class="col-keterangan">6-24100 &nbsp; {{ $lrMap['6-24100']->nama_akun }}</td>
+                        @for ($m = 1; $m <= 12; $m++) <td></td> @endfor
+                        <td></td>
+                    </tr>
+                @endif
+                @foreach ($imporAccounts as $acc)
+                    <tr>
+                        <td class="col-keterangan pl-1">{{ $acc->kode_akun }} &nbsp; {{ $acc->nama_akun }}</td>
+                        @for ($m = 1; $m <= 12; $m++)
+                            <td class="text-right">{{ $fmt($mVal($acc->kode_akun, $m)) }}</td>
+                        @endfor
+                        <td class="text-right">{{ $fmt($yearVal($acc->kode_akun)) }}</td>
+                    </tr>
+                @endforeach
+                <tr class="row-subtotal">
+                    <td class="pl-sub">Total Biaya Impor</td>
+                    @for ($m = 1; $m <= 12; $m++)
+                        <td class="text-right">{{ $fmt($mTotalImpor[$m]) }}</td>
+                    @endfor
+                    <td class="text-right">{{ $fmt(array_sum($mTotalImpor)) }}</td>
+                </tr>
+
+                <!-- BIAYA UMUM & ADMINISTRASI -->
+                @if (isset($lrMap['6-25100']))
+                    <tr class="account-group">
+                        <td class="col-keterangan">6-25100 &nbsp; {{ $lrMap['6-25100']->nama_akun }}</td>
+                        @for ($m = 1; $m <= 12; $m++) <td></td> @endfor
+                        <td></td>
+                    </tr>
+                @endif
+                @if (isset($lrMap['6-25110']))
+                    <tr class="account-group">
+                        <td class="col-keterangan pl-1">6-25110 &nbsp; {{ $lrMap['6-25110']->nama_akun }}</td>
+                        @for ($m = 1; $m <= 12; $m++) <td></td> @endfor
+                        <td></td>
+                    </tr>
+                @endif
+                @foreach ($gajiAccounts as $acc)
+                    <tr>
+                        <td class="col-keterangan pl-2">{{ $acc->kode_akun }} &nbsp; {{ $acc->nama_akun }}</td>
+                        @for ($m = 1; $m <= 12; $m++)
+                            <td class="text-right">{{ $fmt($mVal($acc->kode_akun, $m)) }}</td>
+                        @endfor
+                        <td class="text-right">{{ $fmt($yearVal($acc->kode_akun)) }}</td>
+                    </tr>
+                @endforeach
+                <tr class="row-subtotal">
+                    <td class="pl-sub">Total Biaya Gaji, Lembur</td>
+                    @for ($m = 1; $m <= 12; $m++)
+                        <td class="text-right">{{ $fmt($mTotalGaji[$m]) }}</td>
+                    @endfor
+                    <td class="text-right">{{ $fmt(array_sum($mTotalGaji)) }}</td>
+                </tr>
+
+                <!-- BEBAN UTILITI, ADM, SEWA -->
+                @if (isset($lrMap['6-25120']))
+                    <tr class="account-group">
+                        <td class="col-keterangan pl-1">6-25120 &nbsp; {{ $lrMap['6-25120']->nama_akun }}</td>
+                        @for ($m = 1; $m <= 12; $m++) <td></td> @endfor
+                        <td></td>
+                    </tr>
+                @endif
+                @foreach ($utilitiAccounts as $acc)
+                    <tr>
+                        <td class="col-keterangan pl-2">{{ $acc->kode_akun }} &nbsp; {{ $acc->nama_akun }}</td>
+                        @for ($m = 1; $m <= 12; $m++)
+                            <td class="text-right">{{ $fmt($mVal($acc->kode_akun, $m)) }}</td>
+                        @endfor
+                        <td class="text-right">{{ $fmt($yearVal($acc->kode_akun)) }}</td>
+                    </tr>
+                @endforeach
+                <tr class="row-subtotal">
+                    <td class="pl-sub">Total Biaya Umum & Administrasi</td>
+                    @for ($m = 1; $m <= 12; $m++)
+                        <td class="text-right">{{ $fmt($mTotalUmumAdm[$m]) }}</td>
+                    @endfor
+                    <td class="text-right">{{ $fmt(array_sum($mTotalUmumAdm)) }}</td>
+                </tr>
+
+                <!-- TOTAL BIAYA OPERASIONAL -->
+                <tr class="row-hpp">
+                    <td style="font-weight: bold; text-transform: uppercase;">TOTAL BIAYA OPERASIONAL</td>
+                    @for ($m = 1; $m <= 12; $m++)
+                        <td class="text-right">{{ $fmt($mTotalBiayaOperasional[$m]) }}</td>
+                    @endfor
+                    <td class="text-right">{{ $fmt(array_sum($mTotalBiayaOperasional)) }}</td>
+                </tr>
+
+                <!-- 4. LABA (RUGI) BERSIH -->
+                <tr class="row-grand-total">
+                    <td>LABA (RUGI) BERSIH</td>
+                    @for ($m = 1; $m <= 12; $m++)
+                        <td class="text-right" style="color: {{ $mLabaBersih[$m] >= 0 ? '#1e3a8a' : '#dc2626' }};">
+                            {{ $fmt($mLabaBersih[$m]) }}
                         </td>
                     @endfor
-                    <td class="text-right" style="font-weight: bold;">
-                        {{ formatLRTahunanValue($grandTotalLabaBersihYear) }}
+                    <td class="text-right font-bold" style="color: {{ array_sum($mLabaBersih) >= 0 ? '#1e3a8a' : '#dc2626' }};">
+                        {{ $fmt(array_sum($mLabaBersih)) }}
                     </td>
                 </tr>
             </tbody>
         </table>
     </div>
 </body>
-
 </html>

@@ -471,6 +471,10 @@ class LaporanaccountingController extends Controller
                         'ak' => [],
                         'used' => [],
                     ],
+                    'bj' => [
+                        'sa' => [],
+                        'ak' => [],
+                    ],
                 ];
 
                 for ($m = 1; $m <= 12; $m++) {
@@ -503,9 +507,20 @@ class LaporanaccountingController extends Controller
                     $hppBahanTahunan['bk']['sa'][$m] = $sa_bk;
                     $hppBahanTahunan['bk']['ak'][$m] = $ak_bk;
                     $hppBahanTahunan['bk']['used'][$m] = $used_bk;
+
+                    // 5-12103 (P/L Persediaan Awal Barang Jadi / Bahan Bakar)
+                    $bjSaRow = $monthlyMatrix['5-12103'][$m] ?? null;
+                    $sa_bj = $bjSaRow ? ((float) $bjSaRow['debet'] - (float) $bjSaRow['kredit']) : 0.0;
+                    $hppBahanTahunan['bj']['sa'][$m] = $sa_bj;
+
+                    // 5-13103 (P/L Persediaan Akhir Barang Jadi / Bahan Bakar)
+                    $bjAkRow = $monthlyMatrix['5-13103'][$m] ?? null;
+                    $ak_bj = $bjAkRow ? abs((float) $bjAkRow['kredit'] - (float) $bjAkRow['debet']) : 0.0;
+                    $hppBahanTahunan['bj']['ak'][$m] = $ak_bj;
                 }
 
                 $data['labarugi'] = $lrAccounts;
+                $data['lrMap'] = $lrAccounts->keyBy('kode_akun');
                 $data['balances'] = $balances_LR;
                 $data['hppBahanTahunan'] = $hppBahanTahunan;
 
