@@ -45,6 +45,8 @@
             margin: 0 auto;
             width: 100%;
             overflow-x: auto;
+            overflow-y: auto;
+            max-height: calc(100vh - 120px);
             position: relative;
         }
 
@@ -247,6 +249,8 @@
 
             .content {
                 overflow-x: visible !important;
+                overflow-y: visible !important;
+                max-height: none !important;
             }
         }
     </style>
