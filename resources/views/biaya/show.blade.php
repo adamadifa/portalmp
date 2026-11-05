@@ -6,6 +6,7 @@
     @php
         $total_biaya = 0;
         $total_dpp_detail = 0;
+        $total_dpp_lain_detail = 0;
         $total_ppn_detail = 0;
 
         foreach ($detail as $d) {
@@ -15,13 +16,15 @@
 
             if ($biaya->ppn == '1') {
                 $dpp_val  = $subtotal * 100 / 111;
-                $dpp_lain = $dpp_val * 11 / 12;
-                $ppn_val  = $dpp_lain * 0.12;
+                $dpp_lain_val = $dpp_val * 11 / 12;
+                $ppn_val  = $dpp_lain_val * 0.12;
             } else {
                 $dpp_val = $total;
+                $dpp_lain_val = 0;
                 $ppn_val = 0;
             }
             $total_dpp_detail += $dpp_val;
+            $total_dpp_lain_detail += $dpp_lain_val;
             $total_ppn_detail += $ppn_val;
         }
 
@@ -221,7 +224,6 @@
             </div>
         </div>
 
-        @can('biaya.harga')
             <!-- Card: Detail Pos Biaya -->
             <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/90 dark:border-slate-800 shadow-2xs overflow-hidden">
                 <div class="px-6 py-4 bg-[#162a5b] text-white flex items-center justify-between">
@@ -251,6 +253,7 @@
                                 <th class="py-2.5 px-4 text-right w-28 whitespace-nowrap">Subtotal</th>
                                 <th class="py-2.5 px-4 text-right w-24 whitespace-nowrap">Peny</th>
                                 <th class="py-2.5 px-4 text-right w-28 whitespace-nowrap">DPP</th>
+                                <th class="py-2.5 px-4 text-right w-28 whitespace-nowrap">DPP Lain</th>
                                 <th class="py-2.5 px-4 text-right w-24 whitespace-nowrap">PPN</th>
                                 <th class="py-2.5 px-4 text-right w-32 whitespace-nowrap">Total</th>
                             </tr>
@@ -262,10 +265,11 @@
                                     $total_item = $subtotal + $d->penyesuaian;
                                     if ($biaya->ppn == '1') {
                                         $dpp_val  = $subtotal * 100 / 111;
-                                        $dpp_lain = $dpp_val * 11 / 12;
-                                        $ppn_val  = $dpp_lain * 0.12;
+                                        $dpp_lain_val = $dpp_val * 11 / 12;
+                                        $ppn_val  = $dpp_lain_val * 0.12;
                                     } else {
                                         $dpp_val = $total_item;
+                                        $dpp_lain_val = 0;
                                         $ppn_val = 0;
                                     }
                                 @endphp
@@ -287,6 +291,7 @@
                                     <td class="py-2 px-4 text-right font-medium text-slate-700 dark:text-slate-300 whitespace-nowrap">{{ formatAngkaDesimal($subtotal) }}</td>
                                     <td class="py-2 px-4 text-right font-medium text-slate-500 whitespace-nowrap">{{ formatAngkaDesimal($d->penyesuaian) }}</td>
                                     <td class="py-2 px-4 text-right font-semibold text-indigo-700 dark:text-indigo-400 whitespace-nowrap">{{ formatAngkaDesimal($dpp_val) }}</td>
+                                    <td class="py-2 px-4 text-right font-semibold text-violet-700 dark:text-violet-400 whitespace-nowrap">{{ formatAngkaDesimal($dpp_lain_val) }}</td>
                                     <td class="py-2 px-4 text-right font-semibold text-emerald-700 dark:text-emerald-400 whitespace-nowrap">{{ $ppn_val > 0 ? formatAngkaDesimal($ppn_val) : '-' }}</td>
                                     <td class="py-2 px-4 text-right font-bold text-slate-900 dark:text-white whitespace-nowrap">{{ formatAngkaDesimal($total_item) }}</td>
                                 </tr>
@@ -296,6 +301,7 @@
                             <tr>
                                 <td colspan="7" class="py-3 px-4 text-right uppercase tracking-wider text-[11px] text-slate-500 dark:text-slate-400">Total Pos Biaya</td>
                                 <td class="py-3 px-4 text-right font-bold text-indigo-700 dark:text-indigo-400 whitespace-nowrap">{{ formatAngkaDesimal($total_dpp_detail) }}</td>
+                                <td class="py-3 px-4 text-right font-bold text-violet-700 dark:text-violet-400 whitespace-nowrap">{{ formatAngkaDesimal($total_dpp_lain_detail) }}</td>
                                 <td class="py-3 px-4 text-right font-bold text-emerald-700 dark:text-emerald-400 whitespace-nowrap">{{ $total_ppn_detail > 0 ? formatAngkaDesimal($total_ppn_detail) : '-' }}</td>
                                 <td class="py-3 px-4 text-right font-black text-slate-900 dark:text-white whitespace-nowrap">{{ formatAngkaDesimal($total_biaya) }}</td>
                             </tr>
@@ -305,16 +311,25 @@
             </div>
 
             @php
-                $biayaByAkun      = [];
-                $itemBreakdowns   = [];
-                $total_dpp_items  = 0;
-                $total_ppn_items  = 0;
-                $total_hutang_items = 0;
+                $biayaByAkun          = [];
+                $itemBreakdowns       = [];
+                $total_dpp_items      = 0;
+                $total_dpp_lain_items = 0;
+                $total_ppn_items      = 0;
+                $total_hutang_items   = 0;
 
                 foreach ($detail as $d) {
-                    $sub    = ($d->jumlah * $d->harga) + $d->penyesuaian;
-                    $dpp    = ($biaya->ppn == '1') ? (($d->jumlah * $d->harga) * 100 / 111) : $sub;
-                    $ppn    = ($biaya->ppn == '1') ? ($sub - $dpp) : 0;
+                    $sub          = ($d->jumlah * $d->harga) + $d->penyesuaian;
+                    $sub_bruto    = ($d->jumlah * $d->harga);
+                    if ($biaya->ppn == '1') {
+                        $dpp      = $sub_bruto * 100 / 111;
+                        $dpp_lain = $dpp * 11 / 12;
+                        $ppn      = $dpp_lain * 0.12;
+                    } else {
+                        $dpp      = $sub;
+                        $dpp_lain = 0;
+                        $ppn      = 0;
+                    }
                     $hutang = $sub;
                     $kdAkun = $d->kode_akun ?? '6-11101';
                     $nmAkun = $d->nama_akun ?? 'Biaya';
@@ -326,13 +341,15 @@
                         'kode_akun'  => $kdAkun,
                         'nama_akun'  => $nmAkun,
                         'dpp'        => $dpp,
+                        'dpp_lain'   => $dpp_lain,
                         'ppn'        => $ppn,
                         'hutang'     => $hutang,
                     ];
 
-                    $total_dpp_items    += $dpp;
-                    $total_ppn_items    += $ppn;
-                    $total_hutang_items += $hutang;
+                    $total_dpp_items      += $dpp;
+                    $total_dpp_lain_items += $dpp_lain;
+                    $total_ppn_items      += $ppn;
+                    $total_hutang_items   += $hutang;
 
                     if (!isset($biayaByAkun[$kdAkun])) {
                         $biayaByAkun[$kdAkun] = ['kode_akun' => $kdAkun, 'nama_akun' => $nmAkun, 'jumlah' => 0];
@@ -358,22 +375,23 @@
                             </div>
                             <div>
                                 <h4 class="font-bold text-sm text-white">Rincian Akun & Jurnal</h4>
-                                <p class="text-[11px] text-indigo-200/80">Alokasi beban (DPP), PPN Masukan, dan Jurnal</p>
+                                <p class="text-[11px] text-indigo-200/80">Alokasi beban (DPP & DPP Lain), PPN Masukan, dan Jurnal</p>
                             </div>
                         </div>
                         <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold bg-white/20 text-white">
-                            {{ $biaya->ppn == '1' ? 'PPN 11%' : 'Non-PPN' }}
+                            {{ $biaya->ppn == '1' ? 'PPN 12% DPP Lain' : 'Non-PPN' }}
                         </span>
                     </div>
 
                     <!-- Tabel Item Akun -->
                     <div class="overflow-x-auto">
-                        <table class="w-full text-xs text-left border-collapse min-w-[480px]">
+                        <table class="w-full text-xs text-left border-collapse min-w-[520px]">
                             <thead class="bg-indigo-50/50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-b border-indigo-100 dark:border-slate-700 uppercase tracking-wider text-[11px] font-bold">
                                 <tr>
                                     <th class="py-2.5 px-3 w-10 text-center">No</th>
                                     <th class="py-2.5 px-3">Item & Akun</th>
                                     <th class="py-2.5 px-3 text-right whitespace-nowrap">DPP</th>
+                                    <th class="py-2.5 px-3 text-right whitespace-nowrap">DPP Lain</th>
                                     <th class="py-2.5 px-3 text-right whitespace-nowrap">PPN</th>
                                     <th class="py-2.5 px-3 text-right whitespace-nowrap">Total</th>
                                 </tr>
@@ -392,6 +410,7 @@
                                             </div>
                                         </td>
                                         <td class="py-2.5 px-3 text-right font-medium text-slate-800 dark:text-slate-200 whitespace-nowrap">{{ formatAngkaDesimal($item['dpp']) }}</td>
+                                        <td class="py-2.5 px-3 text-right font-medium text-violet-700 dark:text-violet-400 whitespace-nowrap">{{ formatAngkaDesimal($item['dpp_lain']) }}</td>
                                         <td class="py-2.5 px-3 text-right font-medium {{ $item['ppn'] > 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-400' }} whitespace-nowrap">
                                             {{ $item['ppn'] > 0 ? formatAngkaDesimal($item['ppn']) : '-' }}
                                         </td>
@@ -403,6 +422,7 @@
                                 <tr>
                                     <td colspan="2" class="py-2.5 px-3 text-right uppercase text-slate-500 dark:text-slate-400">Total Akun</td>
                                     <td class="py-2.5 px-3 text-right font-bold text-slate-800 dark:text-white whitespace-nowrap">{{ formatAngkaDesimal($total_dpp_items) }}</td>
+                                    <td class="py-2.5 px-3 text-right font-bold text-violet-700 dark:text-violet-400 whitespace-nowrap">{{ formatAngkaDesimal($total_dpp_lain_items) }}</td>
                                     <td class="py-2.5 px-3 text-right font-bold text-emerald-600 dark:text-emerald-400 whitespace-nowrap">{{ formatAngkaDesimal($total_ppn_items) }}</td>
                                     <td class="py-2.5 px-3 text-right font-bold text-slate-900 dark:text-white whitespace-nowrap">{{ formatAngkaDesimal($total_hutang_items) }}</td>
                                 </tr>
@@ -444,7 +464,7 @@
                                     <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/40">
                                         <td class="py-2 px-3">
                                             <div class="font-mono font-bold text-indigo-700 dark:text-indigo-400">1-11501</div>
-                                            <div class="text-[10px] text-slate-500">PPN Masukan (11%)</div>
+                                            <div class="text-[10px] text-slate-500">PPN Masukan (12% DPP Lain)</div>
                                         </td>
                                         <td class="py-2 px-3 text-center">
                                             <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold uppercase bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 border border-blue-200/60">Debet</span>
@@ -597,41 +617,6 @@
                 </div>
 
             </div>
-        @else
-            <!-- Non-Harga View (Simple Detail) -->
-            <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/90 dark:border-slate-800 shadow-2xs overflow-hidden">
-                <div class="px-6 py-4 bg-[#162a5b] text-white flex items-center justify-between">
-                    <div class="flex items-center gap-2.5">
-                        <div class="w-8 h-8 rounded-lg bg-white/15 flex items-center justify-center">
-                            <i data-lucide="layers" class="w-4 h-4 text-white"></i>
-                        </div>
-                        <h4 class="font-bold text-sm text-white">Data Pos Biaya</h4>
-                    </div>
-                </div>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-xs text-left border-collapse">
-                        <thead class="bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-b border-slate-200 dark:border-slate-700 uppercase tracking-wider text-[11px] font-bold">
-                            <tr>
-                                <th class="py-2.5 px-4 w-12 text-center whitespace-nowrap">No</th>
-                                <th class="py-2.5 px-4 min-w-[200px]">Keterangan</th>
-                                <th class="py-2.5 px-4 min-w-[180px]">Akun (COA)</th>
-                                <th class="py-2.5 px-4 text-center w-28 whitespace-nowrap">Qty</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-slate-100 dark:divide-slate-800 text-slate-700 dark:text-slate-300">
-                            @foreach ($detail as $d)
-                                <tr class="hover:bg-slate-50/70 dark:hover:bg-slate-800/40 transition">
-                                    <td class="py-2 px-4 text-center text-slate-400 font-mono">{{ $loop->iteration }}</td>
-                                    <td class="py-2 px-4 font-bold text-slate-900 dark:text-white">{{ textCamelCase($d->keterangan ?? $d->nama_barang ?? '-') }}</td>
-                                    <td class="py-2 px-4 font-mono text-slate-600 dark:text-slate-400">{{ $d->kode_akun }} - {{ $d->nama_akun }}</td>
-                                    <td class="py-2 px-4 text-center font-bold text-slate-900 dark:text-white whitespace-nowrap">{{ formatAngkaDesimal($d->jumlah) }}</td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        @endcan
 
     </div>
 
