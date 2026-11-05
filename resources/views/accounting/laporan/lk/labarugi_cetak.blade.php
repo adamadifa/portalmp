@@ -6,7 +6,7 @@
     <title>Laba Rugi {{ date('Y-m-d H:i:s') }}</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: Arial, Helvetica, sans-serif;
             color: #000;
             margin: 20px;
             background-color: #fff;
@@ -23,7 +23,7 @@
             font-weight: bold;
             text-transform: uppercase;
             margin: 0;
-            color: #111;
+            color: #000;
         }
 
         .header .report-title {
@@ -36,7 +36,7 @@
         .header .period {
             font-size: 12px;
             margin: 2px 0 0 0;
-            color: #333;
+            color: #222;
             font-weight: bold;
         }
 
@@ -57,19 +57,18 @@
             border-bottom: 1.5px solid #000;
             padding: 5px 6px;
             font-weight: bold;
-            background-color: #f8fafc;
+            background-color: #f1f5f9;
             text-align: left;
         }
 
         .table-lr td {
-            padding: 3px 6px;
-            border-bottom: 1px dotted #999;
+            padding: 2.5px 6px;
+            border-bottom: 1px dotted #555;
             vertical-align: middle;
         }
 
         .col-kode {
-            width: 90px;
-            font-family: Arial, sans-serif;
+            width: 80px;
             white-space: nowrap;
         }
 
@@ -83,24 +82,39 @@
             white-space: nowrap;
         }
 
-        .row-section-header td {
+        /* Section & Sub-section Headers */
+        .header-main td {
             font-weight: bold;
             text-transform: uppercase;
-            border-top: 1.5px solid #000;
-            border-bottom: 1px solid #000;
-            background-color: #f1f5f9;
-            padding-top: 6px;
-            padding-bottom: 6px;
+            border-bottom: 1px dotted #555;
+            padding-top: 12px;
+            padding-bottom: 3px;
             font-size: 11.5px;
         }
 
-        .row-sub-header td {
+        .header-sub td {
             font-weight: bold;
-            border-bottom: 1px dotted #999;
-            padding-top: 5px;
-            padding-bottom: 3px;
+            text-transform: uppercase;
+            border-bottom: 1px dotted #555;
+            padding-top: 8px;
+            padding-bottom: 2px;
         }
 
+        .header-underline td {
+            font-weight: bold;
+            text-transform: uppercase;
+            text-decoration: underline;
+            border-bottom: 1px dotted #555;
+            padding-top: 8px;
+            padding-bottom: 2px;
+        }
+
+        .account-group td {
+            font-weight: bold;
+            border-bottom: 1px dotted #555;
+        }
+
+        /* Subtotal Rows */
         .row-subtotal td {
             font-weight: bold;
             font-style: italic;
@@ -109,13 +123,23 @@
             background-color: #fafafa;
         }
 
-        .row-total td {
+        /* Production Cost & HPP Total Rows */
+        .row-total-prod td {
+            font-weight: bold;
+            font-style: italic;
+            border-top: 1px solid #000;
+            border-bottom: 1px solid #000;
+            background-color: #f8fafc;
+        }
+
+        .row-hpp td {
             font-weight: bold;
             border-top: 1.5px solid #000;
             border-bottom: 1.5px solid #000;
             background-color: #f8fafc;
         }
 
+        /* Yellow Highlighted Laba Kotor */
         .row-laba-kotor td {
             font-weight: bold;
             background-color: #ffff00 !important;
@@ -125,6 +149,7 @@
             color: #000;
         }
 
+        /* Grand Total Rows */
         .row-grand-total td {
             font-weight: bold;
             border-top: 1.5px solid #000;
@@ -143,9 +168,9 @@
             text-align: center;
         }
 
-        .pl-1 { padding-left: 14px !important; }
-        .pl-2 { padding-left: 28px !important; }
-        .pl-3 { padding-left: 42px !important; }
+        .pl-1 { padding-left: 12px !important; }
+        .pl-2 { padding-left: 24px !important; }
+        .pl-sub { padding-left: 30px !important; }
 
         @media print {
             body {
@@ -192,7 +217,7 @@
             };
 
             // ==========================================
-            // 1. PENDAPATAN
+            // 1. PENDAPATAN (4)
             // ==========================================
             $pendapatanAccounts = $lrAccounts->filter(function($a) {
                 return substr($a->kode_akun, 0, 1) === '4';
@@ -200,7 +225,17 @@
             $totalPendapatan = $pendapatanAccounts->where('is_leaf', true)->sum('total');
 
             // ==========================================
-            // 2. HPP & BIAYA PRODUKSI
+            // 2. HARGA POKOK PENJUALAN (HPP)
+            //    Komponen HPP:
+            //    - Bahan Baku
+            //    - Bahan Kemasan
+            //    - Biaya Overhead Pabrik (BOP)
+            //    - Biaya Tidak Langsung (BPTL)
+            //    - Biaya Overhead Lainnya
+            //    = Total Biaya Produksi
+            //    + Persediaan Awal Barang Jadi (5-12103)
+            //    - Persediaan Akhir Barang Jadi (5-13103)
+            //    = HPP
             // ==========================================
             $sa_bb   = $hppBahan['sa_bb'] ?? 0;
             $pemb_bb = $hppBahan['pemb_bb'] ?? 0;
@@ -218,7 +253,7 @@
             });
             $totalBOP = $bopAccounts->sum('total');
 
-            // BPTL (6-12100)
+            // BPTL / Biaya Tidak Langsung (6-12100)
             $bptlAccounts = $lrAccounts->filter(function($a) {
                 return str_starts_with($a->kode_akun, '6-121') && $a->is_leaf;
             });
@@ -237,8 +272,10 @@
             $sa_bj = $hppBahan['sa_bj'] ?? $valOf('5-12103');
             $ak_bj = $hppBahan['ak_bj'] ?? $valOf('5-13103');
 
-            // HPP & Laba Kotor
+            // HPP (Harga Pokok Penjualan)
             $totalHpp = $totalBiayaProduksi + $sa_bj - $ak_bj;
+
+            // Laba Kotor = Pendapatan - HPP
             $labaKotor = $totalPendapatan - $totalHpp;
 
             // ==========================================
@@ -268,7 +305,7 @@
             });
             $totalImpor = $imporAccounts->sum('total');
 
-            // Gaji (6-25110)
+            // Gaji & Tunjangan (6-25110)
             $gajiAccounts = $lrAccounts->filter(function($a) {
                 return str_starts_with($a->kode_akun, '6-2511') && $a->is_leaf;
             });
@@ -314,14 +351,14 @@
             <tbody>
                 <!-- 1. PENDAPATAN -->
                 @if (isset($lrMap['4-11000']))
-                    <tr class="row-sub-header">
+                    <tr class="account-group">
                         <td class="col-kode">4-11000</td>
                         <td class="col-nama">{{ $lrMap['4-11000']->nama_akun }}</td>
                         <td class="col-jumlah"></td>
                     </tr>
                 @endif
                 @if (isset($lrMap['4-11100']))
-                    <tr class="row-sub-header">
+                    <tr class="account-group">
                         <td class="col-kode">4-11100</td>
                         <td class="col-nama pl-1">{{ $lrMap['4-11100']->nama_akun }}</td>
                         <td class="col-jumlah"></td>
@@ -338,73 +375,78 @@
                 @endforeach
                 <tr class="row-subtotal">
                     <td></td>
-                    <td class="pl-2">Jumlah Pendapatan</td>
+                    <td class="pl-sub">Jumlah Pendapatan</td>
                     <td class="col-jumlah">{{ $fmt($totalPendapatan) }}</td>
                 </tr>
 
-                <!-- 2. HARGA POKOK PENJUALAN -->
-                <tr class="row-section-header">
-                    <td colspan="3">HARGA POKOK PENJUALAN</td>
+                <!-- ======================================================== -->
+                <!-- 2. HARGA POKOK PENJUALAN (HPP)                         -->
+                <!--    Semua komponen di bawah ini adalah bagian dari HPP! -->
+                <!-- ======================================================== -->
+                <tr class="header-main">
+                    <td colspan="2">HARGA POKOK PENJUALAN</td>
+                    <td></td>
                 </tr>
 
-                <!-- BAHAN BAKU -->
-                <tr class="row-sub-header">
-                    <td></td>
+                <!-- Komponen HPP 1: BAHAN BAKU -->
+                <tr class="header-sub">
                     <td colspan="2">BAHAN BAKU</td>
+                    <td></td>
                 </tr>
                 <tr>
                     <td class="col-kode">5-12101</td>
-                    <td class="col-nama pl-1">{{ $nameOf('5-12101', 'P/L Persediaan Bahan Baku (Awal)') }}</td>
+                    <td class="col-nama">{{ $nameOf('5-12101', 'P/L Persediaan Bahan Baku') }}</td>
                     <td class="col-jumlah">{{ $fmt($sa_bb) }}</td>
                 </tr>
                 <tr>
                     <td class="col-kode">5-11101</td>
-                    <td class="col-nama pl-1">{{ $nameOf('5-11101', 'Pembelian Bahan Baku') }}</td>
+                    <td class="col-nama">{{ $nameOf('5-11101', 'Pembelian Bahan Baku') }}</td>
                     <td class="col-jumlah">{{ $fmt($pemb_bb) }}</td>
                 </tr>
                 <tr>
                     <td class="col-kode">5-13101</td>
-                    <td class="col-nama pl-1">{{ $nameOf('5-13101', 'P/L Persediaan Bahan Baku (Akhir)') }}</td>
+                    <td class="col-nama">{{ $nameOf('5-13101', 'P/L Persediaan Bahan Baku') }}</td>
                     <td class="col-jumlah">{{ $ak_bb != 0 ? '(' . number_format($ak_bb, 0, ',', '.') . ')' : '-' }}</td>
                 </tr>
                 <tr class="row-subtotal">
                     <td></td>
-                    <td class="pl-1">Bahan Baku yang digunakan</td>
+                    <td class="pl-sub">Bahan Baku yang digunakan</td>
                     <td class="col-jumlah">{{ $fmt($used_bb) }}</td>
                 </tr>
 
-                <!-- BAHAN KEMASAN -->
-                <tr class="row-sub-header">
-                    <td></td>
+                <!-- Komponen HPP 2: BAHAN KEMASAN -->
+                <tr class="header-sub">
                     <td colspan="2">BAHAN KEMASAN</td>
+                    <td></td>
                 </tr>
                 <tr>
                     <td class="col-kode">5-12102</td>
-                    <td class="col-nama pl-1">{{ $nameOf('5-12102', 'P/L Persediaan Bahan Kemasan (Awal)') }}</td>
+                    <td class="col-nama">{{ $nameOf('5-12102', 'P/L Persediaan Bahan Kemasan') }}</td>
                     <td class="col-jumlah">{{ $fmt($sa_bk) }}</td>
                 </tr>
                 <tr>
                     <td class="col-kode">5-11102</td>
-                    <td class="col-nama pl-1">{{ $nameOf('5-11102', 'Pembelian Bahan Kemasan') }}</td>
+                    <td class="col-nama">{{ $nameOf('5-11102', 'Pembelian Bahan Kemasan') }}</td>
                     <td class="col-jumlah">{{ $fmt($pemb_bk) }}</td>
                 </tr>
                 <tr>
                     <td class="col-kode">5-13102</td>
-                    <td class="col-nama pl-1">{{ $nameOf('5-13102', 'P/L Persediaan Bahan Kemasan (Akhir)') }}</td>
+                    <td class="col-nama">{{ $nameOf('5-13102', 'P/L Persediaan Bahan Kemasan') }}</td>
                     <td class="col-jumlah">{{ $ak_bk != 0 ? '(' . number_format($ak_bk, 0, ',', '.') . ')' : '-' }}</td>
                 </tr>
                 <tr class="row-subtotal">
                     <td></td>
-                    <td class="pl-1">Bahan Kemasan yang digunakan</td>
+                    <td class="pl-sub">Bahan Kemasan yang digunakan</td>
                     <td class="col-jumlah">{{ $fmt($used_bk) }}</td>
                 </tr>
 
-                <!-- BIAYA OVERHEAD PABRIK -->
-                <tr class="row-section-header">
-                    <td colspan="3">BIAYA OVERHEAD PABRIK</td>
+                <!-- Komponen HPP 3: BIAYA OVERHEAD PABRIK (Masuk Komponen HPP) -->
+                <tr class="header-underline">
+                    <td colspan="2">BIAYA OVERHEAD PABRIK</td>
+                    <td></td>
                 </tr>
                 @if (isset($lrMap['6-11100']))
-                    <tr class="row-sub-header">
+                    <tr class="account-group">
                         <td class="col-kode">6-11100</td>
                         <td class="col-nama">{{ $lrMap['6-11100']->nama_akun }}</td>
                         <td class="col-jumlah"></td>
@@ -419,13 +461,13 @@
                 @endforeach
                 <tr class="row-subtotal">
                     <td></td>
-                    <td class="pl-1">Total Biaya Overhead Pabrik</td>
+                    <td class="pl-sub">Total Biaya Overhead Pabrik</td>
                     <td class="col-jumlah">{{ $fmt($totalBOP) }}</td>
                 </tr>
 
-                <!-- BIAYA TIDAK LANGSUNG (BPTL) -->
+                <!-- Komponen HPP 4: BIAYA TIDAK LANGSUNG (Masuk Komponen HPP) -->
                 @if (isset($lrMap['6-12100']))
-                    <tr class="row-sub-header">
+                    <tr class="account-group">
                         <td class="col-kode">6-12100</td>
                         <td class="col-nama">{{ $lrMap['6-12100']->nama_akun }}</td>
                         <td class="col-jumlah"></td>
@@ -440,13 +482,13 @@
                 @endforeach
                 <tr class="row-subtotal">
                     <td></td>
-                    <td class="pl-1">Total Biaya Produksi Tidak Langsung</td>
+                    <td class="pl-sub">Total Biaya Produksi Tidak Langsung</td>
                     <td class="col-jumlah">{{ $fmt($totalBPTL) }}</td>
                 </tr>
 
-                <!-- BIAYA OVERHEAD LAINNYA -->
+                <!-- Komponen HPP 5: BIAYA OVERHEAD LAINNYA (Masuk Komponen HPP) -->
                 @if (isset($lrMap['6-13100']))
-                    <tr class="row-sub-header">
+                    <tr class="account-group">
                         <td class="col-kode">6-13100</td>
                         <td class="col-nama">{{ $lrMap['6-13100']->nama_akun }}</td>
                         <td class="col-jumlah"></td>
@@ -461,51 +503,56 @@
                 @endforeach
                 <tr class="row-subtotal">
                     <td></td>
-                    <td class="pl-1">Total Biaya Overhead Lainnya</td>
+                    <td class="pl-sub">Total Biaya Overhead Lainnya</td>
                     <td class="col-jumlah">{{ $fmt($totalOverheadLainnya) }}</td>
                 </tr>
 
-                <!-- TOTAL BIAYA PRODUKSI -->
-                <tr class="row-subtotal" style="background-color: #f1f5f9;">
+                <!-- SUBTOTAL BIAYA PRODUKSI (Total 5 Komponen di atas) -->
+                <tr class="row-total-prod">
                     <td></td>
-                    <td style="font-weight: bold; font-style: normal;">Total Biaya Produksi</td>
-                    <td class="col-jumlah" style="font-weight: bold; font-style: normal;">{{ $fmt($totalBiayaProduksi) }}</td>
+                    <td class="pl-sub">Total Biaya Produksi</td>
+                    <td class="col-jumlah">{{ $fmt($totalBiayaProduksi) }}</td>
                 </tr>
 
-                <!-- PERSEDIAAN BARANG JADI & HPP -->
+                <!-- PENYESUAIAN PERSEDIAAN BARANG JADI -->
                 <tr>
                     <td class="col-kode">5-12103</td>
-                    <td class="col-nama">{{ $nameOf('5-12103', 'P/L Persediaan Barang Jadi (Awal)') }}</td>
+                    <td class="col-nama">{{ $nameOf('5-12103', 'P/L Persediaan Barang Jadi') }}</td>
                     <td class="col-jumlah">{{ $fmt($sa_bj) }}</td>
                 </tr>
                 <tr>
                     <td class="col-kode">5-13103</td>
-                    <td class="col-nama">{{ $nameOf('5-13103', 'P/L Persediaan Barang Jadi (Akhir)') }}</td>
+                    <td class="col-nama">{{ $nameOf('5-13103', 'P/L Persediaan Barang Jadi') }}</td>
                     <td class="col-jumlah">{{ $ak_bj != 0 ? '(' . number_format($ak_bj, 0, ',', '.') . ')' : '-' }}</td>
                 </tr>
-                <tr class="row-total">
+
+                <!-- TOTAL HARGA POKOK PENJUALAN (HPP) -->
+                <tr class="row-hpp">
                     <td></td>
-                    <td style="font-weight: bold;">HPP</td>
-                    <td class="col-jumlah" style="font-weight: bold;">{{ $fmt($totalHpp) }}</td>
+                    <td class="pl-sub">HPP</td>
+                    <td class="col-jumlah">{{ $fmt($totalHpp) }}</td>
                 </tr>
 
-                <!-- LABA KOTOR (YELLOW HIGHLIGHT) -->
+                <!-- LABA KOTOR (YELLOW HIGHLIGHT) = PENDAPATAN - HPP -->
                 <tr class="row-laba-kotor">
                     <td></td>
-                    <td>LABA KOTOR</td>
+                    <td class="pl-sub">LABA KOTOR</td>
                     <td class="col-jumlah">{{ $fmt($labaKotor) }}</td>
                 </tr>
 
-                <!-- 3. BIAYA OPERASIONAL -->
-                <tr class="row-section-header">
-                    <td colspan="3">BIAYA OPERASIONAL</td>
+                <!-- ======================================================== -->
+                <!-- 3. BIAYA OPERASIONAL (Beban Usaha Diluar Pabrik/Produksi) -->
+                <!-- ======================================================== -->
+                <tr class="header-main">
+                    <td colspan="2">BIAYA OPERASIONAL</td>
+                    <td></td>
                 </tr>
-                <tr class="row-sub-header">
+                <tr class="account-group">
                     <td class="col-kode">6-21100</td>
                     <td class="col-nama">Beban Operasi</td>
                     <td class="col-jumlah"></td>
                 </tr>
-                <tr class="row-sub-header">
+                <tr class="account-group">
                     <td class="col-kode">6-21100</td>
                     <td class="col-nama pl-1">Biaya ADM</td>
                     <td class="col-jumlah"></td>
@@ -519,17 +566,17 @@
                 @endforeach
                 <tr class="row-subtotal">
                     <td></td>
-                    <td class="pl-1">Total Biaya Admin</td>
+                    <td class="pl-sub">Total Biaya Admin</td>
                     <td class="col-jumlah">{{ $fmt($totalAdmin) }}</td>
                 </tr>
 
                 <!-- BIAYA PENYUSUTAN & AMORTISASI -->
-                <tr class="row-sub-header">
+                <tr class="account-group">
                     <td class="col-kode">6-22100</td>
                     <td class="col-nama">BIAYA PEMASARAN UMUM</td>
                     <td class="col-jumlah"></td>
                 </tr>
-                <tr class="row-sub-header">
+                <tr class="account-group">
                     <td class="col-kode">6-22100</td>
                     <td class="col-nama pl-1">Biaya Penyusutan & Amortisasi</td>
                     <td class="col-jumlah"></td>
@@ -543,13 +590,13 @@
                 @endforeach
                 <tr class="row-subtotal">
                     <td></td>
-                    <td class="pl-1">Total Biaya Penyusutan & Amortisasi</td>
+                    <td class="pl-sub">Total Biaya Penyusutan & Amortisasi</td>
                     <td class="col-jumlah">{{ $fmt($totalPenyusutan) }}</td>
                 </tr>
 
                 <!-- BIAYA JASA -->
                 @if (isset($lrMap['6-23100']))
-                    <tr class="row-sub-header">
+                    <tr class="account-group">
                         <td class="col-kode">6-23100</td>
                         <td class="col-nama">{{ $lrMap['6-23100']->nama_akun }}</td>
                         <td class="col-jumlah"></td>
@@ -564,13 +611,13 @@
                 @endforeach
                 <tr class="row-subtotal">
                     <td></td>
-                    <td class="pl-1">Total Biaya Jasa</td>
+                    <td class="pl-sub">Total Biaya Jasa</td>
                     <td class="col-jumlah">{{ $fmt($totalJasa) }}</td>
                 </tr>
 
                 <!-- BIAYA IMPOR -->
                 @if (isset($lrMap['6-24100']))
-                    <tr class="row-sub-header">
+                    <tr class="account-group">
                         <td class="col-kode">6-24100</td>
                         <td class="col-nama">{{ $lrMap['6-24100']->nama_akun }}</td>
                         <td class="col-jumlah"></td>
@@ -585,20 +632,20 @@
                 @endforeach
                 <tr class="row-subtotal">
                     <td></td>
-                    <td class="pl-1">Total Biaya Impor</td>
+                    <td class="pl-sub">Total Biaya Impor</td>
                     <td class="col-jumlah">{{ $fmt($totalImpor) }}</td>
                 </tr>
 
                 <!-- BIAYA UMUM & ADMINISTRASI -->
                 @if (isset($lrMap['6-25100']))
-                    <tr class="row-sub-header">
+                    <tr class="account-group">
                         <td class="col-kode">6-25100</td>
                         <td class="col-nama">{{ $lrMap['6-25100']->nama_akun }}</td>
                         <td class="col-jumlah"></td>
                     </tr>
                 @endif
                 @if (isset($lrMap['6-25110']))
-                    <tr class="row-sub-header">
+                    <tr class="account-group">
                         <td class="col-kode">6-25110</td>
                         <td class="col-nama pl-1">{{ $lrMap['6-25110']->nama_akun }}</td>
                         <td class="col-jumlah"></td>
@@ -613,12 +660,13 @@
                 @endforeach
                 <tr class="row-subtotal">
                     <td></td>
-                    <td class="pl-1">Total Biaya Gaji, Lembur</td>
+                    <td class="pl-sub">Total Biaya Gaji, Lembur</td>
                     <td class="col-jumlah">{{ $fmt($totalGaji) }}</td>
                 </tr>
 
+                <!-- BEBAN UTILITI, ADM, SEWA -->
                 @if (isset($lrMap['6-25120']))
-                    <tr class="row-sub-header">
+                    <tr class="account-group">
                         <td class="col-kode">6-25120</td>
                         <td class="col-nama pl-1">{{ $lrMap['6-25120']->nama_akun }}</td>
                         <td class="col-jumlah"></td>
@@ -640,18 +688,18 @@
                 @endforeach
                 <tr class="row-subtotal">
                     <td></td>
-                    <td class="pl-1">Total Biaya Umum & Administrasi</td>
+                    <td class="pl-sub">Total Biaya Umum & Administrasi</td>
                     <td class="col-jumlah">{{ $fmt($totalUmumAdm + $totalOtherOperasional) }}</td>
                 </tr>
 
                 <!-- TOTAL BIAYA OPERASIONAL -->
-                <tr class="row-total">
+                <tr class="row-hpp">
                     <td></td>
                     <td style="font-weight: bold; text-transform: uppercase;">TOTAL BIAYA OPERASIONAL</td>
                     <td class="col-jumlah" style="font-weight: bold;">{{ $fmt($totalBiayaOperasional) }}</td>
                 </tr>
 
-                <!-- 4. LABA (RUGI) BERSIH -->
+                <!-- 4. LABA (RUGI) BERSIH = LABA KOTOR - TOTAL BIAYA OPERASIONAL -->
                 <tr class="row-grand-total">
                     <td></td>
                     <td>LABA (RUGI) BERSIH</td>
