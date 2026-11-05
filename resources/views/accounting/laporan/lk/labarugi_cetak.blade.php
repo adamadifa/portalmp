@@ -529,7 +529,7 @@
                 <!-- TOTAL HARGA POKOK PENJUALAN (HPP) -->
                 <tr class="row-hpp">
                     <td></td>
-                    <td class="pl-sub">HPP</td>
+                    <td class="pl-sub">TOTAL HARGA POKOK PENJUALAN (HPP)</td>
                     <td class="col-jumlah">{{ $fmt($totalHpp) }}</td>
                 </tr>
 

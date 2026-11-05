@@ -162,9 +162,9 @@
             $prefix = substr($rootNode['kode_akun'], 0, 1);
             if ($prefix == '4') {
                 $pendapatanTree[] = $rootNode;
-            } elseif ($prefix == '5') {
+            } elseif ($prefix == '5' || str_starts_with($rootNode['kode_akun'], '6-1')) {
                 $hppTree[] = $rootNode;
-            } elseif ($prefix == '6') {
+            } elseif (str_starts_with($rootNode['kode_akun'], '6-2') || $prefix == '6') {
                 $bebanTree[] = $rootNode;
             }
         }
@@ -426,11 +426,15 @@
                 @php
                     $otherHppAccounts = [];
                     foreach ($labarugi as $acc) {
-                        if (substr($acc->kode_akun, 0, 1) === '5' && !in_array($acc->kode_akun, [
+                        $is5 = substr($acc->kode_akun, 0, 1) === '5' && !in_array($acc->kode_akun, [
                             '5-11000', '5-11100', '5-11101', '5-11102',
                             '5-12000', '5-12100', '5-12101', '5-12102', '5-12103',
                             '5-13000', '5-13100', '5-13101', '5-13102', '5-13103'
-                        ])) {
+                        ]);
+                        $is6Overhead = str_starts_with($acc->kode_akun, '6-1') && !in_array($acc->kode_akun, [
+                            '6-11000', '6-11100', '6-12100', '6-13100'
+                        ]);
+                        if ($is5 || $is6Overhead) {
                             $otherHppAccounts[] = $acc;
                         }
                     }
