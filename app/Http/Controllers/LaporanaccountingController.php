@@ -59,7 +59,7 @@ class LaporanaccountingController extends Controller
                     'biaya.tanggal',
                     'biaya.no_bukti',
                     DB::raw("'BIAYA OPERASIONAL' as sumber"),
-                    DB::raw('((biaya_detail.jumlah * biaya_detail.harga) + biaya_detail.penyesuaian) as jml_debet'),
+                    DB::raw('CASE WHEN biaya.ppn = "1" THEN ((biaya_detail.jumlah * biaya_detail.harga) * 100 / 111) ELSE ((biaya_detail.jumlah * biaya_detail.harga) + biaya_detail.penyesuaian) END as jml_debet'),
                     DB::raw('0 as jml_kredit'),
                     DB::raw('0 as saldo_awal_val')
                 );
@@ -560,7 +560,7 @@ class LaporanaccountingController extends Controller
                 DB::raw('0 as urutan')
             );
 
-        // 2. Transaksi Biaya Operasional
+        // 2. Transaksi Biaya Operasional (Jika PPN = 1, hanya DPP yang masuk ke akun beban)
         $biayaSub = DB::table('biaya_detail')
             ->join('biaya', 'biaya_detail.no_bukti', '=', 'biaya.no_bukti')
             ->whereBetween('biaya.tanggal', [sprintf('%04d-%02d-01', $tahun, $bulan), $sampai])
@@ -570,7 +570,7 @@ class LaporanaccountingController extends Controller
                 'biaya.no_bukti',
                 DB::raw("'BIAYA OPERASIONAL' as sumber"),
                 DB::raw("CONCAT(COALESCE(biaya_detail.keterangan, 'Biaya'), ' - ', COALESCE(biaya.keterangan, '')) as keterangan"),
-                DB::raw('((biaya_detail.jumlah * biaya_detail.harga) + biaya_detail.penyesuaian) as jml_debet'),
+                DB::raw('CASE WHEN biaya.ppn = "1" THEN ((biaya_detail.jumlah * biaya_detail.harga) * 100 / 111) ELSE ((biaya_detail.jumlah * biaya_detail.harga) + biaya_detail.penyesuaian) END as jml_debet'),
                 DB::raw('0 as jml_kredit'),
                 DB::raw('0 as saldo_awal_val'),
                 DB::raw('2 as urutan')

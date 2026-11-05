@@ -108,7 +108,7 @@
                 </tbody>
                 <tfoot>
                     <tr>
-                        <th colspan="8" style="text-align: right">GRAND TOTAL</th>
+                        <th colspan="9" style="text-align: right">GRAND TOTAL</th>
                         <th class="right" style="font-weight: bold">{{ formatAngkaDesimal($total_dpp) }}</th>
                         <th class="right" style="font-weight: bold">{{ formatAngkaDesimal($total_dpp_lain) }}</th>
                         <th class="right" style="font-weight: bold">{{ formatAngkaDesimal($total_ppn) }}</th>

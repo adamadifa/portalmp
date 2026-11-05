@@ -14,7 +14,7 @@ class SaldoawalbukubesarController extends Controller
 {
     public function index(Request $request)
     {
-        abort_if(!auth()->user()->can('saldoawalbukubesar.index'), 403);
+        abort_if(! auth()->user()->can('saldoawalbukubesar.index'), 403);
 
         $data['list_bulan'] = config('global.list_bulan');
         $data['nama_bulan'] = config('global.nama_bulan');
@@ -22,10 +22,10 @@ class SaldoawalbukubesarController extends Controller
 
         $query = Saldoawalbukubesar::query();
 
-        if (!empty($request->bulan)) {
+        if (! empty($request->bulan)) {
             $query->where('bulan', $request->bulan);
         }
-        if (!empty($request->tahun)) {
+        if (! empty($request->tahun)) {
             $query->where('tahun', $request->tahun);
         } else {
             $query->where('tahun', date('Y'));
@@ -41,7 +41,7 @@ class SaldoawalbukubesarController extends Controller
 
     public function create()
     {
-        abort_if(!auth()->user()->can('saldoawalbukubesar.create'), 403);
+        abort_if(! auth()->user()->can('saldoawalbukubesar.create'), 403);
 
         $data['list_bulan'] = config('global.list_bulan');
         $data['start_year'] = config('global.start_year');
@@ -78,17 +78,18 @@ class SaldoawalbukubesarController extends Controller
         // Jika belum ada data sama sekali, load seluruh akun COA dengan nilai 0 untuk inisialisasi
         $is_initial = ($cek_total_saldo_awal === 0);
 
-        if (!$is_initial && $cek_saldo_sebelumnya === 0) {
+        if (! $is_initial && $cek_saldo_sebelumnya === 0) {
             $nama_bln_prev = $nama_bulan[$bulan_sebelumnya] ?? $bulan_sebelumnya;
+
             return response()->json([
                 'success' => false,
-                'message' => "Saldo awal bulan $nama_bln_prev $tahun_sebelumnya belum dibuat. Silakan buat saldo awal periode sebelumnya terlebih dahulu."
+                'message' => "Saldo awal bulan $nama_bln_prev $tahun_sebelumnya belum dibuat. Silakan buat saldo awal periode sebelumnya terlebih dahulu.",
             ], 400);
         }
 
         // Ambil saldo awal bulan sebelumnya jika ada
         $saldo_map = [];
-        if (!$is_initial) {
+        if (! $is_initial) {
             $kode_sa_prev = sprintf('SA%02d%d', $bulan_sebelumnya, $tahun_sebelumnya);
             $prevDetails = Detailsaldoawalbukubesar::where('kode_saldo_awal', $kode_sa_prev)->get();
             foreach ($prevDetails as $pd) {
@@ -99,11 +100,11 @@ class SaldoawalbukubesarController extends Controller
             $start_date = sprintf('%04d-%02d-01', $tahun_sebelumnya, $bulan_sebelumnya);
             $end_date = date('Y-m-t', strtotime($start_date));
 
-            // Mutasi dari Biaya Operasional
+            // Mutasi dari Biaya Operasional (Hanya DPP jika PPN aktif)
             $biayaRows = DB::table('biaya_detail')
                 ->join('biaya', 'biaya_detail.no_bukti', '=', 'biaya.no_bukti')
                 ->whereBetween('biaya.tanggal', [$start_date, $end_date])
-                ->select('biaya_detail.kode_akun', DB::raw('SUM((jumlah * harga) + penyesuaian) as total'))
+                ->select('biaya_detail.kode_akun', DB::raw('SUM(CASE WHEN biaya.ppn = "1" THEN ((jumlah * harga) * 100 / 111) ELSE ((jumlah * harga) + penyesuaian) END) as total'))
                 ->groupBy('biaya_detail.kode_akun')
                 ->get();
             foreach ($biayaRows as $br) {
@@ -151,7 +152,7 @@ class SaldoawalbukubesarController extends Controller
                 ->whereBetween('tanggal', [$start_date, $end_date])
                 ->sum('jumlah');
 
-            $mutasiPiutang = (float)$nettoPenjualanTotal - (float)$pelunasanPiutangTotal;
+            $mutasiPiutang = (float) $nettoPenjualanTotal - (float) $pelunasanPiutangTotal;
             if ($mutasiPiutang != 0) {
                 $saldo_map['1-11201'] = ($saldo_map['1-11201'] ?? 0) + $mutasiPiutang;
             }
@@ -170,7 +171,7 @@ class SaldoawalbukubesarController extends Controller
 
     public function store(Request $request)
     {
-        abort_if(!auth()->user()->can('saldoawalbukubesar.create'), 403);
+        abort_if(! auth()->user()->can('saldoawalbukubesar.create'), 403);
 
         $request->validate([
             'bulan' => 'required',
@@ -180,8 +181,8 @@ class SaldoawalbukubesarController extends Controller
         ]);
 
         $bln = sprintf('%02d', $request->bulan);
-        $kode_saldo_awal = "SA" . $bln . $request->tahun;
-        $tanggal = $request->tahun . "-" . $bln . "-01";
+        $kode_saldo_awal = 'SA'.$bln.$request->tahun;
+        $tanggal = $request->tahun.'-'.$bln.'-01';
 
         DB::beginTransaction();
         try {
@@ -213,16 +214,18 @@ class SaldoawalbukubesarController extends Controller
             }
 
             DB::commit();
+
             return Redirect::route('saldoawalbukubesar.index')->with(['success' => 'Saldo Awal Buku Besar Periode Berhasil Disimpan.']);
         } catch (\Exception $e) {
             DB::rollBack();
-            return Redirect::back()->withInput()->with(['error' => 'Gagal menyimpan saldo awal: ' . $e->getMessage()]);
+
+            return Redirect::back()->withInput()->with(['error' => 'Gagal menyimpan saldo awal: '.$e->getMessage()]);
         }
     }
 
     public function show($kode_saldo_awal)
     {
-        abort_if(!auth()->user()->can('saldoawalbukubesar.show'), 403);
+        abort_if(! auth()->user()->can('saldoawalbukubesar.show'), 403);
 
         try {
             $kode_decrypted = Crypt::decrypt($kode_saldo_awal);
@@ -243,7 +246,7 @@ class SaldoawalbukubesarController extends Controller
 
     public function edit($kode_saldo_awal)
     {
-        abort_if(!auth()->user()->can('saldoawalbukubesar.edit'), 403);
+        abort_if(! auth()->user()->can('saldoawalbukubesar.edit'), 403);
 
         try {
             $kode_decrypted = Crypt::decrypt($kode_saldo_awal);
@@ -265,7 +268,7 @@ class SaldoawalbukubesarController extends Controller
 
     public function destroy($kode_saldo_awal)
     {
-        abort_if(!auth()->user()->can('saldoawalbukubesar.delete'), 403);
+        abort_if(! auth()->user()->can('saldoawalbukubesar.delete'), 403);
 
         try {
             $kode_decrypted = Crypt::decrypt($kode_saldo_awal);
@@ -282,7 +285,8 @@ class SaldoawalbukubesarController extends Controller
             return Redirect::back()->with(['success' => 'Saldo Awal Berhasil Dihapus.']);
         } catch (\Exception $e) {
             DB::rollBack();
-            return Redirect::back()->with(['error' => 'Gagal menghapus saldo awal: ' . $e->getMessage()]);
+
+            return Redirect::back()->with(['error' => 'Gagal menghapus saldo awal: '.$e->getMessage()]);
         }
     }
 }
