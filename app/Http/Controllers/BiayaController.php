@@ -260,6 +260,47 @@ class BiayaController extends Controller
         }
     }
 
+    public function bulkDelete(Request $request)
+    {
+        $no_bukti_list = $request->no_bukti;
+
+        if (empty($no_bukti_list) || ! is_array($no_bukti_list)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Tidak ada data biaya yang dipilih.',
+            ], 422);
+        }
+
+        DB::beginTransaction();
+        try {
+            $deletedCount = 0;
+            foreach ($no_bukti_list as $no_bukti) {
+                $biaya = Biaya::where('no_bukti', $no_bukti)->first();
+                if ($biaya) {
+                    Detailbiaya::where('no_bukti', $no_bukti)->delete();
+                    Historibayarbiaya::where('no_bukti', $no_bukti)->delete();
+                    $biaya->delete();
+                    $deletedCount++;
+                }
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'deleted_count' => $deletedCount,
+                'message' => "Sebanyak {$deletedCount} data biaya berhasil dihapus.",
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal menghapus data biaya: '.$e->getMessage(),
+            ], 500);
+        }
+    }
+
     public function createprosespembayaran($no_bukti)
     {
         try {

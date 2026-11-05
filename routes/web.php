@@ -163,6 +163,7 @@ Route::middleware('auth')->group(function () {
     });
 
     // Biaya Operasional
+    Route::post('/biaya/bulkdelete', [BiayaController::class, 'bulkDelete'])->name('biaya.bulkdelete');
     Route::post('/biaya/reset', [BiayaController::class, 'resetData'])->name('biaya.reset');
     Route::post('/biaya/import', [BiayaController::class, 'importExcel'])->name('biaya.import');
     Route::post('/biaya/importpembayaran', [BiayaController::class, 'importPembayaranExcel'])->name('biaya.importpembayaran');

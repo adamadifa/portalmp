@@ -356,11 +356,28 @@
                 @endif
             </div>
 
+            <!-- Bulk Action Bar (Animated when rows checked) -->
+            <div id="bulkActionBar" class="hidden bg-gradient-to-r from-blue-50 to-indigo-50/80 dark:from-slate-800 dark:to-slate-800/90 border-b border-blue-200 dark:border-blue-900/40 px-5 py-2.5 flex flex-wrap items-center justify-between text-xs transition duration-200">
+                <div class="flex items-center gap-2.5 text-[#162a5b] dark:text-blue-300 font-bold">
+                    <span id="selectedCount" class="bg-[#162a5b] dark:bg-blue-600 text-white px-2.5 py-0.5 rounded-full text-[11px] font-extrabold shadow-2xs">0</span>
+                    <span>item biaya terpilih</span>
+                </div>
+                <div class="flex flex-wrap items-center gap-2 mt-1 sm:mt-0">
+                    <button type="button" onclick="bulkDeleteBiaya()" class="px-3.5 py-1.5 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold transition shadow-2xs inline-flex items-center gap-1.5 cursor-pointer">
+                        <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                        <span>Hapus Terpilih</span>
+                    </button>
+                </div>
+            </div>
+
             <!-- Table Responsive Area -->
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse">
                     <thead class="bg-[#162a5b]">
                         <tr class="text-[11px] font-extrabold uppercase tracking-wider text-blue-200/90 bg-[#162a5b]">
+                            <th class="py-2.5 px-3 w-10 text-center">
+                                <input type="checkbox" id="checkAll" class="rounded border-blue-300/40 text-blue-600 focus:ring-0 w-3.5 h-3.5 cursor-pointer bg-white/10 checked:bg-blue-600">
+                            </th>
                             <th class="py-2.5 px-4 w-40 min-w-[140px] whitespace-nowrap">No. Bukti</th>
                             <th class="py-2.5 px-4 w-28 whitespace-nowrap">Tanggal</th>
                             <th class="py-2.5 px-4 min-w-[180px]">Rekanan / Supplier</th>
@@ -376,11 +393,21 @@
                     <tbody class="divide-y divide-slate-100 dark:divide-slate-800 text-xs">
                         @forelse ($biaya as $d)
                             <tr class="hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-colors">
+                                <!-- Checkbox -->
+                                <td class="py-1 px-3 text-center">
+                                    <input type="checkbox" class="checkItem rounded border-slate-300 dark:border-slate-700 text-[#162a5b] focus:ring-0 w-3.5 h-3.5 cursor-pointer" value="{{ $d->no_bukti }}">
+                                </td>
+
                                 <!-- No Bukti -->
                                 <td class="py-1 px-4 whitespace-nowrap">
-                                    <span class="font-mono text-xs font-bold px-2 py-0.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-[#162a5b] dark:text-blue-400 border border-slate-200/60 dark:border-slate-700">
-                                        {{ $d->no_bukti }}
-                                    </span>
+                                    <div class="flex items-center gap-1.5">
+                                        <span class="font-mono text-xs font-bold px-2 py-0.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-[#162a5b] dark:text-blue-400 border border-slate-200/60 dark:border-slate-700">
+                                            {{ $d->no_bukti }}
+                                        </span>
+                                        <span class="px-1.5 py-0.5 rounded text-[10px] font-bold {{ $d->jenis_transaksi == 'T' ? 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-200/60' : 'bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-200/60' }}">
+                                            {{ $d->jenis_transaksi == 'T' ? 'T' : 'K' }}
+                                        </span>
+                                    </div>
                                 </td>
 
                                 <!-- Tanggal -->
@@ -511,7 +538,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="9" class="py-16 px-4 text-center">
+                                <td colspan="11" class="py-16 px-4 text-center">
                                     <div class="flex flex-col items-center justify-center max-w-sm mx-auto">
                                         <div class="w-12 h-12 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400 mb-3 shadow-xs">
                                             <i data-lucide="receipt" class="w-6 h-6"></i>
@@ -784,6 +811,99 @@
         }
 
 
+
+        // Checkbox Logic & Bulk Actions
+        function updateBulkBar() {
+            var count = $('.checkItem:checked').length;
+            $('#selectedCount').text(count);
+
+            if (count > 0) {
+                $('#bulkActionBar').removeClass('hidden');
+            } else {
+                $('#bulkActionBar').addClass('hidden');
+            }
+
+            var totalItems = $('.checkItem').length;
+            $('#checkAll').prop('checked', totalItems > 0 && count === totalItems);
+
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+        }
+
+        $('#checkAll').on('change', function() {
+            var isChecked = $(this).is(':checked');
+            $('.checkItem').prop('checked', isChecked);
+            updateBulkBar();
+        });
+
+        $(document).on('change', '.checkItem', function() {
+            updateBulkBar();
+        });
+
+        window.bulkDeleteBiaya = function() {
+            var selected = $('.checkItem:checked').map(function() {
+                return $(this).val();
+            }).get();
+
+            if (selected.length === 0) {
+                Swal.fire({
+                    title: 'Peringatan',
+                    text: 'Pilih minimal satu data biaya untuk dihapus!',
+                    icon: 'warning',
+                    confirmButtonColor: '#162a5b'
+                });
+                return;
+            }
+
+            Swal.fire({
+                title: 'Hapus Data Terpilih?',
+                text: `Apakah Anda yakin ingin menghapus ${selected.length} data biaya operasional terpilih beserta detail item dan histori pembayarannya? Tindakan ini tidak dapat dibatalkan!`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#6B7280',
+                confirmButtonText: 'Ya, Hapus Terpilih!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({
+                        title: 'Menghapus...',
+                        text: 'Mohon tunggu sebentar',
+                        allowOutsideClick: false,
+                        didOpen: () => { Swal.showLoading(); }
+                    });
+
+                    $.ajax({
+                        url: "{{ route('biaya.bulkdelete') }}",
+                        type: 'POST',
+                        data: {
+                            _token: $('meta[name="csrf-token"]').attr('content'),
+                            no_bukti: selected
+                        },
+                        success: function(response) {
+                            Swal.fire({
+                                title: 'Berhasil!',
+                                text: response.message,
+                                icon: 'success',
+                                confirmButtonColor: '#162a5b'
+                            }).then(() => {
+                                window.location.reload();
+                            });
+                        },
+                        error: function(xhr) {
+                            var errMsg = xhr.responseJSON && xhr.responseJSON.message ? xhr.responseJSON.message : 'Gagal menghapus data biaya.';
+                            Swal.fire({
+                                title: 'Gagal!',
+                                text: errMsg,
+                                icon: 'error',
+                                confirmButtonColor: '#d33'
+                            });
+                        }
+                    });
+                }
+            });
+        };
 
         $(".btnHistoriBayar").click(function(e) {
             e.preventDefault();
