@@ -124,6 +124,7 @@
         .header-underline td:first-child,
         .account-group td:first-child {
             background-color: #fff;
+            border-right: none !important;
         }
 
         .text-right {
@@ -483,12 +484,16 @@
 
                 <!-- 2. HARGA POKOK PENJUALAN -->
                 <tr class="header-main">
-                    <td colspan="14">HARGA POKOK PENJUALAN</td>
+                    <td>HARGA POKOK PENJUALAN</td>
+                    @for ($m = 1; $m <= 12; $m++) <td></td> @endfor
+                    <td></td>
                 </tr>
 
                 <!-- BAHAN BAKU -->
                 <tr class="header-sub">
-                    <td colspan="14">BAHAN BAKU</td>
+                    <td>BAHAN BAKU</td>
+                    @for ($m = 1; $m <= 12; $m++) <td></td> @endfor
+                    <td></td>
                 </tr>
                 <tr>
                     <td class="col-keterangan">5-12101 &nbsp; {{ $nameOf('5-12101', 'P/L Persediaan Bahan Baku') }}</td>
@@ -521,7 +526,9 @@
 
                 <!-- BAHAN KEMASAN -->
                 <tr class="header-sub">
-                    <td colspan="14">BAHAN KEMASAN</td>
+                    <td>BAHAN KEMASAN</td>
+                    @for ($m = 1; $m <= 12; $m++) <td></td> @endfor
+                    <td></td>
                 </tr>
                 <tr>
                     <td class="col-keterangan">5-12102 &nbsp; {{ $nameOf('5-12102', 'P/L Persediaan Bahan Kemasan') }}</td>
@@ -554,7 +561,9 @@
 
                 <!-- BIAYA OVERHEAD PABRIK -->
                 <tr class="header-underline">
-                    <td colspan="14">BIAYA OVERHEAD PABRIK</td>
+                    <td>BIAYA OVERHEAD PABRIK</td>
+                    @for ($m = 1; $m <= 12; $m++) <td></td> @endfor
+                    <td></td>
                 </tr>
                 @if (isset($lrMap['6-11100']))
                     <tr class="account-group">
@@ -675,7 +684,9 @@
 
                 <!-- 3. BIAYA OPERASIONAL -->
                 <tr class="header-main">
-                    <td colspan="14">BIAYA OPERASIONAL</td>
+                    <td>BIAYA OPERASIONAL</td>
+                    @for ($m = 1; $m <= 12; $m++) <td></td> @endfor
+                    <td></td>
                 </tr>
                 <tr class="account-group">
                     <td class="col-keterangan">6-21100 &nbsp; Beban Operasi</td>
