@@ -151,13 +151,22 @@ class LaporanmarketingController extends Controller
 
         $kartupiutang = [];
         foreach ($penjualan as $p) {
-            // Hitung total DPP
-            $dpp = DB::table('marketing_penjualan_detail')
+            // Ambil detail penjualan: DPP dan Total Piutang (Netto)
+            $detail = DB::table('marketing_penjualan_detail')
                 ->where('no_bukti', $p->no_bukti)
-                ->sum('subtotal') ?? 0;
-            
-            $ppn = $dpp * 0.11;
-            $total_piutang = $dpp + $ppn;
+                ->selectRaw('SUM(harga_dus * jumlah) as dpp, SUM(subtotal) as total_netto')
+                ->first();
+
+            $dpp = $detail->dpp ?? 0;
+            $total_piutang = $detail->total_netto ?? 0;
+
+            // Jika subtotal sama dengan dpp (belum include PPN), hitung PPN
+            if (abs($total_piutang - $dpp) < 1 && $dpp > 0) {
+                $ppn = $dpp * 0.11;
+                $total_piutang = $dpp + $ppn;
+            } else {
+                $ppn = $total_piutang - $dpp;
+            }
 
             // Hitung pembayaran lalu (sebelum $dari)
             $bayar_lalu = DB::table('marketing_penjualan_historibayar')
