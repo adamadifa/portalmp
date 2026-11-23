@@ -38,7 +38,16 @@ class PembelianController extends Controller
         }
 
         $pmb = new Pembelian();
-        $pembelian = $pmb->getPembelian(request: $request)->paginate(15);
+        $queryPembelian = $pmb->getPembelian(request: $request);
+
+        $perPage = $request->get('per_page', '15');
+        if ($perPage === 'all') {
+            $totalCount = (clone $queryPembelian)->count();
+            $pembelian = $queryPembelian->paginate(max($totalCount, 1));
+        } else {
+            $perPage = in_array((int) $perPage, [10, 15, 25, 50, 100, 200]) ? (int) $perPage : 15;
+            $pembelian = $queryPembelian->paginate($perPage);
+        }
         $pembelian->appends(request()->all());
         $data['pembelian'] = $pembelian;
 

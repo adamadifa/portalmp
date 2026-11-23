@@ -44,7 +44,14 @@ class PenjualanMarketingController extends Controller
         $query->orderBy('marketing_penjualan.tanggal', 'desc');
         $query->orderBy('marketing_penjualan.no_bukti', 'desc');
 
-        $penjualan = $query->paginate(15);
+        $perPage = $request->get('per_page', '15');
+        if ($perPage === 'all') {
+            $totalCount = (clone $query)->count();
+            $penjualan = $query->paginate(max($totalCount, 1));
+        } else {
+            $perPage = in_array((int) $perPage, [10, 15, 25, 50, 100, 200]) ? (int) $perPage : 15;
+            $penjualan = $query->paginate($perPage);
+        }
         $penjualan->appends($request->all());
 
         return view('marketing.penjualan.index', compact('penjualan'));
