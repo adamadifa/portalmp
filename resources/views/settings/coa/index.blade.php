@@ -157,7 +157,6 @@
         </div>
     </div>
 
-    <!-- Modal Dialog inside @push('modals') -->
     @push('modals')
     <div id="modalDialog" class="fixed inset-0 z-50 hidden overflow-y-auto bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="relative w-full max-w-lg bg-white rounded-2xl shadow-2xl overflow-hidden transform transition-all">
