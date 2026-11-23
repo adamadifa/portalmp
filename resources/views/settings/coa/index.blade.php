@@ -11,7 +11,7 @@
         </div>
         <div class="flex items-center gap-3">
             @can('coa.create')
-            <button type="button" id="btnTambahCoa" class="inline-flex items-center gap-2 px-4 py-2.5 text-xs font-semibold text-white bg-[#294C9A] hover:bg-[#1E3A70] rounded-xl transition shadow-sm cursor-pointer" style="background-color: #294C9A !important; color: #ffffff !important;">
+            <button type="button" id="btnTambahCoa" onclick="openModal('Tambah Akun COA Baru', '/coa/create')" class="inline-flex items-center gap-2 px-4 py-2.5 text-xs font-semibold text-white bg-[#294C9A] hover:bg-[#1E3A70] rounded-xl transition shadow-sm cursor-pointer" style="background-color: #294C9A !important; color: #ffffff !important;">
                 <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
                 Tambah Akun
             </button>
@@ -157,7 +157,8 @@
         </div>
     </div>
 
-    <!-- Modal Dialog -->
+    <!-- Modal Dialog inside @push('modals') -->
+    @push('modals')
     <div id="modalDialog" class="fixed inset-0 z-50 hidden overflow-y-auto bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="relative w-full max-w-lg bg-white rounded-2xl shadow-2xl overflow-hidden transform transition-all">
             <div class="px-6 py-4 bg-[#294C9A] text-white flex justify-between items-center">
@@ -173,28 +174,38 @@
             </div>
         </div>
     </div>
+    @endpush
 
     @push('myscript')
     <script>
-        function openModal(title, url) {
+        window.openModal = function(title, url) {
             $("#modalTitle").text(title);
             $("#modalBody").html(`
                 <div class="flex items-center justify-center py-8">
                     <svg class="w-8 h-8 text-[#294C9A] animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
                 </div>
             `);
-            $("#modalDialog").removeClass("hidden");
-            $("#modalBody").load(url);
-        }
+            $("#modalDialog").removeClass("hidden").addClass("flex");
+            $("#modalBody").load(url, function(response, status, xhr) {
+                if (status === "error") {
+                    $("#modalBody").html(`
+                        <div class="p-6 text-center text-rose-500 font-semibold text-xs">
+                            Gagal memuat formulir: ${xhr.status} ${xhr.statusText}
+                        </div>
+                    `);
+                }
+            });
+        };
 
-        function closeModal() {
-            $("#modalDialog").addClass("hidden");
-        }
+        window.closeModal = function() {
+            $("#modalDialog").addClass("hidden").removeClass("flex");
+            $("#modalBody").empty();
+        };
 
         $(document).ready(function() {
             $("#btnTambahCoa").click(function(e) {
                 e.preventDefault();
-                openModal("Tambah Akun COA Baru", "{{ route('coa.create') }}");
+                openModal("Tambah Akun COA Baru", "/coa/create");
             });
 
             $(".btnEditCoa").click(function(e) {

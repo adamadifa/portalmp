@@ -496,7 +496,7 @@
         </script>
     @endif
 
-    @if($errors->any())
+    @if(!empty($errors) && $errors->any())
         <script>
             document.addEventListener('DOMContentLoaded', function() {
                 window.showToast('error', {!! json_encode($errors->first()) !!});
