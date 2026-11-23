@@ -861,6 +861,13 @@ class LaporanaccountingController extends Controller
 
         // 14. Hutang PPh 23 (2-11203) dari Potongan PPh 23 Biaya (Kredit)
         $hutangPph23BiayaSub = DB::table('biaya')
+            ->leftJoin('supplier', 'biaya.kode_supplier', '=', 'supplier.kode_supplier')
+            ->leftJoin(
+                DB::raw('(SELECT no_bukti, GROUP_CONCAT(DISTINCT COALESCE(NULLIF(TRIM(keterangan), ""), "Item Biaya") SEPARATOR ", ") as item_keterangan FROM biaya_detail WHERE keterangan IS NOT NULL AND keterangan != "" GROUP BY no_bukti) as bd'),
+                'biaya.no_bukti',
+                '=',
+                'bd.no_bukti'
+            )
             ->whereBetween('biaya.tanggal', [sprintf('%04d-%02d-01', $tahun, $bulan), $sampai])
             ->where('biaya.potongan_pph23', '>', 0)
             ->select(
@@ -868,7 +875,21 @@ class LaporanaccountingController extends Controller
                 'biaya.tanggal',
                 'biaya.no_bukti',
                 DB::raw("'BIAYA' as sumber"),
-                DB::raw("CONCAT('Potongan PPh 23 Biaya - ', COALESCE(biaya.keterangan, '')) as keterangan"),
+                DB::raw("TRIM(CONCAT(
+                    'Potongan PPh 23',
+                    CASE 
+                        WHEN bd.item_keterangan IS NOT NULL AND bd.item_keterangan != '' 
+                        THEN CONCAT(' - ', bd.item_keterangan)
+                        WHEN biaya.keterangan IS NOT NULL AND biaya.keterangan != ''
+                        THEN CONCAT(' - ', biaya.keterangan)
+                        ELSE ''
+                    END,
+                    CASE 
+                        WHEN supplier.nama_supplier IS NOT NULL AND supplier.nama_supplier != ''
+                        THEN CONCAT(' (', supplier.nama_supplier, ')')
+                        ELSE ''
+                    END
+                )) as keterangan"),
                 DB::raw('0 as jml_debet'),
                 'biaya.potongan_pph23 as jml_kredit',
                 DB::raw('0 as saldo_awal_val'),
