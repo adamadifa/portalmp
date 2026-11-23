@@ -368,6 +368,15 @@
                 // Jika validasi client-side gagal dan event dibatalkan, hentikan
                 if (e.defaultPrevented) return;
 
+                // Lewati form laporan / form yang membuka tab baru (target="_blank")
+                // agar tombol submit tidak berubah loading/disabled dan tidak perlu refresh halaman
+                const isReportForm = form.getAttribute('target') === '_blank' || 
+                                     form.target === '_blank' || 
+                                     /laporan|cetak/i.test(form.getAttribute('action') || '') || 
+                                     /formlap|frmlap|rekap|report/i.test(form.id || '') ||
+                                     form.classList.contains('no-loading');
+                if (isReportForm) return;
+
                 // Cari tombol submit pada form yang sedang dikirim
                 const submitBtn = form.querySelector('button[type="submit"], input[type="submit"]');
                 if (!submitBtn) return;
