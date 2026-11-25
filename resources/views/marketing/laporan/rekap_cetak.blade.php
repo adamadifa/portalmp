@@ -158,60 +158,12 @@
             text-transform: uppercase;
         }
 
-        /* Floating Action Bar (Screen Only) */
-        .action-bar {
-            position: fixed;
-            bottom: 24px;
-            right: 24px;
-            display: flex;
-            gap: 10px;
-            z-index: 9999;
-        }
-
-        .btn-action {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 10px 18px;
-            border-radius: 30px;
-            font-size: 12px;
-            font-weight: 700;
-            text-decoration: none;
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-            transition: all 0.2s ease;
-            border: none;
-        }
-
-        .btn-print {
-            background-color: #162a5b;
-            color: #ffffff;
-        }
-        .btn-print:hover {
-            background-color: #1f3a7a;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(22, 42, 91, 0.3);
-        }
-
-        .btn-close {
-            background-color: #64748b;
-            color: #ffffff;
-        }
-        .btn-close:hover {
-            background-color: #475569;
-            transform: translateY(-2px);
-        }
-
         /* Print Media Styles */
         @media print {
             body {
                 padding: 0;
                 background-color: #ffffff;
                 font-size: 9.5px;
-            }
-
-            .action-bar {
-                display: none !important;
             }
 
             .freeze-table {
@@ -260,18 +212,6 @@
 </head>
 
 <body>
-    <!-- Floating Quick Actions -->
-    <div class="action-bar">
-        <button type="button" class="btn-action btn-print" onclick="window.print()">
-            <svg style="width: 16px; height: 16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
-            <span>Cetak / Cetak PDF</span>
-        </button>
-        <button type="button" class="btn-action btn-close" onclick="window.close()">
-            <svg style="width: 16px; height: 16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-            <span>Tutup</span>
-        </button>
-    </div>
-
     <!-- Letterhead & Report Metadata -->
     <div class="report-header">
         <h1 class="report-title">Rekapitulasi Penjualan Marketing</h1>
